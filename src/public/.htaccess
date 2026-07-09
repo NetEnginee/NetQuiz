@@ -1,0 +1,19 @@
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    
+    # 1. Force HTTPS (Di-comment sementara karena SSL belum dipastikan aktif)
+    # RewriteCond %{HTTPS} off
+    # RewriteCond %{HTTP:X-Forwarded-Proto} !https
+    # RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+    # 2. Routing Utama (Setara try_files Nginx)
+    # Jika file atau direktori fisik ada, layani langsung
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_FILENAME} !-f
+    
+    # Jika tidak ada, arahkan ke index.php dengan Query String (QSA)
+    RewriteRule ^(.*)$ index.php [L,QSA]
+</IfModule>
+
+# 3. Mencegah Directory Browsing untuk Folder Assets
+# Options -Indexes
