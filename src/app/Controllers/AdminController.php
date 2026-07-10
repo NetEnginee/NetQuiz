@@ -16,7 +16,7 @@ class AdminController extends Controller
 
     private function checkAdmin()
     {
-        if (!isset($_SESSION['user']) || $_SESSION['user']['email'] !== 'admin@routeros.academy') {
+        if (!isset($_SESSION['user']) || $_SESSION['user']['email'] !== 'admin@routerosquiz.academy') {
             header('Location: ' . BASE_URL . '/');
             exit;
         }

@@ -12,7 +12,7 @@ class HomeController extends Controller
     public function index()
     {
         // Redirect admin users to the Admin dashboard
-        if ($_SESSION['user']['email'] === 'admin@routeros.academy') {
+        if ($_SESSION['user']['email'] === 'admin@routerosquiz.academy') {
             header('Location: ' . BASE_URL . '/admin');
             exit;
         }
@@ -201,7 +201,7 @@ class HomeController extends Controller
 
     public function dashboardRedirect()
     {
-        if ($_SESSION['user']['email'] === 'admin@routeros.academy') {
+        if ($_SESSION['user']['email'] === 'admin@routerosquiz.academy') {
             header('Location: ' . BASE_URL . '/admin');
             exit;
         }

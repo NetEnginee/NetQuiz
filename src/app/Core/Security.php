@@ -55,7 +55,7 @@ class Security
         if (!isset($_SESSION['user'])) {
             return Role::GUEST;
         }
-        return ($_SESSION['user']['email'] === 'admin@routeros.academy') ? Role::ADMIN : Role::USER;
+        return ($_SESSION['user']['email'] === 'admin@routerosquiz.academy') ? Role::ADMIN : Role::USER;
     }
 
     /**
