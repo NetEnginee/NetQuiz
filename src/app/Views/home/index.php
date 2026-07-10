@@ -18,14 +18,38 @@
         flex-direction: column;
         align-items: flex-start;
         text-align: left;
-        gap: 0.25rem;
+        gap: 0.15rem;
         flex: 1;
     }
-    .activity-right-custom {
+    .activity-title-custom {
+        font-weight: 600;
+        font-size: 0.85rem;
+        color: #0f172a;
+        line-height: 1.2;
+    }
+    .activity-cat-custom {
+        font-size: 0.72rem;
+        color: #7c3aed;
+        font-weight: 600;
+        font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+    .activity-time-custom {
+        font-size: 0.7rem;
+        color: #64748b;
+        line-height: 1.2;
+    }
+    
+    .desktop-right-layout {
+        display: flex;
+        align-items: center;
         margin-left: 1rem;
         flex-shrink: 0;
-        align-self: center;
     }
+    .mobile-right-layout {
+        display: none;
+    }
+
+    /* Mobile only styles */
     .status-badge-custom {
         display: inline-flex;
         align-items: center;
@@ -55,8 +79,26 @@
             flex-direction: column;
             align-items: flex-start;
         }
-        .activity-right-custom {
-            margin-left: 0;
+        .activity-left-custom {
+            gap: 0.25rem;
+        }
+        .activity-title-custom {
+            font-size: 1.05rem;
+            font-weight: 700;
+        }
+        .activity-cat-custom {
+            font-size: 0.88rem;
+        }
+        .activity-time-custom {
+            font-size: 0.82rem;
+        }
+        .desktop-right-layout {
+            display: none;
+        }
+        .mobile-right-layout {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
             margin-top: 0.75rem;
             margin-bottom: 0.5rem;
             align-self: flex-start;
@@ -158,15 +200,44 @@
                         <div class="activity-item-custom">
                             <!-- Detail Quiz (Judul, Kategori & Waktu) -->
                             <div class="activity-left-custom">
-                                <span class="activity-title" style="font-weight: 700; font-size: 1.05rem; color: #0f172a; line-height: 1.2; text-align: left;"><?= htmlspecialchars($title) ?></span>
-                                <span style="font-size: 0.88rem; color: #7c3aed; font-weight: 600; font-family: 'Plus Jakarta Sans', sans-serif;"><?= htmlspecialchars($category) ?></span>
-                                <span class="activity-time" style="font-size: 0.82rem; color: #64748b; line-height: 1.2;">
+                                <span class="activity-title-custom" style="text-align: left;"><?= htmlspecialchars($title) ?></span>
+                                <span class="activity-cat-custom"><?= htmlspecialchars($category) ?></span>
+                                <span class="activity-time-custom">
                                     <?= htmlspecialchars($time) ?>
                                 </span>
                             </div>
 
-                            <!-- Status & Action Box -->
-                            <div class="activity-right-custom" style="display: flex; align-items: center; gap: 0.5rem;">
+                            <!-- Desktop View: Status Button (Single Hoverable pill button) -->
+                            <div class="desktop-right-layout">
+                                <?php if ($isFinished): ?>
+                                    <?php
+                                    $reviewUrl = (isset($activity['quiz_id']) && method_exists('\App\Core\Security', 'encryptUrlId'))
+                                        ? BASE_URL . '/quiz/review/' . \App\Core\Security::encryptUrlId($activity['quiz_id'])
+                                        : BASE_URL . '/quiz/review/' . ($activity['quiz_id'] ?? '');
+                                    ?>
+                                    <a href="<?= $reviewUrl ?>"
+                                        style="display: inline-flex; align-items: center; justify-content: center; padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; background-color: #dcfce7; color: #166534; text-decoration: none; cursor: pointer; transition: all 0.2s ease; box-shadow: 0 1px 2px rgba(0,0,0,0.05); min-width: 60px; text-align: center;"
+                                        onmouseover="this.innerText='Review?'; this.style.backgroundColor='#bbf7d0'"
+                                        onmouseout="this.innerText='Selesai'; this.style.backgroundColor='#dcfce7'">
+                                        Selesai
+                                    </a>
+                                <?php else: ?>
+                                    <?php
+                                    $playId = (isset($activity['quiz_id']) && method_exists('\App\Core\Security', 'encryptUrlId'))
+                                        ? \App\Core\Security::encryptUrlId($activity['quiz_id'])
+                                        : ($activity['quiz_id'] ?? '');
+                                    ?>
+                                    <a href="<?= BASE_URL ?>/quiz/play/<?= $playId ?>"
+                                        style="display: inline-flex; align-items: center; justify-content: center; padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; background-color: #fef08a; color: #854d0e; text-decoration: none; cursor: pointer; transition: all 0.2s ease; box-shadow: 0 1px 2px rgba(0,0,0,0.05); min-width: 60px; text-align: center;"
+                                        onmouseover="this.innerText='Lanjut?'; this.style.backgroundColor='#fde047'"
+                                        onmouseout="this.innerText='Dijeda'; this.style.backgroundColor='#fef08a'">
+                                        Dijeda
+                                    </a>
+                                <?php endif; ?>
+                            </div>
+
+                            <!-- Mobile View: Status Badge & Button (Split rounded boxes) -->
+                            <div class="mobile-right-layout">
                                 <?php if ($isFinished): ?>
                                     <?php
                                     $reviewUrl = (isset($activity['quiz_id']) && method_exists('\App\Core\Security', 'encryptUrlId'))
