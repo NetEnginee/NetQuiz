@@ -7,7 +7,7 @@
     .activity-item-custom {
         display: flex;
         justify-content: space-between;
-        align-items: flex-start;
+        align-items: center;
         padding: 0.75rem 1rem;
         border-bottom: 1px solid #f1f5f9;
         width: 100%;
@@ -24,8 +24,7 @@
     .activity-right-custom {
         margin-left: 1rem;
         flex-shrink: 0;
-        align-self: flex-start;
-        margin-top: -2px;
+        align-self: center;
     }
     .status-badge-custom {
         display: inline-flex;
