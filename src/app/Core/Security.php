@@ -130,7 +130,7 @@ class Security
         $cipher = 'AES-256-CBC';
         $key = hash('sha256', 'RouterOS-Quiz-Academy-Secret-Key-1298471');
         $ivlen = openssl_cipher_iv_length($cipher);
-        $iv = openssl_random_bytes($ivlen);
+        $iv = random_bytes($ivlen);
         $ciphertext = openssl_encrypt($plaintext, $cipher, $key, OPENSSL_RAW_DATA, $iv);
         
         $data = $iv . $ciphertext;
