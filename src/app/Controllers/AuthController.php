@@ -102,7 +102,7 @@ class AuthController extends Controller
                     'name' => $user['username'],
                     'email' => $user['email']
                 ];
-                $redirectUrl = ($user['email'] === 'admin@routerosquiz.academy') ? BASE_URL . '/admin' : BASE_URL . '/';
+                $redirectUrl = (strcasecmp(trim($user['email']), 'admin@routerosquiz.academy') === 0) ? BASE_URL . '/admin' : BASE_URL . '/';
                 echo json_encode(['status' => 'success', 'message' => 'Login berhasil!', 'redirect' => $redirectUrl]);
                 exit;
             } else {
