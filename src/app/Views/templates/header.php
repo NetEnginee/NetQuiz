@@ -412,6 +412,7 @@ if (isset($_SESSION['user'])) {
         .badge-modal-card.unlocked {
             border-color: #c7d2fe;
             background-color: #faf5ff;
+        }
         /* Simple & Elegant Page Loader CSS */
         .page-loader {
             position: fixed;
