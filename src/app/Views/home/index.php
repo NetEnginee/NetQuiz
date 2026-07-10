@@ -172,7 +172,7 @@
 <!-- ========================================= -->
 <!-- Komponen Aktivitas Terbaru (Recent Activity) -->
 <!-- ========================================= -->
-<div class="stats-grid">
+<div style="width: 100%; margin-top: 1.25rem;">
     <div class="dashboard-recent-activity">
         <div class="activity-header">
             <h2 class="dashboard-section-title" style="margin: 0; margin-bottom: 1rem;">
