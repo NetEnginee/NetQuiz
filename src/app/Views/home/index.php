@@ -22,19 +22,19 @@
         flex: 1;
     }
     .activity-title-custom {
-        font-weight: 600;
-        font-size: 0.85rem;
+        font-weight: 700;
+        font-size: 1.05rem;
         color: #0f172a;
         line-height: 1.2;
     }
     .activity-cat-custom {
-        font-size: 0.72rem;
+        font-size: 0.88rem;
         color: #7c3aed;
         font-weight: 600;
         font-family: 'Plus Jakarta Sans', sans-serif;
     }
     .activity-time-custom {
-        font-size: 0.7rem;
+        font-size: 0.82rem;
         color: #64748b;
         line-height: 1.2;
     }
@@ -83,16 +83,6 @@
         }
         .activity-left-custom {
             gap: 0.25rem;
-        }
-        .activity-title-custom {
-            font-size: 1.05rem;
-            font-weight: 700;
-        }
-        .activity-cat-custom {
-            font-size: 0.88rem;
-        }
-        .activity-time-custom {
-            font-size: 0.82rem;
         }
         .desktop-right-layout {
             display: none;
@@ -218,7 +208,7 @@
                                         : BASE_URL . '/quiz/review/' . ($activity['quiz_id'] ?? '');
                                     ?>
                                     <a href="<?= $reviewUrl ?>"
-                                        style="display: inline-flex; align-items: center; justify-content: center; padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; background-color: #dcfce7; color: #166534; text-decoration: none; cursor: pointer; transition: all 0.2s ease; box-shadow: 0 1px 2px rgba(0,0,0,0.05); min-width: 60px; text-align: center;"
+                                        style="display: inline-flex; align-items: center; justify-content: center; padding: 5px 12px; border-radius: 20px; font-size: 0.88rem; font-weight: 600; background-color: #dcfce7; color: #166534; text-decoration: none; cursor: pointer; transition: all 0.2s ease; box-shadow: 0 1px 2px rgba(0,0,0,0.05); min-width: 60px; text-align: center;"
                                         onmouseover="this.innerText='Review?'; this.style.backgroundColor='#bbf7d0'"
                                         onmouseout="this.innerText='Selesai'; this.style.backgroundColor='#dcfce7'">
                                         Selesai
@@ -230,7 +220,7 @@
                                         : ($activity['quiz_id'] ?? '');
                                     ?>
                                     <a href="<?= BASE_URL ?>/quiz/play/<?= $playId ?>"
-                                        style="display: inline-flex; align-items: center; justify-content: center; padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; background-color: #fef08a; color: #854d0e; text-decoration: none; cursor: pointer; transition: all 0.2s ease; box-shadow: 0 1px 2px rgba(0,0,0,0.05); min-width: 60px; text-align: center;"
+                                        style="display: inline-flex; align-items: center; justify-content: center; padding: 5px 12px; border-radius: 20px; font-size: 0.88rem; font-weight: 600; background-color: #fef08a; color: #854d0e; text-decoration: none; cursor: pointer; transition: all 0.2s ease; box-shadow: 0 1px 2px rgba(0,0,0,0.05); min-width: 60px; text-align: center;"
                                         onmouseover="this.innerText='Lanjut?'; this.style.backgroundColor='#fde047'"
                                         onmouseout="this.innerText='Dijeda'; this.style.backgroundColor='#fef08a'">
                                         Dijeda
