@@ -130,10 +130,16 @@
         <p>
             Maaf, Anda tidak memiliki izin untuk mengakses halaman ini. Silakan kembali ke dashboard atau hubungi administrator Anda.
         </p>
-        <a href="<?= BASE_URL ?>/dashboard" class="btn-home">
-            <i data-lucide="arrow-left" style="width: 1.1rem; height: 1.1rem;"></i>
-            Kembali ke Dashboard
-        </a>
+        <div style="display: flex; gap: 1rem; justify-content: center; margin-top: 1.5rem; flex-wrap: wrap;">
+            <a href="<?= BASE_URL ?>/" class="btn-home" style="background-color: #7c3aed; box-shadow: 0 10px 25px -5px rgba(124, 58, 237, 0.25);">
+                <i data-lucide="arrow-left" style="width: 1.1rem; height: 1.1rem;"></i>
+                Kembali ke Dashboard
+            </a>
+            <a href="<?= BASE_URL ?>/logout" class="btn-home" style="background-color: #ef4444; box-shadow: 0 10px 25px -5px rgba(239, 68, 68, 0.25);">
+                <i data-lucide="log-out" style="width: 1.1rem; height: 1.1rem;"></i>
+                Logout & Ganti Akun
+            </a>
+        </div>
     </div>
 
     <script>
