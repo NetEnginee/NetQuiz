@@ -105,7 +105,8 @@
                                 <div style="display: flex; flex-direction: column; gap: 0.75rem; margin-top: auto; padding-top: 1rem; border-top: 1px solid #f1f5f9;">
                                     <div style="display: flex; justify-content: space-between; align-items: center;">
                                         <span style="font-size: 0.8rem; font-weight: 800; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px;">Skor Akhir</span>
-                                        <span style="font-size: 1.5rem; font-weight: 800; color: <?= $quiz['score'] >= 80 ? '#10b981' : ($quiz['score'] >= 60 ? '#f59e0b' : '#ef4444') ?>; font-variant-numeric: tabular-nums;"><?= $quiz['score'] ?></span>
+                                        <?php $quizScore = $quiz['score'] ?? 0; ?>
+                                        <span style="font-size: 1.5rem; font-weight: 800; color: <?= $quizScore >= 80 ? '#10b981' : ($quizScore >= 60 ? '#f59e0b' : '#ef4444') ?>; font-variant-numeric: tabular-nums;"><?= $quizScore ?></span>
                                     </div>
                                     <a href="<?= BASE_URL ?>/quiz/review/<?= $quiz['id'] ?>" class="btn-quiz-review" style="width: 100%; justify-content: center; box-sizing: border-box;">
                                         <i data-lucide="eye" style="width: 1rem; height: 1rem;"></i>

@@ -62,12 +62,12 @@ class QuizController extends Controller
     public function index()
     {
         $quizzes = $this->loadQuizzesFromDb();
-        $completedQuizzesIds = [];
+        $completedQuizzes = [];
         try {
             $db = Database::getInstance()->getConnection();
-            $stmt = $db->prepare("SELECT quiz_id FROM quiz_attempts WHERE user_id = :user_id AND quiz_id IS NOT NULL");
+            $stmt = $db->prepare("SELECT quiz_id, score FROM quiz_attempts WHERE user_id = :user_id AND quiz_id IS NOT NULL");
             $stmt->execute(['user_id' => $_SESSION['user']['id']]);
-            $completedQuizzesIds = $stmt->fetchAll(PDO::FETCH_COLUMN);
+            $completedQuizzes = $stmt->fetchAll(PDO::FETCH_KEY_PAIR);
         } catch (PDOException $e) {}
 
         // Initialize default categories so they are always listed
@@ -78,7 +78,9 @@ class QuizController extends Controller
             'Network Management' => []
         ];
         foreach ($quizzes as $quiz) {
-            $quiz['is_completed'] = in_array($quiz['id'], $completedQuizzesIds);
+            $quizId = (int)$quiz['id'];
+            $quiz['is_completed'] = array_key_exists($quizId, $completedQuizzes);
+            $quiz['score'] = $completedQuizzes[$quizId] ?? 0;
             if (isset($categorized[$quiz['category']])) {
                 $categorized[$quiz['category']][] = $quiz;
             }
