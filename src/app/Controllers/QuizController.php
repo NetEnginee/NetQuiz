@@ -50,6 +50,7 @@ class QuizController extends Controller
                     'description' => $q['description'],
                     'category' => $q['category'],
                     'duration' => isset($q['duration']) ? (int) $q['duration'] : 0,
+                    'created_at' => $q['created_at'] ?? null,
                     'questions' => $questions
                 ];
             }
