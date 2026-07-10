@@ -116,6 +116,7 @@ class HomeController extends Controller
                         $pausedActivities[] = [
                             'quiz_id' => $qId,
                             'category' => $quizzes[$qId]['category'],
+                            'title' => $quizzes[$qId]['title'],
                             'score' => 0,
                             'created_at' => $data['paused_at'] ?? date('Y-m-d H:i:s'),
                             'status' => 'paused'
