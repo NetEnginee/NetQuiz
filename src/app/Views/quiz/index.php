@@ -106,10 +106,10 @@
                                     $isNew = $diff < (7 * 24 * 60 * 60); // 7 hari terakhir
                                 }
                                 ?>
-                                <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 0.5rem; width: 100%;">
+                                <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 0.5rem; width: 100%; margin-bottom: 0.75rem;">
                                     <h3 class="quiz-title" style="flex: 1;"><?= htmlspecialchars($quiz['title']) ?></h3>
                                     <?php if ($isNew): ?>
-                                        <span class="badge-new" style="background-color: #fee2e2; border: 1px solid #fecaca; color: #ef4444; font-size: 0.65rem; font-weight: 800; padding: 0.15rem 0.5rem; border-radius: 6px; text-transform: uppercase; letter-spacing: 0.5px; flex-shrink: 0; font-family: 'Plus Jakarta Sans', sans-serif;">Baru</span>
+                                        <span class="badge-new" style="background-color: #f0fdf4; border: 1px solid #bbf7d0; color: #16a34a; font-size: 0.65rem; font-weight: 800; padding: 0.15rem 0.5rem; border-radius: 6px; text-transform: uppercase; letter-spacing: 0.5px; flex-shrink: 0; font-family: 'Plus Jakarta Sans', sans-serif;">Baru</span>
                                     <?php endif; ?>
                                 </div>
                                 <p class="quiz-desc"><?= htmlspecialchars($quiz['description']) ?></p>
