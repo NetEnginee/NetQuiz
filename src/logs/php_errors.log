@@ -319,3 +319,11 @@ Stack trace:
 #2 /var/webfeed/html/public/index.php(120): App\Core\Router->dispatch('/api/login', 'POST')
 #3 {main}
   thrown in /var/webfeed/html/app/Controllers/AuthController.php on line 58
+[10-Jul-2026 06:55:52 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'db_mikrotik_quiz.quizzes' doesn't exist in /var/webfeed/html/app/Controllers/AdminController.php:32
+Stack trace:
+#0 /var/webfeed/html/app/Controllers/AdminController.php(32): PDO->query('SELECT * FROM q...')
+#1 [internal function]: App\Controllers\AdminController->index()
+#2 /var/webfeed/html/app/Core/Router.php(88): call_user_func_array(Array, Array)
+#3 /var/webfeed/html/public/index.php(120): App\Core\Router->dispatch('/admin', 'GET')
+#4 {main}
+  thrown in /var/webfeed/html/app/Controllers/AdminController.php on line 32
