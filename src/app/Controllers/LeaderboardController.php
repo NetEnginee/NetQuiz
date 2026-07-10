@@ -46,7 +46,7 @@ class LeaderboardController extends Controller
                     COUNT(qa.id) as completed_quizzes 
                 FROM users u
                 LEFT JOIN quiz_attempts qa ON {$joinSql}
-                WHERE u.email != 'admin@routerosquiz.academy'
+                WHERE LOWER(TRIM(u.email)) != 'admin@routerosquiz.academy'
                 GROUP BY u.id, u.username
                 ORDER BY total_score DESC, completed_quizzes DESC
             ";
