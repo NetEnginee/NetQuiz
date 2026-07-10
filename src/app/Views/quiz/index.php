@@ -98,7 +98,20 @@
                     <?php foreach ($quizList as $quiz): ?>
                         <div class="quiz-card">
                             <div class="quiz-info">
-                                <h3 class="quiz-title"><?= htmlspecialchars($quiz['title']) ?></h3>
+                                <?php
+                                $isNew = false;
+                                if (!empty($quiz['created_at'])) {
+                                    $createdAt = strtotime($quiz['created_at']);
+                                    $diff = time() - $createdAt;
+                                    $isNew = $diff < (7 * 24 * 60 * 60); // 7 hari terakhir
+                                }
+                                ?>
+                                <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 0.5rem; width: 100%;">
+                                    <h3 class="quiz-title" style="flex: 1;"><?= htmlspecialchars($quiz['title']) ?></h3>
+                                    <?php if ($isNew): ?>
+                                        <span class="badge-new" style="background-color: #fee2e2; border: 1px solid #fecaca; color: #ef4444; font-size: 0.65rem; font-weight: 800; padding: 0.15rem 0.5rem; border-radius: 6px; text-transform: uppercase; letter-spacing: 0.5px; flex-shrink: 0; font-family: 'Plus Jakarta Sans', sans-serif;">Baru</span>
+                                    <?php endif; ?>
+                                </div>
                                 <p class="quiz-desc"><?= htmlspecialchars($quiz['description']) ?></p>
                             </div>
                             <?php if (!empty($quiz['is_completed'])): ?>
