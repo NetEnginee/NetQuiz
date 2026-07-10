@@ -47,7 +47,12 @@
                 Kembali ke Quiz
             </a>
             <?php if ($quiz): ?>
-                <a href="<?= BASE_URL ?>/quiz/review/<?= \App\Core\Security::encryptUrlId($quiz['id']) ?>" class="btn-primary" style="text-decoration: none;">
+                <?php 
+                $reviewUrl = method_exists('\App\Core\Security', 'encryptUrlId') 
+                    ? BASE_URL . '/quiz/review/' . \App\Core\Security::encryptUrlId($quiz['id']) 
+                    : BASE_URL . '/quiz/review/' . $quiz['id'];
+                ?>
+                <a href="<?= $reviewUrl ?>" class="btn-primary" style="text-decoration: none;">
                     Review Jawaban
                 </a>
             <?php endif; ?>

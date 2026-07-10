@@ -108,14 +108,24 @@
                                         <?php $quizScore = $quiz['score'] ?? 0; ?>
                                         <span style="font-size: 1.5rem; font-weight: 800; color: <?= $quizScore >= 80 ? '#10b981' : ($quizScore >= 60 ? '#f59e0b' : '#ef4444') ?>; font-variant-numeric: tabular-nums;"><?= $quizScore ?></span>
                                     </div>
-                                    <a href="<?= BASE_URL ?>/quiz/review/<?= \App\Core\Security::encryptUrlId($quiz['id']) ?>" class="btn-quiz-review" style="width: 100%; justify-content: center; box-sizing: border-box;">
+                                    <?php 
+                                    $reviewUrl = method_exists('\App\Core\Security', 'encryptUrlId') 
+                                        ? BASE_URL . '/quiz/review/' . \App\Core\Security::encryptUrlId($quiz['id']) 
+                                        : BASE_URL . '/quiz/review/' . $quiz['id'];
+                                    ?>
+                                    <a href="<?= $reviewUrl ?>" class="btn-quiz-review" style="width: 100%; justify-content: center; box-sizing: border-box;">
                                         <i data-lucide="eye" style="width: 1rem; height: 1rem;"></i>
                                         Review Jawaban
                                     </a>
                                 </div>
                             <?php else: ?>
-                                <?php $isPaused = isset($_SESSION['paused_quiz'][$quiz['id']]); ?>
-                                <a href="<?= BASE_URL ?>/quiz/play/<?= \App\Core\Security::encryptUrlId($quiz['id']) ?>" class="btn-quiz-action" <?= $isPaused ? 'style="background: #fef3c7; border: 1px solid #fde68a; color: #d97706; box-shadow: 0 4px 15px rgba(217, 119, 6, 0.1);"' : '' ?>>
+                                <?php 
+                                $isPaused = isset($_SESSION['paused_quiz'][$quiz['id']]); 
+                                $playUrl = method_exists('\App\Core\Security', 'encryptUrlId') 
+                                    ? BASE_URL . '/quiz/play/' . \App\Core\Security::encryptUrlId($quiz['id']) 
+                                    : BASE_URL . '/quiz/play/' . $quiz['id'];
+                                ?>
+                                <a href="<?= $playUrl ?>" class="btn-quiz-action" <?= $isPaused ? 'style="background: #fef3c7; border: 1px solid #fde68a; color: #d97706; box-shadow: 0 4px 15px rgba(217, 119, 6, 0.1);"' : '' ?>>
                                     <i data-lucide="<?= $isPaused ? 'play' : 'play-circle' ?>" style="width: 1rem; height: 1rem;"></i>
                                     <?= $isPaused ? 'Lanjutkan Kuis' : 'Mulai Kuis' ?>
                                 </a>

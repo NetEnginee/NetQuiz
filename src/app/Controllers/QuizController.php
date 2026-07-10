@@ -59,6 +59,23 @@ class QuizController extends Controller
         }
     }
 
+    private function getDecryptedId($id)
+    {
+        if (empty($id)) {
+            return null;
+        }
+        if (method_exists(\App\Core\Security::class, 'decryptUrlId')) {
+            $decrypted = \App\Core\Security::decryptUrlId((string)$id);
+            if ($decrypted !== null) {
+                return (int)$decrypted;
+            }
+        }
+        if (is_numeric($id)) {
+            return (int)$id;
+        }
+        return null;
+    }
+
     public function index()
     {
         $quizzes = $this->loadQuizzesFromDb();
@@ -107,7 +124,7 @@ class QuizController extends Controller
 
     public function play($id)
     {
-        $id = \App\Core\Security::decryptUrlId((string)$id);
+        $id = $this->getDecryptedId($id);
         if ($id === null) {
             header('Location: ' . BASE_URL . '/quiz');
             exit;
@@ -148,7 +165,7 @@ class QuizController extends Controller
             exit;
         }
 
-        $id = \App\Core\Security::decryptUrlId((string)$id);
+        $id = $this->getDecryptedId($id);
         if ($id === null) {
             header('Location: ' . BASE_URL . '/quiz');
             exit;
@@ -169,7 +186,7 @@ class QuizController extends Controller
             $this->jsonResponse(['success' => false, 'message' => 'Sesi tidak valid.'], 403);
         }
 
-        $id = \App\Core\Security::decryptUrlId((string)$id);
+        $id = $this->getDecryptedId($id);
         if ($id === null) {
             header('Location: ' . BASE_URL . '/quiz');
             exit;
@@ -221,13 +238,16 @@ class QuizController extends Controller
             // Log error
         }
 
-        header('Location: ' . BASE_URL . '/quiz/result/' . \App\Core\Security::encryptUrlId($attemptId ?: $id) . '?score=' . $score . '&correct=' . $correctCount . '&total=' . $totalQuestions . '&quiz_id=' . \App\Core\Security::encryptUrlId($id));
+        $encryptedAttemptId = method_exists(\App\Core\Security::class, 'encryptUrlId') ? \App\Core\Security::encryptUrlId($attemptId ?: $id) : ($attemptId ?: $id);
+        $encryptedQuizId = method_exists(\App\Core\Security::class, 'encryptUrlId') ? \App\Core\Security::encryptUrlId($id) : $id;
+
+        header('Location: ' . BASE_URL . '/quiz/result/' . $encryptedAttemptId . '?score=' . $score . '&correct=' . $correctCount . '&total=' . $totalQuestions . '&quiz_id=' . $encryptedQuizId);
         exit;
     }
 
     public function review($id)
     {
-        $quizId = \App\Core\Security::decryptUrlId((string)$id);
+        $quizId = $this->getDecryptedId($id);
         if ($quizId === null) {
             header('Location: ' . BASE_URL . '/quiz');
             exit;
@@ -267,7 +287,7 @@ class QuizController extends Controller
 
     public function result($id)
     {
-        $idDecrypted = \App\Core\Security::decryptUrlId((string)$id);
+        $idDecrypted = $this->getDecryptedId($id);
         if ($idDecrypted === null) {
             header('Location: ' . BASE_URL . '/quiz');
             exit;
@@ -278,7 +298,7 @@ class QuizController extends Controller
         $total = $_GET['total'] ?? 0;
         
         $quizIdRaw = $_GET['quiz_id'] ?? '';
-        $quizIdDecrypted = \App\Core\Security::decryptUrlId($quizIdRaw);
+        $quizIdDecrypted = $this->getDecryptedId($quizIdRaw);
         $quizId = $quizIdDecrypted !== null ? (int) $quizIdDecrypted : 1;
 
         // Fetch the attempt and verify ownership
