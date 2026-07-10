@@ -7,7 +7,7 @@
     .activity-item-custom {
         display: flex;
         justify-content: space-between;
-        align-items: center;
+        align-items: flex-start;
         padding: 0.75rem 1rem;
         border-bottom: 1px solid #f1f5f9;
         width: 100%;
@@ -44,6 +44,8 @@
         align-items: center;
         margin-left: 1rem;
         flex-shrink: 0;
+        align-self: flex-start;
+        margin-top: -2px;
     }
     .mobile-right-layout {
         display: none;
