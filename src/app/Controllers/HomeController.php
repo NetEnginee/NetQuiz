@@ -92,6 +92,12 @@ class HomeController extends Controller
             $stmt->execute(['uid' => $userId]);
             $recentActivities = $stmt->fetchAll(\PDO::FETCH_ASSOC);
 
+            // Filter out activities older than 1 day (24 hours) in PHP to prevent timezone mismatch issues
+            $oneDayAgo = time() - (24 * 60 * 60);
+            $recentActivities = array_filter($recentActivities, function($act) use ($oneDayAgo) {
+                return strtotime($act['created_at']) >= $oneDayAgo;
+            });
+
             // Load quizzes to map quiz_id to category/title for paused session quizzes
             $quizzes = [];
             try {
@@ -105,7 +111,8 @@ class HomeController extends Controller
             $pausedActivities = [];
             if (!empty($_SESSION['paused_quiz'])) {
                 foreach ($_SESSION['paused_quiz'] as $qId => $data) {
-                    if (isset($quizzes[$qId])) {
+                    $pausedAt = isset($data['paused_at']) ? strtotime($data['paused_at']) : time();
+                    if ($pausedAt >= $oneDayAgo && isset($quizzes[$qId])) {
                         $pausedActivities[] = [
                             'quiz_id' => $qId,
                             'category' => $quizzes[$qId]['category'],
@@ -117,13 +124,11 @@ class HomeController extends Controller
                 }
             }
 
-            if (!empty($pausedActivities)) {
-                $allActivities = array_merge($pausedActivities, $recentActivities);
-                usort($allActivities, function($a, $b) {
-                    return strtotime($b['created_at']) - strtotime($a['created_at']);
-                });
-                $recentActivities = array_slice($allActivities, 0, 5);
-            }
+            $allActivities = array_merge($pausedActivities, $recentActivities);
+            usort($allActivities, function($a, $b) {
+                return strtotime($b['created_at']) - strtotime($a['created_at']);
+            });
+            $recentActivities = array_slice($allActivities, 0, 5);
 
             // 8. Fetch count of perfect scores
             $stmt = $db->prepare("SELECT COUNT(*) as count FROM quiz_attempts WHERE user_id = :uid AND score = 100 AND status = 'finished'");
