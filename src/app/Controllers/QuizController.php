@@ -65,11 +65,21 @@ class QuizController extends Controller
         $completedQuizzes = [];
         try {
             $db = Database::getInstance()->getConnection();
-            $stmt = $db->prepare("SELECT quiz_id, score FROM quiz_attempts WHERE user_id = :user_id AND quiz_id IS NOT NULL");
-            $stmt->execute(['user_id' => $_SESSION['user']['id']]);
-            $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
-            foreach ($rows as $row) {
-                $completedQuizzes[(int)$row['quiz_id']] = (int)$row['score'];
+            try {
+                $stmt = $db->prepare("SELECT quiz_id, score FROM quiz_attempts WHERE user_id = :user_id AND quiz_id IS NOT NULL");
+                $stmt->execute(['user_id' => $_SESSION['user']['id']]);
+                $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                foreach ($rows as $row) {
+                    $completedQuizzes[(int)$row['quiz_id']] = (int)($row['score'] ?? 0);
+                }
+            } catch (PDOException $e) {
+                // Fallback if the 'score' column does not exist
+                $stmt = $db->prepare("SELECT quiz_id FROM quiz_attempts WHERE user_id = :user_id AND quiz_id IS NOT NULL");
+                $stmt->execute(['user_id' => $_SESSION['user']['id']]);
+                $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                foreach ($rows as $row) {
+                    $completedQuizzes[(int)$row['quiz_id']] = 0;
+                }
             }
         } catch (PDOException $e) {}
 
