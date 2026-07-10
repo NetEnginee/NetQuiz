@@ -87,10 +87,43 @@ class HomeController extends Controller
                 }
             }
 
-            // 7. Fetch recent activities
-            $stmt = $db->prepare("SELECT category, score, created_at, status FROM quiz_attempts WHERE user_id = :uid ORDER BY created_at DESC LIMIT 5");
+            // 7. Fetch recent activities and merge with paused quizzes in session
+            $stmt = $db->prepare("SELECT quiz_id, category, score, created_at, status FROM quiz_attempts WHERE user_id = :uid ORDER BY created_at DESC LIMIT 5");
             $stmt->execute(['uid' => $userId]);
             $recentActivities = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+
+            // Load quizzes to map quiz_id to category/title for paused session quizzes
+            $quizzes = [];
+            try {
+                $qStmt = $db->query("SELECT id, title, category FROM quizzes");
+                $quizzesRaw = $qStmt->fetchAll(\PDO::FETCH_ASSOC);
+                foreach ($quizzesRaw as $q) {
+                    $quizzes[(int)$q['id']] = $q;
+                }
+            } catch (\PDOException $pe) {}
+
+            $pausedActivities = [];
+            if (!empty($_SESSION['paused_quiz'])) {
+                foreach ($_SESSION['paused_quiz'] as $qId => $data) {
+                    if (isset($quizzes[$qId])) {
+                        $pausedActivities[] = [
+                            'quiz_id' => $qId,
+                            'category' => $quizzes[$qId]['category'],
+                            'score' => 0,
+                            'created_at' => $data['paused_at'] ?? date('Y-m-d H:i:s'),
+                            'status' => 'paused'
+                        ];
+                    }
+                }
+            }
+
+            if (!empty($pausedActivities)) {
+                $allActivities = array_merge($pausedActivities, $recentActivities);
+                usort($allActivities, function($a, $b) {
+                    return strtotime($b['created_at']) - strtotime($a['created_at']);
+                });
+                $recentActivities = array_slice($allActivities, 0, 5);
+            }
 
             // 8. Fetch count of perfect scores
             $stmt = $db->prepare("SELECT COUNT(*) as count FROM quiz_attempts WHERE user_id = :uid AND score = 100 AND status = 'finished'");
