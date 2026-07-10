@@ -31,9 +31,9 @@
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        padding: 4px 8px;
+        padding: 5px 10px;
         border-radius: 6px;
-        font-size: 0.8rem;
+        font-size: 0.88rem;
         font-weight: 600;
         text-align: center;
     }
@@ -41,9 +41,9 @@
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        padding: 4px 10px;
+        padding: 5px 12px;
         border-radius: 6px;
-        font-size: 0.8rem;
+        font-size: 0.88rem;
         font-weight: 600;
         text-decoration: none;
         cursor: pointer;
@@ -159,9 +159,9 @@
                         <div class="activity-item-custom">
                             <!-- Detail Quiz (Judul, Kategori & Waktu) -->
                             <div class="activity-left-custom">
-                                <span class="activity-title" style="font-weight: 700; font-size: 0.95rem; color: #0f172a; line-height: 1.2; text-align: left;"><?= htmlspecialchars($title) ?></span>
-                                <span style="font-size: 0.78rem; color: #7c3aed; font-weight: 600; font-family: 'Plus Jakarta Sans', sans-serif;"><?= htmlspecialchars($category) ?></span>
-                                <span class="activity-time" style="font-size: 0.75rem; color: #64748b; line-height: 1.2;">
+                                <span class="activity-title" style="font-weight: 700; font-size: 1.05rem; color: #0f172a; line-height: 1.2; text-align: left;"><?= htmlspecialchars($title) ?></span>
+                                <span style="font-size: 0.88rem; color: #7c3aed; font-weight: 600; font-family: 'Plus Jakarta Sans', sans-serif;"><?= htmlspecialchars($category) ?></span>
+                                <span class="activity-time" style="font-size: 0.82rem; color: #64748b; line-height: 1.2;">
                                     <?= htmlspecialchars($time) ?>
                                 </span>
                             </div>
