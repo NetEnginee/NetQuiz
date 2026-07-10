@@ -25,7 +25,8 @@ class AuthController extends Controller
         }
 
         if (isset($_SESSION['user'])) {
-            $redirectUrl = ($_SESSION['user']['email'] === 'admin@routerosquiz.academy') ? BASE_URL . '/admin' : BASE_URL . '/';
+            $email = isset($_SESSION['user']['email']) ? trim($_SESSION['user']['email']) : '';
+            $redirectUrl = (strcasecmp($email, 'admin@routerosquiz.academy') === 0) ? BASE_URL . '/admin' : BASE_URL . '/';
             header('Location: ' . $redirectUrl);
             exit;
         }

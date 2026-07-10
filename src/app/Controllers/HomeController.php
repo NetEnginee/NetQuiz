@@ -12,7 +12,8 @@ class HomeController extends Controller
     public function index()
     {
         // Redirect admin users to the Admin dashboard
-        if ($_SESSION['user']['email'] === 'admin@routerosquiz.academy') {
+        $email = isset($_SESSION['user']['email']) ? trim($_SESSION['user']['email']) : '';
+        if (strcasecmp($email, 'admin@routerosquiz.academy') === 0) {
             header('Location: ' . BASE_URL . '/admin');
             exit;
         }
