@@ -113,7 +113,12 @@
                                         <?= $statusText ?>
                                     </span>
                                 <?php else: ?>
-                                    <a href="<?= BASE_URL ?>/quiz"
+                                    <?php 
+                                    $playId = (isset($activity['quiz_id']) && method_exists('\App\Core\Security', 'encryptUrlId')) 
+                                        ? \App\Core\Security::encryptUrlId($activity['quiz_id']) 
+                                        : ($activity['quiz_id'] ?? '');
+                                    ?>
+                                    <a href="<?= BASE_URL ?>/quiz/play/<?= $playId ?>"
                                         style="display: inline-flex; align-items: center; gap: 4px; padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; background-color: #fef08a; color: #854d0e; text-decoration: none; cursor: pointer; transition: all 0.2s ease; box-shadow: 0 1px 2px rgba(0,0,0,0.05);"
                                         onmouseover="this.style.backgroundColor='#fde047'"
                                         onmouseout="this.style.backgroundColor='#fef08a'">

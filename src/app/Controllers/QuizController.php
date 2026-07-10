@@ -174,7 +174,8 @@ class QuizController extends Controller
         $id = (int) $id;
         $_SESSION['paused_quiz'][$id] = [
             'answers' => $_POST['answers'] ?? [],
-            'time_left' => (int)($_POST['time_left'] ?? 0)
+            'time_left' => (int)($_POST['time_left'] ?? 0),
+            'paused_at' => date('Y-m-d H:i:s')
         ];
 
         header('Location: ' . BASE_URL . '/quiz');
