@@ -91,7 +91,7 @@
                         $time = date('d M Y, H:i', strtotime($activity['created_at']));
 
                         $isFinished = ($activity['status'] === 'finished');
-                        $statusText = $isFinished ? 'Selesai' : 'Jeda';
+                        $statusText = $isFinished ? 'Selesai' : 'Dijeda';
                         ?>
 
                         <div class="activity-item"
@@ -119,10 +119,10 @@
                                         : ($activity['quiz_id'] ?? '');
                                     ?>
                                     <a href="<?= BASE_URL ?>/quiz/play/<?= $playId ?>"
-                                        style="display: inline-flex; align-items: center; gap: 4px; padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; background-color: #fef08a; color: #854d0e; text-decoration: none; cursor: pointer; transition: all 0.2s ease; box-shadow: 0 1px 2px rgba(0,0,0,0.05);"
-                                        onmouseover="this.style.backgroundColor='#fde047'"
-                                        onmouseout="this.style.backgroundColor='#fef08a'">
-                                        <?= $statusText ?> <i data-lucide="play-circle" style="width: 14px; height: 14px;"></i>
+                                        style="display: inline-flex; align-items: center; justify-content: center; padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; background-color: #fef08a; color: #854d0e; text-decoration: none; cursor: pointer; transition: all 0.2s ease; box-shadow: 0 1px 2px rgba(0,0,0,0.05); min-width: 60px; text-align: center;"
+                                        onmouseover="this.innerText='Lanjut?'; this.style.backgroundColor='#fde047'"
+                                        onmouseout="this.innerText='Dijeda'; this.style.backgroundColor='#fef08a'">
+                                        <?= $statusText ?>
                                     </a>
                                 <?php endif; ?>
                             </div>
