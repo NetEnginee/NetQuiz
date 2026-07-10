@@ -67,7 +67,10 @@ class QuizController extends Controller
             $db = Database::getInstance()->getConnection();
             $stmt = $db->prepare("SELECT quiz_id, score FROM quiz_attempts WHERE user_id = :user_id AND quiz_id IS NOT NULL");
             $stmt->execute(['user_id' => $_SESSION['user']['id']]);
-            $completedQuizzes = $stmt->fetchAll(PDO::FETCH_KEY_PAIR);
+            $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            foreach ($rows as $row) {
+                $completedQuizzes[(int)$row['quiz_id']] = (int)$row['score'];
+            }
         } catch (PDOException $e) {}
 
         // Initialize default categories so they are always listed
