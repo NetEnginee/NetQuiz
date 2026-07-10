@@ -87,7 +87,7 @@
                 <?php else: ?>
                     <?php foreach ($recentActivities as $activity):
                         $category = $activity['category'];
-                        $title = "Quiz " . $category;
+                        $title = $activity['title'] ?? ("Quiz " . $category);
                         $time = date('d M Y, H:i', strtotime($activity['created_at']));
 
                         $isFinished = ($activity['status'] === 'finished');
@@ -96,10 +96,11 @@
 
                         <div class="activity-item"
                             style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 1rem; border-bottom: 1px solid #f1f5f9; width: 100%; box-sizing: border-box;">
-                            <!-- Detail Quiz (Judul & Waktu) -->
-                            <div style="display: flex; flex-direction: column; align-items: flex-start; text-align: left;">
+                            <!-- Detail Quiz (Judul & Kategori & Waktu) -->
+                            <div style="display: flex; flex-direction: column; align-items: flex-start; text-align: left; gap: 0.15rem;">
                                 <span class="activity-title"
-                                    style="font-weight: 600; font-size: 0.85rem; color: #0f172a; margin-bottom: 0.25rem; line-height: 1.2;"><?= htmlspecialchars($title) ?></span>
+                                    style="font-weight: 600; font-size: 0.85rem; color: #0f172a; line-height: 1.2;"><?= htmlspecialchars($title) ?></span>
+                                <span style="font-size: 0.72rem; color: #7c3aed; font-weight: 600; font-family: 'Plus Jakarta Sans', sans-serif;"><?= htmlspecialchars($category) ?></span>
                                 <span class="activity-time" style="font-size: 0.7rem; color: #64748b; line-height: 1.2;">
                                     <?= htmlspecialchars($time) ?>
                                 </span>

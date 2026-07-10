@@ -124,6 +124,12 @@ class HomeController extends Controller
                 }
             }
 
+            foreach ($recentActivities as &$act) {
+                $qId = (int)($act['quiz_id'] ?? 0);
+                $act['title'] = isset($quizzes[$qId]) ? $quizzes[$qId]['title'] : ("Quiz " . $act['category']);
+            }
+            unset($act);
+
             $allActivities = array_merge($pausedActivities, $recentActivities);
             usort($allActivities, function($a, $b) {
                 return strtotime($b['created_at']) - strtotime($a['created_at']);
