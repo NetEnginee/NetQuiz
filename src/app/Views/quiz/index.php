@@ -100,16 +100,43 @@
                             <div class="quiz-info">
                                 <?php
                                 $isNew = false;
+                                $timeAgoText = '';
                                 if (!empty($quiz['created_at'])) {
                                     $createdAt = strtotime($quiz['created_at']);
                                     $diff = time() - $createdAt;
-                                    $isNew = $diff < (7 * 24 * 60 * 60); // 7 hari terakhir
+                                    $isNew = $diff < (1 * 24 * 60 * 60); // 1 hari terakhir
+                                    
+                                    if (!$isNew) {
+                                        if (!function_exists('getQuizTimeAgo')) {
+                                            function getQuizTimeAgo($diff) {
+                                                $intervals = [
+                                                    31536000 => 'tahun',
+                                                    2592000  => 'bulan',
+                                                    604800   => 'minggu',
+                                                    86400    => 'hari',
+                                                    3600     => 'jam',
+                                                    60       => 'menit'
+                                                ];
+                                                foreach ($intervals as $secs => $label) {
+                                                    $div = $diff / $secs;
+                                                    if ($div >= 1) {
+                                                        $num = round($div);
+                                                        return $num . ' ' . $label . ' yang lalu';
+                                                    }
+                                                }
+                                                return 'Baru saja';
+                                            }
+                                        }
+                                        $timeAgoText = getQuizTimeAgo($diff);
+                                    }
                                 }
                                 ?>
                                 <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 0.5rem; width: 100%; margin-bottom: 0.75rem;">
                                     <h3 class="quiz-title" style="flex: 1;"><?= htmlspecialchars($quiz['title']) ?></h3>
                                     <?php if ($isNew): ?>
                                         <span class="badge-new" style="background-color: #f0fdf4; border: 1px solid #bbf7d0; color: #16a34a; font-size: 0.65rem; font-weight: 800; padding: 0.15rem 0.5rem; border-radius: 6px; text-transform: uppercase; letter-spacing: 0.5px; flex-shrink: 0; font-family: 'Plus Jakarta Sans', sans-serif;">Baru</span>
+                                    <?php elseif (!empty($timeAgoText)): ?>
+                                        <span style="color: #64748b; font-size: 0.75rem; font-weight: 500; font-family: 'Plus Jakarta Sans', sans-serif; flex-shrink: 0; align-self: center;"><?= htmlspecialchars($timeAgoText) ?></span>
                                     <?php endif; ?>
                                 </div>
                                 <p class="quiz-desc"><?= htmlspecialchars($quiz['description']) ?></p>
