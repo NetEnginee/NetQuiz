@@ -88,7 +88,7 @@
                     <?php foreach ($recentActivities as $activity):
                         $category = $activity['category'];
                         $title = $activity['title'] ?? ("Quiz " . $category);
-                        $time = date('d M Y, H:i', strtotime($activity['created_at']));
+                        $time = date('d M Y', strtotime($activity['created_at']));
 
                         $isFinished = ($activity['status'] === 'finished');
                         $statusText = $isFinished ? 'Selesai' : 'Dijeda';
@@ -97,16 +97,17 @@
                         <div class="activity-item"
                             style="display: flex; flex-direction: column; align-items: flex-start; padding: 0.75rem 1rem; border-bottom: 1px solid #f1f5f9; width: 100%; box-sizing: border-box;">
                             <!-- Detail Quiz & Status aligned -->
-                            <div style="display: flex; justify-content: space-between; align-items: center; width: 100%; gap: 0.5rem; margin-bottom: 0.15rem;">
+                            <div
+                                style="display: flex; justify-content: space-between; align-items: center; width: 100%; gap: 0.5rem; margin-bottom: 0.15rem;">
                                 <span class="activity-title"
                                     style="font-weight: 600; font-size: 0.85rem; color: #0f172a; line-height: 1.2; text-align: left; flex: 1;"><?= htmlspecialchars($title) ?></span>
-                                
+
                                 <!-- Status -->
                                 <div class="activity-status" style="flex-shrink: 0;">
                                     <?php if ($isFinished): ?>
-                                        <?php 
-                                        $reviewUrl = (isset($activity['quiz_id']) && method_exists('\App\Core\Security', 'encryptUrlId')) 
-                                            ? BASE_URL . '/quiz/review/' . \App\Core\Security::encryptUrlId($activity['quiz_id']) 
+                                        <?php
+                                        $reviewUrl = (isset($activity['quiz_id']) && method_exists('\App\Core\Security', 'encryptUrlId'))
+                                            ? BASE_URL . '/quiz/review/' . \App\Core\Security::encryptUrlId($activity['quiz_id'])
                                             : BASE_URL . '/quiz/review/' . ($activity['quiz_id'] ?? '');
                                         ?>
                                         <a href="<?= $reviewUrl ?>"
@@ -116,9 +117,9 @@
                                             <?= $statusText ?>
                                         </a>
                                     <?php else: ?>
-                                        <?php 
-                                        $playId = (isset($activity['quiz_id']) && method_exists('\App\Core\Security', 'encryptUrlId')) 
-                                            ? \App\Core\Security::encryptUrlId($activity['quiz_id']) 
+                                        <?php
+                                        $playId = (isset($activity['quiz_id']) && method_exists('\App\Core\Security', 'encryptUrlId'))
+                                            ? \App\Core\Security::encryptUrlId($activity['quiz_id'])
                                             : ($activity['quiz_id'] ?? '');
                                         ?>
                                         <a href="<?= BASE_URL ?>/quiz/play/<?= $playId ?>"
@@ -131,8 +132,10 @@
                                 </div>
                             </div>
                             <!-- Category and Time -->
-                            <div style="display: flex; flex-direction: column; align-items: flex-start; text-align: left; gap: 0.15rem;">
-                                <span style="font-size: 0.72rem; color: #7c3aed; font-weight: 600; font-family: 'Plus Jakarta Sans', sans-serif;"><?= htmlspecialchars($category) ?></span>
+                            <div
+                                style="display: flex; flex-direction: column; align-items: flex-start; text-align: left; gap: 0.15rem;">
+                                <span
+                                    style="font-size: 0.72rem; color: #7c3aed; font-weight: 600; font-family: 'Plus Jakarta Sans', sans-serif;"><?= htmlspecialchars($category) ?></span>
                                 <span class="activity-time" style="font-size: 0.7rem; color: #64748b; line-height: 1.2;">
                                     <?= htmlspecialchars($time) ?>
                                 </span>
