@@ -25,7 +25,7 @@ class AuthController extends Controller
         }
 
         if (isset($_SESSION['user'])) {
-            $redirectUrl = ($_SESSION['user']['email'] === 'admin@routeros.academy') ? BASE_URL . '/admin' : BASE_URL . '/';
+            $redirectUrl = ($_SESSION['user']['email'] === 'admin@routerosquiz.academy') ? BASE_URL . '/admin' : BASE_URL . '/';
             header('Location: ' . $redirectUrl);
             exit;
         }
@@ -101,7 +101,7 @@ class AuthController extends Controller
                     'name' => $user['username'],
                     'email' => $user['email']
                 ];
-                $redirectUrl = ($user['email'] === 'admin@routeros.academy') ? BASE_URL . '/admin' : BASE_URL . '/';
+                $redirectUrl = ($user['email'] === 'admin@routerosquiz.academy') ? BASE_URL . '/admin' : BASE_URL . '/';
                 echo json_encode(['status' => 'success', 'message' => 'Login berhasil!', 'redirect' => $redirectUrl]);
                 exit;
             } else {

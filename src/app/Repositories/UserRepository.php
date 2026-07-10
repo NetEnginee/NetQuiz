@@ -135,7 +135,7 @@ class UserRepository
      */
     public function delete(int $id): bool
     {
-        $stmt = $this->db->prepare("DELETE FROM users WHERE id = :id AND email != 'admin@routeros.academy'");
+        $stmt = $this->db->prepare("DELETE FROM users WHERE id = :id AND email != 'admin@routerosquiz.academy'");
         return $stmt->execute(['id' => $id]);
     }
 
@@ -144,7 +144,7 @@ class UserRepository
      */
     public function getAllUsers(): array
     {
-        $stmt = $this->db->prepare("SELECT id, username, email, created_at FROM users WHERE email != 'admin@routeros.academy' ORDER BY id DESC");
+        $stmt = $this->db->prepare("SELECT id, username, email, created_at FROM users WHERE email != 'admin@routerosquiz.academy' ORDER BY id DESC");
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }

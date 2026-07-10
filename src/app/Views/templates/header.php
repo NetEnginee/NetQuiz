@@ -536,7 +536,7 @@ if (isset($_SESSION['user'])) {
             style="display: flex; justify-content: space-between; align-items: center; position: relative;">
             <!-- Brand Logo (Left) -->
             <div style="flex: 1; display: flex; justify-content: flex-start;">
-                <a href="<?= (isset($_SESSION['user']) && $_SESSION['user']['email'] === 'admin@routeros.academy') ? BASE_URL . '/admin' : BASE_URL . '/' ?>"
+                <a href="<?= (isset($_SESSION['user']) && $_SESSION['user']['email'] === 'admin@routerosquiz.academy') ? BASE_URL . '/admin' : BASE_URL . '/' ?>"
                     style="text-decoration: none; font-size: 1.25rem; font-weight: 800; font-family: 'Plus Jakarta Sans', sans-serif; color: #0f172a; letter-spacing: -0.02em; display: inline-flex; align-items: center; gap: 0.5rem;">
                     RouterOS <span style="color: #7c3aed;">Quiz</span>
                 </a>
@@ -544,7 +544,7 @@ if (isset($_SESSION['user'])) {
 
             <!-- Navigation Menu (Center) -->
             <nav style="display: flex; gap: 1.5rem; align-items: center; justify-content: center; flex: 1;">
-                <?php if (!isset($_SESSION['user']) || $_SESSION['user']['email'] !== 'admin@routeros.academy'): ?>
+                <?php if (!isset($_SESSION['user']) || $_SESSION['user']['email'] !== 'admin@routerosquiz.academy'): ?>
                     <a href="<?= BASE_URL ?>/quiz"
                         style="color: #475569; text-decoration: none; font-weight: 500; transition: color 0.2s;"
                         onmouseover="this.style.color='#7c3aed'" onmouseout="this.style.color='#475569'">Quiz</a>
@@ -557,7 +557,7 @@ if (isset($_SESSION['user'])) {
             <!-- User Controls (Right) -->
             <div style="display: flex; gap: 1rem; align-items: center; justify-content: flex-end; flex: 1;">
                 <?php if (isset($_SESSION['user'])): ?>
-                    <?php if ($_SESSION['user']['email'] !== 'admin@routeros.academy'): ?>
+                    <?php if ($_SESSION['user']['email'] !== 'admin@routerosquiz.academy'): ?>
                         <!-- Achievements Trigger (Direct Modal Access) -->
                         <button type="button" id="ach-dropdown-trigger"
                             style="display: flex; align-items: center; justify-content: center; width: 2.25rem; height: 2.25rem; background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 50%; cursor: pointer; position: relative; transition: all 0.2s; outline: none; box-shadow: 0 1px 3px rgba(0,0,0,0.05);"
@@ -583,7 +583,7 @@ if (isset($_SESSION['user'])) {
                     <?php endif; ?>
 
                     <!-- Profile Dropdown Container -->
-                    <?php if ($_SESSION['user']['email'] === 'admin@routeros.academy'): ?>
+                    <?php if ($_SESSION['user']['email'] === 'admin@routerosquiz.academy'): ?>
                         <a href="<?= BASE_URL ?>/logout"
                             style="color: #f43f5e; border: 1px solid #fecaca; background-color: #fff1f2; text-decoration: none; font-weight: 700; padding: 0.5rem 1rem; border-radius: 10px; font-size: 0.85rem; display: flex; align-items: center; gap: 0.4rem; transition: all 0.2s;"
                             onmouseover="this.style.backgroundColor='#f43f5e'; this.style.color='#ffffff'; this.style.borderColor='#f43f5e';"
@@ -655,7 +655,7 @@ if (isset($_SESSION['user'])) {
             </div>
             <!-- Mobile Dropdown Menu -->
             <div id="mobile-menu">
-                <?php if (!isset($_SESSION['user']) || $_SESSION['user']['email'] !== 'admin@routeros.academy'): ?>
+                <?php if (!isset($_SESSION['user']) || $_SESSION['user']['email'] !== 'admin@routerosquiz.academy'): ?>
                     <a href="<?= BASE_URL ?>/quiz"
                         style="color: #475569; text-decoration: none; font-weight: 600; padding: 0.6rem 0.75rem; border-radius: 8px; font-size: 0.9rem; display: block; transition: all 0.2s;"
                         onmouseover="this.style.backgroundColor='#f1f5f9'; this.style.color='#7c3aed';"
@@ -678,7 +678,7 @@ if (isset($_SESSION['user'])) {
 
 
 
-                    <?php if ($_SESSION['user']['email'] !== 'admin@routeros.academy'): ?>
+                    <?php if ($_SESSION['user']['email'] !== 'admin@routerosquiz.academy'): ?>
                         <!-- Settings option -->
                         <a href="<?= BASE_URL ?>/settings"
                             style="color: #475569; text-decoration: none; font-weight: 600; padding: 0.6rem 0.75rem; border-radius: 8px; font-size: 0.9rem; display: block; transition: all 0.2s;"
@@ -710,7 +710,7 @@ if (isset($_SESSION['user'])) {
     </header>
 
     <!-- Achievements & Badges Fullscreen Modal -->
-    <?php if (isset($_SESSION['user']) && $_SESSION['user']['email'] !== 'admin@routeros.academy'): ?>
+    <?php if (isset($_SESSION['user']) && $_SESSION['user']['email'] !== 'admin@routerosquiz.academy'): ?>
         <div id="ach-modal" class="modal-overlay">
             <div class="modal-content">
                 <button type="button" id="close-ach-modal-btn" class="modal-close-btn" title="Tutup">
