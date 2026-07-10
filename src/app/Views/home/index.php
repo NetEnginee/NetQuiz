@@ -238,9 +238,9 @@
                                     ?>
                                     <span class="status-badge-custom" style="background-color: #dcfce7; color: #166534;">Selesai</span>
                                     <a href="<?= $reviewUrl ?>" class="action-btn-custom"
-                                        style="background-color: #f1f5f9; border: 1px solid #cbd5e1; color: #475569;"
-                                        onmouseover="this.style.backgroundColor='#e2e8f0'; this.style.color='#0f172a';"
-                                        onmouseout="this.style.backgroundColor='#f1f5f9'; this.style.color='#475569';">
+                                        style="background-color: #10b981; color: #ffffff;"
+                                        onmouseover="this.style.backgroundColor='#059669';"
+                                        onmouseout="this.style.backgroundColor='#10b981';">
                                         Review
                                     </a>
                                 <?php else: ?>
