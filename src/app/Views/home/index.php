@@ -18,7 +18,7 @@
         flex-direction: column;
         align-items: flex-start;
         text-align: left;
-        gap: 0.15rem;
+        gap: 0.25rem;
         flex: 1;
     }
     .activity-right-custom {
@@ -26,6 +26,30 @@
         flex-shrink: 0;
         align-self: flex-start;
         margin-top: -2px;
+    }
+    .status-badge-custom {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 4px 8px;
+        border-radius: 6px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        text-align: center;
+    }
+    .action-btn-custom {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 4px 10px;
+        border-radius: 6px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        text-decoration: none;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        text-align: center;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.05);
     }
     @media (max-width: 640px) {
         .activity-item-custom {
@@ -135,26 +159,27 @@
                         <div class="activity-item-custom">
                             <!-- Detail Quiz (Judul, Kategori & Waktu) -->
                             <div class="activity-left-custom">
-                                <span class="activity-title" style="font-weight: 600; font-size: 0.85rem; color: #0f172a; line-height: 1.2; text-align: left;"><?= htmlspecialchars($title) ?></span>
-                                <span style="font-size: 0.72rem; color: #7c3aed; font-weight: 600; font-family: 'Plus Jakarta Sans', sans-serif;"><?= htmlspecialchars($category) ?></span>
-                                <span class="activity-time" style="font-size: 0.7rem; color: #64748b; line-height: 1.2;">
+                                <span class="activity-title" style="font-weight: 700; font-size: 0.95rem; color: #0f172a; line-height: 1.2; text-align: left;"><?= htmlspecialchars($title) ?></span>
+                                <span style="font-size: 0.78rem; color: #7c3aed; font-weight: 600; font-family: 'Plus Jakarta Sans', sans-serif;"><?= htmlspecialchars($category) ?></span>
+                                <span class="activity-time" style="font-size: 0.75rem; color: #64748b; line-height: 1.2;">
                                     <?= htmlspecialchars($time) ?>
                                 </span>
                             </div>
 
-                            <!-- Status Button -->
-                            <div class="activity-right-custom">
+                            <!-- Status & Action Box -->
+                            <div class="activity-right-custom" style="display: flex; align-items: center; gap: 0.5rem;">
                                 <?php if ($isFinished): ?>
                                     <?php
                                     $reviewUrl = (isset($activity['quiz_id']) && method_exists('\App\Core\Security', 'encryptUrlId'))
                                         ? BASE_URL . '/quiz/review/' . \App\Core\Security::encryptUrlId($activity['quiz_id'])
                                         : BASE_URL . '/quiz/review/' . ($activity['quiz_id'] ?? '');
                                     ?>
-                                    <a href="<?= $reviewUrl ?>"
-                                        style="display: inline-flex; align-items: center; justify-content: center; padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; background-color: #dcfce7; color: #166534; text-decoration: none; cursor: pointer; transition: all 0.2s ease; box-shadow: 0 1px 2px rgba(0,0,0,0.05); min-width: 60px; text-align: center;"
-                                        onmouseover="this.innerText='Review?'; this.style.backgroundColor='#bbf7d0'"
-                                        onmouseout="this.innerText='Selesai'; this.style.backgroundColor='#dcfce7'">
-                                        <?= $statusText ?>
+                                    <span class="status-badge-custom" style="background-color: #dcfce7; color: #166534;">Selesai</span>
+                                    <a href="<?= $reviewUrl ?>" class="action-btn-custom"
+                                        style="background-color: #f1f5f9; border: 1px solid #cbd5e1; color: #475569;"
+                                        onmouseover="this.style.backgroundColor='#e2e8f0'; this.style.color='#0f172a';"
+                                        onmouseout="this.style.backgroundColor='#f1f5f9'; this.style.color='#475569';">
+                                        Review
                                     </a>
                                 <?php else: ?>
                                     <?php
@@ -162,11 +187,12 @@
                                         ? \App\Core\Security::encryptUrlId($activity['quiz_id'])
                                         : ($activity['quiz_id'] ?? '');
                                     ?>
-                                    <a href="<?= BASE_URL ?>/quiz/play/<?= $playId ?>"
-                                        style="display: inline-flex; align-items: center; justify-content: center; padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; background-color: #fef08a; color: #854d0e; text-decoration: none; cursor: pointer; transition: all 0.2s ease; box-shadow: 0 1px 2px rgba(0,0,0,0.05); min-width: 60px; text-align: center;"
-                                        onmouseover="this.innerText='Lanjut?'; this.style.backgroundColor='#fde047'"
-                                        onmouseout="this.innerText='Dijeda'; this.style.backgroundColor='#fef08a'">
-                                        <?= $statusText ?>
+                                    <span class="status-badge-custom" style="background-color: #fef3c7; color: #854d0e;">Dijeda</span>
+                                    <a href="<?= BASE_URL ?>/quiz/play/<?= $playId ?>" class="action-btn-custom"
+                                        style="background-color: #7c3aed; color: #ffffff;"
+                                        onmouseover="this.style.backgroundColor='#6d28d9';"
+                                        onmouseout="this.style.backgroundColor='#7c3aed';">
+                                        Lanjutkan
                                     </a>
                                 <?php endif; ?>
                             </div>
