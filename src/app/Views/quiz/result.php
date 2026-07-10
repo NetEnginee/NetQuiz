@@ -47,7 +47,7 @@
                 Kembali ke Quiz
             </a>
             <?php if ($quiz): ?>
-                <a href="<?= BASE_URL ?>/quiz/review/<?= $quiz['id'] ?>" class="btn-primary" style="text-decoration: none;">
+                <a href="<?= BASE_URL ?>/quiz/review/<?= \App\Core\Security::encryptUrlId($quiz['id']) ?>" class="btn-primary" style="text-decoration: none;">
                     Review Jawaban
                 </a>
             <?php endif; ?>
