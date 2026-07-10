@@ -412,10 +412,84 @@ if (isset($_SESSION['user'])) {
         .badge-modal-card.unlocked {
             border-color: #c7d2fe;
             background-color: #faf5ff;
+        /* Simple & Elegant Page Loader CSS */
+        .page-loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: rgba(255, 255, 255, 0.95);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 999999;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+            opacity: 1;
+            visibility: visible;
+        }
+        .page-loader.fade-out {
+            opacity: 0;
+            visibility: hidden;
+        }
+        .loader-spinner {
+            width: 44px;
+            height: 44px;
+            border: 3px solid #e2e8f0;
+            border-top-color: #7c3aed;
+            border-radius: 50%;
+            animation: spinLoader 0.7s linear infinite;
+        }
+        @keyframes spinLoader {
+            to {
+                transform: rotate(360deg);
+            }
         }
     </style>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+            // Elegant loader transition scripts
+            const loader = document.getElementById('page-loader');
+            if (loader) {
+                setTimeout(() => {
+                    loader.classList.add('fade-out');
+                }, 80);
+            }
+
+            window.addEventListener('beforeunload', () => {
+                if (loader) {
+                    loader.classList.remove('fade-out');
+                }
+            });
+
+            document.addEventListener('click', (e) => {
+                const target = e.target.closest('a');
+                if (target) {
+                    const href = target.getAttribute('href');
+                    const targetAttr = target.getAttribute('target');
+                    if (href && 
+                        !href.startsWith('#') && 
+                        !href.startsWith('javascript:') && 
+                        (!targetAttr || targetAttr === '_self') && 
+                        !e.ctrlKey && !e.metaKey && !e.shiftKey) {
+                        try {
+                            const linkUrl = new URL(target.href);
+                            if (linkUrl.origin === window.location.origin) {
+                                if (loader) {
+                                    loader.classList.remove('fade-out');
+                                }
+                            }
+                        } catch (err) {}
+                    }
+                }
+            });
+
+            document.addEventListener('submit', (e) => {
+                if (loader && !e.defaultPrevented) {
+                    loader.classList.remove('fade-out');
+                }
+            });
+
             const trigger = document.getElementById('profile-dropdown-trigger');
             const menu = document.getElementById('profile-dropdown-menu');
             const chevron = document.getElementById('profile-chevron');
@@ -531,6 +605,11 @@ if (isset($_SESSION['user'])) {
 </head>
 
 <body>
+    <!-- Elegant Page Loader -->
+    <div id="page-loader" class="page-loader">
+        <div class="loader-spinner"></div>
+    </div>
+
     <header style="position: fixed; top: 0; left: 0; right: 0; z-index: 100;">
         <div class="container"
             style="display: flex; justify-content: space-between; align-items: center; position: relative;">
