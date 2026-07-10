@@ -95,37 +95,47 @@
                         ?>
 
                         <div class="activity-item"
-                            style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 1rem; border-bottom: 1px solid #f1f5f9; width: 100%; box-sizing: border-box;">
-                            <!-- Detail Quiz (Judul & Kategori & Waktu) -->
-                            <div style="display: flex; flex-direction: column; align-items: flex-start; text-align: left; gap: 0.15rem;">
+                            style="display: flex; flex-direction: column; align-items: flex-start; padding: 0.75rem 1rem; border-bottom: 1px solid #f1f5f9; width: 100%; box-sizing: border-box;">
+                            <!-- Detail Quiz & Status aligned -->
+                            <div style="display: flex; justify-content: space-between; align-items: center; width: 100%; gap: 0.5rem; margin-bottom: 0.15rem;">
                                 <span class="activity-title"
-                                    style="font-weight: 600; font-size: 0.85rem; color: #0f172a; line-height: 1.2;"><?= htmlspecialchars($title) ?></span>
+                                    style="font-weight: 600; font-size: 0.85rem; color: #0f172a; line-height: 1.2; text-align: left; flex: 1;"><?= htmlspecialchars($title) ?></span>
+                                
+                                <!-- Status -->
+                                <div class="activity-status" style="flex-shrink: 0;">
+                                    <?php if ($isFinished): ?>
+                                        <?php 
+                                        $reviewUrl = (isset($activity['quiz_id']) && method_exists('\App\Core\Security', 'encryptUrlId')) 
+                                            ? BASE_URL . '/quiz/review/' . \App\Core\Security::encryptUrlId($activity['quiz_id']) 
+                                            : BASE_URL . '/quiz/review/' . ($activity['quiz_id'] ?? '');
+                                        ?>
+                                        <a href="<?= $reviewUrl ?>"
+                                            style="display: inline-flex; align-items: center; justify-content: center; padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; background-color: #dcfce7; color: #166534; text-decoration: none; cursor: pointer; transition: all 0.2s ease; box-shadow: 0 1px 2px rgba(0,0,0,0.05); min-width: 60px; text-align: center;"
+                                            onmouseover="this.innerText='Review?'; this.style.backgroundColor='#bbf7d0'"
+                                            onmouseout="this.innerText='Selesai'; this.style.backgroundColor='#dcfce7'">
+                                            <?= $statusText ?>
+                                        </a>
+                                    <?php else: ?>
+                                        <?php 
+                                        $playId = (isset($activity['quiz_id']) && method_exists('\App\Core\Security', 'encryptUrlId')) 
+                                            ? \App\Core\Security::encryptUrlId($activity['quiz_id']) 
+                                            : ($activity['quiz_id'] ?? '');
+                                        ?>
+                                        <a href="<?= BASE_URL ?>/quiz/play/<?= $playId ?>"
+                                            style="display: inline-flex; align-items: center; justify-content: center; padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; background-color: #fef08a; color: #854d0e; text-decoration: none; cursor: pointer; transition: all 0.2s ease; box-shadow: 0 1px 2px rgba(0,0,0,0.05); min-width: 60px; text-align: center;"
+                                            onmouseover="this.innerText='Lanjut?'; this.style.backgroundColor='#fde047'"
+                                            onmouseout="this.innerText='Dijeda'; this.style.backgroundColor='#fef08a'">
+                                            <?= $statusText ?>
+                                        </a>
+                                    <?php endif; ?>
+                                </div>
+                            </div>
+                            <!-- Category and Time -->
+                            <div style="display: flex; flex-direction: column; align-items: flex-start; text-align: left; gap: 0.15rem;">
                                 <span style="font-size: 0.72rem; color: #7c3aed; font-weight: 600; font-family: 'Plus Jakarta Sans', sans-serif;"><?= htmlspecialchars($category) ?></span>
                                 <span class="activity-time" style="font-size: 0.7rem; color: #64748b; line-height: 1.2;">
                                     <?= htmlspecialchars($time) ?>
                                 </span>
-                            </div>
-
-                            <!-- Status -->
-                            <div class="activity-status">
-                                <?php if ($isFinished): ?>
-                                    <span
-                                        style="display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; background-color: #dcfce7; color: #166534;">
-                                        <?= $statusText ?>
-                                    </span>
-                                <?php else: ?>
-                                    <?php 
-                                    $playId = (isset($activity['quiz_id']) && method_exists('\App\Core\Security', 'encryptUrlId')) 
-                                        ? \App\Core\Security::encryptUrlId($activity['quiz_id']) 
-                                        : ($activity['quiz_id'] ?? '');
-                                    ?>
-                                    <a href="<?= BASE_URL ?>/quiz/play/<?= $playId ?>"
-                                        style="display: inline-flex; align-items: center; justify-content: center; padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; background-color: #fef08a; color: #854d0e; text-decoration: none; cursor: pointer; transition: all 0.2s ease; box-shadow: 0 1px 2px rgba(0,0,0,0.05); min-width: 60px; text-align: center;"
-                                        onmouseover="this.innerText='Lanjut?'; this.style.backgroundColor='#fde047'"
-                                        onmouseout="this.innerText='Dijeda'; this.style.backgroundColor='#fef08a'">
-                                        <?= $statusText ?>
-                                    </a>
-                                <?php endif; ?>
                             </div>
                         </div>
 
