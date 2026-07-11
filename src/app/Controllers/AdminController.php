@@ -37,7 +37,7 @@ class AdminController extends Controller
         // Fetch all users (excluding admin) for user management using Repository
         $userRepo = new UserRepository();
         $usersList = $userRepo->getAllUsers();
-        
+
         $totalQuizzes = count($quizzes);
         $totalUsers = count($usersList);
 
@@ -46,7 +46,7 @@ class AdminController extends Controller
         $badgesList = $stmtBadges->fetchAll(PDO::FETCH_ASSOC);
 
         $this->view('admin/index', [
-            'title' => 'Admin Dashboard | RouterOS Quiz',
+            'title' => 'Admin Dashboard | NetQuiz',
             'quizzes' => $quizzes,
             'users_list' => $usersList,
             'badges_list' => $badgesList,
@@ -68,7 +68,7 @@ class AdminController extends Controller
                 exit;
             }
             $title = $_POST['title'] ?? '';
-            $duration = isset($_POST['duration']) ? (int)$_POST['duration'] : 0;
+            $duration = isset($_POST['duration']) ? (int) $_POST['duration'] : 0;
             $description = $_POST['description'] ?? '';
             $category = $_POST['category'] ?? 'Routing';
             $questions = $_POST['questions'] ?? [];
@@ -101,15 +101,15 @@ class AdminController extends Controller
 
                 foreach ($questions as $q) {
                     $qImagePath = null;
-                    
+
                     if (!empty($q['image']) && strpos($q['image'], 'data:image/') === 0) {
                         $imageData = $q['image'];
                         $imageData = str_replace(' ', '+', $imageData);
-                        
+
                         list(, $data) = explode(';', $imageData);
                         list(, $data) = explode(',', $data);
                         $data = base64_decode($data);
-                        
+
                         $image = imagecreatefromstring($data);
                         if ($image) {
                             $newFilename = uniqid('qimg_') . '.webp';
@@ -117,16 +117,15 @@ class AdminController extends Controller
                             if (!is_dir($uploadDir)) {
                                 mkdir($uploadDir, 0755, true);
                             }
-                            
+
                             // Preserve transparency for PNG conversion to WebP
                             imagepalettetotruecolor($image);
                             imagealphablending($image, true);
                             imagesavealpha($image, true);
-                            
+
                             if (imagewebp($image, $uploadDir . $newFilename, 80)) {
                                 $qImagePath = 'uploads/questions/' . $newFilename;
                             }
-                            imagedestroy($image);
                         }
                     }
 
@@ -310,7 +309,7 @@ class AdminController extends Controller
             $username = trim($_POST['username'] ?? '');
             $email = trim($_POST['email'] ?? '');
             $password = $_POST['password'] ?? '';
-            $adminId = (int)$_SESSION['user']['id'];
+            $adminId = (int) $_SESSION['user']['id'];
 
             if (empty($username) || empty($email)) {
                 $_SESSION['admin_error'] = 'Username dan Email wajib diisi.';

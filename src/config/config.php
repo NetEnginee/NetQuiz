@@ -16,7 +16,7 @@ $isLocal = ($host === 'localhost:8080' || $host === '127.0.0.1:8080');
 
 if ($isLocal) {
     return [
-        'app_name' => 'RouterOS Quiz (Dev)',
+        'app_name' => 'NetQuiz (Dev)',
         'base_url' => $base_url,
         // Database Config for Docker Local Dev
         'db_host' => getenv('DB_HOST') ?: 'nvram-mysql',
@@ -26,7 +26,7 @@ if ($isLocal) {
     ];
 } else {
     return [
-        'app_name' => 'RouterOS Quiz Academy',
+        'app_name' => 'NetQuiz Academy',
         'base_url' => $base_url,
         // Database Config for InfinityFree Production Shared Hosting
         'db_host' => 'sql213.infinityfree.com',

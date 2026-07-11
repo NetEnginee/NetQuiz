@@ -4,9 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= htmlspecialchars($title) ?> | RouterOS Quiz</title>
+    <title><?= htmlspecialchars($title) ?> | NetQuiz</title>
     <meta name="description"
-        content="Masuk atau daftarkan diri Anda di RouterOS Quiz untuk menguasai konfigurasi MikroTik RouterOS melalui kuis interaktif dan simulasi ujian sertifikasi.">
+        content="Masuk atau daftarkan diri Anda di NetQuiz untuk menguasai konfigurasi MikroTik RouterOS melalui kuis interaktif dan simulasi ujian sertifikasi.">
 
     <!-- Modern Fonts (Plus Jakarta Sans & Inter) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -108,7 +108,7 @@
                 <div class="mobile-brand">
                     <a href="<?= BASE_URL ?>/" class="brand-link-mobile">
                         <i data-lucide="router" class="icon-brand-mobile"></i>
-                        <span>RouterOS Quiz</span>
+                        <span>NetQuiz</span>
                     </a>
                 </div>
 
