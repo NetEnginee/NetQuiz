@@ -11,6 +11,7 @@ class HomeController extends Controller
 {
     public function index()
     {
+        $this->syncPausedQuizzesFromDb();
         // Redirect admin users to the Admin dashboard
         $email = isset($_SESSION['user']['email']) ? trim($_SESSION['user']['email']) : '';
         if (strcasecmp($email, 'admin@routerosquiz.academy') === 0) {
@@ -254,5 +255,27 @@ class HomeController extends Controller
 
         header('Location: ' . BASE_URL . '/');
         exit;
+    }
+
+    private function syncPausedQuizzesFromDb()
+    {
+        if (isset($_SESSION['user']['id'])) {
+            try {
+                $db = \App\Core\Database::getInstance()->getConnection();
+                $stmt = $db->prepare("SELECT quiz_id, user_answers, created_at FROM quiz_attempts WHERE user_id = :user_id AND status = 'paused'");
+                $stmt->execute(['user_id' => $_SESSION['user']['id']]);
+                $pausedAttempts = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+
+                $_SESSION['paused_quiz'] = [];
+                foreach ($pausedAttempts as $attempt) {
+                    $payload = json_decode($attempt['user_answers'], true);
+                    $_SESSION['paused_quiz'][(int)$attempt['quiz_id']] = [
+                        'answers' => $payload['answers'] ?? [],
+                        'time_left' => $payload['time_left'] ?? 0,
+                        'paused_at' => $attempt['created_at'] ?? date('Y-m-d H:i:s')
+                    ];
+                }
+            } catch (\Exception $e) {}
+        }
     }
 }
