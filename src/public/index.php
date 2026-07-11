@@ -33,6 +33,8 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
+
+
 // Enforce server-side session inactivity timeout (e.g., 30 minutes)
 $inactivityTimeout = 1800; // 30 minutes in seconds
 if (isset($_SESSION['last_activity']) && (time() - $_SESSION['last_activity'] > $inactivityTimeout)) {
@@ -41,15 +43,13 @@ if (isset($_SESSION['last_activity']) && (time() - $_SESSION['last_activity'] > 
     session_destroy();
 
     // Restart empty session
-    if (session_status() === PHP_SESSION_NONE) {
-        session_start();
-    }
+    session_start();
 }
 $_SESSION['last_activity'] = time();
 
 // Error handling: Disable display in production, log instead
-ini_set('display_errors', '1');
-ini_set('display_startup_errors', '1');
+ini_set('display_errors', '0');
+ini_set('display_startup_errors', '0');
 error_reporting(E_ALL);
 ini_set('log_errors', '1');
 ini_set('error_log', dirname(__DIR__) . '/logs/php_errors.log');

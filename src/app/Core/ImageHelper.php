@@ -27,8 +27,9 @@ class ImageHelper
             mkdir($targetDir, 0755, true);
         }
 
-        $imageType = $file['type'];
         $tempPath = $file['tmp_name'];
+        // Detect MIME type securely using server-side detection to prevent MIME-spoofing bypass
+        $imageType = mime_content_type($tempPath);
 
         // Create image resource based on original type
         switch ($imageType) {

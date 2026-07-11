@@ -188,7 +188,12 @@ class QuizController extends Controller
             'paused_at' => date('Y-m-d H:i:s')
         ];
 
-        header('Location: ' . BASE_URL . '/quiz');
+        $redirect = $_GET['redirect'] ?? $_POST['redirect'] ?? '';
+        if (!empty($redirect) && strpos($redirect, BASE_URL) === 0) {
+            header('Location: ' . $redirect);
+        } else {
+            header('Location: ' . BASE_URL . '/quiz');
+        }
         exit;
     }
 

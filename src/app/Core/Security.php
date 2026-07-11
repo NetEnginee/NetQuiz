@@ -186,4 +186,97 @@ class Security
         $decrypted = openssl_decrypt($ciphertext, $cipher, $key, OPENSSL_RAW_DATA, $iv);
         return $decrypted !== false ? $decrypted : null;
     }
+
+    /**
+     * Check if the current IP address or email is rate-limited (brute force protection).
+     * Returns the remaining lock duration in seconds if limited, null otherwise.
+     */
+    public static function checkRateLimit(string $email, int $maxAttempts = 5, int $decaySeconds = 300): ?int
+    {
+        $ip = $_SERVER['REMOTE_ADDR'] ?? '';
+        if (empty($ip)) {
+            return null;
+        }
+
+        try {
+            $db = Database::getInstance()->getConnection();
+            
+            // Clean up old attempts
+            $cleanStmt = $db->prepare("DELETE FROM login_attempts WHERE attempted_at < DATE_SUB(NOW(), INTERVAL :decay SECOND)");
+            $cleanStmt->execute(['decay' => $decaySeconds]);
+
+            // Count attempts from this IP or email in the decay window
+            $stmt = $db->prepare("SELECT COUNT(*) FROM login_attempts WHERE (ip_address = :ip OR email = :email) AND attempted_at >= DATE_SUB(NOW(), INTERVAL :decay SECOND)");
+            $stmt->execute([
+                'ip' => $ip,
+                'email' => $email,
+                'decay' => $decaySeconds
+            ]);
+            $attempts = (int) $stmt->fetchColumn();
+
+            if ($attempts >= $maxAttempts) {
+                // Find how many seconds until the block lifts
+                $timeStmt = $db->prepare("SELECT MIN(attempted_at) FROM login_attempts WHERE (ip_address = :ip OR email = :email) AND attempted_at >= DATE_SUB(NOW(), INTERVAL :decay SECOND)");
+                $timeStmt->execute([
+                    'ip' => $ip,
+                    'email' => $email,
+                    'decay' => $decaySeconds
+                ]);
+                $firstAttempt = $timeStmt->fetchColumn();
+                if ($firstAttempt) {
+                    $timeLeft = (strtotime($firstAttempt) + $decaySeconds) - time();
+                    return $timeLeft > 0 ? $timeLeft : 1;
+                }
+                return $decaySeconds;
+            }
+        } catch (\Exception $e) {
+            error_log("Rate limit check failed: " . $e->getMessage());
+        }
+
+        return null;
+    }
+
+    /**
+     * Record a failed login attempt.
+     */
+    public static function recordLoginAttempt(string $email): void
+    {
+        $ip = $_SERVER['REMOTE_ADDR'] ?? '';
+        if (empty($ip)) {
+            return;
+        }
+
+        try {
+            $db = Database::getInstance()->getConnection();
+            $stmt = $db->prepare("INSERT INTO login_attempts (ip_address, email) VALUES (:ip, :email)");
+            $stmt->execute([
+                'ip' => $ip,
+                'email' => $email
+            ]);
+        } catch (\Exception $e) {
+            error_log("Failed to record login attempt: " . $e->getMessage());
+        }
+    }
+
+    /**
+     * Clear login attempts upon successful login.
+     */
+    public static function clearLoginAttempts(string $email): void
+    {
+        $ip = $_SERVER['REMOTE_ADDR'] ?? '';
+        if (empty($ip)) {
+            return;
+        }
+
+        try {
+            $db = Database::getInstance()->getConnection();
+            $stmt = $db->prepare("DELETE FROM login_attempts WHERE ip_address = :ip OR email = :email");
+            $stmt->execute([
+                'ip' => $ip,
+                'email' => $email
+            ]);
+        } catch (\Exception $e) {
+            error_log("Failed to clear login attempts: " . $e->getMessage());
+        }
+    }
 }

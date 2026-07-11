@@ -399,8 +399,7 @@
         left: 0;
         width: 100%;
         height: 100%;
-        background-color: rgba(15, 23, 42, 0.4);
-        backdrop-filter: blur(6px);
+        background-color: rgba(15, 23, 42, 0.75);
         display: flex;
         align-items: center;
         justify-content: center;

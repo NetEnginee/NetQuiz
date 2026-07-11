@@ -115,13 +115,15 @@ if (isset($_SESSION['user'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= htmlspecialchars($title ?? APP_NAME) ?> | NetQuiz</title>
-    <meta name="description" content="Kuasai konfigurasi MikroTik RouterOS melalui kuis interaktif, simulasi ujian sertifikasi, dan papan peringkat (leaderboard) secara real-time di NetQuiz.">
+    <meta name="description"
+        content="Kuasai konfigurasi MikroTik RouterOS melalui kuis interaktif, simulasi ujian sertifikasi, dan papan peringkat (leaderboard) secara real-time di NetQuiz.">
     <meta name="robots" content="index, follow">
-    <link rel="canonical" href="<?= (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] ?>">
+    <link rel="canonical"
+        href="<?= (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] ?>">
 
     <?php if (isset($preloadImage) && !empty($preloadImage)): ?>
-    <!-- Preload LCP Image -->
-    <link rel="preload" href="<?= htmlspecialchars($preloadImage) ?>" as="image">
+        <!-- Preload LCP Image -->
+        <link rel="preload" href="<?= htmlspecialchars($preloadImage) ?>" as="image">
     <?php endif; ?>
 
     <!-- Modern Typography (Plus Jakarta Sans & Inter) -->
@@ -305,8 +307,6 @@ if (isset($_SESSION['user'])) {
                 display: flex !important;
             }
         }
-
-
     </style>
     <style>
         /* Modal Styles */
@@ -316,8 +316,7 @@ if (isset($_SESSION['user'])) {
             left: 0;
             width: 100vw;
             height: 100vh;
-            background-color: rgba(15, 23, 42, 0.6);
-            backdrop-filter: blur(4px);
+            background-color: rgba(15, 23, 42, 0.85);
             z-index: 1000;
             display: flex;
             align-items: center;
@@ -422,9 +421,29 @@ if (isset($_SESSION['user'])) {
             border-color: #c7d2fe;
             background-color: #faf5ff;
         }
+
+        /* Simple & Elegant Page Loader CSS */
         .page-loader {
-            display: none !important;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: rgba(255, 255, 255, 0.95);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 999999;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+            opacity: 1;
+            visibility: visible;
         }
+
+        .page-loader.fade-out {
+            opacity: 0;
+            visibility: hidden;
+        }
+
         .loader-spinner {
             width: 44px;
             height: 44px;
@@ -433,6 +452,7 @@ if (isset($_SESSION['user'])) {
             border-radius: 50%;
             animation: spinLoader 0.7s linear infinite;
         }
+
         @keyframes spinLoader {
             to {
                 transform: rotate(360deg);
@@ -449,57 +469,86 @@ if (isset($_SESSION['user'])) {
                 }, 80);
             }
 
-            window.isQuizSubmitting = false;
-
-             window.addEventListener('beforeunload', (e) => {
-                const currentPath = window.location.href.toLowerCase();
-                if (currentPath.includes('/quiz/play/') && window.isQuizSubmitting === false) {
-                    e.preventDefault();
-                    e.returnValue = 'Apakah Anda yakin ingin keluar dari proses kuis? Progress pengerjaan Anda tidak akan tersimpan.';
-                    return e.returnValue;
-                }
-                if (loader && window.isQuizSubmitting !== false) {
-                    loader.classList.remove('fade-out');
+            // Ensure loader fades out on pageshow (e.g., when navigating using browser Back/Forward BFCache)
+            window.addEventListener('pageshow', (event) => {
+                if (loader) {
+                    loader.classList.add('fade-out');
                 }
             });
 
-            // 2. Page Loader Click Listener (ignores quiz play pages and start links which have their own confirmation modals)
+
+
+            // 1. Auto-pause quiz when navigating away via internal links
             document.addEventListener('click', (e) => {
                 const target = e.target.closest('a');
                 if (target) {
                     const href = target.getAttribute('href');
                     const currentPath = window.location.href.toLowerCase();
-                    const targetHref = href ? href.toLowerCase() : '';
-                    
-                    // If we are currently on the play page, or the target goes to the play page, do NOT show loader on click!
-                    if (currentPath.includes('/quiz/play/') || targetHref.includes('/quiz/play/')) {
-                        return;
-                    }
 
-                    const targetAttr = target.getAttribute('target');
-                    if (href && 
-                        !href.startsWith('#') && 
-                        !href.startsWith('javascript:') && 
-                        (!targetAttr || targetAttr === '_self') && 
-                        !e.ctrlKey && !e.metaKey && !e.shiftKey) {
-                        try {
-                            const linkUrl = new URL(target.href);
-                            if (linkUrl.origin === window.location.origin) {
-                                if (loader) {
-                                    loader.classList.remove('fade-out');
-                                }
+                    if (currentPath.includes('/quiz/play/') && href && !href.startsWith('#') && !href.startsWith('javascript:') && window.isQuizSubmitting === false) {
+                        const quizForm = document.getElementById('quiz-form');
+                        if (quizForm) {
+                            e.preventDefault();
+                            window.isQuizSubmitting = true;
+
+                            // Transform action URL to pause route and attach redirect destination
+                            const actionUrl = quizForm.getAttribute('action').replace('/submit/', '/pause/');
+                            quizForm.action = actionUrl + '?redirect=' + encodeURIComponent(target.href);
+
+                            if (loader) {
+                                loader.style.setProperty('display', 'flex', 'important');
+                                loader.classList.remove('fade-out');
                             }
-                        } catch (err) {}
+
+                            quizForm.submit();
+                        }
                     }
                 }
             });
 
-            document.addEventListener('submit', (e) => {
+            // 2. Auto-pause quiz when leaving the page (tab close, refresh, browser back/forward)
+            window.addEventListener('pagehide', () => {
                 const currentPath = window.location.href.toLowerCase();
-                if (currentPath.includes('/quiz/play/')) {
-                    window.isQuizSubmitting = true;
+                if (currentPath.includes('/quiz/play/') && window.isQuizSubmitting === false) {
+                    const quizForm = document.getElementById('quiz-form');
+                    if (quizForm) {
+                        const formData = new FormData(quizForm);
+                        const actionUrl = quizForm.getAttribute('action').replace('/submit/', '/pause/');
+                        navigator.sendBeacon(actionUrl, formData);
+                    }
                 }
-                if (loader && !e.defaultPrevented && window.isQuizSubmitting !== false) {
+            });
+
+            // 3. Page Loader Click Listener (deferred to run last, respects e.defaultPrevented)
+            setTimeout(() => {
+                document.addEventListener('click', (e) => {
+                    if (e.defaultPrevented) {
+                        return;
+                    }
+                    const target = e.target.closest('a');
+                    if (target) {
+                        const href = target.getAttribute('href');
+                        const targetAttr = target.getAttribute('target');
+                        if (href &&
+                            !href.startsWith('#') &&
+                            !href.startsWith('javascript:') &&
+                            (!targetAttr || targetAttr === '_self') &&
+                            !e.ctrlKey && !e.metaKey && !e.shiftKey) {
+                            try {
+                                const linkUrl = new URL(target.href);
+                                if (linkUrl.origin === window.location.origin) {
+                                    if (loader) {
+                                        loader.classList.remove('fade-out');
+                                    }
+                                }
+                            } catch (err) { }
+                        }
+                    }
+                });
+            }, 100);
+
+            document.addEventListener('submit', (e) => {
+                if (loader && !e.defaultPrevented) {
                     loader.classList.remove('fade-out');
                 }
             });
@@ -619,6 +668,10 @@ if (isset($_SESSION['user'])) {
 </head>
 
 <body>
+    <!-- Elegant Page Loader -->
+    <div id="page-loader" class="page-loader">
+        <div class="loader-spinner"></div>
+    </div>
 
     <header style="position: fixed; top: 0; left: 0; right: 0; z-index: 100;">
         <div class="container"
