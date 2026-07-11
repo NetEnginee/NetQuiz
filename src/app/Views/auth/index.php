@@ -51,7 +51,7 @@
                     <div class="brand-icon">
                         <i data-lucide="router" class="icon-brand"></i>
                     </div>
-                    <span class="brand-text">RouterOS <span class="highlight">Quiz</span></span>
+                    <span class="brand-text">Net<span class="highlight">Quiz</span></span>
                 </a>
 
                 <!-- Catchy Tagline -->
