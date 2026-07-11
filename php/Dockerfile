@@ -1,6 +1,6 @@
 FROM php:8.4-fpm
 
-# Install sistem dependensi yang dibutuhkan framework modern
+# Install system dependencies including WebP, JPEG, Freetype
 RUN apt-get update && apt-get install -y \
     git \
     curl \
@@ -8,15 +8,24 @@ RUN apt-get update && apt-get install -y \
     libonig-dev \
     libxml2-dev \
     zip \
-    unzip
+    unzip \
+    libwebp-dev \
+    libjpeg-dev \
+    libfreetype6-dev
 
-# Hapus cache untuk mengurangi ukuran image
+# Clean cache to reduce image size
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Install ekstensi PHP untuk MySQL (sangat krusial untuk koneksi database)
-RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd
+# Configure GD with WebP, JPEG, and Freetype support
+RUN docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp
 
-# Ambil Composer versi terbaru untuk manajemen framework
+# Install PHP extensions including opcache
+RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd opcache
+
+# Copy OPcache configuration into conf.d directory
+COPY php/opcache.ini /usr/local/etc/php/conf.d/opcache.ini
+
+# Get the latest Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 WORKDIR /var/webfeed/html
