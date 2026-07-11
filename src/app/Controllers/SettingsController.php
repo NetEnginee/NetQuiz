@@ -77,7 +77,7 @@ class SettingsController extends Controller
 
         $input = json_decode(file_get_contents('php://input'), true) ?? $_POST;
         $username = trim($input['username'] ?? '');
-        $email = trim($input['email'] ?? '');
+        $email = $_SESSION['user']['email']; // Lock email to prevent modification
         $userId = (int)$_SESSION['user']['id'];
 
         $errors = [];

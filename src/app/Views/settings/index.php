@@ -94,12 +94,12 @@
 
                 <!-- Email Input -->
                 <div class="input-group">
-                    <label for="email" class="input-label">Alamat Email</label>
+                    <label for="email" class="input-label">Alamat Email (Tidak dapat diubah)</label>
                     <div class="input-wrapper">
                         <span class="input-icon-left">
                         </span>
                         <input type="email" id="email" name="email" class="form-input"
-                            value="<?= htmlspecialchars($user['email']) ?>" placeholder="nama@email.com" required>
+                            value="<?= htmlspecialchars($user['email']) ?>" placeholder="nama@email.com" required disabled style="background-color: #f1f5f9; color: #64748b; cursor: not-allowed;">
                     </div>
                     <span class="error-msg" id="email-error"></span>
                 </div>
