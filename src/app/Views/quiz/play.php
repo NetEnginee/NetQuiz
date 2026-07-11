@@ -340,7 +340,7 @@
             <div style="display: flex; gap: 0.5rem;">
                 <button type="button" id="btn-pause" class="btn-nav"
                     style="background: #fffbeb; color: #d97706; border: 1px solid #fef3c7;"
-                    onclick="const f = document.getElementById('quiz-form'); f.action = '<?= BASE_URL ?>/quiz/pause/<?= $quiz['id'] ?>'; f.submit();">
+                    onclick="window.isQuizSubmitting = true; const f = document.getElementById('quiz-form'); f.action = '<?= BASE_URL ?>/quiz/pause/<?= $quiz['id'] ?>'; f.submit();">
                     <i data-lucide="pause-circle" style="width: 1.2rem; height: 1.2rem;"></i>
                 </button>
                 <button type="submit" id="btn-submit-quiz" class="btn-submit-quiz" disabled
@@ -425,6 +425,7 @@
                     // Remove required attributes so form can submit even if not fully answered
                     quizForm.querySelectorAll('input[required]').forEach(input => input.removeAttribute('required'));
                     
+                    window.isQuizSubmitting = true;
                     // Submit forcefully after 2 seconds
                     setTimeout(() => {
                         quizForm.submit();
@@ -551,7 +552,86 @@
                 }
             });
         }
+
+        // Track when quiz form is submitted
+        const quizFormElement = document.getElementById('quiz-form');
+        if (quizFormElement) {
+            quizFormElement.addEventListener('submit', () => {
+                window.isQuizSubmitting = true;
+            });
+        }
+    });
+
+    // Global navigation warning logic
+    window.isQuizSubmitting = false;
+
+    window.addEventListener('beforeunload', (e) => {
+        if (!window.isQuizSubmitting) {
+            e.preventDefault();
+            e.returnValue = 'Apakah Anda yakin ingin keluar dari proses kuis? Progress pengerjaan Anda tidak akan tersimpan.';
+            return e.returnValue;
+        }
+    });
+
+    // Intercept clicks on links that navigate away
+    document.addEventListener('click', (e) => {
+        const anchor = e.target.closest('a');
+        if (anchor) {
+            const href = anchor.getAttribute('href');
+            // Intercept only if it's a valid link navigating to a different page and not a javascript/hash link
+            if (href && !href.startsWith('#') && !href.startsWith('javascript:') && !window.isQuizSubmitting) {
+                e.preventDefault();
+                
+                const exitModal = document.getElementById('confirm-exit-modal');
+                if (exitModal) {
+                    exitModal.style.display = 'flex';
+                    exitModal.offsetHeight; // force reflow
+                    exitModal.style.opacity = '1';
+                    exitModal.querySelector('div').style.transform = 'scale(1)';
+                    
+                    // Store target URL in modal confirm button
+                    const btnConfirm = document.getElementById('exit-modal-btn-confirm');
+                    btnConfirm.onclick = () => {
+                        window.isQuizSubmitting = true;
+                        window.location.href = href;
+                    };
+                }
+            }
+        }
+    });
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const exitModal = document.getElementById('confirm-exit-modal');
+        const btnCancel = document.getElementById('exit-modal-btn-cancel');
+        if (exitModal && btnCancel) {
+            const closeExitModal = () => {
+                exitModal.style.opacity = '0';
+                exitModal.querySelector('div').style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    exitModal.style.display = 'none';
+                }, 300);
+            };
+            btnCancel.addEventListener('click', closeExitModal);
+            exitModal.addEventListener('click', (e) => {
+                if (e.target === exitModal) closeExitModal();
+            });
+        }
     });
 </script>
+
+<!-- Premium Exit Quiz Confirmation Modal -->
+<div id="confirm-exit-modal" style="display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); z-index: 10000; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.3s ease; font-family: 'Plus Jakarta Sans', sans-serif;">
+    <div style="background: rgba(255, 255, 255, 0.95); border: 1px solid rgba(255, 255, 255, 0.8); box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04); border-radius: 16px; width: 90%; max-width: 420px; padding: 2rem; transform: scale(0.95); transition: transform 0.3s ease; text-align: center;">
+        <div style="background: rgba(239, 68, 68, 0.1); width: 56px; height: 56px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.25rem auto; color: #ef4444;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+        </div>
+        <h3 style="font-size: 1.25rem; font-weight: 800; color: #0f172a; margin-bottom: 0.5rem; font-family: 'Plus Jakarta Sans', sans-serif;">Tinggalkan Kuis?</h3>
+        <p style="font-size: 0.9rem; color: #64748b; line-height: 1.5; margin-bottom: 1.75rem; font-family: 'Plus Jakarta Sans', sans-serif;">Apakah Anda yakin ingin keluar? Progress kuis Anda tidak akan tersimpan jika Anda keluar tanpa menekan tombol jeda.</p>
+        <div style="display: flex; gap: 0.75rem; justify-content: center;">
+            <button id="exit-modal-btn-cancel" style="flex: 1; padding: 0.65rem; border-radius: 10px; border: 1px solid #cbd5e1; background: #ffffff; color: #475569; font-weight: 700; cursor: pointer; font-size: 0.85rem; transition: all 0.2s; font-family: 'Plus Jakarta Sans', sans-serif;">Lanjutkan Kuis</button>
+            <button id="exit-modal-btn-confirm" style="flex: 1; padding: 0.65rem; border-radius: 10px; border: none; background: #ef4444; color: #ffffff; font-weight: 700; cursor: pointer; font-size: 0.85rem; transition: all 0.2s; box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2); font-family: 'Plus Jakarta Sans', sans-serif;">Keluar</button>
+        </div>
+    </div>
+</div>
 
 <?php require_once dirname(__DIR__) . '/templates/footer.php'; ?>
