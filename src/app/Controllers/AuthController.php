@@ -90,6 +90,17 @@ class AuthController extends Controller
             // Check if users table exists, create it if not
             $this->checkAndCreateUsersTable($db);
 
+            // Check rate limiting (brute force protection)
+            $lockSeconds = \App\Core\Security::checkRateLimit($email);
+            if ($lockSeconds !== null) {
+                $minutes = (int) ceil($lockSeconds / 60);
+                echo json_encode([
+                    'status' => 'error',
+                    'errors' => ['general' => "Terlalu banyak percobaan masuk. Silakan coba kembali dalam {$minutes} menit."]
+                ]);
+                exit;
+            }
+
             $userRepo = new UserRepository();
             $user = $userRepo->findByEmail($email);
 
@@ -97,6 +108,9 @@ class AuthController extends Controller
                 session_regenerate_id(true);
                 // Regenerate CSRF token on login to prevent fixation
                 \App\Core\Security::generateCsrfToken(true);
+
+                // Clear rate limit history on successful login
+                \App\Core\Security::clearLoginAttempts($email);
 
                 $_SESSION['user'] = [
                     'id' => $user['id'],
@@ -107,6 +121,8 @@ class AuthController extends Controller
                 echo json_encode(['status' => 'success', 'message' => 'Login berhasil!', 'redirect' => $redirectUrl]);
                 exit;
             } else {
+                // Record failed login attempt for rate limiting
+                \App\Core\Security::recordLoginAttempt($email);
                 echo json_encode(['status' => 'error', 'errors' => ['password' => 'Password salah atau email tidak terdaftar.']]);
                 exit;
             }
@@ -168,6 +184,17 @@ class AuthController extends Controller
             exit;
         }
 
+        // Check rate limiting (brute force protection on registration)
+        $lockSeconds = \App\Core\Security::checkRateLimit($email, 5, 300);
+        if ($lockSeconds !== null) {
+            $minutes = (int) ceil($lockSeconds / 60);
+            echo json_encode([
+                'status' => 'error',
+                'errors' => ['general' => "Terlalu banyak percobaan registrasi. Silakan coba kembali dalam {$minutes} menit."]
+            ]);
+            exit;
+        }
+
         try {
             $dbInstance = Database::getInstance();
             $db = $dbInstance->getConnection();
@@ -178,12 +205,14 @@ class AuthController extends Controller
 
             // Check if email already exists
             if ($userRepo->emailExists($email)) {
+                \App\Core\Security::recordLoginAttempt($email);
                 echo json_encode(['status' => 'error', 'errors' => ['email' => 'Email ini sudah terdaftar.']]);
                 exit;
             }
 
             // Check if name (username) already exists
             if ($userRepo->usernameExists($name)) {
+                \App\Core\Security::recordLoginAttempt($email);
                 echo json_encode(['status' => 'error', 'errors' => ['name' => 'Nama ini sudah terdaftar. Silakan gunakan nama lain.']]);
                 exit;
             }
@@ -194,6 +223,9 @@ class AuthController extends Controller
             // Set session
             session_regenerate_id(true);
             \App\Core\Security::generateCsrfToken(true);
+            
+            // Clear rate limit history on successful registration
+            \App\Core\Security::clearLoginAttempts($email);
 
             $_SESSION['user'] = [
                 'id' => $userId,

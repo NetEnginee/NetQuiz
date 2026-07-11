@@ -47,6 +47,17 @@ class Database
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;";
         $this->conn->exec($sql);
 
+        // Create login_attempts table if not exists for brute force protection
+        $sqlAttempts = "CREATE TABLE IF NOT EXISTS login_attempts (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            ip_address VARCHAR(45) NOT NULL,
+            email VARCHAR(255) NOT NULL,
+            attempted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            KEY idx_ip_time (ip_address, attempted_at),
+            KEY idx_email_time (email, attempted_at)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;";
+        $this->conn->exec($sqlAttempts);
+
         try {
             $this->conn->exec("ALTER TABLE quizzes ADD COLUMN image_path VARCHAR(255) NULL");
         } catch (PDOException $e) {

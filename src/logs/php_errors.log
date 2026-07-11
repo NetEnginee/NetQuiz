@@ -393,3 +393,38 @@ Stack trace:
 [11-Jul-2026 06:51:24 UTC] PHP Warning:  Undefined variable $durationSeconds in /var/webfeed/html/app/Views/quiz/play.php on line 288
 [11-Jul-2026 06:51:38 UTC] PHP Warning:  Undefined variable $durationSeconds in /var/webfeed/html/app/Views/quiz/play.php on line 288
 [11-Jul-2026 06:52:06 UTC] PHP Warning:  Undefined variable $durationSeconds in /var/webfeed/html/app/Views/quiz/play.php on line 288
+[11-Jul-2026 06:52:44 UTC] PHP Warning:  Undefined variable $durationSeconds in /var/webfeed/html/app/Views/quiz/play.php on line 288
+[11-Jul-2026 06:52:57 UTC] PHP Warning:  Undefined variable $durationSeconds in /var/webfeed/html/app/Views/quiz/play.php on line 288
+[11-Jul-2026 08:04:06 UTC] PHP Warning:  Undefined variable $durationSeconds in /var/webfeed/html/app/Views/quiz/play.php on line 288
+[11-Jul-2026 08:04:11 UTC] PHP Warning:  Undefined variable $durationSeconds in /var/webfeed/html/app/Views/quiz/play.php on line 288
+[11-Jul-2026 08:15:00 UTC] PHP Warning:  Undefined variable $durationSeconds in /var/webfeed/html/app/Views/quiz/play.php on line 288
+[11-Jul-2026 08:15:30 UTC] PHP Warning:  Undefined variable $durationSeconds in /var/webfeed/html/app/Views/quiz/play.php on line 288
+[11-Jul-2026 08:17:05 UTC] PHP Warning:  Undefined variable $durationSeconds in /var/webfeed/html/app/Views/quiz/play.php on line 288
+[11-Jul-2026 08:17:29 UTC] PHP Warning:  Undefined variable $durationSeconds in /var/webfeed/html/app/Views/quiz/play.php on line 288
+[11-Jul-2026 08:18:00 UTC] PHP Warning:  Undefined variable $durationSeconds in /var/webfeed/html/app/Views/quiz/play.php on line 288
+[11-Jul-2026 08:18:19 UTC] PHP Warning:  Undefined variable $durationSeconds in /var/webfeed/html/app/Views/quiz/play.php on line 293
+[11-Jul-2026 08:18:40 UTC] PHP Warning:  Undefined variable $durationSeconds in /var/webfeed/html/app/Views/quiz/play.php on line 293
+[11-Jul-2026 08:19:59 UTC] PHP Warning:  Undefined variable $durationSeconds in /var/webfeed/html/app/Views/quiz/play.php on line 293
+[11-Jul-2026 08:20:10 UTC] PHP Warning:  Undefined variable $durationSeconds in /var/webfeed/html/app/Views/quiz/play.php on line 293
+[11-Jul-2026 08:21:33 UTC] PHP Warning:  Undefined variable $durationSeconds in /var/webfeed/html/app/Views/quiz/play.php on line 293
+[11-Jul-2026 08:21:47 UTC] PHP Warning:  Undefined variable $durationSeconds in /var/webfeed/html/app/Views/quiz/play.php on line 293
+[11-Jul-2026 08:26:24 UTC] Database Connection Error: SQLSTATE[HY000] [2002] Connection refused
+[11-Jul-2026 08:27:12 UTC] PHP Warning:  Undefined variable $durationSeconds in /var/webfeed/html/app/Views/quiz/play.php on line 293
+[11-Jul-2026 08:27:19 UTC] PHP Warning:  Undefined variable $durationSeconds in /var/webfeed/html/app/Views/quiz/play.php on line 293
+[11-Jul-2026 08:27:22 UTC] PHP Warning:  Undefined variable $durationSeconds in /var/webfeed/html/app/Views/quiz/play.php on line 293
+[11-Jul-2026 08:27:24 UTC] PHP Warning:  Undefined variable $durationSeconds in /var/webfeed/html/app/Views/quiz/play.php on line 293
+[11-Jul-2026 08:27:26 UTC] PHP Warning:  Undefined variable $durationSeconds in /var/webfeed/html/app/Views/quiz/play.php on line 293
+[11-Jul-2026 08:27:27 UTC] PHP Warning:  Undefined variable $durationSeconds in /var/webfeed/html/app/Views/quiz/play.php on line 293
+[11-Jul-2026 08:27:28 UTC] PHP Warning:  Undefined variable $durationSeconds in /var/webfeed/html/app/Views/quiz/play.php on line 293
+[11-Jul-2026 08:27:29 UTC] PHP Warning:  Undefined variable $durationSeconds in /var/webfeed/html/app/Views/quiz/play.php on line 293
+[11-Jul-2026 08:27:30 UTC] PHP Warning:  Undefined variable $durationSeconds in /var/webfeed/html/app/Views/quiz/play.php on line 293
+[11-Jul-2026 08:27:30 UTC] PHP Warning:  Undefined variable $durationSeconds in /var/webfeed/html/app/Views/quiz/play.php on line 293
+[11-Jul-2026 08:27:31 UTC] PHP Warning:  Undefined variable $durationSeconds in /var/webfeed/html/app/Views/quiz/play.php on line 293
+[11-Jul-2026 08:28:15 UTC] PHP Warning:  Undefined variable $durationSeconds in /var/webfeed/html/app/Views/quiz/play.php on line 293
+[11-Jul-2026 08:28:19 UTC] PHP Warning:  Undefined variable $durationSeconds in /var/webfeed/html/app/Views/quiz/play.php on line 293
+[11-Jul-2026 08:28:23 UTC] PHP Warning:  Undefined variable $durationSeconds in /var/webfeed/html/app/Views/quiz/play.php on line 293
+[11-Jul-2026 08:28:43 UTC] Database Connection Error: SQLSTATE[HY000] [2002] Connection refused
+[11-Jul-2026 08:31:04 UTC] Database Connection Error: SQLSTATE[HY000] [2002] Connection refused
+[11-Jul-2026 08:32:07 UTC] Database Connection Error: SQLSTATE[HY000] [2002] Connection refused
+[11-Jul-2026 08:32:09 UTC] Database Connection Error: SQLSTATE[HY000] [2002] Connection refused
+[11-Jul-2026 08:35:58 UTC] Database Connection Error: SQLSTATE[HY000] [2002] Connection refused

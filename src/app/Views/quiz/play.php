@@ -7,7 +7,7 @@
     .page-loader {
         display: none !important;
     }
-    
+
     /* Premium Quiz UI Override */
     .quiz-container {
         max-width: 800px;
@@ -268,7 +268,7 @@
         border-color: #cbd5e1;
         color: #0f172a;
     }
-    
+
     .page-number.answered:hover {
         background: #059669;
         border-color: #059669;
@@ -287,21 +287,22 @@
         <span style="color: #0f172a; font-weight: 600;"><?= htmlspecialchars($quiz['title']) ?></span>
     </nav>
 
+    <?php
+    // Convert duration to seconds
+    $durationSeconds = (isset($quiz['duration']) ? (int) $quiz['duration'] : 0) * 60;
+    ?>
+
     <!-- Quiz Form Card -->
     <form id="quiz-form" method="POST" action="<?= BASE_URL ?>/quiz/submit/<?= $quiz['id'] ?>" class="play-card">
         <?= \App\Core\Security::csrfField() ?>
         <input type="hidden" name="time_left" id="time_left" value="<?= $durationSeconds ?>">
 
-        <?php
-        // Convert duration to seconds
-        $durationSeconds = (isset($quiz['duration']) ? (int) $quiz['duration'] : 0) * 60;
-        ?>
         <div class="quiz-header" style="display: flex; justify-content: flex-end; align-items: flex-start;">
             <?php if ($durationSeconds > 0): ?>
-            <!-- Inline Timer UI -->
-            <div id="quiz-timer" class="timer-pill">
-                <span id="timer-text" class="timer-text">00:00</span>
-            </div>
+                <!-- Inline Timer UI -->
+                <div id="quiz-timer" class="timer-pill">
+                    <span id="timer-text" class="timer-text">00:00</span>
+                </div>
             <?php endif; ?>
         </div>
 
@@ -313,7 +314,8 @@
 
                 <?php if (!empty($q['image_path'])): ?>
                     <div style="margin: 0.5rem 0 1rem 0; text-align: left;">
-                        <img src="<?= BASE_URL ?>/<?= htmlspecialchars($q['image_path']) ?>" alt="Gambar Pertanyaan" style="max-width: 100%; max-height: 400px; height: auto; border-radius: 8px; border: 1px solid #e2e8f0; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+                        <img src="<?= BASE_URL ?>/<?= htmlspecialchars($q['image_path']) ?>" alt="Gambar Pertanyaan"
+                            style="max-width: 100%; max-height: 400px; height: auto; border-radius: 8px; border: 1px solid #e2e8f0; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
                     </div>
                 <?php endif; ?>
 
@@ -360,7 +362,9 @@
     <div class="quiz-pagination">
         <?php foreach ($quiz['questions'] as $qIndex => $q): ?>
             <?php $isAnswered = isset($pausedState['answers'][$qIndex]); ?>
-            <button type="button" class="page-number <?= $qIndex === 0 ? 'active' : '' ?> <?= $isAnswered ? 'answered' : '' ?>" data-slide="<?= $qIndex ?>">
+            <button type="button"
+                class="page-number <?= $qIndex === 0 ? 'active' : '' ?> <?= $isAnswered ? 'answered' : '' ?>"
+                data-slide="<?= $qIndex ?>">
                 <?= $qIndex + 1 ?>
             </button>
         <?php endforeach; ?>
@@ -372,7 +376,31 @@
     <!-- Timer Logic -->
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            let timeLeft = <?= isset($pausedState['time_left']) && $pausedState['time_left'] > 0 ? $pausedState['time_left'] : $durationSeconds ?>;
+            const quizId = <?= (int)$quiz['id'] ?>;
+            const userId = <?= (int)$_SESSION['user']['id'] ?>;
+            const storageKey = `quiz_timer_${userId}_${quizId}`;
+            
+            let initialTimeLeft = <?= isset($pausedState['time_left']) && $pausedState['time_left'] > 0 ? $pausedState['time_left'] : $durationSeconds ?>;
+            
+            // Check if there is a target end-timestamp in localStorage
+            let targetTimestamp = localStorage.getItem(storageKey);
+            let timeLeft;
+            
+            if (targetTimestamp) {
+                timeLeft = Math.max(0, Math.floor((parseInt(targetTimestamp, 10) - Date.now()) / 1000));
+                
+                // If it already expired or is invalidly longer than initial time, reset to initial
+                if (timeLeft <= 0 || timeLeft > initialTimeLeft) {
+                    timeLeft = initialTimeLeft;
+                    targetTimestamp = Date.now() + (timeLeft * 1000);
+                    localStorage.setItem(storageKey, targetTimestamp);
+                }
+            } else {
+                timeLeft = initialTimeLeft;
+                targetTimestamp = Date.now() + (timeLeft * 1000);
+                localStorage.setItem(storageKey, targetTimestamp);
+            }
+
             const timerText = document.getElementById('timer-text');
             const timerPill = document.getElementById('quiz-timer');
             const quizForm = document.getElementById('quiz-form');
@@ -382,7 +410,7 @@
                 const minutes = Math.floor(timeLeft / 60);
                 const seconds = timeLeft % 60;
                 timerText.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-                
+
                 if (timeLeftInput) {
                     timeLeftInput.value = timeLeft;
                 }
@@ -400,7 +428,8 @@
                 if (timeLeft <= 0) {
                     clearInterval(timerInterval);
                     timerText.textContent = "00:00";
-                    
+                    localStorage.removeItem(storageKey);
+
                     // Block interaction forcefully
                     const overlay = document.createElement('div');
                     overlay.style.position = 'fixed';
@@ -417,7 +446,7 @@
                     overlay.style.alignItems = 'center';
                     overlay.style.zIndex = '9999';
                     overlay.style.fontFamily = "'Plus Jakarta Sans', sans-serif";
-                    
+
                     overlay.innerHTML = `
                         <div style="background: #ef4444; border-radius: 50%; width: 80px; height: 80px; display: flex; align-items: center; justify-content: center; margin-bottom: 1.5rem; animation: pulse 1.5s infinite;">
                             <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: white;"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
@@ -429,7 +458,7 @@
 
                     // Remove required attributes so form can submit even if not fully answered
                     quizForm.querySelectorAll('input[required]').forEach(input => input.removeAttribute('required'));
-                    
+
                     window.isQuizSubmitting = true;
                     // Submit forcefully after 2 seconds
                     setTimeout(() => {
@@ -439,6 +468,18 @@
                     updateTimerDisplay();
                 }
             }, 1000);
+
+            // Clean up storage when submitting form or when navigation/pause happens
+            if (quizForm) {
+                quizForm.addEventListener('submit', () => {
+                    localStorage.removeItem(storageKey);
+                });
+            }
+            window.addEventListener('pagehide', () => {
+                if (window.isQuizSubmitting) {
+                    localStorage.removeItem(storageKey);
+                }
+            });
         });
     </script>
 <?php endif; ?>
@@ -450,6 +491,45 @@
             lucide.createIcons();
         }
 
+        // Shuffle helper function
+        function shuffle(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        // Shuffle questions and options only on browser reload/refresh OR when resuming from paused state
+        const isReload = performance.getEntriesByType('navigation')[0]?.type === 'reload';
+        const isResumed = <?= $pausedState !== null ? 'true' : 'false' ?>;
+
+        const form = document.getElementById('quiz-form');
+        if (form && (isReload || isResumed)) {
+            const blocks = Array.from(form.querySelectorAll('.question-block'));
+            shuffle(blocks);
+            
+            blocks.forEach((block, index) => {
+                // Re-append in new order before navigation buttons
+                const navContainer = form.querySelector('.quiz-nav-container');
+                form.insertBefore(block, navContainer);
+                
+                // Update question index display text
+                const indexHeader = block.querySelector('div');
+                if (indexHeader) {
+                    indexHeader.textContent = `Pertanyaan ${index + 1} dari ${blocks.length}`;
+                }
+                
+                // Set correct active state class for first question block
+                block.classList.remove('active');
+                if (index === 0) {
+                    block.classList.add('active');
+                }
+
+
+            });
+        }
+
         // Dynamic styling when selecting options
         const optionLabels = document.querySelectorAll('.option-label');
         optionLabels.forEach(label => {
@@ -459,8 +539,6 @@
                 const block = label.closest('.question-block');
                 block.querySelectorAll('.option-label').forEach(el => el.classList.remove('selected'));
                 label.classList.add('selected');
-
-                // Optional: Auto advance on select could go here (if desired)
             });
         });
 
@@ -526,7 +604,7 @@
         radioInputs.forEach(radio => {
             radio.addEventListener('change', checkSubmitReadiness);
         });
-        
+
         // Initial check in case browser auto-fills or preserves state on refresh
         checkSubmitReadiness();
         updateSlider(); // Initial update of active states

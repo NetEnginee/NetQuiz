@@ -190,6 +190,19 @@ class SettingsController extends Controller
             exit;
         }
 
+        $email = $_SESSION['user']['email'] ?? '';
+
+        // Check rate limiting (brute force protection on password change)
+        $lockSeconds = \App\Core\Security::checkRateLimit($email, 5, 300);
+        if ($lockSeconds !== null) {
+            $minutes = (int) ceil($lockSeconds / 60);
+            echo json_encode([
+                'status' => 'error',
+                'errors' => ['general' => "Terlalu banyak percobaan. Silakan coba kembali dalam {$minutes} menit."]
+            ]);
+            exit;
+        }
+
         try {
             $db = Database::getInstance()->getConnection();
             $userRepo = new UserRepository();
@@ -200,12 +213,16 @@ class SettingsController extends Controller
             $user = $stmt->fetch();
 
             if (!$user || !password_verify($currentPassword, $user['password'])) {
+                \App\Core\Security::recordLoginAttempt($email);
                 echo json_encode(['status' => 'error', 'errors' => ['current_password' => 'Password saat ini salah.']]);
                 exit;
             }
 
             // Update hashed password in DB using Repository (never plaintext)
             $userRepo->updatePassword($userId, $newPassword);
+
+            // Clear rate limit history on successful password update
+            \App\Core\Security::clearLoginAttempts($email);
 
             echo json_encode([
                 'status' => 'success',
