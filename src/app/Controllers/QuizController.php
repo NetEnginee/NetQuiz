@@ -79,12 +79,13 @@ class QuizController extends Controller
 
     public function index()
     {
+        $this->syncPausedQuizzesFromDb();
         $quizzes = $this->loadQuizzesFromDb();
         $completedQuizzes = [];
         try {
             $db = Database::getInstance()->getConnection();
             try {
-                $stmt = $db->prepare("SELECT quiz_id, score FROM quiz_attempts WHERE user_id = :user_id AND quiz_id IS NOT NULL");
+                $stmt = $db->prepare("SELECT quiz_id, score FROM quiz_attempts WHERE user_id = :user_id AND quiz_id IS NOT NULL AND status = 'finished'");
                 $stmt->execute(['user_id' => $_SESSION['user']['id']]);
                 $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 foreach ($rows as $row) {
@@ -92,7 +93,7 @@ class QuizController extends Controller
                 }
             } catch (PDOException $e) {
                 // Fallback if the 'score' column does not exist
-                $stmt = $db->prepare("SELECT quiz_id FROM quiz_attempts WHERE user_id = :user_id AND quiz_id IS NOT NULL");
+                $stmt = $db->prepare("SELECT quiz_id FROM quiz_attempts WHERE user_id = :user_id AND quiz_id IS NOT NULL AND status = 'finished'");
                 $stmt->execute(['user_id' => $_SESSION['user']['id']]);
                 $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 foreach ($rows as $row) {
@@ -125,6 +126,7 @@ class QuizController extends Controller
 
     public function play($id)
     {
+        $this->syncPausedQuizzesFromDb();
         $id = $this->getDecryptedId($id);
         if ($id === null) {
             header('Location: ' . BASE_URL . '/quiz');
@@ -139,7 +141,7 @@ class QuizController extends Controller
 
         try {
             $db = Database::getInstance()->getConnection();
-            $stmt = $db->prepare("SELECT id FROM quiz_attempts WHERE user_id = :user_id AND quiz_id = :quiz_id");
+            $stmt = $db->prepare("SELECT id FROM quiz_attempts WHERE user_id = :user_id AND quiz_id = :quiz_id AND status = 'finished'");
             $stmt->execute(['user_id' => $_SESSION['user']['id'], 'quiz_id' => $id]);
             if ($stmt->fetch()) {
                 $_SESSION['quiz_error'] = 'Anda sudah pernah mengerjakan kuis ini.';
@@ -182,11 +184,54 @@ class QuizController extends Controller
             exit;
         }
         $id = (int) $id;
+        $answers = $_POST['answers'] ?? [];
+        $timeLeft = (int)($_POST['time_left'] ?? 0);
+        $pausedAt = date('Y-m-d H:i:s');
+
         $_SESSION['paused_quiz'][$id] = [
-            'answers' => $_POST['answers'] ?? [],
-            'time_left' => (int)($_POST['time_left'] ?? 0),
-            'paused_at' => date('Y-m-d H:i:s')
+            'answers' => $answers,
+            'time_left' => $timeLeft,
+            'paused_at' => $pausedAt
         ];
+
+        // Save paused state to database for cross-relog persistence
+        try {
+            $db = Database::getInstance()->getConnection();
+            $userId = $_SESSION['user']['id'];
+
+            // Check if there is an existing paused attempt
+            $stmt = $db->prepare("SELECT id FROM quiz_attempts WHERE user_id = :user_id AND quiz_id = :quiz_id AND status = 'paused' LIMIT 1");
+            $stmt->execute(['user_id' => $userId, 'quiz_id' => $id]);
+            $existing = $stmt->fetch();
+
+            $payload = json_encode([
+                'answers' => $answers,
+                'time_left' => $timeLeft
+            ]);
+
+            if ($existing) {
+                $upStmt = $db->prepare("UPDATE quiz_attempts SET user_answers = :payload, created_at = :paused_at WHERE id = :id");
+                $upStmt->execute([
+                    'payload' => $payload, 
+                    'paused_at' => $pausedAt,
+                    'id' => $existing['id']
+                ]);
+            } else {
+                $quizzes = $this->loadQuizzesFromDb();
+                $category = $quizzes[$id]['category'] ?? 'General';
+                
+                $inStmt = $db->prepare("INSERT INTO quiz_attempts (user_id, quiz_id, category, score, status, user_answers, created_at) VALUES (:user_id, :quiz_id, :category, 0, 'paused', :payload, :paused_at)");
+                $inStmt->execute([
+                    'user_id' => $userId,
+                    'quiz_id' => $id,
+                    'category' => $category,
+                    'payload' => $payload,
+                    'paused_at' => $pausedAt
+                ]);
+            }
+        } catch (\Exception $e) {
+            error_log("Failed to save paused quiz to database: " . $e->getMessage());
+        }
 
         $redirect = $_GET['redirect'] ?? $_POST['redirect'] ?? '';
         if (!empty($redirect) && strpos($redirect, BASE_URL) === 0) {
@@ -238,6 +283,10 @@ class QuizController extends Controller
             $db = Database::getInstance()->getConnection();
             $userId = $_SESSION['user']['id'];
             $category = $quiz['category'];
+
+            // Delete paused attempt for this user and quiz
+            $delStmt = $db->prepare("DELETE FROM quiz_attempts WHERE user_id = :user_id AND quiz_id = :quiz_id AND status = 'paused'");
+            $delStmt->execute(['user_id' => $userId, 'quiz_id' => $id]);
 
             $stmt = $db->prepare("
                 INSERT INTO quiz_attempts (user_id, quiz_id, category, score, status, user_answers) 
@@ -353,5 +402,27 @@ class QuizController extends Controller
             'total' => $total,
             'quiz' => $quiz
         ]);
+    }
+
+    private function syncPausedQuizzesFromDb()
+    {
+        if (isset($_SESSION['user']['id'])) {
+            try {
+                $db = Database::getInstance()->getConnection();
+                $stmt = $db->prepare("SELECT quiz_id, user_answers, created_at FROM quiz_attempts WHERE user_id = :user_id AND status = 'paused'");
+                $stmt->execute(['user_id' => $_SESSION['user']['id']]);
+                $pausedAttempts = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+                $_SESSION['paused_quiz'] = [];
+                foreach ($pausedAttempts as $attempt) {
+                    $payload = json_decode($attempt['user_answers'], true);
+                    $_SESSION['paused_quiz'][(int)$attempt['quiz_id']] = [
+                        'answers' => $payload['answers'] ?? [],
+                        'time_left' => $payload['time_left'] ?? 0,
+                        'paused_at' => $attempt['created_at'] ?? date('Y-m-d H:i:s')
+                    ];
+                }
+            } catch (\Exception $e) {}
+        }
     }
 }

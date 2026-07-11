@@ -428,3 +428,5 @@ Stack trace:
 [11-Jul-2026 08:32:07 UTC] Database Connection Error: SQLSTATE[HY000] [2002] Connection refused
 [11-Jul-2026 08:32:09 UTC] Database Connection Error: SQLSTATE[HY000] [2002] Connection refused
 [11-Jul-2026 08:35:58 UTC] Database Connection Error: SQLSTATE[HY000] [2002] Connection refused
+[11-Jul-2026 08:45:20 UTC] Database Connection Error: SQLSTATE[HY000] [2002] Connection refused
+[11-Jul-2026 08:47:55 UTC] Database Connection Error: SQLSTATE[HY000] [2002] Connection refused
