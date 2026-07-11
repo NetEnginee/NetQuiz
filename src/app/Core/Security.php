@@ -84,7 +84,26 @@ class Security
         header('X-Frame-Options: DENY');
         header('X-XSS-Protection: 1; mode=block');
         header('Referrer-Policy: strict-origin-when-cross-origin');
-        header("Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' https://unpkg.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self';");
+        header("Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' https://unpkg.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self';");
+    }
+
+    /**
+     * Configure headers to allow browser BFCache (Back/Forward Cache) for non-sensitive pages.
+     */
+    public static function allowBFCache(): void
+    {
+        header('Cache-Control: private, max-age=0, must-revalidate');
+        header('Pragma: cache');
+    }
+
+    /**
+     * Configure headers to completely block caching (e.g. for logout, admin pages, or sensitive forms).
+     */
+    public static function preventBFCache(): void
+    {
+        header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
+        header('Cache-Control: post-check=0, pre-check=0', false);
+        header('Pragma: no-cache');
     }
 
     /**

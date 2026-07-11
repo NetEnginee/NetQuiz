@@ -16,6 +16,7 @@ class AuthController extends Controller
      */
     public function index()
     {
+        \App\Core\Security::preventBFCache();
         $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
         $mode = (strpos($uri, 'signup') !== false) ? 'signup' : 'login';
 
@@ -217,6 +218,7 @@ class AuthController extends Controller
      */
     public function logout()
     {
+        \App\Core\Security::preventBFCache();
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }

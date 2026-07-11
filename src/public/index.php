@@ -26,6 +26,9 @@ if (session_status() === PHP_SESSION_NONE) {
         'samesite' => 'Strict'
     ]);
 
+    // Prevent PHP from sending default cache-control headers (avoiding automatic no-store)
+    session_cache_limiter('');
+
     // Start session
     session_start();
 }
@@ -80,6 +83,7 @@ define('PUBLIC_ROOT', __DIR__);
 // Load Security and set headers
 require_once dirname(__DIR__) . '/app/Core/Security.php';
 \App\Core\Security::setSecurityHeaders();
+\App\Core\Security::allowBFCache(); // Enable BFCache by default for all pages unless explicitly disabled
 
 // Instantiate Router
 use App\Core\Router;

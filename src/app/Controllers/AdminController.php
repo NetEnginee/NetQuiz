@@ -26,6 +26,7 @@ class AdminController extends Controller
     public function index()
     {
         $this->checkAdmin();
+        \App\Core\Security::preventBFCache();
 
         $db = Database::getInstance()->getConnection();
 
