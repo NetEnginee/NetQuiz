@@ -562,43 +562,8 @@
         }
     });
 
-    // Global navigation warning logic
+    // Initialize global flag
     window.isQuizSubmitting = false;
-
-    window.addEventListener('beforeunload', (e) => {
-        if (!window.isQuizSubmitting) {
-            e.preventDefault();
-            e.returnValue = 'Apakah Anda yakin ingin keluar dari proses kuis? Progress pengerjaan Anda tidak akan tersimpan.';
-            return e.returnValue;
-        }
-    });
-
-    // Intercept clicks on links that navigate away
-    document.addEventListener('click', (e) => {
-        const anchor = e.target.closest('a');
-        if (anchor) {
-            const href = anchor.getAttribute('href');
-            // Intercept only if it's a valid link navigating to a different page and not a javascript/hash link
-            if (href && !href.startsWith('#') && !href.startsWith('javascript:') && !window.isQuizSubmitting) {
-                e.preventDefault();
-                
-                const exitModal = document.getElementById('confirm-exit-modal');
-                if (exitModal) {
-                    exitModal.style.display = 'flex';
-                    exitModal.offsetHeight; // force reflow
-                    exitModal.style.opacity = '1';
-                    exitModal.querySelector('div').style.transform = 'scale(1)';
-                    
-                    // Store target URL in modal confirm button
-                    const btnConfirm = document.getElementById('exit-modal-btn-confirm');
-                    btnConfirm.onclick = () => {
-                        window.isQuizSubmitting = true;
-                        window.location.href = href;
-                    };
-                }
-            }
-        }
-    });
 
     document.addEventListener('DOMContentLoaded', () => {
         const exitModal = document.getElementById('confirm-exit-modal');

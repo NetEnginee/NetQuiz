@@ -466,36 +466,80 @@ if (isset($_SESSION['user'])) {
                 }, 80);
             }
 
-            window.addEventListener('beforeunload', () => {
-                if (loader) {
+            window.isQuizSubmitting = false;
+
+            window.addEventListener('beforeunload', (e) => {
+                if (window.location.pathname.includes('/quiz/play/') && window.isQuizSubmitting === false) {
+                    e.preventDefault();
+                    e.returnValue = 'Apakah Anda yakin ingin keluar dari proses kuis? Progress pengerjaan Anda tidak akan tersimpan.';
+                    return e.returnValue;
+                }
+                if (loader && window.isQuizSubmitting !== false) {
                     loader.classList.remove('fade-out');
                 }
             });
 
+            // 1. Intercept clicks on links when playing quiz to show exit modal (runs immediately)
             document.addEventListener('click', (e) => {
                 const target = e.target.closest('a');
                 if (target) {
                     const href = target.getAttribute('href');
-                    const targetAttr = target.getAttribute('target');
-                    if (href && 
-                        !href.startsWith('#') && 
-                        !href.startsWith('javascript:') && 
-                        (!targetAttr || targetAttr === '_self') && 
-                        !e.ctrlKey && !e.metaKey && !e.shiftKey) {
-                        try {
-                            const linkUrl = new URL(target.href);
-                            if (linkUrl.origin === window.location.origin) {
-                                if (loader) {
-                                    loader.classList.remove('fade-out');
-                                }
+                    
+                    // If playing quiz and navigating away, intercept and show exit modal
+                    if (window.location.pathname.includes('/quiz/play/') && href && !href.startsWith('#') && !href.startsWith('javascript:') && window.isQuizSubmitting === false) {
+                        e.preventDefault();
+                        const exitModal = document.getElementById('confirm-exit-modal');
+                        if (exitModal) {
+                            exitModal.style.display = 'flex';
+                            exitModal.offsetHeight; // force reflow
+                            exitModal.style.opacity = '1';
+                            exitModal.querySelector('div').style.transform = 'scale(1)';
+                            
+                            const btnConfirm = document.getElementById('exit-modal-btn-confirm');
+                            if (btnConfirm) {
+                                btnConfirm.onclick = () => {
+                                    window.isQuizSubmitting = true;
+                                    window.location.href = target.href;
+                                };
                             }
-                        } catch (err) {}
+                        }
                     }
                 }
             });
 
+            // 2. Page Loader Click Listener (deferred to run last, respects e.defaultPrevented)
+            setTimeout(() => {
+                document.addEventListener('click', (e) => {
+                    if (e.defaultPrevented) {
+                        return;
+                    }
+                    const target = e.target.closest('a');
+                    if (target) {
+                        const href = target.getAttribute('href');
+                        const targetAttr = target.getAttribute('target');
+                        if (href && 
+                            !href.startsWith('#') && 
+                            !href.startsWith('javascript:') && 
+                            (!targetAttr || targetAttr === '_self') && 
+                            !e.ctrlKey && !e.metaKey && !e.shiftKey) {
+                            try {
+                                const linkUrl = new URL(target.href);
+                                if (linkUrl.origin === window.location.origin) {
+                                    if (loader) {
+                                        loader.classList.remove('fade-out');
+                                    }
+                                }
+                            } catch (err) {}
+                        }
+                    }
+                });
+            }, 100);
+
             document.addEventListener('submit', (e) => {
-                if (loader && !e.defaultPrevented) {
+                if (window.location.pathname.includes('/quiz/play/')) {
+                    window.isQuizSubmitting = true;
+                }
+                if (loader && !e.defaultPrevented && window.isQuizSubmitting !== false) {
                     loader.classList.remove('fade-out');
                 }
             });
