@@ -41,7 +41,7 @@ class SettingsController extends Controller
             }
 
             $this->view('settings/index', [
-                'title' => 'Pengaturan Profil | RouterOS Quiz',
+                'title' => 'Pengaturan Profil | NetQuiz',
                 'user' => $user
             ]);
 

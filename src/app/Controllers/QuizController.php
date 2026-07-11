@@ -118,7 +118,7 @@ class QuizController extends Controller
         }
 
         $this->view('quiz/index', [
-            'title' => 'Daftar Quiz | RouterOS Quiz',
+            'title' => 'Daftar Quiz | NetQuiz',
             'categorized' => $categorized
         ]);
     }
@@ -151,10 +151,20 @@ class QuizController extends Controller
         $quiz = $quizzes[$id];
         $pausedState = $_SESSION['paused_quiz'][$id] ?? null;
 
+        // Extract first question image for LCP Preloading
+        $preloadImage = '';
+        if (!empty($quiz['questions'])) {
+            $firstQuestion = reset($quiz['questions']);
+            if (!empty($firstQuestion['image_path'])) {
+                $preloadImage = BASE_URL . '/' . $firstQuestion['image_path'];
+            }
+        }
+
         $this->view('quiz/play', [
-            'title' => 'Mulai Kuis - ' . $quiz['title'] . ' | RouterOS Quiz',
+            'title' => 'Mulai Kuis - ' . $quiz['title'] . ' | NetQuiz',
             'quiz' => $quiz,
-            'pausedState' => $pausedState
+            'pausedState' => $pausedState,
+            'preloadImage' => $preloadImage
         ]);
     }
 
@@ -279,11 +289,21 @@ class QuizController extends Controller
 
         $userAnswers = json_decode($attempt['user_answers'] ?? '{}', true) ?: [];
 
+        // Extract first question image for LCP Preloading
+        $preloadImage = '';
+        if (!empty($quiz['questions'])) {
+            $firstQuestion = reset($quiz['questions']);
+            if (!empty($firstQuestion['image_path'])) {
+                $preloadImage = BASE_URL . '/' . $firstQuestion['image_path'];
+            }
+        }
+
         $this->view('quiz/review', [
-            'title' => 'Review Jawaban - ' . $quiz['title'] . ' | RouterOS Quiz',
+            'title' => 'Review Jawaban - ' . $quiz['title'] . ' | NetQuiz',
             'quiz' => $quiz,
             'userAnswers' => $userAnswers,
-            'score' => $attempt['score']
+            'score' => $attempt['score'],
+            'preloadImage' => $preloadImage
         ]);
     }
 
@@ -322,7 +342,7 @@ class QuizController extends Controller
         $quiz = $quizzes[(int) $quizId] ?? null;
 
         $this->view('quiz/result', [
-            'title' => 'Hasil Kuis | RouterOS Quiz',
+            'title' => 'Hasil Kuis | NetQuiz',
             'score' => $score,
             'correct' => $correct,
             'total' => $total,

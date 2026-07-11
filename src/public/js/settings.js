@@ -1,5 +1,5 @@
 /**
- * JavaScript Controller for RouterOS Quiz Settings Page
+ * JavaScript Controller for NetQuiz Settings Page
  * Features: Tab Navigation, Client-side Form Validation, AJAX Request Handler, Dynamic DOM updates.
  */
 

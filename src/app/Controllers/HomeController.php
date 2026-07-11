@@ -240,7 +240,7 @@ class HomeController extends Controller
         ];
 
         $this->view('home/index', [
-            'title' => 'Dashboard | RouterOS Quiz',
+            'title' => 'Dashboard | NetQuiz',
             'stats' => $userStats
         ]);
     }

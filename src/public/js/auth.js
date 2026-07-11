@@ -56,7 +56,7 @@ document.addEventListener("DOMContentLoaded", () => {
       if (cardTitle) cardTitle.textContent = "Mulai Belajar Sekarang";
       if (cardSubtitle)
         cardSubtitle.textContent =
-          "Daftarkan akun gratis untuk mengakses semua fitur RouterOS Quiz.";
+          "Daftarkan akun gratis untuk mengakses semua fitur NetQuiz.";
 
       // Update Footer Toggle
       if (toggleLinkText) {

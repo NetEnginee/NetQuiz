@@ -2,7 +2,7 @@
 declare(strict_types=1);
 
 /**
- * RouterOS Quiz Academy - InfinityFree Shared Hosting Diagnostic Tool
+ * NetQuiz Academy - InfinityFree Shared Hosting Diagnostic Tool
  * Author: Senior DevOps & PHP Developer
  * Usage: Upload this file directly to your htdocs/ directory and visit http://yourdomain/diagnose.php in your browser.
  */
@@ -14,7 +14,7 @@ declare(strict_types=1);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Diagnostics & Fix Tool | RouterOS Quiz</title>
+    <title>Diagnostics & Fix Tool | NetQuiz</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
@@ -316,7 +316,7 @@ declare(strict_types=1);
         </div>
 
         <div class="footer">
-            RouterOS Quiz Academy Tool &bull; Silakan hapus file <code>diagnose.php</code> ini setelah masalah terselesaikan demi keamanan.
+            NetQuiz Academy Tool &bull; Silakan hapus file <code>diagnose.php</code> ini setelah masalah terselesaikan demi keamanan.
         </div>
     </div>
 

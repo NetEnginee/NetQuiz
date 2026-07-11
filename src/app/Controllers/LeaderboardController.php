@@ -72,7 +72,7 @@ class LeaderboardController extends Controller
         $topUsers = array_slice($leaderboard, 0, 10);
 
         $this->view('leaderboard/index', [
-            'title' => 'Leaderboard | RouterOS Quiz',
+            'title' => 'Leaderboard | NetQuiz',
             'leaderboard' => $topUsers,
             'currentUserRank' => $currentUserRank,
             'currentUserStats' => $currentUserStats,

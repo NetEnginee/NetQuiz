@@ -33,7 +33,7 @@
         <div class="result-meta-grid">
             <div class="result-meta-item">
                 <span class="result-meta-label">Kuis</span>
-                <span class="result-meta-value"><?= htmlspecialchars($quiz['title'] ?? 'RouterOS Quiz') ?></span>
+                <span class="result-meta-value"><?= htmlspecialchars($quiz['title'] ?? 'NetQuiz') ?></span>
             </div>
             <div class="result-meta-item">
                 <span class="result-meta-label">Jawaban Benar</span>
