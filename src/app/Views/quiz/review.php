@@ -315,7 +315,6 @@
     </div>
 </div>
 
-<script src="https://unpkg.com/lucide@latest"></script>
 <script>
     document.addEventListener('DOMContentLoaded', () => {
         if (window.lucide) {

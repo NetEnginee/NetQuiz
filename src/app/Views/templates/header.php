@@ -115,6 +115,9 @@ if (isset($_SESSION['user'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= htmlspecialchars($title ?? APP_NAME) ?> | RouterOS Quiz</title>
+    <meta name="description" content="Kuasai konfigurasi MikroTik RouterOS melalui kuis interaktif, simulasi ujian sertifikasi, dan papan peringkat (leaderboard) secara real-time di RouterOS Quiz.">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="<?= (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] ?>">
 
     <!-- Modern Typography (Plus Jakarta Sans & Inter) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
