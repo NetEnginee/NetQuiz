@@ -383,3 +383,13 @@ Stack trace:
 [11-Jul-2026 06:45:40 UTC] PHP Warning:  Undefined variable $durationSeconds in /var/webfeed/html/app/Views/quiz/play.php on line 288
 [11-Jul-2026 06:45:51 UTC] PHP Warning:  Undefined variable $durationSeconds in /var/webfeed/html/app/Views/quiz/play.php on line 288
 [11-Jul-2026 06:45:54 UTC] PHP Warning:  Undefined variable $durationSeconds in /var/webfeed/html/app/Views/quiz/play.php on line 288
+[11-Jul-2026 06:46:53 UTC] PHP Warning:  Undefined variable $durationSeconds in /var/webfeed/html/app/Views/quiz/play.php on line 288
+[11-Jul-2026 06:48:46 UTC] PHP Warning:  Undefined variable $durationSeconds in /var/webfeed/html/app/Views/quiz/play.php on line 288
+[11-Jul-2026 06:49:38 UTC] PHP Warning:  Undefined variable $durationSeconds in /var/webfeed/html/app/Views/quiz/play.php on line 288
+[11-Jul-2026 06:49:54 UTC] PHP Warning:  Undefined variable $durationSeconds in /var/webfeed/html/app/Views/quiz/play.php on line 288
+[11-Jul-2026 06:50:38 UTC] PHP Warning:  Undefined variable $durationSeconds in /var/webfeed/html/app/Views/quiz/play.php on line 288
+[11-Jul-2026 06:50:41 UTC] PHP Warning:  Undefined variable $durationSeconds in /var/webfeed/html/app/Views/quiz/play.php on line 288
+[11-Jul-2026 06:50:46 UTC] PHP Warning:  Undefined variable $durationSeconds in /var/webfeed/html/app/Views/quiz/play.php on line 288
+[11-Jul-2026 06:51:24 UTC] PHP Warning:  Undefined variable $durationSeconds in /var/webfeed/html/app/Views/quiz/play.php on line 288
+[11-Jul-2026 06:51:38 UTC] PHP Warning:  Undefined variable $durationSeconds in /var/webfeed/html/app/Views/quiz/play.php on line 288
+[11-Jul-2026 06:52:06 UTC] PHP Warning:  Undefined variable $durationSeconds in /var/webfeed/html/app/Views/quiz/play.php on line 288

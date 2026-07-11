@@ -463,42 +463,6 @@ if (isset($_SESSION['user'])) {
                 }
             });
 
-            // 1. Intercept clicks on links when playing quiz to show exit modal (runs immediately)
-            document.addEventListener('click', (e) => {
-                const target = e.target.closest('a');
-                if (target) {
-                    const href = target.getAttribute('href');
-                    const currentPath = window.location.href.toLowerCase();
-                    
-                    // If playing quiz and navigating away, intercept and show exit modal
-                    if (currentPath.includes('/quiz/play/') && href && !href.startsWith('#') && !href.startsWith('javascript:') && window.isQuizSubmitting === false) {
-                        e.preventDefault();
-                        const exitModal = document.getElementById('confirm-exit-modal');
-                        if (exitModal) {
-                            if (loader) {
-                                loader.classList.add('fade-out'); // Force hide loader when showing modal
-                            }
-                            exitModal.style.display = 'flex';
-                            exitModal.offsetHeight; // force reflow
-                            exitModal.style.opacity = '1';
-                            exitModal.querySelector('div').style.transform = 'scale(1)';
-                            
-                            const btnConfirm = document.getElementById('exit-modal-btn-confirm');
-                            if (btnConfirm) {
-                                btnConfirm.onclick = () => {
-                                    window.isQuizSubmitting = true;
-                                    if (loader) {
-                                        loader.style.setProperty('display', 'flex', 'important'); // Override CSS display override
-                                        loader.classList.remove('fade-out');
-                                    }
-                                    window.location.href = target.href;
-                                };
-                            }
-                        }
-                    }
-                }
-            });
-
             // 2. Page Loader Click Listener (ignores quiz play pages and start links which have their own confirmation modals)
             document.addEventListener('click', (e) => {
                 const target = e.target.closest('a');
