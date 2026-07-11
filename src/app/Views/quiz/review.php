@@ -177,6 +177,51 @@
         background: #e2e8f0;
         color: #0f172a;
     }
+
+    /* Quiz Pagination Styles */
+    .quiz-pagination {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        justify-content: flex-start;
+        margin-top: 1.5rem;
+        background: rgba(255, 255, 255, 0.7);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.5);
+        border-radius: 16px;
+        padding: 1rem 1.5rem;
+        box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.8);
+    }
+
+    .page-number {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 36px;
+        height: 36px;
+        border-radius: 8px;
+        font-size: 0.9rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        border: 2px solid #e2e8f0;
+        background: #f8fafc;
+        color: #64748b;
+    }
+
+    .page-number.active {
+        border-color: #7c3aed;
+        color: #7c3aed;
+        box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.15);
+    }
+
+    .page-number:hover {
+        transform: translateY(-1px);
+        background: #f1f5f9;
+        border-color: #cbd5e1;
+        color: #0f172a;
+    }
 </style>
 
 <div class="quiz-container">
@@ -259,6 +304,15 @@
             </a>
         </div>
     </div>
+
+    <!-- Quiz Pagination -->
+    <div class="quiz-pagination">
+        <?php foreach ($quiz['questions'] as $qIndex => $q): ?>
+            <button type="button" class="page-number <?= $qIndex === 0 ? 'active' : '' ?>" data-slide="<?= $qIndex ?>">
+                <?= $qIndex + 1 ?>
+            </button>
+        <?php endforeach; ?>
+    </div>
 </div>
 
 <script src="https://unpkg.com/lucide@latest"></script>
@@ -286,7 +340,28 @@
 
             if (btnPrev) btnPrev.disabled = currentSlide === 0;
             if (btnNext) btnNext.disabled = currentSlide === totalSlides - 1;
+
+            // Update pagination active state
+            document.querySelectorAll('.page-number').forEach((btn, index) => {
+                if (index === currentSlide) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
         }
+
+        // Initialize active pagination button on load
+        updateSlider();
+
+        // Pagination buttons click listener
+        document.querySelectorAll('.page-number').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const target = parseInt(btn.getAttribute('data-slide'));
+                currentSlide = target;
+                updateSlider();
+            });
+        });
 
         if (btnNext) {
             btnNext.addEventListener('click', () => {

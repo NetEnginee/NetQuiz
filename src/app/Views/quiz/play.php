@@ -207,6 +207,68 @@
         transform: translateY(-2px);
         box-shadow: 0 8px 25px rgba(124, 58, 237, 0.4);
     }
+
+    /* Quiz Pagination Styles */
+    .quiz-pagination {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        justify-content: flex-start;
+        margin-top: 1.5rem;
+        background: rgba(255, 255, 255, 0.7);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.5);
+        border-radius: 16px;
+        padding: 1rem 1.5rem;
+        box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.8);
+    }
+
+    .page-number {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 36px;
+        height: 36px;
+        border-radius: 8px;
+        font-size: 0.9rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        border: 2px solid #e2e8f0;
+        background: #f8fafc;
+        color: #64748b;
+    }
+
+    .page-number.active {
+        border-color: #7c3aed;
+        color: #7c3aed;
+        box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.15);
+    }
+
+    .page-number.answered {
+        background: #10b981;
+        border-color: #10b981;
+        color: #ffffff;
+    }
+
+    .page-number.answered.active {
+        border-color: #047857;
+        box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.3);
+    }
+
+    .page-number:hover {
+        transform: translateY(-1px);
+        background: #f1f5f9;
+        border-color: #cbd5e1;
+        color: #0f172a;
+    }
+    
+    .page-number.answered:hover {
+        background: #059669;
+        border-color: #059669;
+        color: #ffffff;
+    }
 </style>
 
 <div class="quiz-container">
@@ -288,6 +350,16 @@
             </div>
         </div>
     </form>
+
+    <!-- Quiz Pagination -->
+    <div class="quiz-pagination">
+        <?php foreach ($quiz['questions'] as $qIndex => $q): ?>
+            <?php $isAnswered = isset($pausedState['answers'][$qIndex]); ?>
+            <button type="button" class="page-number <?= $qIndex === 0 ? 'active' : '' ?> <?= $isAnswered ? 'answered' : '' ?>" data-slide="<?= $qIndex ?>">
+                <?= $qIndex + 1 ?>
+            </button>
+        <?php endforeach; ?>
+    </div>
 </div>
 
 <?php if ($durationSeconds > 0): ?>
@@ -405,6 +477,15 @@
 
             if (btnPrev) btnPrev.disabled = currentSlide === 0;
             if (btnNext) btnNext.disabled = currentSlide === totalSlides - 1;
+
+            // Update pagination active state
+            document.querySelectorAll('.page-number').forEach((btn, index) => {
+                if (index === currentSlide) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
         }
 
         function checkSubmitReadiness() {
@@ -420,6 +501,19 @@
                     btnSubmit.style.cursor = 'not-allowed';
                 }
             }
+
+            // Highlight answered pagination buttons
+            blocks.forEach((block, index) => {
+                const radioChecked = block.querySelector('.options-list input[type="radio"]:checked');
+                const pageBtn = document.querySelector(`.page-number[data-slide="${index}"]`);
+                if (pageBtn) {
+                    if (radioChecked) {
+                        pageBtn.classList.add('answered');
+                    } else {
+                        pageBtn.classList.remove('answered');
+                    }
+                }
+            });
         }
 
         const radioInputs = document.querySelectorAll('.options-list input[type="radio"]');
@@ -429,6 +523,16 @@
         
         // Initial check in case browser auto-fills or preserves state on refresh
         checkSubmitReadiness();
+        updateSlider(); // Initial update of active states
+
+        // Pagination buttons click listener
+        document.querySelectorAll('.page-number').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const target = parseInt(btn.getAttribute('data-slide'));
+                currentSlide = target;
+                updateSlider();
+            });
+        });
 
         if (btnNext) {
             btnNext.addEventListener('click', () => {
