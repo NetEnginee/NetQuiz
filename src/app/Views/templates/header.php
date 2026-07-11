@@ -422,25 +422,8 @@ if (isset($_SESSION['user'])) {
             border-color: #c7d2fe;
             background-color: #faf5ff;
         }
-        /* Simple & Elegant Page Loader CSS */
         .page-loader {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background-color: rgba(255, 255, 255, 0.95);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 999999;
-            transition: opacity 0.3s ease, visibility 0.3s ease;
-            opacity: 1;
-            visibility: visible;
-        }
-        .page-loader.fade-out {
-            opacity: 0;
-            visibility: hidden;
+            display: none !important;
         }
         .loader-spinner {
             width: 44px;
@@ -468,8 +451,9 @@ if (isset($_SESSION['user'])) {
 
             window.isQuizSubmitting = false;
 
-            window.addEventListener('beforeunload', (e) => {
-                if (window.location.pathname.includes('/quiz/play/') && window.isQuizSubmitting === false) {
+             window.addEventListener('beforeunload', (e) => {
+                const currentPath = window.location.href.toLowerCase();
+                if (currentPath.includes('/quiz/play/') && window.isQuizSubmitting === false) {
                     e.preventDefault();
                     e.returnValue = 'Apakah Anda yakin ingin keluar dari proses kuis? Progress pengerjaan Anda tidak akan tersimpan.';
                     return e.returnValue;
@@ -484,12 +468,16 @@ if (isset($_SESSION['user'])) {
                 const target = e.target.closest('a');
                 if (target) {
                     const href = target.getAttribute('href');
+                    const currentPath = window.location.href.toLowerCase();
                     
                     // If playing quiz and navigating away, intercept and show exit modal
-                    if (window.location.pathname.includes('/quiz/play/') && href && !href.startsWith('#') && !href.startsWith('javascript:') && window.isQuizSubmitting === false) {
+                    if (currentPath.includes('/quiz/play/') && href && !href.startsWith('#') && !href.startsWith('javascript:') && window.isQuizSubmitting === false) {
                         e.preventDefault();
                         const exitModal = document.getElementById('confirm-exit-modal');
                         if (exitModal) {
+                            if (loader) {
+                                loader.classList.add('fade-out'); // Force hide loader when showing modal
+                            }
                             exitModal.style.display = 'flex';
                             exitModal.offsetHeight; // force reflow
                             exitModal.style.opacity = '1';
@@ -499,6 +487,10 @@ if (isset($_SESSION['user'])) {
                             if (btnConfirm) {
                                 btnConfirm.onclick = () => {
                                     window.isQuizSubmitting = true;
+                                    if (loader) {
+                                        loader.style.setProperty('display', 'flex', 'important'); // Override CSS display override
+                                        loader.classList.remove('fade-out');
+                                    }
                                     window.location.href = target.href;
                                 };
                             }
@@ -507,36 +499,40 @@ if (isset($_SESSION['user'])) {
                 }
             });
 
-            // 2. Page Loader Click Listener (deferred to run last, respects e.defaultPrevented)
-            setTimeout(() => {
-                document.addEventListener('click', (e) => {
-                    if (e.defaultPrevented) {
+            // 2. Page Loader Click Listener (ignores quiz play pages and start links which have their own confirmation modals)
+            document.addEventListener('click', (e) => {
+                const target = e.target.closest('a');
+                if (target) {
+                    const href = target.getAttribute('href');
+                    const currentPath = window.location.href.toLowerCase();
+                    const targetHref = href ? href.toLowerCase() : '';
+                    
+                    // If we are currently on the play page, or the target goes to the play page, do NOT show loader on click!
+                    if (currentPath.includes('/quiz/play/') || targetHref.includes('/quiz/play/')) {
                         return;
                     }
-                    const target = e.target.closest('a');
-                    if (target) {
-                        const href = target.getAttribute('href');
-                        const targetAttr = target.getAttribute('target');
-                        if (href && 
-                            !href.startsWith('#') && 
-                            !href.startsWith('javascript:') && 
-                            (!targetAttr || targetAttr === '_self') && 
-                            !e.ctrlKey && !e.metaKey && !e.shiftKey) {
-                            try {
-                                const linkUrl = new URL(target.href);
-                                if (linkUrl.origin === window.location.origin) {
-                                    if (loader) {
-                                        loader.classList.remove('fade-out');
-                                    }
+
+                    const targetAttr = target.getAttribute('target');
+                    if (href && 
+                        !href.startsWith('#') && 
+                        !href.startsWith('javascript:') && 
+                        (!targetAttr || targetAttr === '_self') && 
+                        !e.ctrlKey && !e.metaKey && !e.shiftKey) {
+                        try {
+                            const linkUrl = new URL(target.href);
+                            if (linkUrl.origin === window.location.origin) {
+                                if (loader) {
+                                    loader.classList.remove('fade-out');
                                 }
-                            } catch (err) {}
-                        }
+                            }
+                        } catch (err) {}
                     }
-                });
-            }, 100);
+                }
+            });
 
             document.addEventListener('submit', (e) => {
-                if (window.location.pathname.includes('/quiz/play/')) {
+                const currentPath = window.location.href.toLowerCase();
+                if (currentPath.includes('/quiz/play/')) {
                     window.isQuizSubmitting = true;
                 }
                 if (loader && !e.defaultPrevented && window.isQuizSubmitting !== false) {
@@ -659,10 +655,6 @@ if (isset($_SESSION['user'])) {
 </head>
 
 <body>
-    <!-- Elegant Page Loader -->
-    <div id="page-loader" class="page-loader">
-        <div class="loader-spinner"></div>
-    </div>
 
     <header style="position: fixed; top: 0; left: 0; right: 0; z-index: 100;">
         <div class="container"

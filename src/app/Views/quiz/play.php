@@ -3,6 +3,11 @@
 <!-- Custom Styles for Quiz -->
 <link rel="stylesheet" href="<?= BASE_URL ?>/css/quiz.css?v=<?= time() ?>">
 <style>
+    /* Disable page loader on quiz play page by default */
+    .page-loader {
+        display: none !important;
+    }
+    
     /* Premium Quiz UI Override */
     .quiz-container {
         max-width: 800px;
@@ -570,6 +575,10 @@
         const btnCancel = document.getElementById('exit-modal-btn-cancel');
         if (exitModal && btnCancel) {
             const closeExitModal = () => {
+                const loader = document.getElementById('page-loader');
+                if (loader) {
+                    loader.classList.add('fade-out');
+                }
                 exitModal.style.opacity = '0';
                 exitModal.querySelector('div').style.transform = 'scale(0.95)';
                 setTimeout(() => {
@@ -585,7 +594,7 @@
 </script>
 
 <!-- Premium Exit Quiz Confirmation Modal -->
-<div id="confirm-exit-modal" style="display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); z-index: 10000; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.3s ease; font-family: 'Plus Jakarta Sans', sans-serif;">
+<div id="confirm-exit-modal" style="display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); z-index: 2000000; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.3s ease; font-family: 'Plus Jakarta Sans', sans-serif;">
     <div style="background: rgba(255, 255, 255, 0.95); border: 1px solid rgba(255, 255, 255, 0.8); box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04); border-radius: 16px; width: 90%; max-width: 420px; padding: 2rem; transform: scale(0.95); transition: transform 0.3s ease; text-align: center;">
         <div style="background: rgba(239, 68, 68, 0.1); width: 56px; height: 56px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.25rem auto; color: #ef4444;">
             <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
