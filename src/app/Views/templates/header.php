@@ -627,7 +627,7 @@ if (isset($_SESSION['user'])) {
             <div style="flex: 1; display: flex; justify-content: flex-start;">
                 <a href="<?= $isAdmin ? BASE_URL . '/admin' : BASE_URL . '/' ?>"
                     style="text-decoration: none; font-size: 1.25rem; font-weight: 800; font-family: 'Plus Jakarta Sans', sans-serif; color: #0f172a; letter-spacing: -0.02em; display: inline-flex; align-items: center; gap: 0.5rem;">
-                    RouterOS <span style="color: #7c3aed;">Quiz</span>
+                    Net<span style="color: #7c3aed;">Quiz</span>
                 </a>
             </div>
 
