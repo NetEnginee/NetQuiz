@@ -16,7 +16,7 @@
         rel="stylesheet">
 
     <!-- Lucide Icons CDN -->
-    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://unpkg.com/lucide@latest" defer></script>
 
     <!-- Custom Vanilla CSS -->
     <link rel="stylesheet" href="<?= BASE_URL ?>/css/auth.css?v=<?= time() ?>">
@@ -187,7 +187,7 @@
     </div>
 
     <!-- Custom Client-side Controller (Interactive validations and toggle animations) -->
-    <script src="<?= BASE_URL ?>/js/auth.js?v=<?= time() ?>"></script>
+    <script src="<?= BASE_URL ?>/js/auth.js?v=<?= time() ?>" defer></script>
 </body>
 
 </html>

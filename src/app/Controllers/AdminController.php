@@ -103,26 +103,29 @@ class AdminController extends Controller
                     
                     if (!empty($q['image']) && strpos($q['image'], 'data:image/') === 0) {
                         $imageData = $q['image'];
-                        // Fix spaces to pluses which might happen during POST
                         $imageData = str_replace(' ', '+', $imageData);
                         
-                        list($type, $data) = explode(';', $imageData);
-                        list(, $data)      = explode(',', $data);
+                        list(, $data) = explode(';', $imageData);
+                        list(, $data) = explode(',', $data);
                         $data = base64_decode($data);
                         
-                        $ext = 'png';
-                        if (strpos($type, 'jpeg') !== false) $ext = 'jpg';
-                        if (strpos($type, 'webp') !== false) $ext = 'webp';
-                        if (strpos($type, 'gif') !== false) $ext = 'gif';
-                        
-                        $newFilename = uniqid('qimg_') . '.' . $ext;
-                        $uploadDir = PUBLIC_ROOT . '/uploads/questions/';
-                        if (!is_dir($uploadDir)) {
-                            mkdir($uploadDir, 0755, true);
-                        }
-                        
-                        if (file_put_contents($uploadDir . $newFilename, $data)) {
-                            $qImagePath = 'uploads/questions/' . $newFilename;
+                        $image = imagecreatefromstring($data);
+                        if ($image) {
+                            $newFilename = uniqid('qimg_') . '.webp';
+                            $uploadDir = PUBLIC_ROOT . '/uploads/questions/';
+                            if (!is_dir($uploadDir)) {
+                                mkdir($uploadDir, 0755, true);
+                            }
+                            
+                            // Preserve transparency for PNG conversion to WebP
+                            imagepalettetotruecolor($image);
+                            imagealphablending($image, true);
+                            imagesavealpha($image, true);
+                            
+                            if (imagewebp($image, $uploadDir . $newFilename, 80)) {
+                                $qImagePath = 'uploads/questions/' . $newFilename;
+                            }
+                            imagedestroy($image);
                         }
                     }
 

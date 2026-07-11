@@ -124,7 +124,7 @@ if (isset($_SESSION['user'])) {
         rel="stylesheet">
 
     <!-- Lucide Icons CDN -->
-    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://unpkg.com/lucide@latest" defer></script>
 
     <style>
         body {
