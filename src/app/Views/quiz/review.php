@@ -38,6 +38,7 @@
     .question-block {
         display: none;
         animation: fadeIn 0.4s ease-out;
+        min-height: 400px;
     }
 
     .question-block.active {

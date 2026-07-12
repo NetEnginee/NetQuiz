@@ -19,11 +19,13 @@
         border: none;
         box-shadow: 0 4px 12px rgba(124, 58, 237, 0.2);
     }
+
     .btn-quiz-action:hover {
         transform: translateY(-1px);
         box-shadow: 0 6px 16px rgba(124, 58, 237, 0.3);
         color: #ffffff;
     }
+
     .btn-quiz-done {
         display: inline-flex;
         align-items: center;
@@ -39,6 +41,7 @@
         cursor: not-allowed;
         box-shadow: none;
     }
+
     .btn-quiz-review {
         display: inline-flex;
         align-items: center;
@@ -55,25 +58,80 @@
         transition: all 0.2s ease;
         box-shadow: 0 2px 4px rgba(99, 102, 241, 0.05);
     }
+
     .btn-quiz-review:hover {
         background: #e0e7ff;
         color: #4f46e5;
         border-color: #c7d2fe;
         transform: translateY(-1px);
     }
+
+    .categories-filter-wrapper {
+        margin-bottom: 2rem;
+    }
+
+    .categories-filter-pills {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+    }
+
+    .category-pill {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.5rem 1rem;
+        border-radius: 9999px;
+        font-size: 0.825rem;
+        font-weight: 600;
+        color: #475569;
+        background-color: #ffffff;
+        border: 1px solid #e2e8f0;
+        text-decoration: none;
+        transition: all 0.15s ease;
+        cursor: pointer;
+    }
+
+    .category-pill:hover {
+        color: #0f172a;
+        border-color: #cbd5e1;
+        background-color: #f8fafc;
+    }
+
+    .category-pill.active {
+        color: #ffffff;
+        background-color: #7c3aed;
+        border-color: #7c3aed;
+        box-shadow: 0 4px 10px rgba(124, 58, 237, 0.15);
+    }
 </style>
 
 <div class="quiz-container">
     <!-- Breadcrumb Navigation -->
     <nav class="breadcrumb"
-        style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 2rem; font-size: 0.85rem; font-weight: 500; color: #64748b; font-family: 'Plus Jakarta Sans', sans-serif;">
+        style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1.5rem; font-size: 0.85rem; font-weight: 500; color: #64748b; font-family: 'Plus Jakarta Sans', sans-serif;">
         <span style="color: #64748b;">Dashboard</span>
         <span style="color: #cbd5e1;">/</span>
         <span style="color: #0f172a; font-weight: 600;">Quiz</span>
     </nav>
 
+    <!-- Difficulty Filter Pills -->
+    <div class="categories-filter-wrapper">
+        <div class="categories-filter-pills">
+            <a href="<?= BASE_URL ?>/quiz?difficulty=all"
+                class="category-pill <?= $activeDifficulty === 'all' ? 'active' : '' ?>">Semua</a>
+            <a href="<?= BASE_URL ?>/quiz?difficulty=Mudah"
+                class="category-pill <?= $activeDifficulty === 'Mudah' ? 'active' : '' ?>">Mudah</a>
+            <a href="<?= BASE_URL ?>/quiz?difficulty=Sedang"
+                class="category-pill <?= $activeDifficulty === 'Sedang' ? 'active' : '' ?>">Sedang</a>
+            <a href="<?= BASE_URL ?>/quiz?difficulty=Sulit"
+                class="category-pill <?= $activeDifficulty === 'Sulit' ? 'active' : '' ?>">Sulit</a>
+        </div>
+    </div>
+
     <?php if (isset($_SESSION['quiz_error'])): ?>
-        <div style="background-color: #fee2e2; border-left: 4px solid #ef4444; padding: 1rem; border-radius: 8px; margin-bottom: 2rem; color: #b91c1c; display: flex; align-items: center; gap: 0.5rem; animation: fadeIn 0.3s ease-out;">
+        <div
+            style="background-color: #fee2e2; border-left: 4px solid #ef4444; padding: 1rem; border-radius: 8px; margin-bottom: 2rem; color: #b91c1c; display: flex; align-items: center; gap: 0.5rem; animation: fadeIn 0.3s ease-out;">
             <i data-lucide="alert-circle" style="width: 1.2rem; height: 1.2rem;"></i>
             <?= htmlspecialchars($_SESSION['quiz_error']) ?>
         </div>
@@ -105,17 +163,18 @@
                                     $createdAt = strtotime($quiz['created_at']);
                                     $diff = time() - $createdAt;
                                     $isNew = $diff < (1 * 24 * 60 * 60); // 1 hari terakhir
-                                    
+                    
                                     if (!$isNew) {
                                         if (!function_exists('getQuizTimeAgo')) {
-                                            function getQuizTimeAgo($diff) {
+                                            function getQuizTimeAgo($diff)
+                                            {
                                                 $intervals = [
                                                     31536000 => 'tahun',
-                                                    2592000  => 'bulan',
-                                                    604800   => 'minggu',
-                                                    86400    => 'hari',
-                                                    3600     => 'jam',
-                                                    60       => 'menit'
+                                                    2592000 => 'bulan',
+                                                    604800 => 'minggu',
+                                                    86400 => 'hari',
+                                                    3600 => 'jam',
+                                                    60 => 'menit'
                                                 ];
                                                 foreach ($intervals as $secs => $label) {
                                                     $div = $diff / $secs;
@@ -131,38 +190,77 @@
                                     }
                                 }
                                 ?>
-                                <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 0.5rem; width: 100%; margin-bottom: 0.75rem;">
+                                <div
+                                    style="display: flex; align-items: flex-start; justify-content: space-between; gap: 0.5rem; width: 100%; margin-bottom: 0.5rem;">
                                     <h3 class="quiz-title" style="flex: 1;"><?= htmlspecialchars($quiz['title']) ?></h3>
                                     <?php if ($isNew): ?>
-                                        <span class="badge-new" style="background-color: #f0fdf4; border: 1px solid #bbf7d0; color: #16a34a; font-size: 0.65rem; font-weight: 800; padding: 0.15rem 0.5rem; border-radius: 6px; text-transform: uppercase; letter-spacing: 0.5px; flex-shrink: 0; font-family: 'Plus Jakarta Sans', sans-serif;">Baru</span>
+                                        <span class="badge-new"
+                                            style="background-color: #f0fdf4; border: 1px solid #bbf7d0; color: #16a34a; font-size: 0.65rem; font-weight: 800; padding: 0.15rem 0.5rem; border-radius: 6px; text-transform: uppercase; letter-spacing: 0.5px; flex-shrink: 0; font-family: 'Plus Jakarta Sans', sans-serif;">Baru</span>
                                     <?php elseif (!empty($timeAgoText)): ?>
-                                        <span style="color: #64748b; font-size: 0.75rem; font-weight: 500; font-family: 'Plus Jakarta Sans', sans-serif; flex-shrink: 0; align-self: center;"><?= htmlspecialchars($timeAgoText) ?></span>
+                                        <span
+                                            style="color: #64748b; font-size: 0.75rem; font-weight: 500; font-family: 'Plus Jakarta Sans', sans-serif; flex-shrink: 0; align-self: center;"><?= htmlspecialchars($timeAgoText) ?></span>
                                     <?php endif; ?>
                                 </div>
+
+                                <?php
+                                $diff = $quiz['difficulty'] ?? 'Mudah';
+                                $diffColor = '#10b981'; // Green
+                                $diffBg = '#ecfdf5';
+                                $diffBorder = '#a7f3d0';
+                                if ($diff === 'Sedang') {
+                                    $diffColor = '#d97706'; // Amber
+                                    $diffBg = '#fffbeb';
+                                    $diffBorder = '#fde68a';
+                                } elseif ($diff === 'Sulit') {
+                                    $diffColor = '#dc2626'; // Red
+                                    $diffBg = '#fef2f2';
+                                    $diffBorder = '#fecaca';
+                                }
+                                ?>
+                                <div
+                                    style="display: flex; gap: 0.35rem; align-items: center; margin-bottom: 0.75rem; flex-wrap: wrap;">
+                                    <span
+                                        style="background-color: <?= $diffBg ?>; border: 1px solid <?= $diffBorder ?>; color: <?= $diffColor ?>; font-size: 0.68rem; font-weight: 700; padding: 0.15rem 0.5rem; border-radius: 6px; font-family: 'Plus Jakarta Sans', sans-serif;">
+                                        <?= htmlspecialchars($diff) ?>
+                                    </span>
+                                    <?php if (isset($quiz['duration']) && $quiz['duration'] > 0): ?>
+                                        <span
+                                            style="background-color: #f1f5f9; border: 1px solid #e2e8f0; color: #475569; font-size: 0.68rem; font-weight: 700; padding: 0.15rem 0.5rem; border-radius: 6px; font-family: 'Plus Jakarta Sans', sans-serif; display: inline-flex; align-items: center; gap: 0.25rem;">
+                                            <i data-lucide="clock" style="width: 0.75rem; height: 0.75rem;"></i>
+                                            <?= $quiz['duration'] ?> Menit
+                                        </span>
+                                    <?php endif; ?>
+                                </div>
+
                                 <p class="quiz-desc"><?= htmlspecialchars($quiz['description']) ?></p>
                             </div>
                             <?php if (!empty($quiz['is_completed'])): ?>
-                                <div style="display: flex; flex-direction: column; gap: 0.75rem; margin-top: auto; padding-top: 1rem; border-top: 1px solid #f1f5f9;">
+                                <div
+                                    style="display: flex; flex-direction: column; gap: 0.75rem; margin-top: auto; padding-top: 1rem; border-top: 1px solid #f1f5f9;">
                                     <div style="display: flex; justify-content: space-between; align-items: center;">
-                                        <span style="font-size: 0.8rem; font-weight: 800; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px;">Skor Akhir</span>
+                                        <span
+                                            style="font-size: 0.8rem; font-weight: 800; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px;">Skor
+                                            Akhir</span>
                                         <?php $quizScore = $quiz['score'] ?? 0; ?>
-                                        <span style="font-size: 1.5rem; font-weight: 800; color: <?= $quizScore >= 80 ? '#10b981' : ($quizScore >= 60 ? '#f59e0b' : '#ef4444') ?>; font-variant-numeric: tabular-nums;"><?= $quizScore ?></span>
+                                        <span
+                                            style="font-size: 1.5rem; font-weight: 800; color: <?= $quizScore >= 80 ? '#10b981' : ($quizScore >= 60 ? '#f59e0b' : '#ef4444') ?>; font-variant-numeric: tabular-nums;"><?= $quizScore ?></span>
                                     </div>
-                                    <?php 
-                                    $reviewUrl = method_exists('\App\Core\Security', 'encryptUrlId') 
-                                        ? BASE_URL . '/quiz/review/' . \App\Core\Security::encryptUrlId($quiz['id']) 
+                                    <?php
+                                    $reviewUrl = method_exists('\App\Core\Security', 'encryptUrlId')
+                                        ? BASE_URL . '/quiz/review/' . \App\Core\Security::encryptUrlId($quiz['id'])
                                         : BASE_URL . '/quiz/review/' . $quiz['id'];
                                     ?>
-                                    <a href="<?= $reviewUrl ?>" class="btn-quiz-review" style="width: 100%; justify-content: center; box-sizing: border-box;">
+                                    <a href="<?= $reviewUrl ?>" class="btn-quiz-review"
+                                        style="width: 100%; justify-content: center; box-sizing: border-box;">
                                         <i data-lucide="eye" style="width: 1rem; height: 1rem;"></i>
                                         Review Jawaban
                                     </a>
                                 </div>
                             <?php else: ?>
-                                <?php 
-                                $isPaused = isset($_SESSION['paused_quiz'][$quiz['id']]); 
-                                $playUrl = method_exists('\App\Core\Security', 'encryptUrlId') 
-                                    ? BASE_URL . '/quiz/play/' . \App\Core\Security::encryptUrlId($quiz['id']) 
+                                <?php
+                                $isPaused = isset($_SESSION['paused_quiz'][$quiz['id']]);
+                                $playUrl = method_exists('\App\Core\Security', 'encryptUrlId')
+                                    ? BASE_URL . '/quiz/play/' . \App\Core\Security::encryptUrlId($quiz['id'])
                                     : BASE_URL . '/quiz/play/' . $quiz['id'];
                                 ?>
                                 <a href="<?= $playUrl ?>" class="btn-quiz-action" <?= $isPaused ? 'style="background: #fef3c7; border: 1px solid #fde68a; color: #d97706; box-shadow: 0 4px 15px rgba(217, 119, 6, 0.1);"' : '' ?>>
@@ -179,79 +277,92 @@
 </div>
 
 <!-- Premium Start Quiz Confirmation Modal -->
-<div id="confirm-start-modal" style="display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.8); z-index: 2000000; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.3s ease; font-family: 'Plus Jakarta Sans', sans-serif;">
-    <div style="background: rgba(255, 255, 255, 0.95); border: 1px solid rgba(255, 255, 255, 0.8); box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04); border-radius: 16px; width: 90%; max-width: 420px; padding: 2rem; transform: scale(0.95); transition: transform 0.3s ease; text-align: center;">
-        <div style="background: rgba(124, 58, 237, 0.1); width: 56px; height: 56px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.25rem auto; color: #7c3aed;">
-            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polygon points="10 8 16 12 10 16 10 8"></polygon></svg>
+<div id="confirm-start-modal"
+    style="display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.8); z-index: 2000000; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.3s ease; font-family: 'Plus Jakarta Sans', sans-serif;">
+    <div
+        style="background: rgba(255, 255, 255, 0.95); border: 1px solid rgba(255, 255, 255, 0.8); box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04); border-radius: 16px; width: 90%; max-width: 420px; padding: 2rem; transform: scale(0.95); transition: transform 0.3s ease; text-align: center;">
+        <div
+            style="background: rgba(124, 58, 237, 0.1); width: 56px; height: 56px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.25rem auto; color: #7c3aed;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polygon points="10 8 16 12 10 16 10 8"></polygon>
+            </svg>
         </div>
-        <h3 id="modal-title" style="font-size: 1.25rem; font-weight: 800; color: #0f172a; margin-bottom: 0.5rem; font-family: 'Plus Jakarta Sans', sans-serif;">Mulai Kuis?</h3>
-        <p id="modal-desc" style="font-size: 0.9rem; color: #64748b; line-height: 1.5; margin-bottom: 1.75rem; font-family: 'Plus Jakarta Sans', sans-serif;">Apakah Anda yakin ingin memulai kuis ini? Waktu akan mulai berjalan.</p>
+        <h3 id="modal-title"
+            style="font-size: 1.25rem; font-weight: 800; color: #0f172a; margin-bottom: 0.5rem; font-family: 'Plus Jakarta Sans', sans-serif;">
+            Mulai Kuis?</h3>
+        <p id="modal-desc"
+            style="font-size: 0.9rem; color: #64748b; line-height: 1.5; margin-bottom: 1.75rem; font-family: 'Plus Jakarta Sans', sans-serif;">
+            Apakah Anda yakin ingin memulai kuis ini? Waktu akan mulai berjalan.</p>
         <div style="display: flex; gap: 0.75rem; justify-content: center;">
-            <button id="modal-btn-cancel" style="flex: 1; padding: 0.65rem; border-radius: 10px; border: 1px solid #cbd5e1; background: #ffffff; color: #475569; font-weight: 700; cursor: pointer; font-size: 0.85rem; transition: all 0.2s; font-family: 'Plus Jakarta Sans', sans-serif;">Batal</button>
-            <button id="modal-btn-confirm" style="flex: 1; padding: 0.65rem; border-radius: 10px; border: none; background: linear-gradient(135deg, #7c3aed 0%, #4f46e5 100%); color: #ffffff; font-weight: 700; cursor: pointer; font-size: 0.85rem; transition: all 0.2s; box-shadow: 0 4px 12px rgba(124, 58, 237, 0.2); font-family: 'Plus Jakarta Sans', sans-serif;">Mulai</button>
+            <button id="modal-btn-cancel"
+                style="flex: 1; padding: 0.65rem; border-radius: 10px; border: 1px solid #cbd5e1; background: #ffffff; color: #475569; font-weight: 700; cursor: pointer; font-size: 0.85rem; transition: all 0.2s; font-family: 'Plus Jakarta Sans', sans-serif;">Batal</button>
+            <button id="modal-btn-confirm"
+                style="flex: 1; padding: 0.65rem; border-radius: 10px; border: none; background: linear-gradient(135deg, #7c3aed 0%, #4f46e5 100%); color: #ffffff; font-weight: 700; cursor: pointer; font-size: 0.85rem; transition: all 0.2s; box-shadow: 0 4px 12px rgba(124, 58, 237, 0.2); font-family: 'Plus Jakarta Sans', sans-serif;">Mulai</button>
         </div>
     </div>
 </div>
 
 <script>
-document.addEventListener('DOMContentLoaded', () => {
-    const playButtons = document.querySelectorAll('.btn-quiz-action');
-    const modal = document.getElementById('confirm-start-modal');
-    const modalTitle = document.getElementById('modal-title');
-    const modalDesc = document.getElementById('modal-desc');
-    const btnCancel = document.getElementById('modal-btn-cancel');
-    const btnConfirm = document.getElementById('modal-btn-confirm');
-    let targetUrl = '';
+    document.addEventListener('DOMContentLoaded', () => {
+        const playButtons = document.querySelectorAll('.btn-quiz-action');
+        const modal = document.getElementById('confirm-start-modal');
+        const modalTitle = document.getElementById('modal-title');
+        const modalDesc = document.getElementById('modal-desc');
+        const btnCancel = document.getElementById('modal-btn-cancel');
+        const btnConfirm = document.getElementById('modal-btn-confirm');
+        let targetUrl = '';
 
-    if (playButtons.length > 0 && modal) {
-        playButtons.forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                e.preventDefault();
-                targetUrl = btn.getAttribute('href');
-                const isPausedText = btn.textContent.trim().includes('Lanjutkan');
-                
-                if (isPausedText) {
-                    modalTitle.textContent = 'Lanjutkan Kuis?';
-                    modalDesc.textContent = 'Apakah Anda yakin ingin melanjutkan kuis ini? Sisa waktu Anda akan berjalan kembali.';
-                    btnConfirm.textContent = 'Lanjutkan';
-                } else {
-                    modalTitle.textContent = 'Mulai Kuis?';
-                    modalDesc.textContent = 'Apakah Anda yakin ingin memulai kuis ini? Waktu pengerjaan akan segera dimulai.';
-                    btnConfirm.textContent = 'Mulai';
-                }
+        if (playButtons.length > 0 && modal) {
+            playButtons.forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    targetUrl = btn.getAttribute('href');
+                    const isPausedText = btn.textContent.trim().includes('Lanjutkan');
 
-                modal.style.display = 'flex';
-                // Trigger reflow
-                modal.offsetHeight;
-                modal.style.opacity = '1';
-                modal.querySelector('div').style.transform = 'scale(1)';
+                    if (isPausedText) {
+                        modalTitle.textContent = 'Lanjutkan Kuis?';
+                        modalDesc.textContent = 'Apakah Anda yakin ingin melanjutkan kuis ini? Sisa waktu Anda akan berjalan kembali.';
+                        btnConfirm.textContent = 'Lanjutkan';
+                    } else {
+                        modalTitle.textContent = 'Mulai Kuis?';
+                        modalDesc.textContent = 'Apakah Anda yakin ingin memulai kuis ini? Waktu pengerjaan akan segera dimulai.';
+                        btnConfirm.textContent = 'Mulai';
+                    }
+
+                    modal.style.display = 'flex';
+                    // Trigger reflow
+                    modal.offsetHeight;
+                    modal.style.opacity = '1';
+                    modal.querySelector('div').style.transform = 'scale(1)';
+                });
             });
-        });
 
-        const closeModal = () => {
-            modal.style.opacity = '0';
-            modal.querySelector('div').style.transform = 'scale(0.95)';
-            setTimeout(() => {
-                modal.style.display = 'none';
-            }, 300);
-        };
+            const closeModal = () => {
+                modal.style.opacity = '0';
+                modal.querySelector('div').style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    modal.style.display = 'none';
+                }, 300);
+            };
 
-        btnCancel.addEventListener('click', closeModal);
-        modal.addEventListener('click', (e) => {
-            if (e.target === modal) closeModal();
-        });
+            btnCancel.addEventListener('click', closeModal);
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) closeModal();
+            });
 
-        btnConfirm.addEventListener('click', () => {
-            if (targetUrl) {
-                const loader = document.getElementById('page-loader');
-                if (loader) {
-                    loader.classList.remove('fade-out');
+            btnConfirm.addEventListener('click', () => {
+                if (targetUrl) {
+                    const loader = document.getElementById('page-loader');
+                    if (loader) {
+                        loader.classList.remove('fade-out');
+                    }
+                    window.location.href = targetUrl;
                 }
-                window.location.href = targetUrl;
-            }
-        });
-    }
-});
+            });
+        }
+    });
 </script>
 
 <?php require_once dirname(__DIR__) . '/templates/footer.php'; ?>

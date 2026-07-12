@@ -50,6 +50,7 @@ class QuizController extends Controller
                     'title' => $q['title'],
                     'description' => $q['description'],
                     'category' => $q['category'],
+                    'difficulty' => $q['difficulty'] ?? 'Mudah',
                     'duration' => isset($q['duration']) ? (int) $q['duration'] : 0,
                     'created_at' => $q['created_at'] ?? null,
                     'questions' => $questions
@@ -82,6 +83,14 @@ class QuizController extends Controller
     {
         $this->syncPausedQuizzesFromDb();
         $quizzes = $this->loadQuizzesFromDb();
+        
+        $activeDifficulty = $_GET['difficulty'] ?? 'all';
+        if ($activeDifficulty !== 'all') {
+            $quizzes = array_filter($quizzes, function($quiz) use ($activeDifficulty) {
+                return strcasecmp($quiz['difficulty'] ?? 'Mudah', $activeDifficulty) === 0;
+            });
+        }
+        
         $completedQuizzes = [];
         try {
             $db = Database::getInstance()->getConnection();
@@ -121,7 +130,8 @@ class QuizController extends Controller
 
         $this->view('quiz/index', [
             'title' => 'Daftar Quiz | NetQuiz',
-            'categorized' => $categorized
+            'categorized' => $categorized,
+            'activeDifficulty' => $activeDifficulty
         ]);
     }
 
