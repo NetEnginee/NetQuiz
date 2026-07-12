@@ -40,7 +40,8 @@ class QuizController extends Controller
                             'C' => $quest['option_c'],
                             'D' => $quest['option_d']
                         ],
-                        'correct' => $quest['correct']
+                        'correct' => $quest['correct'],
+                        'explanation' => $quest['explanation'] ?? null
                     ];
                 }
 
@@ -328,6 +329,7 @@ class QuizController extends Controller
         $quiz = $quizzes[$quizId];
 
         $attempt = null;
+        $isAdmin = isset($_SESSION['user']['email']) && strcasecmp(trim($_SESSION['user']['email']), 'admin@routerosquiz.academy') === 0;
         try {
             $db = Database::getInstance()->getConnection();
             $stmt = $db->prepare("SELECT * FROM quiz_attempts WHERE user_id = :user_id AND quiz_id = :quiz_id");
@@ -335,13 +337,14 @@ class QuizController extends Controller
             $attempt = $stmt->fetch(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {}
 
-        if (!$attempt) {
+        if (!$attempt && !$isAdmin) {
             $_SESSION['quiz_error'] = 'Anda belum mengerjakan kuis ini.';
             header('Location: ' . BASE_URL . '/quiz');
             exit;
         }
 
-        $userAnswers = json_decode($attempt['user_answers'] ?? '{}', true) ?: [];
+        $userAnswers = $attempt ? (json_decode($attempt['user_answers'] ?? '{}', true) ?: []) : [];
+        $score = $attempt ? $attempt['score'] : 0;
 
         // Extract first question image for LCP Preloading
         $preloadImage = '';
@@ -356,7 +359,7 @@ class QuizController extends Controller
             'title' => 'Review Jawaban - ' . $quiz['title'] . ' | NetQuiz',
             'quiz' => $quiz,
             'userAnswers' => $userAnswers,
-            'score' => $attempt['score'],
+            'score' => $score,
             'preloadImage' => $preloadImage
         ]);
     }

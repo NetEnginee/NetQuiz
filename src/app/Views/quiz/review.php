@@ -280,6 +280,15 @@
                     <?php endforeach; ?>
                 </div>
 
+                <?php if (!empty($q['explanation'])): ?>
+                    <div style="margin-top: 1rem; text-align: left;">
+                        <button type="button" class="btn-explanation" onclick="showExplanation(<?= $qIndex ?>)" style="background: rgba(124, 58, 237, 0.08); color: #7c3aed; border: 1px solid rgba(124, 58, 237, 0.2); padding: 0.5rem 1rem; border-radius: 8px; font-weight: 600; font-size: 0.85rem; cursor: pointer; display: inline-flex; align-items: center; gap: 0.5rem; transition: all 0.2s ease;">
+                            <i data-lucide="info" style="width: 1rem; height: 1rem;"></i>
+                            Lihat Penjelasan Jawaban
+                        </button>
+                    </div>
+                <?php endif; ?>
+
                 <?php if ($userAns === ''): ?>
 
                     <?php endif; ?>
@@ -379,6 +388,79 @@
                 }
             });
         }
+    });
+</script>
+
+<!-- Modal Penjelasan -->
+<div id="explanation-modal" style="display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.4); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); z-index: 9999; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.25s ease; padding: 1.5rem;">
+    <div style="background: white; border-radius: 16px; width: 100%; max-width: 500px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04); overflow: hidden; transform: scale(0.95); transition: transform 0.25s ease; border: 1px solid rgba(0,0,0,0.05);">
+        <!-- Modal Header -->
+        <div style="padding: 1.25rem 1.5rem; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; background: #faf5ff;">
+            <div style="display: flex; align-items: center; gap: 0.5rem; color: #7c3aed;">
+                <i data-lucide="help-circle" style="width: 1.25rem; height: 1.25rem;"></i>
+                <h3 style="font-weight: 700; font-size: 1.1rem; margin: 0; font-family: 'Plus Jakarta Sans', sans-serif;">Penjelasan Soal</h3>
+            </div>
+            <button onclick="closeExplanation()" style="background: none; border: none; cursor: pointer; color: #64748b; padding: 0.25rem; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: background-color 0.2s;" onmouseover="this.style.backgroundColor='#f1f5f9'" onmouseout="this.style.backgroundColor='transparent'">
+                <i data-lucide="x" style="width: 1.25rem; height: 1.25rem;"></i>
+            </button>
+        </div>
+        <!-- Modal Body -->
+        <div style="padding: 1.5rem; max-height: 60vh; overflow-y: auto; font-size: 0.95rem; color: #334155; line-height: 1.6; font-family: 'Plus Jakarta Sans', sans-serif;">
+            <p id="explanation-text" style="white-space: pre-wrap; margin: 0;"></p>
+        </div>
+        <!-- Modal Footer -->
+        <div style="padding: 1rem 1.5rem; border-top: 1px solid #e2e8f0; text-align: right; background: #f8fafc;">
+            <button onclick="closeExplanation()" style="background: #7c3aed; color: white; border: none; padding: 0.5rem 1.25rem; border-radius: 8px; font-weight: 600; font-size: 0.9rem; cursor: pointer; transition: background 0.2s;" onmouseover="this.style.background='#6d28d9'" onmouseout="this.style.background='#7c3aed'">
+                Tutup
+            </button>
+        </div>
+    </div>
+</div>
+
+<style>
+    .btn-explanation:hover {
+        background: rgba(124, 58, 237, 0.15) !important;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 6px -1px rgba(124, 58, 237, 0.1);
+    }
+</style>
+
+<script>
+    const questionExplanations = <?= json_encode(array_map(function($q) { return $q['explanation'] ?? ''; }, $quiz['questions'])) ?>;
+
+    function showExplanation(index) {
+        const text = questionExplanations[index] || 'Tidak ada penjelasan untuk soal ini.';
+        const modal = document.getElementById('explanation-modal');
+        const textEl = document.getElementById('explanation-text');
+
+        textEl.textContent = text;
+        modal.style.display = 'flex';
+        // Trigger reflow for transition
+        void modal.offsetWidth;
+        modal.style.opacity = '1';
+        modal.firstElementChild.style.transform = 'scale(1)';
+        
+        // Re-init lucide icons inside modal if needed
+        if (window.lucide) {
+            window.lucide.createIcons();
+        }
+    }
+
+    function closeExplanation() {
+        const modal = document.getElementById('explanation-modal');
+        modal.style.opacity = '0';
+        modal.firstElementChild.style.transform = 'scale(0.95)';
+        setTimeout(() => {
+            modal.style.display = 'none';
+        }, 250);
+    }
+
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') closeExplanation();
+    });
+
+    document.getElementById('explanation-modal').addEventListener('click', (e) => {
+        if (e.target === e.currentTarget) closeExplanation();
     });
 </script>
 
