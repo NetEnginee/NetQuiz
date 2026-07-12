@@ -95,8 +95,8 @@ class AdminController extends Controller
 
                 // 2. Insert Questions
                 $stmtQ = $db->prepare("
-                    INSERT INTO questions (quiz_id, question, option_a, option_b, option_c, option_d, correct, image_path) 
-                    VALUES (:quiz_id, :question, :option_a, :option_b, :option_c, :option_d, :correct, :image_path)
+                    INSERT INTO questions (quiz_id, question, option_a, option_b, option_c, option_d, correct, explanation, image_path) 
+                    VALUES (:quiz_id, :question, :option_a, :option_b, :option_c, :option_d, :correct, :explanation, :image_path)
                 ");
 
                 foreach ($questions as $q) {
@@ -137,6 +137,7 @@ class AdminController extends Controller
                         'option_c' => $q['option_c'],
                         'option_d' => $q['option_d'],
                         'correct' => strtoupper($q['correct']),
+                        'explanation' => !empty($q['explanation']) ? $q['explanation'] : null,
                         'image_path' => $qImagePath
                     ]);
                 }

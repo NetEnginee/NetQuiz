@@ -60,6 +60,7 @@ CREATE TABLE `questions` (
   `option_c` varchar(255) NOT NULL,
   `option_d` varchar(255) NOT NULL,
   `correct` char(1) NOT NULL,
+  `explanation` text DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   `image_path` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`),

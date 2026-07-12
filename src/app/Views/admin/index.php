@@ -766,7 +766,7 @@
                             </div>
                         </div>
 
-                        <div class="admin-form-group" style="margin-top: 0.65rem; margin-bottom: 0;">
+                        <div class="admin-form-group" style="margin-top: 0.65rem;">
                             <label class="admin-label" style="font-size: 0.8rem;">Kunci Jawaban Benar</label>
                             <select id="q-correct" class="admin-select">
                                 <option value="A">A</option>
@@ -774,6 +774,10 @@
                                 <option value="C">C</option>
                                 <option value="D">D</option>
                             </select>
+                        </div>
+                        <div class="admin-form-group" style="margin-top: 0.65rem; margin-bottom: 0;">
+                            <label class="admin-label" style="font-size: 0.8rem;">Penjelasan Kunci Jawaban (Opsional)</label>
+                            <textarea id="q-explanation" class="admin-textarea" rows="3" placeholder="Masukkan penjelasan kenapa pilihan tersebut benar..." style="resize: vertical; font-size: 0.85rem; padding: 0.5rem;"></textarea>
                         </div>
                     </div>
                     <button type="submit" id="btn-submit-quiz" class="btn-publish" disabled
@@ -1337,6 +1341,7 @@
         const qOptCInput = document.getElementById('q-opt-c');
         const qOptDInput = document.getElementById('q-opt-d');
         const qCorrectSelect = document.getElementById('q-correct');
+        const qExplanationInput = document.getElementById('q-explanation');
 
         let savedQuestions = [];
 
@@ -1386,6 +1391,7 @@
                 <div class="quiz-row-info">
                     <span style="font-weight: 700; font-size: 0.85rem; color: #0f172a;">#${index + 1}: ${q.question}</span>
                     <span style="font-size: 0.75rem; color: #64748b;">Pilihan: [A: ${q.option_a}] [B: ${q.option_b}] [C: ${q.option_c}] [D: ${q.option_d}] &bull; Jawaban: <strong style="color: #7c3aed;">${q.correct}</strong></span>
+                    ${q.explanation ? `<span style="font-size: 0.75rem; color: #475569; display: block; margin-top: 0.25rem;"><strong>Penjelasan:</strong> ${escapeHtml(q.explanation)}</span>` : ''}
                     ${q.image ? '<span style="font-size: 0.7rem; color: #0d9488;"><i data-lucide="image" style="width: 0.8rem; height: 0.8rem;"></i> Termasuk Gambar</span>' : ''}
                 </div>
                 <button type="button" class="btn-danger-sm" style="padding: 0.3rem 0.6rem;" onclick="removeQuestion(${index})">
@@ -1401,6 +1407,7 @@
                 <input type="hidden" name="questions[${index}][option_c]" value="${escapeHtml(q.option_c)}">
                 <input type="hidden" name="questions[${index}][option_d]" value="${escapeHtml(q.option_d)}">
                 <input type="hidden" name="questions[${index}][correct]" value="${escapeHtml(q.correct)}">
+                <input type="hidden" name="questions[${index}][explanation]" value="${escapeHtml(q.explanation || '')}">
                 <input type="hidden" name="questions[${index}][image]" value="${escapeHtml(q.image || '')}">
             `;
             });
@@ -1462,6 +1469,7 @@
             const optC = qOptCInput.value.trim();
             const optD = qOptDInput.value.trim();
             const correct = qCorrectSelect.value;
+            const explanation = qExplanationInput ? qExplanationInput.value.trim() : '';
 
             if (!text || !optA || !optB || !optC || !optD) {
                 alert('Silakan isi seluruh teks soal dan semua pilihan jawaban terlebih dahulu.');
@@ -1475,6 +1483,7 @@
                 option_c: optC,
                 option_d: optD,
                 correct: correct,
+                explanation: explanation,
                 image: currentImageBase64
             });
 
@@ -1483,6 +1492,7 @@
             qOptBInput.value = '';
             qOptCInput.value = '';
             qOptDInput.value = '';
+            if (qExplanationInput) qExplanationInput.value = '';
             qCorrectSelect.selectedIndex = 0;
             if (qImageInput) qImageInput.value = '';
             if (qImageFilename) qImageFilename.textContent = 'Belum ada gambar yang dipilih';
