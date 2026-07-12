@@ -71,6 +71,7 @@ class AdminController extends Controller
             $duration = isset($_POST['duration']) ? (int) $_POST['duration'] : 0;
             $description = $_POST['description'] ?? '';
             $category = $_POST['category'] ?? 'Routing';
+            $difficulty = $_POST['difficulty'] ?? 'Mudah';
             $questions = $_POST['questions'] ?? [];
 
             if (empty($title) || empty($description) || empty($questions)) {
@@ -84,12 +85,13 @@ class AdminController extends Controller
                 $db->beginTransaction();
 
                 // 1. Insert Quiz (Reverted to no image)
-                $stmt = $db->prepare("INSERT INTO quizzes (title, description, category, duration) VALUES (:title, :description, :category, :duration)");
+                $stmt = $db->prepare("INSERT INTO quizzes (title, description, category, duration, difficulty) VALUES (:title, :description, :category, :duration, :difficulty)");
                 $stmt->execute([
                     'title' => $title,
                     'description' => $description,
                     'category' => $category,
-                    'duration' => $duration
+                    'duration' => $duration,
+                    'difficulty' => $difficulty
                 ]);
                 $quizId = $db->lastInsertId();
 

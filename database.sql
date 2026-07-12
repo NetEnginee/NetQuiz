@@ -123,6 +123,7 @@ CREATE TABLE `quizzes` (
   `title` varchar(255) NOT NULL,
   `description` text NOT NULL,
   `category` varchar(100) NOT NULL,
+  `difficulty` varchar(50) NOT NULL DEFAULT 'Mudah',
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   `duration` int NOT NULL DEFAULT '0',
   `image_path` varchar(255) DEFAULT NULL,

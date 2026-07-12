@@ -680,6 +680,15 @@
                         </div>
                     </div>
 
+                    <div class="admin-form-group">
+                        <label class="admin-label">Tingkat Kesulitan</label>
+                        <select name="difficulty" class="admin-select" style="width: 100%; border: 1px solid #cbd5e1; border-radius: 8px; padding: 0.65rem 0.85rem; font-size: 0.9rem; font-family: inherit; color: #0f172a; outline: none; transition: border-color 0.2s;" required>
+                            <option value="Mudah">Mudah</option>
+                            <option value="Sedang">Sedang</option>
+                            <option value="Sulit">Sulit</option>
+                        </select>
+                    </div>
+
                     <div class="admin-form-group" style="margin-bottom: 0;">
                         <label class="admin-label">Deskripsi Kuis</label>
                         <textarea name="description" rows="5" class="admin-textarea"
