@@ -37,17 +37,10 @@
                     <?php foreach ($items as $material): 
                         // Clean excerpt from HTML
                         $excerpt = strip_tags($material['content']);
-                        $diffClass = 'diff-easy';
-                        if ($material['difficulty'] === 'Sedang') {
-                            $diffClass = 'diff-medium';
-                        } elseif ($material['difficulty'] === 'Sulit') {
-                            $diffClass = 'diff-hard';
-                        }
                     ?>
                         <a href="<?= BASE_URL ?>/learn/<?= $material['id'] ?>" class="material-card">
                             <div>
-                                <div class="material-card-header">
-                                    <span class="material-difficulty <?= $diffClass ?>"><?= htmlspecialchars($material['difficulty']) ?></span>
+                                <div class="material-card-header" style="justify-content: flex-end; margin-bottom: 0.5rem;">
                                     <i data-lucide="book-open" style="width: 1.1rem; height: 1.1rem; color: #94a3b8;"></i>
                                 </div>
                                 <h3 class="material-title"><?= htmlspecialchars($material['title']) ?></h3>
