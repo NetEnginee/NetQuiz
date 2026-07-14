@@ -20,8 +20,10 @@
 
     <!-- Empty State -->
     <?php if (empty($groupedMaterials)): ?>
-        <div style="background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 3rem; text-align: center;">
-            <p style="color: #64748b; font-size: 0.95rem; margin: 0;">Belum ada materi pembelajaran yang tersedia saat ini.</p>
+        <div
+            style="background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 3rem; text-align: center;">
+            <p style="color: #64748b; font-size: 0.95rem; margin: 0;">Belum ada materi pembelajaran yang tersedia saat ini.
+            </p>
         </div>
     <?php else: ?>
         <!-- Grouped Materials List -->
@@ -30,27 +32,25 @@
                 <div class="category-title-header">
                     <i data-lucide="folder" style="width: 1.25rem; height: 1.25rem; color: #7c3aed;"></i>
                     <?= htmlspecialchars($category) ?>
-                    <span class="category-badge"><?= count($items) ?> Materi</span>
                 </div>
 
                 <div class="materials-grid">
-                    <?php foreach ($items as $material): 
+                    <?php foreach ($items as $material):
                         // Clean excerpt from HTML
                         $excerpt = strip_tags($material['content']);
-                    ?>
+                        ?>
                         <a href="<?= BASE_URL ?>/learn/<?= $material['id'] ?>" class="material-card">
                             <div>
-                                <div class="material-card-header" style="justify-content: flex-end; margin-bottom: 0.5rem;">
-                                    <i data-lucide="book-open" style="width: 1.1rem; height: 1.1rem; color: #94a3b8;"></i>
-                                </div>
                                 <h3 class="material-title"><?= htmlspecialchars($material['title']) ?></h3>
-                                <p class="material-excerpt"><?= htmlspecialchars($excerpt) ?></p>
+                                <p class="material-excerpt">
+                                    <?= htmlspecialchars($excerpt) ?>
+                                </p>
                             </div>
-                            
+
                             <div class="material-footer">
                                 <span class="read-btn">
-                                    Mulai Belajar 
-                                    <i data-lucide="arrow-right" style="width: 0.9rem; height: 0.9rem;"></i>
+                                    Mulai Belajar
+                                    <i data-lucide="arrow-right" class="arrow-icon" style="width: 1.1rem; height: 1.1rem;"></i>
                                 </span>
                             </div>
                         </a>
