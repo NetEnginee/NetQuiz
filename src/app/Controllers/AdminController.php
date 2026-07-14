@@ -45,14 +45,20 @@ class AdminController extends Controller
         $stmtBadges = $db->query("SELECT * FROM badges ORDER BY id DESC");
         $badgesList = $stmtBadges->fetchAll(PDO::FETCH_ASSOC);
 
+        // Fetch all materials
+        $materialRepo = new \App\Repositories\MaterialRepository();
+        $materialsList = $materialRepo->getAll();
+
         $this->view('admin/index', [
             'title' => 'Admin Dashboard | NetQuiz',
             'quizzes' => $quizzes,
             'users_list' => $usersList,
             'badges_list' => $badgesList,
+            'materials_list' => $materialsList,
             'stats' => [
                 'total_quizzes' => $totalQuizzes,
-                'total_users' => $totalUsers
+                'total_users' => $totalUsers,
+                'total_materials' => count($materialsList)
             ]
         ]);
     }
@@ -444,5 +450,61 @@ class AdminController extends Controller
             header('Location: ' . BASE_URL . '/admin');
             exit;
         }
+    }
+
+    public function createMaterial()
+    {
+        $this->checkAdmin();
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            if (!\App\Core\Security::validateCsrfToken()) {
+                $_SESSION['admin_error'] = 'Sesi tidak valid, silakan muat ulang halaman.';
+                header('Location: ' . BASE_URL . '/admin');
+                exit;
+            }
+            $title = trim($_POST['title'] ?? '');
+            $content = trim($_POST['content'] ?? '');
+            $category = trim($_POST['category'] ?? 'Routing');
+            $difficulty = trim($_POST['difficulty'] ?? 'Mudah');
+
+            if (empty($title) || empty($content)) {
+                $_SESSION['admin_error'] = 'Judul dan Konten materi wajib diisi.';
+                header('Location: ' . BASE_URL . '/admin');
+                exit;
+            }
+
+            try {
+                $materialRepo = new \App\Repositories\MaterialRepository();
+                $materialRepo->create($title, $content, $category, $difficulty);
+                $_SESSION['admin_success'] = 'Materi baru berhasil dibuat!';
+            } catch (\Exception $e) {
+                $_SESSION['admin_error'] = 'Gagal membuat materi: ' . $e->getMessage();
+            }
+
+            header('Location: ' . BASE_URL . '/admin');
+            exit;
+        }
+    }
+
+    public function deleteMaterial($id)
+    {
+        $this->checkAdmin();
+        if (!\App\Core\Security::validateCsrfToken()) {
+            $_SESSION['admin_error'] = 'Sesi tidak valid, silakan muat ulang halaman.';
+            header('Location: ' . BASE_URL . '/admin');
+            exit;
+        }
+        $id = (int) $id;
+
+        try {
+            $materialRepo = new \App\Repositories\MaterialRepository();
+            $materialRepo->delete($id);
+            $_SESSION['admin_success'] = 'Materi berhasil dihapus!';
+        } catch (\Exception $e) {
+            $_SESSION['admin_error'] = 'Gagal menghapus materi: ' . $e->getMessage();
+        }
+
+        header('Location: ' . BASE_URL . '/admin');
+        exit;
     }
 }

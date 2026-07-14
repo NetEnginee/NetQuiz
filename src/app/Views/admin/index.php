@@ -630,6 +630,9 @@
         <button type="button" class="admin-tab-btn" data-target="badge-section">
             Lencana
         </button>
+        <button type="button" class="admin-tab-btn" data-target="materials-section">
+            Materi Belajar
+        </button>
         <button type="button" class="admin-tab-btn" data-target="profile-section">
             Pengaturan Profil
         </button>
@@ -1031,6 +1034,109 @@
                     </div>
                 </div>
             </form>
+        </div>
+    </div>
+
+    <!-- SECTION 6: MATERIALS MANAGEMENT (Materi Belajar) -->
+    <div id="materials-section" class="admin-section-content">
+        <div style="display: grid; grid-template-columns: 1fr; gap: 1.5rem; align-items: start; margin-bottom: 2rem;">
+            <!-- Create Material Card -->
+            <div class="admin-card">
+                <h3 class="admin-card-title">
+                    <i data-lucide="book-open" style="width: 1.25rem; height: 1.25rem; color: #7c3aed;"></i>
+                    Buat Materi Belajar Baru
+                </h3>
+                <form id="create-material-form" method="POST" action="<?= BASE_URL ?>/admin/material/create">
+                    <?= \App\Core\Security::csrfField() ?>
+                    
+                    <div class="admin-form-group">
+                        <label class="admin-label">Judul Materi</label>
+                        <input type="text" name="title" class="admin-input" placeholder="Masukkan judul materi..." required>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                        <div class="admin-form-group">
+                            <label class="admin-label">Kategori</label>
+                            <select name="category" class="admin-input" style="height: 44px; padding: 0 0.75rem;">
+                                <option value="Routing">Routing</option>
+                                <option value="Firewall & NAT">Firewall & NAT</option>
+                                <option value="Wireless">Wireless</option>
+                                <option value="Network Management">Network Management</option>
+                            </select>
+                        </div>
+                        <div class="admin-form-group">
+                            <label class="admin-label">Tingkat Kesulitan</label>
+                            <select name="difficulty" class="admin-input" style="height: 44px; padding: 0 0.75rem;">
+                                <option value="Mudah">Mudah</option>
+                                <option value="Sedang">Sedang</option>
+                                <option value="Sulit">Sulit</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="admin-form-group">
+                        <label class="admin-label">Konten Materi (Mendukung HTML)</label>
+                        <textarea name="content" class="admin-input" style="height: 250px; padding: 0.75rem; font-family: monospace;" placeholder="Tulis materi pembelajaran di sini... Contoh: <h2>Judul Bab</h2><p>Paragraf penjelasan.</p>" required></textarea>
+                    </div>
+
+                    <button type="submit" class="btn-publish" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 0.5rem; height: 44px;">
+                        <i data-lucide="plus-circle" style="width: 1.1rem; height: 1.1rem;"></i>
+                        Publikasikan Materi
+                    </button>
+                </form>
+            </div>
+
+            <!-- List Materials Card -->
+            <div class="admin-card">
+                <h3 class="admin-card-title">
+                    <i data-lucide="list" style="width: 1.25rem; height: 1.25rem; color: #7c3aed;"></i>
+                    Daftar Materi Pembelajaran
+                </h3>
+
+                <div class="admin-table-container">
+                    <?php if (empty($materials_list)): ?>
+                        <p style="color: #64748b; font-size: 0.9rem; text-align: center; padding: 1.5rem 0; margin: 0;">Belum ada materi pembelajaran yang dibuat.</p>
+                    <?php else: ?>
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>Judul</th>
+                                    <th>Kategori</th>
+                                    <th>Kesulitan</th>
+                                    <th style="text-align: right;">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php foreach ($materials_list as $mat): ?>
+                                    <tr>
+                                        <td>
+                                            <div style="font-weight: 600; color: #0f172a;"><?= htmlspecialchars($mat['title']) ?></div>
+                                            <div style="font-size: 0.75rem; color: #64748b;"><?= date('d M Y', strtotime($mat['created_at'])) ?></div>
+                                        </td>
+                                        <td>
+                                            <span style="font-size: 0.8rem; font-weight: 600; color: #7c3aed;"><?= htmlspecialchars($mat['category']) ?></span>
+                                        </td>
+                                        <td>
+                                            <span style="font-size: 0.75rem; padding: 0.15rem 0.4rem; border-radius: 4px; font-weight: 600; 
+                                                <?= $mat['difficulty'] === 'Sedang' ? 'background-color: #fffbeb; color: #d97706;' : ($mat['difficulty'] === 'Sulit' ? 'background-color: #fef2f2; color: #dc2626;' : 'background-color: #ecfdf5; color: #059669;') ?>">
+                                                <?= htmlspecialchars($mat['difficulty']) ?>
+                                            </span>
+                                        </td>
+                                        <td style="text-align: right;">
+                                            <form method="POST" action="<?= BASE_URL ?>/admin/material/delete/<?= $mat['id'] ?>" style="display: inline;" onsubmit="return confirm('Apakah Anda yakin ingin menghapus materi ini?');">
+                                                <?= \App\Core\Security::csrfField() ?>
+                                                <button type="submit" style="background: none; border: none; padding: 4px; cursor: pointer; color: #ef4444; border-radius: 4px; transition: background-color 0.15s;" onmouseover="this.style.backgroundColor='#fef2f2'" onmouseout="this.style.backgroundColor='transparent'">
+                                                    <i data-lucide="trash-2" style="width: 1rem; height: 1rem;"></i>
+                                                </button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            </tbody>
+                        </table>
+                    <?php endif; ?>
+                </div>
+            </div>
         </div>
     </div>
 </div>

@@ -58,6 +58,43 @@ class Database
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;";
         $this->conn->exec($sqlAttempts);
 
+        // Create materials table if not exists
+        $sqlMaterials = "CREATE TABLE IF NOT EXISTS materials (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            title VARCHAR(255) NOT NULL,
+            content LONGTEXT NOT NULL,
+            category VARCHAR(100) NOT NULL,
+            difficulty VARCHAR(50) NOT NULL DEFAULT 'Mudah',
+            image_path VARCHAR(255) DEFAULT NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;";
+        $this->conn->exec($sqlMaterials);
+
+        // Seed default materials if empty
+        $stmtMat = $this->conn->query("SELECT COUNT(*) FROM materials");
+        $countMat = (int) $stmtMat->fetchColumn();
+        if ($countMat === 0) {
+            $defaultMaterials = [
+                [
+                    'Pengenalan Dasar Routing Static di MikroTik',
+                    '<h2>Apa itu Routing Static?</h2><p>Static routing adalah metode routing di mana administrator jaringan secara manual mengkonfigurasi rute-rute dalam tabel routing router. Ini adalah cara paling mendasar untuk menghubungkan dua atau lebih jaringan berbeda melalui MikroTik.</p><h3>Langkah Konfigurasi Static Route di RouterOS:</h3><pre><code>/ip route\nadd dst-address=192.168.2.0/24 gateway=192.168.1.1</code></pre><p>Parameter utama yang perlu dikonfigurasi adalah <strong>dst-address</strong> (jaringan tujuan) dan <strong>gateway</strong> (IP hop berikutnya/interface keluar).</p>',
+                    'Routing',
+                    'Mudah'
+                ],
+                [
+                    'Dasar-Dasar Firewall Filter Rules',
+                    '<h2>Fungsi Firewall Filter</h2><p>Firewall filter pada MikroTik RouterOS digunakan untuk melindungi router dari akses tidak sah serta mengontrol lalu lintas data yang masuk, keluar, atau melewati router.</p><h3>Chain Utama pada Filter Rules:</h3><ul><li><strong>Input</strong>: Digunakan untuk memfilter paket data yang ditujukan langsung ke router.</li><li><strong>Forward</strong>: Digunakan untuk memfilter paket data yang melintasi router dari satu interface ke interface lainnya.</li><li><strong>Output</strong>: Digunakan untuk memfilter paket data yang berasal dari router itu sendiri.</li></ul><h3>Contoh Konfigurasi Memblokir Ping (ICMP):</h3><pre><code>/ip firewall filter\nadd chain=input protocol=icmp action=drop</code></pre>',
+                    'Firewall & NAT',
+                    'Mudah'
+                ]
+            ];
+            $stmtInsertMat = $this->conn->prepare("INSERT INTO materials (title, content, category, difficulty) VALUES (?, ?, ?, ?)");
+            foreach ($defaultMaterials as $mat) {
+                $stmtInsertMat->execute($mat);
+            }
+        }
+
         try {
             $this->conn->exec("ALTER TABLE quizzes ADD COLUMN image_path VARCHAR(255) NULL");
         } catch (PDOException $e) {
