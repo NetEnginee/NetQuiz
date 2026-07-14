@@ -18,10 +18,6 @@
         <!-- Main Content Area -->
         <main class="material-main-content">
             <div class="material-meta">
-                <span class="material-difficulty 
-                    <?= $material['difficulty'] === 'Sedang' ? 'diff-medium' : ($material['difficulty'] === 'Sulit' ? 'diff-hard' : 'diff-easy') ?>">
-                    <?= htmlspecialchars($material['difficulty']) ?>
-                </span>
                 <span class="meta-item">
                     <i data-lucide="tag" style="width: 1rem; height: 1rem;"></i>
                     <?= htmlspecialchars($material['category']) ?>
@@ -60,11 +56,6 @@
                         <?php foreach ($otherMaterials as $other): ?>
                             <a href="<?= BASE_URL ?>/learn/<?= $other['id'] ?>" class="sidebar-link">
                                 <span class="sidebar-link-title"><?= htmlspecialchars($other['title']) ?></span>
-                                <div class="sidebar-link-meta">
-                                    <span class="material-difficulty <?= $other['difficulty'] === 'Sedang' ? 'diff-medium' : ($other['difficulty'] === 'Sulit' ? 'diff-hard' : 'diff-easy') ?>" style="padding: 0.05rem 0.3rem; font-size: 0.65rem;">
-                                        <?= htmlspecialchars($other['difficulty']) ?>
-                                    </span>
-                                </div>
                             </a>
                         <?php endforeach; ?>
                     </div>

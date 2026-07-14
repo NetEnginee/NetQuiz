@@ -2,6 +2,13 @@
 
 <!-- Custom Styles for Admin -->
 <style>
+    /* Force visible overflow on scroll ancestors to allow position: sticky to work */
+    main,
+    .dashboard-container,
+    #materials-section {
+        overflow: visible !important;
+    }
+
     html,
     body {
         -ms-overflow-style: none;
@@ -95,6 +102,11 @@
         border-bottom: 1px solid #e2e8f0;
         padding-bottom: 1.25rem;
         flex-wrap: wrap;
+        position: sticky;
+        top: 4.2rem;
+        background-color: #f8fafc;
+        padding-top: 1rem;
+        z-index: 30;
     }
 
     .admin-tab-btn {
@@ -572,7 +584,7 @@
 
         <button type="button" id="open-quiz-modal-btn" class="btn-outline-primary">
             <i data-lucide="eye" style="width: 1.1rem; height: 1.1rem;"></i>
-            Lihat Kuis Aktif
+            <span id="open-quiz-modal-text">Lihat Kuis Aktif</span>
         </button>
     </div>
 
@@ -685,7 +697,9 @@
 
                     <div class="admin-form-group">
                         <label class="admin-label">Tingkat Kesulitan</label>
-                        <select name="difficulty" class="admin-select" style="width: 100%; border: 1px solid #cbd5e1; border-radius: 8px; padding: 0.65rem 0.85rem; font-size: 0.9rem; font-family: inherit; color: #0f172a; outline: none; transition: border-color 0.2s;" required>
+                        <select name="difficulty" class="admin-select"
+                            style="width: 100%; border: 1px solid #cbd5e1; border-radius: 8px; padding: 0.65rem 0.85rem; font-size: 0.9rem; font-family: inherit; color: #0f172a; outline: none; transition: border-color 0.2s;"
+                            required>
                             <option value="Mudah">Mudah</option>
                             <option value="Sedang">Sedang</option>
                             <option value="Sulit">Sulit</option>
@@ -716,28 +730,36 @@
                     </button>
 
                     <!-- Import Questions from File -->
-                    <div style="background-color: #f0fdfa; border: 1.5px dashed #0d9488; padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
-                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.5rem;">
-                            <span style="font-weight: 700; font-size: 0.85rem; color: #0d9488; display: flex; align-items: center; gap: 0.4rem;">
+                    <div
+                        style="background-color: #f0fdfa; border: 1.5px dashed #0d9488; padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
+                        <div
+                            style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.5rem;">
+                            <span
+                                style="font-weight: 700; font-size: 0.85rem; color: #0d9488; display: flex; align-items: center; gap: 0.4rem;">
                                 <i data-lucide="upload-cloud" style="width: 1.1rem; height: 1.1rem;"></i>
                                 Auto-Fill via File (JSON / CSV)
                             </span>
                             <div style="display: flex; gap: 0.25rem;">
-                                <button type="button" id="download-template-json" class="btn-outline-primary" style="padding: 0.25rem 0.5rem; font-size: 0.7rem; border-color: #0d9488; color: #0d9488; display: inline-flex; align-items: center; gap: 0.2rem; background: #ffffff;">
+                                <button type="button" id="download-template-json" class="btn-outline-primary"
+                                    style="padding: 0.25rem 0.5rem; font-size: 0.7rem; border-color: #0d9488; color: #0d9488; display: inline-flex; align-items: center; gap: 0.2rem; background: #ffffff;">
                                     <i data-lucide="download" style="width: 0.75rem; height: 0.75rem;"></i> JSON
                                 </button>
-                                <button type="button" id="download-template-csv" class="btn-outline-primary" style="padding: 0.25rem 0.5rem; font-size: 0.7rem; border-color: #0d9488; color: #0d9488; display: inline-flex; align-items: center; gap: 0.2rem; background: #ffffff;">
+                                <button type="button" id="download-template-csv" class="btn-outline-primary"
+                                    style="padding: 0.25rem 0.5rem; font-size: 0.7rem; border-color: #0d9488; color: #0d9488; display: inline-flex; align-items: center; gap: 0.2rem; background: #ffffff;">
                                     <i data-lucide="download" style="width: 0.75rem; height: 0.75rem;"></i> CSV
                                 </button>
                             </div>
                         </div>
                         <div style="display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;">
                             <input type="file" id="import-quiz-file" accept=".json,.csv" style="display: none;">
-                            <label for="import-quiz-file" class="btn-outline-primary" style="padding: 0.4rem 0.85rem; border-color: #0d9488; color: #0d9488; cursor: pointer; margin: 0; font-size: 0.8rem; display: inline-flex; align-items: center; gap: 0.4rem; background: #ffffff;">
+                            <label for="import-quiz-file" class="btn-outline-primary"
+                                style="padding: 0.4rem 0.85rem; border-color: #0d9488; color: #0d9488; cursor: pointer; margin: 0; font-size: 0.8rem; display: inline-flex; align-items: center; gap: 0.4rem; background: #ffffff;">
                                 <i data-lucide="file-text" style="width: 1rem; height: 1rem;"></i>
                                 Unggah File
                             </label>
-                            <span id="import-file-name" style="font-size: 0.75rem; color: #64748b; font-weight: 500;">Pilih berkas JSON / CSV...</span>
+                            <span id="import-file-name"
+                                style="font-size: 0.75rem; color: #64748b; font-weight: 500;">Pilih berkas JSON /
+                                CSV...</span>
                         </div>
                     </div>
 
@@ -814,8 +836,11 @@
                             </select>
                         </div>
                         <div class="admin-form-group" style="margin-top: 0.65rem; margin-bottom: 0;">
-                            <label class="admin-label" style="font-size: 0.8rem;">Penjelasan Kunci Jawaban (Opsional)</label>
-                            <textarea id="q-explanation" class="admin-textarea" rows="3" placeholder="Masukkan penjelasan kenapa pilihan tersebut benar..." style="resize: vertical; font-size: 0.85rem; padding: 0.5rem;"></textarea>
+                            <label class="admin-label" style="font-size: 0.8rem;">Penjelasan Kunci Jawaban
+                                (Opsional)</label>
+                            <textarea id="q-explanation" class="admin-textarea" rows="3"
+                                placeholder="Masukkan penjelasan kenapa pilihan tersebut benar..."
+                                style="resize: vertical; font-size: 0.85rem; padding: 0.5rem;"></textarea>
                         </div>
                     </div>
                     <button type="submit" id="btn-submit-quiz" class="btn-publish" disabled
@@ -921,17 +946,11 @@
     <!-- SECTION 4: BADGES MANAGEMENT (Manajemen Lencana) -->
     <div id="badge-section" class="admin-section-content">
         <div class="admin-card">
-            <div
-                style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; border-bottom: 1px solid #f1f5f9; padding-bottom: 1rem;">
-                <h3 class="admin-card-title" style="margin-bottom: 0;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; ">
+                <h3 class="admin-card-title" style="margin-bottom: 0; border-bottom: none; padding-bottom: 0;">
                     <i data-lucide="award" style="width: 1.25rem; height: 1.25rem; color: #7c3aed;"></i>
                     Buat Lencana Baru
                 </h3>
-                <button type="button" id="open-badge-modal-btn" class="btn-outline-primary"
-                    style="padding: 0.5rem 1rem; font-size: 0.85rem; font-weight: 600; display: flex; align-items: center; gap: 0.5rem;">
-                    <i data-lucide="list" style="width: 1rem; height: 1rem;"></i>
-                    Lihat Lencana Aktif
-                </button>
             </div>
 
             <form id="create-badge-form" method="POST" action="<?= BASE_URL ?>/admin/badge/create">
@@ -1039,153 +1058,243 @@
 
     <!-- SECTION 6: MATERIALS MANAGEMENT (Materi Belajar) -->
     <div id="materials-section" class="admin-section-content">
-        <div style="display: grid; grid-template-columns: 1fr; gap: 1.5rem; align-items: start; margin-bottom: 2rem;">
+        <div style="display: flex; flex-direction: column; gap: 1.5rem; margin-bottom: 2rem;">
+            <!-- HTML Elements Guide Card (Sticky) -->
+            <div class="admin-card"
+                style="border-left: 4px solid #7c3aed; gap: 0.75rem; position: sticky; top: 8.5rem; z-index: 20; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03);">
+                <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+                    <button type="button" onclick="insertHtmlTag('<h2>', '</h2>')"
+                        style="background-color: #f1f5f9; border: 1px solid #cbd5e1; padding: 0.45rem 0.8rem; border-radius: 6px; cursor: pointer; font-size: 0.8rem; font-weight: 600; color: #475569; font-family: 'Plus Jakarta Sans', sans-serif; transition: all 0.15s; outline: none;"
+                        onmouseover="this.style.backgroundColor='#e2e8f0'; this.style.borderColor='#7c3aed'; this.style.color='#7c3aed';"
+                        onmouseout="this.style.backgroundColor='#f1f5f9'; this.style.borderColor='#cbd5e1'; this.style.color='#475569';">H2
+                        Subjudul</button>
+                    <button type="button" onclick="insertHtmlTag('<h3>', '</h3>')"
+                        style="background-color: #f1f5f9; border: 1px solid #cbd5e1; padding: 0.45rem 0.8rem; border-radius: 6px; cursor: pointer; font-size: 0.8rem; font-weight: 600; color: #475569; font-family: 'Plus Jakarta Sans', sans-serif; transition: all 0.15s; outline: none;"
+                        onmouseover="this.style.backgroundColor='#e2e8f0'; this.style.borderColor='#7c3aed'; this.style.color='#7c3aed';"
+                        onmouseout="this.style.backgroundColor='#f1f5f9'; this.style.borderColor='#cbd5e1'; this.style.color='#475569';">H3
+                        Detail</button>
+                    <button type="button" onclick="insertHtmlTag('<p>', '</p>')"
+                        style="background-color: #f1f5f9; border: 1px solid #cbd5e1; padding: 0.45rem 0.8rem; border-radius: 6px; cursor: pointer; font-size: 0.8rem; font-weight: 600; color: #475569; font-family: 'Plus Jakarta Sans', sans-serif; transition: all 0.15s; outline: none;"
+                        onmouseover="this.style.backgroundColor='#e2e8f0'; this.style.borderColor='#7c3aed'; this.style.color='#7c3aed';"
+                        onmouseout="this.style.backgroundColor='#f1f5f9'; this.style.borderColor='#cbd5e1'; this.style.color='#475569';">Paragraf
+                        (P)</button>
+                    <button type="button" onclick="insertHtmlTag('<pre><code>', '</code></pre>')"
+                        style="background-color: #f1f5f9; border: 1px solid #cbd5e1; padding: 0.45rem 0.8rem; border-radius: 6px; cursor: pointer; font-size: 0.8rem; font-weight: 600; color: #475569; font-family: 'Plus Jakarta Sans', sans-serif; transition: all 0.15s; outline: none;"
+                        onmouseover="this.style.backgroundColor='#e2e8f0'; this.style.borderColor='#7c3aed'; this.style.color='#7c3aed';"
+                        onmouseout="this.style.backgroundColor='#f1f5f9'; this.style.borderColor='#cbd5e1'; this.style.color='#475569';">Blok
+                        Kode</button>
+                    <button type="button" onclick="insertHtmlTag('<code>', '</code>')"
+                        style="background-color: #f1f5f9; border: 1px solid #cbd5e1; padding: 0.45rem 0.8rem; border-radius: 6px; cursor: pointer; font-size: 0.8rem; font-weight: 600; color: #475569; font-family: 'Plus Jakarta Sans', sans-serif; transition: all 0.15s; outline: none;"
+                        onmouseover="this.style.backgroundColor='#e2e8f0'; this.style.borderColor='#7c3aed'; this.style.color='#7c3aed';"
+                        onmouseout="this.style.backgroundColor='#f1f5f9'; this.style.borderColor='#cbd5e1'; this.style.color='#475569';">Inline
+                        Code</button>
+                    <button type="button" onclick="insertHtmlTag('<ul>\n  <li>', '</li>\n</ul>')"
+                        style="background-color: #f1f5f9; border: 1px solid #cbd5e1; padding: 0.45rem 0.8rem; border-radius: 6px; cursor: pointer; font-size: 0.8rem; font-weight: 600; color: #475569; font-family: 'Plus Jakarta Sans', sans-serif; transition: all 0.15s; outline: none;"
+                        onmouseover="this.style.backgroundColor='#e2e8f0'; this.style.borderColor='#7c3aed'; this.style.color='#7c3aed';"
+                        onmouseout="this.style.backgroundColor='#f1f5f9'; this.style.borderColor='#cbd5e1'; this.style.color='#475569';">Bullet
+                        List</button>
+                    <button type="button"
+                        onclick="insertHtmlTag('<img src=\'<?= BASE_URL ?>/uploads/nama-gambar.png\' alt=\'deskripsi\' class=\'material-img\'>')"
+                        style="background-color: #f1f5f9; border: 1px solid #cbd5e1; padding: 0.45rem 0.8rem; border-radius: 6px; cursor: pointer; font-size: 0.8rem; font-weight: 600; color: #475569; font-family: 'Plus Jakarta Sans', sans-serif; transition: all 0.15s; outline: none;"
+                        onmouseover="this.style.backgroundColor='#e2e8f0'; this.style.borderColor='#7c3aed'; this.style.color='#7c3aed';"
+                        onmouseout="this.style.backgroundColor='#f1f5f9'; this.style.borderColor='#cbd5e1'; this.style.color='#475569';">Gambar
+                        (Img)</button>
+                    <button type="button" onclick="formatHtmlContent()"
+                        style="background-color: #10b981; border: 1px solid #059669; padding: 0.45rem 0.8rem; border-radius: 6px; cursor: pointer; font-size: 0.8rem; font-weight: 600; color: #ffffff; font-family: 'Plus Jakarta Sans', sans-serif; transition: all 0.15s; outline: none; margin-left: auto; display: inline-flex; align-items: center; gap: 0.25rem;"
+                        onmouseover="this.style.backgroundColor='#059669';"
+                        onmouseout="this.style.backgroundColor='#10b981';">
+                        <i data-lucide="sparkles" style="width: 0.95rem; height: 0.95rem;"></i>
+                        Rapikan Kode
+                    </button>
+                </div>
+            </div>
+
             <!-- Create Material Card -->
             <div class="admin-card">
-                <h3 class="admin-card-title">
-                    <i data-lucide="book-open" style="width: 1.25rem; height: 1.25rem; color: #7c3aed;"></i>
-                    Buat Materi Belajar Baru
-                </h3>
+                <div
+                    style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem; border-bottom: 1px solid #f1f5f9; padding-bottom: 0.75rem; margin-bottom: 0.5rem;">
+                    <h3 class="admin-card-title" style="margin: 0; border: none; padding: 0;">
+                        <i data-lucide="book-open" style="width: 1.25rem; height: 1.25rem; color: #7c3aed;"></i>
+                        Buat Materi Belajar Baru
+                    </h3>
+                    <div style="display: inline-flex; gap: 0.5rem;">
+                        <button type="button" onclick="downloadJsonTemplate();"
+                            style="display: inline-flex; align-items: center; gap: 0.35rem; height: 32px; padding: 0 0.75rem; font-size: 0.75rem; border-radius: 6px; background-color: #ffffff; border: 1px solid #64748b; color: #64748b; font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 600; cursor: pointer; transition: all 0.15s; outline: none;"
+                            onmouseover="this.style.backgroundColor='#f8fafc'; this.style.borderColor='#475569'; this.style.color='#475569';"
+                            onmouseout="this.style.backgroundColor='#ffffff'; this.style.borderColor='#64748b'; this.style.color='#64748b';">
+                            <i data-lucide="download" style="width: 0.95rem; height: 0.95rem;"></i>
+                            Unduh Template
+                        </button>
+                        <input type="file" id="import-material-json" accept=".json" style="display: none;">
+                        <button type="button" onclick="document.getElementById('import-material-json').click();"
+                            style="display: inline-flex; align-items: center; gap: 0.35rem; height: 32px; padding: 0 0.75rem; font-size: 0.75rem; border-radius: 6px; background-color: #ffffff; border: 1px solid #7c3aed; color: #7c3aed; font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 600; cursor: pointer; transition: all 0.15s; outline: none;"
+                            onmouseover="this.style.backgroundColor='#f5f3ff'"
+                            onmouseout="this.style.backgroundColor='#ffffff'">
+                            <i data-lucide="upload-cloud" style="width: 0.95rem; height: 0.95rem;"></i>
+                            Impor JSON
+                        </button>
+                    </div>
+                </div>
                 <form id="create-material-form" method="POST" action="<?= BASE_URL ?>/admin/material/create">
                     <?= \App\Core\Security::csrfField() ?>
-                    
+
                     <div class="admin-form-group">
                         <label class="admin-label">Judul Materi</label>
-                        <input type="text" name="title" class="admin-input" placeholder="Masukkan judul materi..." required>
+                        <input type="text" name="title" class="admin-input" placeholder="Masukkan judul materi..."
+                            required>
                     </div>
 
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
-                        <div class="admin-form-group">
-                            <label class="admin-label">Kategori</label>
-                            <select name="category" class="admin-input" style="height: 44px; padding: 0 0.75rem;">
-                                <option value="Routing">Routing</option>
-                                <option value="Firewall & NAT">Firewall & NAT</option>
-                                <option value="Wireless">Wireless</option>
-                                <option value="Network Management">Network Management</option>
-                            </select>
-                        </div>
-                        <div class="admin-form-group">
-                            <label class="admin-label">Tingkat Kesulitan</label>
-                            <select name="difficulty" class="admin-input" style="height: 44px; padding: 0 0.75rem;">
-                                <option value="Mudah">Mudah</option>
-                                <option value="Sedang">Sedang</option>
-                                <option value="Sulit">Sulit</option>
-                            </select>
-                        </div>
+                    <div class="admin-form-group">
+                        <label class="admin-label">Kategori</label>
+                        <select name="category" class="admin-input" style="height: 44px; padding: 0 0.75rem;">
+                            <option value="Routing">Routing</option>
+                            <option value="Firewall & NAT">Firewall & NAT</option>
+                            <option value="Wireless">Wireless</option>
+                            <option value="Network Management">Network Management</option>
+                        </select>
                     </div>
 
                     <div class="admin-form-group">
                         <label class="admin-label">Konten Materi (Mendukung HTML)</label>
-                        <textarea name="content" class="admin-input" style="height: 250px; padding: 0.75rem; font-family: monospace;" placeholder="Tulis materi pembelajaran di sini... Contoh: <h2>Judul Bab</h2><p>Paragraf penjelasan.</p>" required></textarea>
+                        <textarea name="content" class="admin-input"
+                            style="height: 250px; padding: 0.75rem; font-family: monospace;"
+                            placeholder="Tulis materi pembelajaran di sini... Contoh: <h2>Judul Bab</h2><p>Paragraf penjelasan.</p>"
+                            required></textarea>
                     </div>
 
-                    <button type="submit" class="btn-publish" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 0.5rem; height: 44px;">
+                    <button type="submit" class="btn-publish"
+                        style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 0.5rem; height: 44px;">
                         <i data-lucide="plus-circle" style="width: 1.1rem; height: 1.1rem;"></i>
                         Publikasikan Materi
                     </button>
                 </form>
             </div>
 
-            <!-- List Materials Card -->
-            <div class="admin-card">
-                <h3 class="admin-card-title">
-                    <i data-lucide="list" style="width: 1.25rem; height: 1.25rem; color: #7c3aed;"></i>
-                    Daftar Materi Pembelajaran
-                </h3>
 
-                <div class="admin-table-container">
-                    <?php if (empty($materials_list)): ?>
-                        <p style="color: #64748b; font-size: 0.9rem; text-align: center; padding: 1.5rem 0; margin: 0;">Belum ada materi pembelajaran yang dibuat.</p>
-                    <?php else: ?>
-                        <table class="admin-table">
-                            <thead>
-                                <tr>
-                                    <th>Judul</th>
-                                    <th>Kategori</th>
-                                    <th>Kesulitan</th>
-                                    <th style="text-align: right;">Aksi</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <?php foreach ($materials_list as $mat): ?>
-                                    <tr>
-                                        <td>
-                                            <div style="font-weight: 600; color: #0f172a;"><?= htmlspecialchars($mat['title']) ?></div>
-                                            <div style="font-size: 0.75rem; color: #64748b;"><?= date('d M Y', strtotime($mat['created_at'])) ?></div>
-                                        </td>
-                                        <td>
-                                            <span style="font-size: 0.8rem; font-weight: 600; color: #7c3aed;"><?= htmlspecialchars($mat['category']) ?></span>
-                                        </td>
-                                        <td>
-                                            <span style="font-size: 0.75rem; padding: 0.15rem 0.4rem; border-radius: 4px; font-weight: 600; 
-                                                <?= $mat['difficulty'] === 'Sedang' ? 'background-color: #fffbeb; color: #d97706;' : ($mat['difficulty'] === 'Sulit' ? 'background-color: #fef2f2; color: #dc2626;' : 'background-color: #ecfdf5; color: #059669;') ?>">
-                                                <?= htmlspecialchars($mat['difficulty']) ?>
-                                            </span>
-                                        </td>
-                                        <td style="text-align: right;">
-                                            <form method="POST" action="<?= BASE_URL ?>/admin/material/delete/<?= $mat['id'] ?>" style="display: inline;" onsubmit="return confirm('Apakah Anda yakin ingin menghapus materi ini?');">
-                                                <?= \App\Core\Security::csrfField() ?>
-                                                <button type="submit" style="background: none; border: none; padding: 4px; cursor: pointer; color: #ef4444; border-radius: 4px; transition: background-color 0.15s;" onmouseover="this.style.backgroundColor='#fef2f2'" onmouseout="this.style.backgroundColor='transparent'">
-                                                    <i data-lucide="trash-2" style="width: 1rem; height: 1rem;"></i>
-                                                </button>
-                                            </form>
-                                        </td>
-                                    </tr>
-                                <?php endforeach; ?>
-                            </tbody>
-                        </table>
-                    <?php endif; ?>
-                </div>
-            </div>
         </div>
     </div>
 </div>
 
-<!-- Modal Pop-up: Active Quizzes List -->
+<!-- Modal Pop-up: Active Items List (Quizzes, Badges, Materials) -->
 <div id="quiz-list-modal" class="admin-modal">
     <div class="admin-modal-content">
         <div class="admin-modal-header">
             <h3
                 style="font-size: 1.15rem; font-weight: 800; color: #0f172a; margin: 0; display: flex; align-items: center; gap: 0.5rem;">
                 <i data-lucide="layout-list" style="width: 1.25rem; height: 1.25rem; color: #7c3aed;"></i>
-                Daftar Kuis yang Aktif Saat Ini
+                <span id="active-list-modal-title">Daftar Kuis yang Aktif Saat Ini</span>
             </h3>
             <button type="button" id="close-quiz-modal-btn" class="close-modal-btn">
                 <i data-lucide="x" style="width: 1.25rem; height: 1.25rem;"></i>
             </button>
         </div>
         <div class="admin-modal-body">
-            <?php if (empty($quizzes)): ?>
-                <div
-                    style="text-align: center; padding: 3rem 1rem; color: #94a3b8; display: flex; flex-direction: column; align-items: center; gap: 0.75rem;">
-                    <i data-lucide="folder-open" style="width: 2.5rem; height: 2.5rem; stroke-width: 1.5;"></i>
-                    <span style="font-size: 0.9rem; font-weight: 500;">Belum ada kuis aktif yang terdaftar.</span>
-                </div>
-            <?php else: ?>
-                <div style="display: flex; flex-direction: column;">
-                    <?php foreach ($quizzes as $quiz): ?>
-                        <div class="quiz-row-item">
-                            <div class="quiz-row-info">
-                                <span class="quiz-row-title"><?= htmlspecialchars($quiz['title']) ?></span>
-                                <div class="quiz-row-meta">
-                                    <span class="badge-category"><?= htmlspecialchars($quiz['category']) ?></span>
-                                    <span style="color: #cbd5e1;">&bull;</span>
-                                    <span
-                                        style="font-weight: 500; font-size: 0.85rem; color: #64748b;"><?= htmlspecialchars($quiz['description']) ?></span>
+            <!-- Quizzes List Container -->
+            <div id="modal-list-quizzes" class="modal-section-content">
+                <?php if (empty($quizzes)): ?>
+                    <div
+                        style="text-align: center; padding: 3rem 1rem; color: #94a3b8; display: flex; flex-direction: column; align-items: center; gap: 0.75rem;">
+                        <i data-lucide="folder-open" style="width: 2.5rem; height: 2.5rem; stroke-width: 1.5;"></i>
+                        <span style="font-size: 0.9rem; font-weight: 500;">Belum ada kuis aktif yang terdaftar.</span>
+                    </div>
+                <?php else: ?>
+                    <div style="display: flex; flex-direction: column;">
+                        <?php foreach ($quizzes as $quiz): ?>
+                            <div class="quiz-row-item">
+                                <div class="quiz-row-info">
+                                    <span class="quiz-row-title"><?= htmlspecialchars($quiz['title']) ?></span>
+                                    <div class="quiz-row-meta">
+                                        <span class="badge-category"><?= htmlspecialchars($quiz['category']) ?></span>
+                                        <span style="color: #cbd5e1;">&bull;</span>
+                                        <span
+                                            style="font-weight: 500; font-size: 0.85rem; color: #64748b;"><?= htmlspecialchars($quiz['description']) ?></span>
+                                    </div>
                                 </div>
+                                <form method="POST" action="<?= BASE_URL ?>/admin/quiz/delete/<?= $quiz['id'] ?>"
+                                    onsubmit="return confirm('Apakah Anda yakin ingin menghapus kuis ini?');">
+                                    <?= \App\Core\Security::csrfField() ?>
+                                    <button type="submit" class="btn-danger-sm">
+                                        <i data-lucide="trash-2" style="width: 0.9rem; height: 0.9rem;"></i>
+                                        Hapus
+                                    </button>
+                                </form>
                             </div>
-                            <form method="POST" action="<?= BASE_URL ?>/admin/quiz/delete/<?= $quiz['id'] ?>"
-                                onsubmit="return confirm('Apakah Anda yakin ingin menghapus kuis ini?');">
-                                <?= \App\Core\Security::csrfField() ?>
-                                <button type="submit" class="btn-danger-sm">
-                                    <i data-lucide="trash-2" style="width: 0.9rem; height: 0.9rem;"></i>
-                                    Hapus
-                                </button>
-                            </form>
-                        </div>
-                    <?php endforeach; ?>
-                </div>
-            <?php endif; ?>
+                        <?php endforeach; ?>
+                    </div>
+                <?php endif; ?>
+            </div>
+
+            <!-- Badges List Container -->
+            <div id="modal-list-badges" class="modal-section-content" style="display: none;">
+                <?php if (empty($badges_list)): ?>
+                    <div
+                        style="text-align: center; padding: 3rem 1rem; color: #94a3b8; display: flex; flex-direction: column; align-items: center; gap: 0.75rem;">
+                        <i data-lucide="award" style="width: 2.5rem; height: 2.5rem; stroke-width: 1.5;"></i>
+                        <span style="font-size: 0.9rem; font-weight: 500;">Belum ada lencana aktif yang terdaftar.</span>
+                    </div>
+                <?php else: ?>
+                    <div style="display: flex; flex-direction: column;">
+                        <?php foreach ($badges_list as $badge): ?>
+                            <div class="quiz-row-item">
+                                <div class="quiz-row-info">
+                                    <span class="quiz-row-title"><?= htmlspecialchars($badge['title']) ?></span>
+                                    <div class="quiz-row-meta">
+                                        <span class="badge-category"
+                                            style="background-color: #e0e7ff; color: #4f46e5;"><?= htmlspecialchars($badge['metric']) ?></span>
+                                        <span style="color: #cbd5e1;">&bull;</span>
+                                        <span
+                                            style="font-weight: 500; font-size: 0.85rem; color: #64748b;"><?= htmlspecialchars($badge['description']) ?></span>
+                                    </div>
+                                </div>
+                                <form method="POST" action="<?= BASE_URL ?>/admin/badge/delete/<?= $badge['id'] ?>"
+                                    onsubmit="return confirm('Apakah Anda yakin ingin menghapus lencana ini?');">
+                                    <?= \App\Core\Security::csrfField() ?>
+                                    <button type="submit" class="btn-danger-sm">
+                                        <i data-lucide="trash-2" style="width: 0.9rem; height: 0.9rem;"></i>
+                                        Hapus
+                                    </button>
+                                </form>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+                <?php endif; ?>
+            </div>
+
+            <!-- Materials List Container -->
+            <div id="modal-list-materials" class="modal-section-content" style="display: none;">
+                <?php if (empty($materials_list)): ?>
+                    <div
+                        style="text-align: center; padding: 3rem 1rem; color: #94a3b8; display: flex; flex-direction: column; align-items: center; gap: 0.75rem;">
+                        <i data-lucide="book-open" style="width: 2.5rem; height: 2.5rem; stroke-width: 1.5;"></i>
+                        <span style="font-size: 0.9rem; font-weight: 500;">Belum ada materi aktif yang terdaftar.</span>
+                    </div>
+                <?php else: ?>
+                    <div style="display: flex; flex-direction: column;">
+                        <?php foreach ($materials_list as $mat): ?>
+                            <div class="quiz-row-item">
+                                <div class="quiz-row-info">
+                                    <span class="quiz-row-title"><?= htmlspecialchars($mat['title']) ?></span>
+                                    <div class="quiz-row-meta">
+                                        <span class="badge-category"
+                                            style="background-color: #f5f3ff; color: #7c3aed;"><?= htmlspecialchars($mat['category']) ?></span>
+                                        <span style="color: #cbd5e1;">&bull;</span>
+                                        <span style="font-weight: 500; font-size: 0.85rem; color: #64748b;">Materi
+                                            Belajar</span>
+                                    </div>
+                                </div>
+                                <form method="POST" action="<?= BASE_URL ?>/admin/material/delete/<?= $mat['id'] ?>"
+                                    onsubmit="return confirm('Apakah Anda yakin ingin menghapus materi ini?');">
+                                    <?= \App\Core\Security::csrfField() ?>
+                                    <button type="submit" class="btn-danger-sm">
+                                        <i data-lucide="trash-2" style="width: 0.9rem; height: 0.9rem;"></i>
+                                        Hapus
+                                    </button>
+                                </form>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+                <?php endif; ?>
+            </div>
         </div>
     </div>
 </div>
@@ -1292,26 +1401,109 @@
 </div>
 
 <script>
+    // Global function to trigger template.json download for import
+    function downloadJsonTemplate() {
+        const templateData = {
+            "title": "Contoh Judul Materi Pembelajaran",
+            "category": "Routing",
+            "content": "<h2>Sub-Bab Materi</h2><p>Tulis paragraf penjelasan materi di sini...</p><h3>Contoh Konfigurasi CLI</h3><pre><code>/ip route add gateway=192.168.1.1</code></pre>"
+        };
+        const jsonString = JSON.stringify(templateData, null, 2);
+        const blob = new Blob([jsonString], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "template_materi.json";
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    }
+
+    // Global editor helper function to insert HTML tags at cursor position
+    function insertHtmlTag(tagOpen, tagClose = '') {
+        const textarea = document.querySelector('textarea[name="content"]');
+        if (!textarea) return;
+
+        const start = textarea.selectionStart;
+        const end = textarea.selectionEnd;
+        const text = textarea.value;
+        const selectedText = text.substring(start, end);
+        const replacement = tagOpen + selectedText + tagClose;
+
+        textarea.value = text.substring(0, start) + replacement + text.substring(end);
+
+        const newCursorPos = start + replacement.length;
+        textarea.focus();
+        textarea.setSelectionRange(newCursorPos, newCursorPos);
+    }
+
+    // Global function to auto-format (beautify) HTML content in textarea
+    function formatHtmlContent() {
+        const textarea = document.querySelector('textarea[name="content"]');
+        if (!textarea) return;
+
+        let html = textarea.value;
+        let indent = 0;
+        const tab = '    '; // 4 spaces indentation
+        let formatted = '';
+
+        // Normalize spacing and clean extra whitespace between elements
+        html = html.replace(/\s+/g, ' ').replace(/>\s+</g, '><');
+
+        // Tokenize HTML tags and text contents
+        const tokens = html.split(/(<\/?[^>]+>)/g);
+
+        for (let i = 0; i < tokens.length; i++) {
+            let token = tokens[i].trim();
+            if (!token) continue;
+
+            if (token.startsWith('</')) {
+                // Closing tag: reduce indentation level
+                indent = Math.max(0, indent - 1);
+                formatted += '\n' + tab.repeat(indent) + token;
+            } else if (token.startsWith('<') && !token.startsWith('<!') && !token.endsWith('/>')) {
+                // Opening tag: append and increase indentation (skip self-closing tags)
+                const isSelfClosing = /<(img|br|hr|input|link|meta)/i.test(token);
+                formatted += '\n' + tab.repeat(indent) + token;
+                if (!isSelfClosing) {
+                    indent++;
+                }
+            } else {
+                // Raw text node
+                formatted += '\n' + tab.repeat(indent) + token;
+            }
+        }
+
+        // Apply formatted value back to the editor field
+        textarea.value = formatted.trim();
+    }
+
     document.addEventListener('DOMContentLoaded', () => {
         // --- TAB SWITCHER LOGIC ---
         const tabButtons = document.querySelectorAll('.admin-tab-btn');
         const sections = document.querySelectorAll('.admin-section-content');
 
-        tabButtons.forEach(btn => {
-            btn.addEventListener('click', () => {
-                const targetId = btn.getAttribute('data-target');
+        function activateTab(targetId) {
+            const targetBtn = document.querySelector(`.admin-tab-btn[data-target="${targetId}"]`);
+            const targetSec = document.getElementById(targetId);
 
+            if (targetBtn && targetSec) {
                 // Remove active classes
                 tabButtons.forEach(b => b.classList.remove('active'));
                 sections.forEach(s => s.classList.remove('active'));
 
-                // Set active clicked tab & target section
-                btn.classList.add('active');
-                const targetSec = document.getElementById(targetId);
-                if (targetSec) targetSec.classList.add('active');
+                // Set active classes
+                targetBtn.classList.add('active');
+                targetSec.classList.add('active');
+
+                // Update hash in URL quietly without page jump
+                if (window.location.hash !== '#' + targetId) {
+                    history.replaceState(null, '', '#' + targetId);
+                }
 
                 // Prevent page scroll for short/scoped sections on desktop if content fits on screen
-                const isShortSection = (targetId === 'badge-section' || targetId === 'profile-section' || targetId === 'manage-section');
+                const isShortSection = (targetId === 'badge-section' || targetId === 'profile-section' || targetId === 'manage-section' || targetId === 'materials-section');
                 const isDesktop = window.innerWidth >= 1024;
                 const contentFits = document.documentElement.scrollHeight <= window.innerHeight;
 
@@ -1322,8 +1514,82 @@
                     document.documentElement.style.overflowY = 'auto';
                     document.body.style.overflowY = 'auto';
                 }
+
+                // Update active list button text dynamically
+                const modalBtnText = document.getElementById('open-quiz-modal-text');
+                if (modalBtnText) {
+                    if (targetId === 'badge-section') {
+                        modalBtnText.innerText = 'Lihat Lencana Aktif';
+                    } else if (targetId === 'materials-section') {
+                        modalBtnText.innerText = 'Lihat Materi Aktif';
+                    } else {
+                        modalBtnText.innerText = 'Lihat Kuis Aktif';
+                    }
+                }
+            }
+        }
+
+        tabButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const targetId = btn.getAttribute('data-target');
+                activateTab(targetId);
             });
         });
+
+        // Initialize active tab from URL hash
+        function initTabFromHash() {
+            const currentHash = window.location.hash.substring(1);
+            if (currentHash && document.getElementById(currentHash) && document.querySelector(`.admin-tab-btn[data-target="${currentHash}"]`)) {
+                activateTab(currentHash);
+            } else {
+                activateTab('quiz-section');
+            }
+        }
+
+        // Run on load and on hash change
+        initTabFromHash();
+        window.addEventListener('hashchange', initTabFromHash);
+
+        // --- JSON MATERIAL IMPORT LOGIC ---
+        const jsonFileInput = document.getElementById('import-material-json');
+        if (jsonFileInput) {
+            jsonFileInput.addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    try {
+                        const data = JSON.parse(event.target.result);
+
+                        // Validate JSON format
+                        if (!data.title || !data.content || !data.category) {
+                            alert('Format JSON tidak valid! File JSON harus memiliki properti "title", "content", dan "category".');
+                            return;
+                        }
+
+                        // Fill in the form fields
+                        const form = document.getElementById('create-material-form');
+                        if (form) {
+                            form.querySelector('input[name="title"]').value = data.title;
+                            form.querySelector('select[name="category"]').value = data.category;
+                            form.querySelector('textarea[name="content"]').value = data.content;
+
+                            // Auto-format HTML content instantly
+                            formatHtmlContent();
+
+                            alert('Materi berhasil diimpor dan dirapikan secara otomatis dari file JSON! Silakan periksa kembali sebelum mempublikasikan.');
+                        }
+                    } catch (err) {
+                        alert('Gagal membaca file JSON: ' + err.message);
+                    }
+                };
+                reader.readAsText(file);
+
+                // Reset file input value so same file can be selected again
+                jsonFileInput.value = '';
+            });
+        }
 
         // --- MEMBER REGISTRATION VALIDATION ---
         const registerForm = document.getElementById('register-member-form');
@@ -1357,6 +1623,33 @@
         const closeActiveModalBtn = document.getElementById('close-quiz-modal-btn');
 
         openActiveModalBtn.addEventListener('click', () => {
+            // Check current active section tab ID
+            const activeSection = document.querySelector('.admin-section-content.active');
+            const activeId = activeSection ? activeSection.getAttribute('id') : '';
+
+            // Get elements
+            const modalTitle = document.getElementById('active-list-modal-title');
+            const quizzesContainer = document.getElementById('modal-list-quizzes');
+            const badgesContainer = document.getElementById('modal-list-badges');
+            const materialsContainer = document.getElementById('modal-list-materials');
+
+            // Reset visibility
+            if (quizzesContainer) quizzesContainer.style.display = 'none';
+            if (badgesContainer) badgesContainer.style.display = 'none';
+            if (materialsContainer) materialsContainer.style.display = 'none';
+
+            // Show relevant active list and change title
+            if (activeId === 'badge-section') {
+                if (modalTitle) modalTitle.innerText = 'Daftar Lencana yang Aktif Saat Ini';
+                if (badgesContainer) badgesContainer.style.display = 'block';
+            } else if (activeId === 'materials-section') {
+                if (modalTitle) modalTitle.innerText = 'Daftar Materi yang Aktif Saat Ini';
+                if (materialsContainer) materialsContainer.style.display = 'block';
+            } else {
+                if (modalTitle) modalTitle.innerText = 'Daftar Kuis yang Aktif Saat Ini';
+                if (quizzesContainer) quizzesContainer.style.display = 'block';
+            }
+
             activeModal.classList.add('show');
         });
 
@@ -1658,7 +1951,7 @@
             let inQuotes = false;
             for (let i = 0; i < text.length; i++) {
                 let c = text[i];
-                let next = text[i+1];
+                let next = text[i + 1];
                 if (c === '"') {
                     if (inQuotes && next === '"') {
                         row[row.length - 1] += '"';
@@ -1685,14 +1978,14 @@
         }
 
         if (importFileInput) {
-            importFileInput.addEventListener('change', function(e) {
+            importFileInput.addEventListener('change', function (e) {
                 const file = e.target.files[0];
                 if (!file) return;
 
                 importFileName.textContent = file.name;
                 const reader = new FileReader();
 
-                reader.onload = function(evt) {
+                reader.onload = function (evt) {
                     try {
                         const content = evt.target.result;
                         let questionsImported = [];
@@ -1747,7 +2040,7 @@
                                         option_b,
                                         option_c,
                                         option_d,
-                                        correct: ['A','B','C','D'].includes(correct) ? correct : 'A',
+                                        correct: ['A', 'B', 'C', 'D'].includes(correct) ? correct : 'A',
                                         explanation,
                                         image: ''
                                     });
@@ -1795,7 +2088,7 @@
                                         option_b,
                                         option_c,
                                         option_d,
-                                        correct: ['A','B','C','D'].includes(correct) ? correct : 'A',
+                                        correct: ['A', 'B', 'C', 'D'].includes(correct) ? correct : 'A',
                                         explanation,
                                         image: ''
                                     });
@@ -1835,7 +2128,7 @@
 
         // Template downloads
         if (downloadJsonBtn) {
-            downloadJsonBtn.addEventListener('click', function() {
+            downloadJsonBtn.addEventListener('click', function () {
                 const template = [
                     {
                         "question": "Contoh pertanyaan kuis MikroTik OSPF?",
@@ -1858,9 +2151,9 @@
         }
 
         if (downloadCsvBtn) {
-            downloadCsvBtn.addEventListener('click', function() {
+            downloadCsvBtn.addEventListener('click', function () {
                 const csvContent = "question,option_a,option_b,option_c,option_d,correct,explanation\n" +
-                                   "\"Contoh pertanyaan kuis MikroTik OSPF?\",\"Jawaban A\",\"Jawaban B\",\"Jawaban C\",\"Jawaban D\",\"A\",\"Penjelasan mengapa jawaban A adalah kunci jawaban yang benar.\"";
+                    "\"Contoh pertanyaan kuis MikroTik OSPF?\",\"Jawaban A\",\"Jawaban B\",\"Jawaban C\",\"Jawaban D\",\"A\",\"Penjelasan mengapa jawaban A adalah kunci jawaban yang benar.\"";
                 const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
                 const url = URL.createObjectURL(blob);
                 const a = document.createElement('a');

@@ -459,7 +459,7 @@ class AdminController extends Controller
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if (!\App\Core\Security::validateCsrfToken()) {
                 $_SESSION['admin_error'] = 'Sesi tidak valid, silakan muat ulang halaman.';
-                header('Location: ' . BASE_URL . '/admin');
+                header('Location: ' . BASE_URL . '/admin#materials-section');
                 exit;
             }
             $title = trim($_POST['title'] ?? '');
@@ -469,7 +469,7 @@ class AdminController extends Controller
 
             if (empty($title) || empty($content)) {
                 $_SESSION['admin_error'] = 'Judul dan Konten materi wajib diisi.';
-                header('Location: ' . BASE_URL . '/admin');
+                header('Location: ' . BASE_URL . '/admin#materials-section');
                 exit;
             }
 
@@ -481,7 +481,7 @@ class AdminController extends Controller
                 $_SESSION['admin_error'] = 'Gagal membuat materi: ' . $e->getMessage();
             }
 
-            header('Location: ' . BASE_URL . '/admin');
+            header('Location: ' . BASE_URL . '/admin#materials-section');
             exit;
         }
     }
@@ -491,7 +491,7 @@ class AdminController extends Controller
         $this->checkAdmin();
         if (!\App\Core\Security::validateCsrfToken()) {
             $_SESSION['admin_error'] = 'Sesi tidak valid, silakan muat ulang halaman.';
-            header('Location: ' . BASE_URL . '/admin');
+            header('Location: ' . BASE_URL . '/admin#materials-section');
             exit;
         }
         $id = (int) $id;
@@ -504,7 +504,7 @@ class AdminController extends Controller
             $_SESSION['admin_error'] = 'Gagal menghapus materi: ' . $e->getMessage();
         }
 
-        header('Location: ' . BASE_URL . '/admin');
+        header('Location: ' . BASE_URL . '/admin#materials-section');
         exit;
     }
 }
