@@ -99,6 +99,8 @@ $router->get('/logout', [\App\Controllers\AuthController::class, 'logout']);
 $router->get('/settings', [\App\Controllers\SettingsController::class, 'index']);
 $router->get('/leaderboard', [\App\Controllers\LeaderboardController::class, 'index']);
 $router->get('/quiz', [\App\Controllers\QuizController::class, 'index']);
+$router->get('/learn', [\App\Controllers\LearnController::class, 'index']);
+$router->get('/learn/{id}', [\App\Controllers\LearnController::class, 'viewMaterial']);
 $router->get('/admin', [\App\Controllers\AdminController::class, 'index']);
 $router->post('/admin/quiz/create', [\App\Controllers\AdminController::class, 'createQuiz']);
 $router->post('/admin/quiz/delete/{id}', [\App\Controllers\AdminController::class, 'deleteQuiz']);
@@ -109,6 +111,8 @@ $router->post('/admin/profile/update', [\App\Controllers\AdminController::class,
 $router->post('/admin/badge/create', [\App\Controllers\AdminController::class, 'createBadge']);
 $router->post('/admin/badge/delete/{id}', [\App\Controllers\AdminController::class, 'deleteBadge']);
 $router->post('/admin/badge/delete-bulk', [\App\Controllers\AdminController::class, 'deleteBadgesBulk']);
+$router->post('/admin/material/create', [\App\Controllers\AdminController::class, 'createMaterial']);
+$router->post('/admin/material/delete/{id}', [\App\Controllers\AdminController::class, 'deleteMaterial']);
 $router->get('/quiz/play/{id}', [\App\Controllers\QuizController::class, 'play']);
 $router->post('/quiz/pause/{id}', [\App\Controllers\QuizController::class, 'pause']);
 $router->post('/quiz/submit/{id}', [\App\Controllers\QuizController::class, 'submit']);
