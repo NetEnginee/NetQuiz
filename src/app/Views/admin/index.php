@@ -712,6 +712,32 @@
                         Lihat Soal Tersimpan (<span id="saved-count">0</span>)
                     </button>
 
+                    <!-- Import Questions from File -->
+                    <div style="background-color: #f0fdfa; border: 1.5px dashed #0d9488; padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
+                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.5rem;">
+                            <span style="font-weight: 700; font-size: 0.85rem; color: #0d9488; display: flex; align-items: center; gap: 0.4rem;">
+                                <i data-lucide="upload-cloud" style="width: 1.1rem; height: 1.1rem;"></i>
+                                Auto-Fill via File (JSON / CSV)
+                            </span>
+                            <div style="display: flex; gap: 0.25rem;">
+                                <button type="button" id="download-template-json" class="btn-outline-primary" style="padding: 0.25rem 0.5rem; font-size: 0.7rem; border-color: #0d9488; color: #0d9488; display: inline-flex; align-items: center; gap: 0.2rem; background: #ffffff;">
+                                    <i data-lucide="download" style="width: 0.75rem; height: 0.75rem;"></i> JSON
+                                </button>
+                                <button type="button" id="download-template-csv" class="btn-outline-primary" style="padding: 0.25rem 0.5rem; font-size: 0.7rem; border-color: #0d9488; color: #0d9488; display: inline-flex; align-items: center; gap: 0.2rem; background: #ffffff;">
+                                    <i data-lucide="download" style="width: 0.75rem; height: 0.75rem;"></i> CSV
+                                </button>
+                            </div>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;">
+                            <input type="file" id="import-quiz-file" accept=".json,.csv" style="display: none;">
+                            <label for="import-quiz-file" class="btn-outline-primary" style="padding: 0.4rem 0.85rem; border-color: #0d9488; color: #0d9488; cursor: pointer; margin: 0; font-size: 0.8rem; display: inline-flex; align-items: center; gap: 0.4rem; background: #ffffff;">
+                                <i data-lucide="file-text" style="width: 1rem; height: 1rem;"></i>
+                                Unggah File
+                            </label>
+                            <span id="import-file-name" style="font-size: 0.75rem; color: #64748b; font-weight: 500;">Pilih berkas JSON / CSV...</span>
+                        </div>
+                    </div>
+
                     <!-- Hidden inputs container for form submission -->
                     <div id="hidden-inputs-container"></div>
 
@@ -1512,6 +1538,232 @@
             qTextInput.focus();
             if (typeof checkQuestionInputs === 'function') checkQuestionInputs();
         });
+
+        // Auto-Import Questions logic
+        const importFileInput = document.getElementById('import-quiz-file');
+        const importFileName = document.getElementById('import-file-name');
+        const downloadJsonBtn = document.getElementById('download-template-json');
+        const downloadCsvBtn = document.getElementById('download-template-csv');
+
+        // CSV parsing helper
+        function parseCSV(text) {
+            let lines = [];
+            let row = [""];
+            let inQuotes = false;
+            for (let i = 0; i < text.length; i++) {
+                let c = text[i];
+                let next = text[i+1];
+                if (c === '"') {
+                    if (inQuotes && next === '"') {
+                        row[row.length - 1] += '"';
+                        i++;
+                    } else {
+                        inQuotes = !inQuotes;
+                    }
+                } else if (c === ',' && !inQuotes) {
+                    row.push('');
+                } else if ((c === '\r' || c === '\n') && !inQuotes) {
+                    if (c === '\r' && next === '\n') {
+                        i++;
+                    }
+                    lines.push(row);
+                    row = [""];
+                } else {
+                    row[row.length - 1] += c;
+                }
+            }
+            if (row.length > 1 || row[0] !== "") {
+                lines.push(row);
+            }
+            return lines;
+        }
+
+        if (importFileInput) {
+            importFileInput.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (!file) return;
+
+                importFileName.textContent = file.name;
+                const reader = new FileReader();
+
+                reader.onload = function(evt) {
+                    try {
+                        const content = evt.target.result;
+                        let questionsImported = [];
+
+                        if (file.name.endsWith('.json')) {
+                            const parsed = JSON.parse(content);
+                            let questionsArray = [];
+
+                            // Check if format is a wrapper object with metadata or direct array
+                            if (!Array.isArray(parsed) && parsed.questions && Array.isArray(parsed.questions)) {
+                                if (parsed.title && quizTitleInput) quizTitleInput.value = parsed.title;
+                                if (parsed.description && quizDescInput) quizDescInput.value = parsed.description;
+                                if (parsed.duration !== undefined && quizDurationInput) quizDurationInput.value = parsed.duration;
+                                if (parsed.difficulty) {
+                                    const diffSelect = document.querySelector('#create-quiz-form select[name="difficulty"]');
+                                    if (diffSelect) diffSelect.value = parsed.difficulty;
+                                }
+                                if (parsed.category) {
+                                    const catInput = document.getElementById('selected-category-input');
+                                    if (catInput) {
+                                        catInput.value = parsed.category;
+                                        const catBtns = document.querySelectorAll('.category-select-btn');
+                                        catBtns.forEach(btn => {
+                                            if (btn.getAttribute('data-value') === parsed.category) {
+                                                btn.classList.add('active');
+                                            } else {
+                                                btn.classList.remove('active');
+                                            }
+                                        });
+                                    }
+                                }
+                                questionsArray = parsed.questions;
+                            } else if (Array.isArray(parsed)) {
+                                questionsArray = parsed;
+                            } else {
+                                throw new Error('Format JSON harus berupa array berisi list objek pertanyaan, atau objek kuis dengan properti "questions".');
+                            }
+
+                            questionsArray.forEach((item, idx) => {
+                                const question = item.question || item.pertanyaan || '';
+                                const option_a = item.option_a || item.pilihan_a || item.a || '';
+                                const option_b = item.option_b || item.pilihan_b || item.b || '';
+                                const option_c = item.option_c || item.pilihan_c || item.c || '';
+                                const option_d = item.option_d || item.pilihan_d || item.d || '';
+                                const correct = (item.correct || item.kunci || item.jawaban || 'A').toUpperCase().trim();
+                                const explanation = item.explanation || item.penjelasan || '';
+
+                                if (question && option_a && option_b && option_c && option_d) {
+                                    questionsImported.push({
+                                        question,
+                                        option_a,
+                                        option_b,
+                                        option_c,
+                                        option_d,
+                                        correct: ['A','B','C','D'].includes(correct) ? correct : 'A',
+                                        explanation,
+                                        image: ''
+                                    });
+                                } else {
+                                    console.warn(`Pertanyaan index ${idx} dilewati karena data kurang lengkap.`);
+                                }
+                            });
+                        } else if (file.name.endsWith('.csv')) {
+                            const rows = parseCSV(content);
+                            if (rows.length < 2) {
+                                throw new Error('File CSV kosong atau tidak memiliki baris data.');
+                            }
+                            const headers = rows[0].map(h => h.trim().toLowerCase());
+                            const map = {};
+                            headers.forEach((h, index) => {
+                                if (h.includes('question') || h.includes('soal') || h === 'pertanyaan') map.question = index;
+                                else if (h.includes('option_a') || h === 'a' || h.includes('pilihan_a')) map.option_a = index;
+                                else if (h.includes('option_b') || h === 'b' || h.includes('pilihan_b')) map.option_b = index;
+                                else if (h.includes('option_c') || h === 'c' || h.includes('pilihan_c')) map.option_c = index;
+                                else if (h.includes('option_d') || h === 'd' || h.includes('pilihan_d')) map.option_d = index;
+                                else if (h.includes('correct') || h.includes('kunci') || h.includes('jawaban')) map.correct = index;
+                                else if (h.includes('explanation') || h.includes('penjelasan')) map.explanation = index;
+                            });
+
+                            if (map.question === undefined || map.option_a === undefined || map.option_b === undefined || map.option_c === undefined || map.option_d === undefined) {
+                                throw new Error('Format kolom CSV tidak sesuai. Pastikan memiliki kolom: question, option_a, option_b, option_c, option_d, correct, explanation');
+                            }
+
+                            for (let i = 1; i < rows.length; i++) {
+                                const row = rows[i];
+                                if (row.length <= 1 && row[0] === '') continue; // Skip empty rows
+
+                                const question = row[map.question] ? row[map.question].trim() : '';
+                                const option_a = row[map.option_a] ? row[map.option_a].trim() : '';
+                                const option_b = row[map.option_b] ? row[map.option_b].trim() : '';
+                                const option_c = row[map.option_c] ? row[map.option_c].trim() : '';
+                                const option_d = row[map.option_d] ? row[map.option_d].trim() : '';
+                                const correct = row[map.correct] ? row[map.correct].trim().toUpperCase() : 'A';
+                                const explanation = row[map.explanation] ? row[map.explanation].trim() : '';
+
+                                if (question && option_a && option_b && option_c && option_d) {
+                                    questionsImported.push({
+                                        question,
+                                        option_a,
+                                        option_b,
+                                        option_c,
+                                        option_d,
+                                        correct: ['A','B','C','D'].includes(correct) ? correct : 'A',
+                                        explanation,
+                                        image: ''
+                                    });
+                                }
+                            }
+                        }
+
+                        if (questionsImported.length === 0) {
+                            alert('Tidak ada soal valid yang berhasil di-import dari file.');
+                        } else {
+                            // Auto-fill default metadata if fields are empty
+                            if (quizTitleInput && quizTitleInput.value.trim() === '') {
+                                const today = new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
+                                quizTitleInput.value = `Kuis Hasil Import - ${today}`;
+                            }
+                            if (quizDescInput && quizDescInput.value.trim() === '') {
+                                quizDescInput.value = `Kuis dinamis yang dibuat otomatis dari import berkas soal pada ${new Date().toLocaleString('id-ID')}.`;
+                            }
+                            if (quizDurationInput && (quizDurationInput.value.trim() === '' || quizDurationInput.value === '0')) {
+                                quizDurationInput.value = '30';
+                            }
+
+                            savedQuestions = savedQuestions.concat(questionsImported);
+                            updateDOM();
+                            alert(`Berhasil meng-import ${questionsImported.length} soal ke dalam daftar kuis.`);
+                        }
+                    } catch (err) {
+                        alert('Gagal memproses file: ' + err.message);
+                    } finally {
+                        importFileInput.value = ''; // Reset input file
+                    }
+                };
+
+                reader.readAsText(file);
+            });
+        }
+
+        // Template downloads
+        if (downloadJsonBtn) {
+            downloadJsonBtn.addEventListener('click', function() {
+                const template = [
+                    {
+                        "question": "Contoh pertanyaan kuis MikroTik OSPF?",
+                        "option_a": "Jawaban A",
+                        "option_b": "Jawaban B",
+                        "option_c": "Jawaban C",
+                        "option_d": "Jawaban D",
+                        "correct": "A",
+                        "explanation": "Penjelasan mengapa jawaban A adalah kunci jawaban yang benar."
+                    }
+                ];
+                const blob = new Blob([JSON.stringify(template, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'template_kuis.json';
+                a.click();
+                URL.revokeObjectURL(url);
+            });
+        }
+
+        if (downloadCsvBtn) {
+            downloadCsvBtn.addEventListener('click', function() {
+                const csvContent = "question,option_a,option_b,option_c,option_d,correct,explanation\n" +
+                                   "\"Contoh pertanyaan kuis MikroTik OSPF?\",\"Jawaban A\",\"Jawaban B\",\"Jawaban C\",\"Jawaban D\",\"A\",\"Penjelasan mengapa jawaban A adalah kunci jawaban yang benar.\"";
+                const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'template_kuis.csv';
+                a.click();
+                URL.revokeObjectURL(url);
+            });
+        }
 
         // 1. Buat Kuis: General Info Input Listeners to trigger updateDOM
         if (quizTitleInput && quizDescInput && quizDurationInput) {
