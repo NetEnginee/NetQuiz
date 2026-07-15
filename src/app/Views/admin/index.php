@@ -1059,61 +1059,14 @@
     <!-- SECTION 6: MATERIALS MANAGEMENT (Materi Belajar) -->
     <div id="materials-section" class="admin-section-content">
         <div style="display: flex; flex-direction: column; gap: 1.5rem; margin-bottom: 2rem;">
-            <!-- HTML Elements Guide Card (Sticky) -->
-            <div class="admin-card"
-                style="border-left: 4px solid #7c3aed; gap: 0.75rem; position: sticky; top: 8.5rem; z-index: 20; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03);">
-                <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
-                    <button type="button" onclick="insertHtmlTag('<h2>', '</h2>')"
-                        style="background-color: #f1f5f9; border: 1px solid #cbd5e1; padding: 0.45rem 0.8rem; border-radius: 6px; cursor: pointer; font-size: 0.8rem; font-weight: 600; color: #475569; font-family: 'Plus Jakarta Sans', sans-serif; transition: all 0.15s; outline: none;"
-                        onmouseover="this.style.backgroundColor='#e2e8f0'; this.style.borderColor='#7c3aed'; this.style.color='#7c3aed';"
-                        onmouseout="this.style.backgroundColor='#f1f5f9'; this.style.borderColor='#cbd5e1'; this.style.color='#475569';">H2
-                        Subjudul</button>
-                    <button type="button" onclick="insertHtmlTag('<h3>', '</h3>')"
-                        style="background-color: #f1f5f9; border: 1px solid #cbd5e1; padding: 0.45rem 0.8rem; border-radius: 6px; cursor: pointer; font-size: 0.8rem; font-weight: 600; color: #475569; font-family: 'Plus Jakarta Sans', sans-serif; transition: all 0.15s; outline: none;"
-                        onmouseover="this.style.backgroundColor='#e2e8f0'; this.style.borderColor='#7c3aed'; this.style.color='#7c3aed';"
-                        onmouseout="this.style.backgroundColor='#f1f5f9'; this.style.borderColor='#cbd5e1'; this.style.color='#475569';">H3
-                        Detail</button>
-                    <button type="button" onclick="insertHtmlTag('<p>', '</p>')"
-                        style="background-color: #f1f5f9; border: 1px solid #cbd5e1; padding: 0.45rem 0.8rem; border-radius: 6px; cursor: pointer; font-size: 0.8rem; font-weight: 600; color: #475569; font-family: 'Plus Jakarta Sans', sans-serif; transition: all 0.15s; outline: none;"
-                        onmouseover="this.style.backgroundColor='#e2e8f0'; this.style.borderColor='#7c3aed'; this.style.color='#7c3aed';"
-                        onmouseout="this.style.backgroundColor='#f1f5f9'; this.style.borderColor='#cbd5e1'; this.style.color='#475569';">Paragraf
-                        (P)</button>
-                    <button type="button" onclick="insertHtmlTag('<pre><code>', '</code></pre>')"
-                        style="background-color: #f1f5f9; border: 1px solid #cbd5e1; padding: 0.45rem 0.8rem; border-radius: 6px; cursor: pointer; font-size: 0.8rem; font-weight: 600; color: #475569; font-family: 'Plus Jakarta Sans', sans-serif; transition: all 0.15s; outline: none;"
-                        onmouseover="this.style.backgroundColor='#e2e8f0'; this.style.borderColor='#7c3aed'; this.style.color='#7c3aed';"
-                        onmouseout="this.style.backgroundColor='#f1f5f9'; this.style.borderColor='#cbd5e1'; this.style.color='#475569';">Blok
-                        Kode</button>
-                    <button type="button" onclick="insertHtmlTag('<code>', '</code>')"
-                        style="background-color: #f1f5f9; border: 1px solid #cbd5e1; padding: 0.45rem 0.8rem; border-radius: 6px; cursor: pointer; font-size: 0.8rem; font-weight: 600; color: #475569; font-family: 'Plus Jakarta Sans', sans-serif; transition: all 0.15s; outline: none;"
-                        onmouseover="this.style.backgroundColor='#e2e8f0'; this.style.borderColor='#7c3aed'; this.style.color='#7c3aed';"
-                        onmouseout="this.style.backgroundColor='#f1f5f9'; this.style.borderColor='#cbd5e1'; this.style.color='#475569';">Inline
-                        Code</button>
-                    <button type="button" onclick="insertHtmlTag('<ul>\n  <li>', '</li>\n</ul>')"
-                        style="background-color: #f1f5f9; border: 1px solid #cbd5e1; padding: 0.45rem 0.8rem; border-radius: 6px; cursor: pointer; font-size: 0.8rem; font-weight: 600; color: #475569; font-family: 'Plus Jakarta Sans', sans-serif; transition: all 0.15s; outline: none;"
-                        onmouseover="this.style.backgroundColor='#e2e8f0'; this.style.borderColor='#7c3aed'; this.style.color='#7c3aed';"
-                        onmouseout="this.style.backgroundColor='#f1f5f9'; this.style.borderColor='#cbd5e1'; this.style.color='#475569';">Bullet
-                        List</button>
-                    <button type="button"
-                        onclick="insertHtmlTag('<img src=\'<?= BASE_URL ?>/uploads/nama-gambar.png\' alt=\'deskripsi\' class=\'material-img\'>')"
-                        style="background-color: #f1f5f9; border: 1px solid #cbd5e1; padding: 0.45rem 0.8rem; border-radius: 6px; cursor: pointer; font-size: 0.8rem; font-weight: 600; color: #475569; font-family: 'Plus Jakarta Sans', sans-serif; transition: all 0.15s; outline: none;"
-                        onmouseover="this.style.backgroundColor='#e2e8f0'; this.style.borderColor='#7c3aed'; this.style.color='#7c3aed';"
-                        onmouseout="this.style.backgroundColor='#f1f5f9'; this.style.borderColor='#cbd5e1'; this.style.color='#475569';">Gambar
-                        (Img)</button>
-                    <button type="button" onclick="formatHtmlContent()"
-                        style="background-color: #10b981; border: 1px solid #059669; padding: 0.45rem 0.8rem; border-radius: 6px; cursor: pointer; font-size: 0.8rem; font-weight: 600; color: #ffffff; font-family: 'Plus Jakarta Sans', sans-serif; transition: all 0.15s; outline: none; margin-left: auto; display: inline-flex; align-items: center; gap: 0.25rem;"
-                        onmouseover="this.style.backgroundColor='#059669';"
-                        onmouseout="this.style.backgroundColor='#10b981';">
-                        <i data-lucide="sparkles" style="width: 0.95rem; height: 0.95rem;"></i>
-                        Rapikan Kode
-                    </button>
-                </div>
-            </div>
+
 
             <!-- Create Material Card -->
             <div class="admin-card">
                 <div
                     style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem; border-bottom: 1px solid #f1f5f9; padding-bottom: 0.75rem; margin-bottom: 0.5rem;">
-                    <h3 class="admin-card-title" style="margin: 0; border: none; padding: 0;">
+                    <h3 id="form-material-card-title" class="admin-card-title"
+                        style="margin: 0; border: none; padding: 0;">
                         <i data-lucide="book-open" style="width: 1.25rem; height: 1.25rem; color: #7c3aed;"></i>
                         Buat Materi Belajar Baru
                     </h3>
@@ -1137,35 +1090,43 @@
                 </div>
                 <form id="create-material-form" method="POST" action="<?= BASE_URL ?>/admin/material/create">
                     <?= \App\Core\Security::csrfField() ?>
+                    <input type="hidden" id="edit-material-id" value="">
 
                     <div class="admin-form-group">
                         <label class="admin-label">Judul Materi</label>
-                        <input type="text" name="title" class="admin-input" placeholder="Masukkan judul materi..."
-                            required>
+                        <input type="text" name="title" id="form-material-title" class="admin-input"
+                            placeholder="Masukkan judul materi..." required>
                     </div>
 
-                    <div class="admin-form-group">
+                    <div class="admin-form-group" style="margin-bottom: 1.25rem;">
                         <label class="admin-label">Kategori</label>
-                        <select name="category" class="admin-input" style="height: 44px; padding: 0 0.75rem;">
+                        <select name="category" id="form-material-category" class="admin-input"
+                            style="height: 44px; padding: 0 0.75rem;">
                             <option value="Routing">Routing</option>
                             <option value="Firewall & NAT">Firewall & NAT</option>
                             <option value="Wireless">Wireless</option>
                             <option value="Network Management">Network Management</option>
                         </select>
                     </div>
+                    <input type="hidden" name="difficulty" id="form-material-difficulty" value="Mudah">
 
-                    <div class="admin-form-group">
-                        <label class="admin-label">Konten Materi (Mendukung HTML)</label>
-                        <textarea name="content" class="admin-input"
-                            style="height: 250px; padding: 0.75rem; font-family: monospace;"
-                            placeholder="Tulis materi pembelajaran di sini... Contoh: <h2>Judul Bab</h2><p>Paragraf penjelasan.</p>"
-                            required></textarea>
-                    </div>
+                    <!-- Hidden input to store compiled HTML from Visual Builder -->
+                    <input type="hidden" name="content" id="form-material-content" value="">
 
-                    <button type="submit" class="btn-publish"
-                        style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 0.5rem; height: 44px;">
-                        <i data-lucide="plus-circle" style="width: 1.1rem; height: 1.1rem;"></i>
-                        Publikasikan Materi
+                    <!-- Launch Visual Builder button (The default path now) -->
+                    <button type="button" onclick="openVisualBuilderFromForm()" class="btn-publish"
+                        style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 0.5rem; height: 48px; font-family: 'Plus Jakarta Sans', sans-serif; background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%); border: none; font-weight: 700; font-size: 0.95rem; margin-top: 1rem; box-shadow: 0 4px 12px rgba(124,58,237,0.25);"
+                        onmouseover="this.style.transform='translateY(-1px)';"
+                        onmouseout="this.style.transform='translateY(0)';">
+                        <span id="btn-publish-material-text">Mulai Desain & Publikasikan (Elementor Mode)</span>
+                    </button>
+
+                    <button type="button" id="btn-cancel-edit-material" onclick="resetMaterialForm()"
+                        class="btn-publish"
+                        style="width: 100%; display: none; align-items: center; justify-content: center; gap: 0.5rem; height: 44px; background-color: #ffffff; border: 1px solid #cbd5e1; color: #475569; margin-top: 0.5rem; font-family: 'Plus Jakarta Sans', sans-serif;"
+                        onmouseover="this.style.backgroundColor='#f1f5f9'"
+                        onmouseout="this.style.backgroundColor='#ffffff'">
+                        Batal Sunting
                     </button>
                 </form>
             </div>
@@ -1282,14 +1243,22 @@
                                             Belajar</span>
                                     </div>
                                 </div>
-                                <form method="POST" action="<?= BASE_URL ?>/admin/material/delete/<?= $mat['id'] ?>"
-                                    onsubmit="return confirm('Apakah Anda yakin ingin menghapus materi ini?');">
-                                    <?= \App\Core\Security::csrfField() ?>
-                                    <button type="submit" class="btn-danger-sm">
-                                        <i data-lucide="trash-2" style="width: 0.9rem; height: 0.9rem;"></i>
-                                        Hapus
+                                <div style="display: flex; gap: 0.5rem; align-items: center;">
+                                    <button type="button" class="btn-primary-sm" onclick="editMaterialVisual(<?= $mat['id'] ?>)"
+                                        style="display: inline-flex; align-items: center; gap: 0.25rem; font-size: 0.8rem; font-weight: 600; padding: 0.4rem 0.75rem; border-radius: 6px; border: 1px solid #7c3aed; background-color: #7c3aed; color: #ffffff; cursor: pointer; transition: all 0.15s; font-family: 'Plus Jakarta Sans', sans-serif;">
+                                        <i data-lucide="edit" style="width: 0.85rem; height: 0.85rem;"></i>
+                                        Edit
                                     </button>
-                                </form>
+                                    <form method="POST" action="<?= BASE_URL ?>/admin/material/delete/<?= $mat['id'] ?>"
+                                        onsubmit="return confirm('Apakah Anda yakin ingin menghapus materi ini?');"
+                                        style="margin: 0;">
+                                        <?= \App\Core\Security::csrfField() ?>
+                                        <button type="submit" class="btn-danger-sm">
+                                            <i data-lucide="trash-2" style="width: 0.9rem; height: 0.9rem;"></i>
+                                            Hapus
+                                        </button>
+                                    </form>
+                                </div>
                             </div>
                         <?php endforeach; ?>
                     </div>
@@ -1526,6 +1495,13 @@
                         modalBtnText.innerText = 'Lihat Kuis Aktif';
                     }
                 }
+
+                // Auto-open visual builder when clicking Materi Belajar
+                if (targetId === 'materials-section') {
+                    if (typeof openVisualBuilderFromForm === 'function') {
+                        openVisualBuilderFromForm();
+                    }
+                }
             }
         }
 
@@ -1571,14 +1547,16 @@
                         // Fill in the form fields
                         const form = document.getElementById('create-material-form');
                         if (form) {
-                            form.querySelector('input[name="title"]').value = data.title;
-                            form.querySelector('select[name="category"]').value = data.category;
-                            form.querySelector('textarea[name="content"]').value = data.content;
+                            document.getElementById('form-material-title').value = data.title;
+                            document.getElementById('form-material-category').value = data.category;
+                            document.getElementById('form-material-difficulty').value = data.difficulty || 'Mudah';
+                            document.getElementById('form-material-content').value = data.content;
 
-                            // Auto-format HTML content instantly
-                            formatHtmlContent();
+                            // Open visual builder and go directly to preview mode
+                            openVisualBuilderFromForm();
+                            setBuilderMode('preview');
 
-                            alert('Materi berhasil diimpor dan dirapikan secara otomatis dari file JSON! Silakan periksa kembali sebelum mempublikasikan.');
+                            alert('Materi berhasil diimpor dari file JSON dan langsung diarahkan ke halaman Pratinjau (Preview) Visual Builder.');
                         }
                     } catch (err) {
                         alert('Gagal membaca file JSON: ' + err.message);
@@ -2298,4 +2276,851 @@
             }, 2000); // 2 seconds timeout
         });
     });
+</script>
+
+<!-- NETQUIZ VISUAL PAGE BUILDER (ELEMENTOR MODE) OVERLAY -->
+<div id="visual-builder-overlay"
+    style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: #f8fafc; z-index: 99999; font-family: 'Plus Jakarta Sans', sans-serif; flex-direction: column;">
+    <!-- Top Navbar -->
+    <div
+        style="height: 64px; background-color: #ffffff; border-bottom: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: space-between; padding: 0 1.5rem; flex-shrink: 0; box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);">
+        <div style="display: flex; align-items: center; gap: 0.75rem;">
+            <div style="font-weight: 800; font-size: 1.2rem; color: #0f172a; letter-spacing: -0.02em;">
+                Net<span style="color: #7c3aed;">Quiz</span> <span
+                    style="font-size: 0.85rem; font-weight: 500; color: #64748b; margin-left: 0.5rem; padding: 0.2rem 0.5rem; background-color: #f1f5f9; border-radius: 4px; border: 1px solid #e2e8f0;">Visual
+                    Page Builder</span>
+            </div>
+        </div>
+
+        <!-- Center Tabs (Edit vs Preview) -->
+        <div style="display: flex; background-color: #f1f5f9; padding: 0.25rem; border-radius: 8px; gap: 0.25rem;">
+            <button type="button" id="builder-tab-edit" onclick="setBuilderMode('edit')"
+                style="border: none; padding: 0.5rem 1rem; border-radius: 6px; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: all 0.15s; background-color: #ffffff; color: #0f172a; display: flex; align-items: center; gap: 0.35rem;">
+                <i data-lucide="edit-3" style="width: 0.95rem; height: 0.95rem;"></i> Sunting
+            </button>
+            <button type="button" id="builder-tab-preview" onclick="setBuilderMode('preview')"
+                style="border: none; padding: 0.5rem 1rem; border-radius: 6px; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: all 0.15s; background-color: transparent; color: #64748b; display: flex; align-items: center; gap: 0.35rem;">
+                <i data-lucide="eye" style="width: 0.95rem; height: 0.95rem;"></i> Pratinjau
+            </button>
+        </div>
+
+        <!-- Action Buttons -->
+        <div style="display: flex; gap: 0.75rem; align-items: center;">
+            <span id="builder-status-text"
+                style="font-size: 0.8rem; color: #10b981; font-weight: 600; display: flex; align-items: center; gap: 0.25rem; opacity: 0; transition: opacity 0.3s;">
+                <i data-lucide="check-circle-2" style="width: 0.9rem; height: 0.9rem;"></i> Tersimpan
+            </span>
+            <button type="button" onclick="closeVisualBuilder()"
+                style="border: 1px solid #cbd5e1; background-color: #ffffff; padding: 0.5rem 1rem; border-radius: 8px; font-size: 0.85rem; font-weight: 600; color: #475569; cursor: pointer; transition: all 0.15s;"
+                onmouseover="this.style.backgroundColor='#f1f5f9'" onmouseout="this.style.backgroundColor='#ffffff'">
+                Batal
+            </button>
+            <button type="button" onclick="saveVisualBuilder(true)"
+                style="border: none; background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%); padding: 0.5rem 1.25rem; border-radius: 8px; font-size: 0.85rem; font-weight: 700; color: #ffffff; cursor: pointer; transition: all 0.15s; display: inline-flex; align-items: center; gap: 0.35rem; box-shadow: 0 4px 10px -3px rgba(124, 58, 237, 0.35);"
+                onmouseover="this.style.transform='translateY(-1px)'" onmouseout="this.style.transform='translateY(0)'">
+                <i data-lucide="save" style="width: 0.95rem; height: 0.95rem;"></i> Simpan Materi
+            </button>
+        </div>
+    </div>
+
+    <!-- Main Workspace -->
+    <div style="display: flex; flex: 1; min-height: 0;">
+        <!-- Left Sidebar -->
+        <div id="builder-sidebar"
+            style="width: 320px; background-color: #ffffff; border-right: 1px solid #e2e8f0; display: flex; flex-direction: column; flex-shrink: 0; min-height: 0;">
+            <div style="display: flex; border-bottom: 1px solid #f1f5f9; flex-shrink: 0;">
+                <button type="button" id="sidebar-tab-widgets" onclick="setSidebarTab('widgets')"
+                    style="flex: 1; border: none; background: transparent; padding: 0.9rem; font-size: 0.85rem; font-weight: 700; color: #7c3aed; border-bottom: 2px solid #7c3aed; cursor: pointer;">
+                    Elemen
+                </button>
+                <button type="button" id="sidebar-tab-settings" onclick="setSidebarTab('settings')"
+                    style="flex: 1; border: none; background: transparent; padding: 0.9rem; font-size: 0.85rem; font-weight: 600; color: #64748b; border-bottom: 2px solid transparent; cursor: pointer;">
+                    Pengaturan Page
+                </button>
+            </div>
+
+            <div style="flex: 1; overflow-y: auto; padding: 1.25rem; min-height: 0;">
+                <!-- Widgets Panel -->
+                <div id="sidebar-widgets-panel" style="display: flex; flex-direction: column; gap: 1.25rem;">
+                    <div
+                        style="font-size: 0.75rem; font-weight: 800; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: -0.25rem;">
+                        Elemen Dasar</div>
+                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.75rem;">
+                        <div onclick="addBuilderBlock('h2')"
+                            style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 0.85rem; text-align: center; cursor: pointer; transition: all 0.15s; display: flex; flex-direction: column; align-items: center; gap: 0.4rem;"
+                            onmouseover="this.style.borderColor='#7c3aed'; this.style.backgroundColor='#f5f3ff';"
+                            onmouseout="this.style.borderColor='#e2e8f0'; this.style.backgroundColor='#f8fafc';">
+                            <div
+                                style="color: #7c3aed; background-color: #f5f3ff; width: 36px; height: 36px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 1.1rem;">
+                                H2</div>
+                            <span style="font-size: 0.75rem; font-weight: 600; color: #475569;">Subjudul (H2)</span>
+                        </div>
+                        <div onclick="addBuilderBlock('h3')"
+                            style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 0.85rem; text-align: center; cursor: pointer; transition: all 0.15s; display: flex; flex-direction: column; align-items: center; gap: 0.4rem;"
+                            onmouseover="this.style.borderColor='#7c3aed'; this.style.backgroundColor='#f5f3ff';"
+                            onmouseout="this.style.borderColor='#e2e8f0'; this.style.backgroundColor='#f8fafc';">
+                            <div
+                                style="color: #7c3aed; background-color: #f5f3ff; width: 36px; height: 36px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.95rem;">
+                                H3</div>
+                            <span style="font-size: 0.75rem; font-weight: 600; color: #475569;">Detail (H3)</span>
+                        </div>
+                        <div onclick="addBuilderBlock('p')"
+                            style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 0.85rem; text-align: center; cursor: pointer; transition: all 0.15s; display: flex; flex-direction: column; align-items: center; gap: 0.4rem;"
+                            onmouseover="this.style.borderColor='#7c3aed'; this.style.backgroundColor='#f5f3ff';"
+                            onmouseout="this.style.borderColor='#e2e8f0'; this.style.backgroundColor='#f8fafc';">
+                            <div
+                                style="color: #7c3aed; background-color: #f5f3ff; width: 36px; height: 36px; border-radius: 6px; display: flex; align-items: center; justify-content: center;">
+                                <i data-lucide="align-left" style="width: 1.2rem; height: 1.2rem;"></i>
+                            </div>
+                            <span style="font-size: 0.75rem; font-weight: 600; color: #475569;">Paragraf</span>
+                        </div>
+                        <div onclick="addBuilderBlock('list')"
+                            style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 0.85rem; text-align: center; cursor: pointer; transition: all 0.15s; display: flex; flex-direction: column; align-items: center; gap: 0.4rem;"
+                            onmouseover="this.style.borderColor='#7c3aed'; this.style.backgroundColor='#f5f3ff';"
+                            onmouseout="this.style.borderColor='#e2e8f0'; this.style.backgroundColor='#f8fafc';">
+                            <div
+                                style="color: #7c3aed; background-color: #f5f3ff; width: 36px; height: 36px; border-radius: 6px; display: flex; align-items: center; justify-content: center;">
+                                <i data-lucide="list" style="width: 1.2rem; height: 1.2rem;"></i>
+                            </div>
+                            <span style="font-size: 0.75rem; font-weight: 600; color: #475569;">Daftar List</span>
+                        </div>
+                    </div>
+
+                    <div
+                        style="font-size: 0.75rem; font-weight: 800; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.05em; margin-top: 0.5rem; margin-bottom: -0.25rem;">
+                        Elemen Interaktif & Media</div>
+                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.75rem;">
+                        <div onclick="addBuilderBlock('code')"
+                            style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 0.85rem; text-align: center; cursor: pointer; transition: all 0.15s; display: flex; flex-direction: column; align-items: center; gap: 0.4rem;"
+                            onmouseover="this.style.borderColor='#7c3aed'; this.style.backgroundColor='#f5f3ff';"
+                            onmouseout="this.style.borderColor='#e2e8f0'; this.style.backgroundColor='#f8fafc';">
+                            <div
+                                style="color: #7c3aed; background-color: #f5f3ff; width: 36px; height: 36px; border-radius: 6px; display: flex; align-items: center; justify-content: center;">
+                                <i data-lucide="code-2" style="width: 1.2rem; height: 1.2rem;"></i>
+                            </div>
+                            <span style="font-size: 0.75rem; font-weight: 600; color: #475569;">Blok Kode</span>
+                        </div>
+                        <div onclick="addBuilderBlock('callout')"
+                            style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 0.85rem; text-align: center; cursor: pointer; transition: all 0.15s; display: flex; flex-direction: column; align-items: center; gap: 0.4rem;"
+                            onmouseover="this.style.borderColor='#7c3aed'; this.style.backgroundColor='#f5f3ff';"
+                            onmouseout="this.style.borderColor='#e2e8f0'; this.style.backgroundColor='#f8fafc';">
+                            <div
+                                style="color: #7c3aed; background-color: #f5f3ff; width: 36px; height: 36px; border-radius: 6px; display: flex; align-items: center; justify-content: center;">
+                                <i data-lucide="alert-circle" style="width: 1.2rem; height: 1.2rem;"></i>
+                            </div>
+                            <span style="font-size: 0.75rem; font-weight: 600; color: #475569;">Kotak Info</span>
+                        </div>
+                        <div onclick="addBuilderBlock('image')"
+                            style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 0.85rem; text-align: center; cursor: pointer; transition: all 0.15s; display: flex; flex-direction: column; align-items: center; gap: 0.4rem;"
+                            onmouseover="this.style.borderColor='#7c3aed'; this.style.backgroundColor='#f5f3ff';"
+                            onmouseout="this.style.borderColor='#e2e8f0'; this.style.backgroundColor='#f8fafc';">
+                            <div
+                                style="color: #7c3aed; background-color: #f5f3ff; width: 36px; height: 36px; border-radius: 6px; display: flex; align-items: center; justify-content: center;">
+                                <i data-lucide="image" style="width: 1.2rem; height: 1.2rem;"></i>
+                            </div>
+                            <span style="font-size: 0.75rem; font-weight: 600; color: #475569;">Gambar</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Page Settings Panel -->
+                <div id="sidebar-settings-panel" style="display: none; flex-direction: column; gap: 1.25rem;">
+                    <div class="admin-form-group">
+                        <label class="admin-label" style="font-size: 0.8rem;">Judul Materi</label>
+                        <input type="text" id="builder-meta-title" oninput="updateBuilderMetaTitle()"
+                            class="admin-input" style="height: 40px; font-size: 0.9rem;" placeholder="Judul materi...">
+                    </div>
+                    <div class="admin-form-group">
+                        <label class="admin-label" style="font-size: 0.8rem;">Kategori</label>
+                        <select id="builder-meta-category" class="admin-input"
+                            style="height: 40px; font-size: 0.9rem; padding: 0 0.5rem;">
+                            <option value="Routing">Routing</option>
+                            <option value="Firewall & NAT">Firewall & NAT</option>
+                            <option value="Wireless">Wireless</option>
+                            <option value="Network Management">Network Management</option>
+                        </select>
+                    </div>
+                    <input type="hidden" id="builder-meta-difficulty" value="Mudah">
+                </div>
+            </div>
+
+            <div
+                style="padding: 1rem; border-top: 1px solid #f1f5f9; background-color: #f8fafc; font-size: 0.75rem; color: #64748b; line-height: 1.4;">
+                <i data-lucide="help-circle"
+                    style="width: 0.9rem; height: 0.9rem; display: inline; vertical-align: middle; margin-right: 0.2rem; color: #7c3aed;"></i>
+                Klik langsung pada teks di kanvas sebelah kanan untuk mengedit isi konten secara visual.
+            </div>
+        </div>
+
+        <!-- Canvas area -->
+        <div style="flex: 1; padding: 2.5rem; overflow-y: auto; background-color: #f8fafc;">
+            <div style="width: 100%; max-width: 800px; margin: 0 auto; display: flex; flex-direction: column; gap: 1.5rem;">
+
+                <!-- Mock Page Title Area -->
+                <div
+                    style="background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 2rem; box-shadow: 0 1px 3px rgba(0,0,0,0.02); display: flex; flex-direction: column; gap: 0.75rem;">
+                    <div
+                        style="display: flex; gap: 0.5rem; align-items: center; font-size: 0.8rem; font-weight: 600; color: #7c3aed;">
+                        <span id="canvas-meta-category">Routing</span>
+                        <span id="canvas-meta-difficulty" style="display: none;">Mudah</span>
+                    </div>
+                    <h1 id="canvas-meta-title"
+                        style="font-size: 2.25rem; font-weight: 800; color: #0f172a; margin: 0; line-height: 1.2; letter-spacing: -0.025em; word-break: break-word;">
+                        Judul Materi Pembelajaran
+                    </h1>
+                    <div style="height: 1px; background-color: #f1f5f9; margin-top: 0.5rem;"></div>
+                </div>
+
+                <!-- The Canvas -->
+                <div id="builder-canvas" class="material-body"
+                    style="background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 2.5rem; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03); min-height: 400px; display: flex; flex-direction: column; gap: 1rem; position: relative;">
+                    <!-- Placeholder when empty -->
+                    <div id="canvas-empty-state"
+                        style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1rem; padding: 5rem 2rem; border: 2px dashed #cbd5e1; border-radius: 8px; color: #94a3b8; text-align: center;">
+                        <i data-lucide="layout"
+                            style="width: 3.5rem; height: 3.5rem; stroke-width: 1.25; color: #cbd5e1;"></i>
+                        <div>
+                            <p style="font-weight: 700; font-size: 1rem; color: #475569; margin: 0 0 0.25rem 0;">Kanvas
+                                Masih Kosong</p>
+                            <p
+                                style="font-size: 0.8rem; color: #94a3b8; max-width: 280px; margin: 0; line-height: 1.4;">
+                                Klik widget di panel kiri untuk mulai mendesain tata letak materi belajar Anda.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Builder block elements */
+    .builder-block-wrapper {
+        position: relative;
+        padding: 0.65rem 0.85rem;
+        margin-bottom: 0.5rem;
+        border: 1.5px dashed transparent;
+        border-radius: 10px;
+        transition: all 0.2s ease-in-out;
+    }
+
+    .builder-block-wrapper:hover {
+        border-color: #a78bfa;
+        background-color: #faf5ff;
+    }
+
+    .builder-block-controls {
+        position: absolute;
+        top: -14px;
+        right: 12px;
+        display: none;
+        gap: 0.25rem;
+        z-index: 100;
+    }
+
+    .builder-block-wrapper:hover .builder-block-controls {
+        display: flex;
+    }
+
+    .builder-control-btn {
+        width: 26px;
+        height: 26px;
+        border-radius: 6px;
+        border: 1px solid #e2e8f0;
+        background-color: #ffffff;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        color: #475569;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        transition: all 0.15s;
+        outline: none;
+    }
+
+    .builder-control-btn:hover {
+        background-color: #7c3aed;
+        color: #ffffff;
+        border-color: #7c3aed;
+        transform: translateY(-1px);
+    }
+
+    /* Hide controls in preview mode */
+    #builder-canvas.preview-mode .builder-block-wrapper {
+        border: none;
+        padding: 0;
+        margin-bottom: 0;
+        background: transparent;
+    }
+
+    #builder-canvas.preview-mode .builder-block-controls,
+    #builder-canvas.preview-mode .builder-block-controls-select {
+        display: none !important;
+    }
+
+    #builder-canvas.preview-mode .builder-editable {
+        outline: none;
+    }
+
+    #builder-canvas.preview-mode [contenteditable="true"] {
+        contenteditable: false !important;
+    }
+
+    #builder-canvas.preview-mode textarea,
+    #builder-canvas.preview-mode input,
+    #builder-canvas.preview-mode select {
+        pointer-events: none;
+        border: none;
+        background: transparent;
+        padding: 0;
+    }
+
+    /* Spin animation for loading state */
+    .animate-spin {
+        animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+        from {
+            transform: rotate(0deg);
+        }
+
+        to {
+            transform: rotate(360deg);
+        }
+    }
+</style>
+
+<script>
+    // --- NETQUIZ VISUAL BUILDER (ELEMENTOR MODE) STATE ---
+    let builderBlocks = [];
+    let activeBuilderMode = 'edit';
+
+    function toggleClassicEditor() {
+        const container = document.getElementById('classic-editor-container');
+        const btn = document.getElementById('classic-editor-toggle-btn');
+        if (container.style.display === 'none') {
+            container.style.display = 'block';
+            btn.innerText = 'Sembunyikan Editor HTML Klasik';
+        } else {
+            container.style.display = 'none';
+            btn.innerText = 'Tampilkan Editor HTML Klasik';
+        }
+    }
+
+    function openVisualBuilderFromForm() {
+        const titleVal = document.getElementById('form-material-title').value;
+        const catVal = document.getElementById('form-material-category').value;
+        const diffVal = document.getElementById('form-material-difficulty').value;
+        const contentVal = document.getElementById('form-material-content').value;
+
+        document.getElementById('builder-meta-title').value = titleVal;
+        document.getElementById('builder-meta-category').value = catVal;
+        document.getElementById('builder-meta-difficulty').value = diffVal;
+
+        updateBuilderMetaTitle();
+
+        // Sync preview badge state
+        const diffEl = document.getElementById('canvas-meta-difficulty');
+        diffEl.innerText = diffVal;
+        diffEl.className = '';
+        if (diffVal === 'Mudah') {
+            diffEl.style.backgroundColor = '#ecfdf5';
+            diffEl.style.color = '#059669';
+        } else if (diffVal === 'Sedang') {
+            diffEl.style.backgroundColor = '#fffbeb';
+            diffEl.style.color = '#d97706';
+        } else {
+            diffEl.style.backgroundColor = '#fef2f2';
+            diffEl.style.color = '#dc2626';
+        }
+        document.getElementById('canvas-meta-category').innerText = catVal;
+
+        builderBlocks = parseHtmlToBlocks(contentVal);
+
+        document.getElementById('visual-builder-overlay').style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+
+        setBuilderMode('edit');
+        renderBuilderBlocks();
+    }
+
+    function editMaterialVisual(id) {
+        const rowItem = document.querySelector(`button[onclick="editMaterialVisual(${id})"]`);
+        const originalContent = rowItem.innerHTML;
+        rowItem.disabled = true;
+        rowItem.innerHTML = '<i data-lucide="loader" class="animate-spin" style="width: 0.85rem; height: 0.85rem; display: inline-block;"></i>...';
+        if (window.lucide) window.lucide.createIcons();
+
+        fetch(`<?= BASE_URL ?>/admin/material/get/${id}`)
+            .then(res => res.json())
+            .then(data => {
+                rowItem.disabled = false;
+                rowItem.innerHTML = originalContent;
+                if (window.lucide) window.lucide.createIcons();
+
+                const listModal = document.getElementById('quiz-list-modal');
+                if (listModal) {
+                    listModal.classList.remove('active');
+                }
+
+                document.getElementById('edit-material-id').value = data.id;
+                document.getElementById('form-material-title').value = data.title;
+                document.getElementById('form-material-category').value = data.category;
+                document.getElementById('form-material-difficulty').value = data.difficulty || 'Mudah';
+                document.getElementById('form-material-content').value = data.content;
+
+                const form = document.getElementById('create-material-form');
+                form.action = `<?= BASE_URL ?>/admin/material/update/${data.id}`;
+                document.getElementById('form-material-card-title').innerHTML = `
+                    <i data-lucide="edit" style="width: 1.25rem; height: 1.25rem; color: #7c3aed;"></i>
+                    Sunting Materi: ${data.title}
+                `;
+                document.getElementById('btn-publish-material-text').innerText = 'Simpan Perubahan';
+                document.getElementById('btn-cancel-edit-material').style.display = 'flex';
+                if (window.lucide) window.lucide.createIcons();
+
+                document.getElementById('materials-section').scrollIntoView({ behavior: 'smooth' });
+
+                openVisualBuilderFromForm();
+            })
+            .catch(err => {
+                rowItem.disabled = false;
+                rowItem.innerHTML = originalContent;
+                if (window.lucide) window.lucide.createIcons();
+                alert('Gagal mengambil data materi: ' + err.message);
+            });
+    }
+
+    function resetMaterialForm() {
+        document.getElementById('edit-material-id').value = '';
+        document.getElementById('form-material-title').value = '';
+        document.getElementById('form-material-category').value = 'Routing';
+        document.getElementById('form-material-difficulty').value = 'Mudah';
+        document.getElementById('form-material-content').value = '';
+
+        const form = document.getElementById('create-material-form');
+        form.action = `<?= BASE_URL ?>/admin/material/create`;
+        document.getElementById('form-material-card-title').innerHTML = `
+            <i data-lucide="book-open" style="width: 1.25rem; height: 1.25rem; color: #7c3aed;"></i>
+            Buat Materi Belajar Baru
+        `;
+        document.getElementById('btn-publish-material-text').innerText = 'Publikasikan Materi';
+        document.getElementById('btn-cancel-edit-material').style.display = 'none';
+        if (window.lucide) window.lucide.createIcons();
+    }
+
+    function closeVisualBuilder() {
+        document.getElementById('visual-builder-overlay').style.display = 'none';
+        document.body.style.overflow = 'auto';
+    }
+
+    function saveVisualBuilder(shouldSubmit = false) {
+        const html = compileBlocksToHtml();
+
+        const titleVal = document.getElementById('builder-meta-title').value;
+        const catVal = document.getElementById('builder-meta-category').value;
+        const diffVal = document.getElementById('builder-meta-difficulty').value;
+
+        document.getElementById('form-material-title').value = titleVal;
+        document.getElementById('form-material-category').value = catVal;
+        document.getElementById('form-material-difficulty').value = diffVal;
+        document.getElementById('form-material-content').value = html;
+
+        const statusText = document.getElementById('builder-status-text');
+        statusText.style.opacity = '1';
+        setTimeout(() => { statusText.style.opacity = '0'; }, 1500);
+
+        if (shouldSubmit) {
+            closeVisualBuilder();
+            document.getElementById('create-material-form').submit();
+        }
+    }
+
+    function setSidebarTab(tab) {
+        const widgetsBtn = document.getElementById('sidebar-tab-widgets');
+        const settingsBtn = document.getElementById('sidebar-tab-settings');
+        const widgetsPanel = document.getElementById('sidebar-widgets-panel');
+        const settingsPanel = document.getElementById('sidebar-settings-panel');
+
+        if (tab === 'widgets') {
+            widgetsBtn.style.color = '#7c3aed';
+            widgetsBtn.style.borderBottomColor = '#7c3aed';
+            settingsBtn.style.color = '#64748b';
+            settingsBtn.style.borderBottomColor = 'transparent';
+            widgetsPanel.style.display = 'flex';
+            settingsPanel.style.display = 'none';
+        } else {
+            settingsBtn.style.color = '#7c3aed';
+            settingsBtn.style.borderBottomColor = '#7c3aed';
+            widgetsBtn.style.color = '#64748b';
+            widgetsBtn.style.borderBottomColor = 'transparent';
+            settingsPanel.style.display = 'flex';
+            widgetsPanel.style.display = 'none';
+        }
+    }
+
+    function setBuilderMode(mode) {
+        activeBuilderMode = mode;
+        const editBtn = document.getElementById('builder-tab-edit');
+        const previewBtn = document.getElementById('builder-tab-preview');
+        const sidebar = document.getElementById('builder-sidebar');
+        const canvas = document.getElementById('builder-canvas');
+
+        if (mode === 'edit') {
+            editBtn.style.backgroundColor = '#ffffff';
+            editBtn.style.color = '#0f172a';
+            previewBtn.style.backgroundColor = 'transparent';
+            previewBtn.style.color = '#64748b';
+            sidebar.style.display = 'flex';
+            canvas.classList.remove('preview-mode');
+            renderBuilderBlocks();
+        } else {
+            previewBtn.style.backgroundColor = '#ffffff';
+            previewBtn.style.color = '#0f172a';
+            editBtn.style.backgroundColor = 'transparent';
+            editBtn.style.color = '#64748b';
+            sidebar.style.display = 'none';
+            canvas.classList.add('preview-mode');
+            renderPreviewInCanvas();
+        }
+    }
+
+    function renderPreviewInCanvas() {
+        const canvas = document.getElementById('builder-canvas');
+        const html = compileBlocksToHtml();
+
+        const oldWrappers = canvas.querySelectorAll('.builder-block-wrapper');
+        oldWrappers.forEach(w => w.remove());
+
+        const previewContainer = document.createElement('div');
+        previewContainer.className = 'builder-block-wrapper';
+        previewContainer.style.border = 'none';
+        previewContainer.style.padding = '0';
+        previewContainer.style.margin = '0';
+        previewContainer.innerHTML = html;
+        canvas.appendChild(previewContainer);
+    }
+
+    function updateBuilderMetaTitle() {
+        const val = document.getElementById('builder-meta-title').value;
+        document.getElementById('canvas-meta-title').innerText = val || 'Judul Materi Pembelajaran';
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const metaCatSelect = document.getElementById('builder-meta-category');
+        const metaDiffSelect = document.getElementById('builder-meta-difficulty');
+
+        if (metaCatSelect && metaDiffSelect) {
+            metaCatSelect.addEventListener('change', (e) => {
+                document.getElementById('canvas-meta-category').innerText = e.target.value;
+            });
+            metaDiffSelect.addEventListener('change', (e) => {
+                const val = e.target.value;
+                const diffEl = document.getElementById('canvas-meta-difficulty');
+                diffEl.innerText = val;
+                diffEl.className = '';
+                if (val === 'Mudah') {
+                    diffEl.style.backgroundColor = '#ecfdf5';
+                    diffEl.style.color = '#059669';
+                } else if (val === 'Sedang') {
+                    diffEl.style.backgroundColor = '#fffbeb';
+                    diffEl.style.color = '#d97706';
+                } else {
+                    diffEl.style.backgroundColor = '#fef2f2';
+                    diffEl.style.color = '#dc2626';
+                }
+            });
+        }
+    });
+
+    function addBuilderBlock(type) {
+        let block = {
+            id: 'block_' + Math.random().toString(36).substr(2, 9),
+            type: type,
+            content: ''
+        };
+
+        if (type === 'callout') {
+            block.calloutType = 'info';
+            block.content = 'Isi kotak info penting di sini...';
+        } else if (type === 'code') {
+            block.language = 'plaintext';
+            block.content = '';
+        } else if (type === 'image') {
+            block.imageSrc = '';
+            block.imageAlt = '';
+        } else if (type === 'h2') {
+            block.content = 'Subjudul H2 baru';
+        } else if (type === 'h3') {
+            block.content = 'Detail H3 baru';
+        } else if (type === 'p') {
+            block.content = 'Tulis teks paragraf di sini...';
+        } else if (type === 'list') {
+            block.content = '<li>Item daftar pertama</li><li>Item daftar kedua</li>';
+        }
+
+        builderBlocks.push(block);
+        renderBuilderBlocks();
+    }
+
+    function updateBlockContent(id, content) {
+        const idx = builderBlocks.findIndex(b => b.id === id);
+        if (idx !== -1) {
+            builderBlocks[idx].content = content;
+        }
+    }
+
+    function updateBlockCalloutType(id, val) {
+        const idx = builderBlocks.findIndex(b => b.id === id);
+        if (idx !== -1) {
+            builderBlocks[idx].calloutType = val;
+            renderBuilderBlocks();
+        }
+    }
+
+    function updateBlockLanguage(id, val) {
+        const idx = builderBlocks.findIndex(b => b.id === id);
+        if (idx !== -1) {
+            builderBlocks[idx].language = val;
+        }
+    }
+
+    function updateBlockImageSrc(id, val) {
+        const idx = builderBlocks.findIndex(b => b.id === id);
+        if (idx !== -1) {
+            builderBlocks[idx].imageSrc = val;
+            renderBuilderBlocks();
+        }
+    }
+
+    function updateBlockImageAlt(id, val) {
+        const idx = builderBlocks.findIndex(b => b.id === id);
+        if (idx !== -1) {
+            builderBlocks[idx].imageAlt = val;
+        }
+    }
+
+    function deleteBlock(id) {
+        builderBlocks = builderBlocks.filter(b => b.id !== id);
+        renderBuilderBlocks();
+    }
+
+    function moveBlockUp(idx) {
+        if (idx > 0) {
+            const temp = builderBlocks[idx];
+            builderBlocks[idx] = builderBlocks[idx - 1];
+            builderBlocks[idx - 1] = temp;
+            renderBuilderBlocks();
+        }
+    }
+
+    function moveBlockDown(idx) {
+        if (idx < builderBlocks.length - 1) {
+            const temp = builderBlocks[idx];
+            builderBlocks[idx] = builderBlocks[idx + 1];
+            builderBlocks[idx + 1] = temp;
+            renderBuilderBlocks();
+        }
+    }
+
+    function compileBlocksToHtml() {
+        let html = '';
+        builderBlocks.forEach(b => {
+            if (b.type === 'h2') {
+                html += `<h2>${b.content}</h2>\n`;
+            } else if (b.type === 'h3') {
+                html += `<h3>${b.content}</h3>\n`;
+            } else if (b.type === 'p') {
+                html += `<p>${b.content}</p>\n`;
+            } else if (b.type === 'list') {
+                html += `<ul>${b.content}</ul>\n`;
+            } else if (b.type === 'callout') {
+                html += `<div class="material-callout material-callout-${b.calloutType || 'info'}">${b.content}</div>\n`;
+            } else if (b.type === 'code') {
+                const escaped = b.content
+                    .replace(/&/g, "&amp;")
+                    .replace(/</g, "&lt;")
+                    .replace(/>/g, "&gt;")
+                    .replace(/"/g, "&quot;")
+                    .replace(/'/g, "&#039;");
+                html += `<pre><code class="language-${b.language || 'plaintext'}">${escaped}</code></pre>\n`;
+            } else if (b.type === 'image') {
+                html += `<img src="${b.imageSrc}" alt="${b.imageAlt || ''}" class="material-img">\n`;
+            }
+        });
+        return html;
+    }
+
+    function parseHtmlToBlocks(html) {
+        if (!html || !html.trim()) return [];
+
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, 'text/html');
+        const container = doc.body;
+        const blocks = [];
+
+        for (let i = 0; i < container.children.length; i++) {
+            const el = container.children[i];
+            const tagName = el.tagName.toLowerCase();
+
+            if (tagName === 'h2') {
+                blocks.push({
+                    id: 'block_' + Math.random().toString(36).substr(2, 9),
+                    type: 'h2',
+                    content: el.innerHTML
+                });
+            } else if (tagName === 'h3') {
+                blocks.push({
+                    id: 'block_' + Math.random().toString(36).substr(2, 9),
+                    type: 'h3',
+                    content: el.innerHTML
+                });
+            } else if (tagName === 'p') {
+                blocks.push({
+                    id: 'block_' + Math.random().toString(36).substr(2, 9),
+                    type: 'p',
+                    content: el.innerHTML
+                });
+            } else if (tagName === 'div' && el.classList.contains('material-callout')) {
+                let type = 'info';
+                if (el.classList.contains('material-callout-success')) type = 'success';
+                else if (el.classList.contains('material-callout-warning')) type = 'warning';
+                else if (el.classList.contains('material-callout-danger')) type = 'danger';
+
+                blocks.push({
+                    id: 'block_' + Math.random().toString(36).substr(2, 9),
+                    type: 'callout',
+                    content: el.innerHTML,
+                    calloutType: type
+                });
+            } else if (tagName === 'pre') {
+                const codeEl = el.querySelector('code');
+                let codeContent = el.innerText;
+                let lang = 'plaintext';
+                if (codeEl) {
+                    codeContent = codeEl.innerText;
+                    const match = codeEl.className.match(/language-(\w+)/);
+                    if (match) lang = match[1];
+                }
+                blocks.push({
+                    id: 'block_' + Math.random().toString(36).substr(2, 9),
+                    type: 'code',
+                    content: codeContent,
+                    language: lang
+                });
+            } else if (tagName === 'ul' || tagName === 'ol') {
+                blocks.push({
+                    id: 'block_' + Math.random().toString(36).substr(2, 9),
+                    type: 'list',
+                    content: el.innerHTML
+                });
+            } else if (tagName === 'img') {
+                blocks.push({
+                    id: 'block_' + Math.random().toString(36).substr(2, 9),
+                    type: 'image',
+                    imageSrc: el.getAttribute('src') || '',
+                    imageAlt: el.getAttribute('alt') || ''
+                });
+            } else {
+                blocks.push({
+                    id: 'block_' + Math.random().toString(36).substr(2, 9),
+                    type: 'p',
+                    content: el.outerHTML
+                });
+            }
+        }
+        return blocks;
+    }
+
+    function renderBuilderBlocks() {
+        const canvas = document.getElementById('builder-canvas');
+        const emptyState = document.getElementById('canvas-empty-state');
+
+        const oldWrappers = canvas.querySelectorAll('.builder-block-wrapper');
+        oldWrappers.forEach(w => w.remove());
+
+        if (builderBlocks.length === 0) {
+            emptyState.style.display = 'flex';
+            return;
+        } else {
+            emptyState.style.display = 'none';
+        }
+
+        builderBlocks.forEach((block, index) => {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'builder-block-wrapper';
+            wrapper.dataset.id = block.id;
+
+            let controlsHtml = `
+                <div class="builder-block-controls">
+                    <button type="button" class="builder-control-btn" onclick="moveBlockUp(${index})" title="Pindahkan Ke Atas"><i data-lucide="chevron-up" style="width: 0.85rem; height: 0.85rem;"></i></button>
+                    <button type="button" class="builder-control-btn" onclick="moveBlockDown(${index})" title="Pindahkan Ke Bawah"><i data-lucide="chevron-down" style="width: 0.85rem; height: 0.85rem;"></i></button>
+                    <button type="button" class="builder-control-btn" onclick="deleteBlock('${block.id}')" title="Hapus Elemen" style="color: #ef4444;"><i data-lucide="trash-2" style="width: 0.85rem; height: 0.85rem;"></i></button>
+                </div>
+            `;
+
+            let contentHtml = '';
+
+            if (block.type === 'h2') {
+                contentHtml = `<h2 class="builder-editable" contenteditable="true" onblur="updateBlockContent('${block.id}', this.innerHTML)" style="margin: 0; outline: none; border-bottom: 2px solid transparent; min-height: 2rem;">${block.content || 'Subjudul H2 baru'}</h2>`;
+            } else if (block.type === 'h3') {
+                contentHtml = `<h3 class="builder-editable" contenteditable="true" onblur="updateBlockContent('${block.id}', this.innerHTML)" style="margin: 0; outline: none; min-height: 1.5rem;">${block.content || 'Detail H3 baru'}</h3>`;
+            } else if (block.type === 'p') {
+                contentHtml = `<p class="builder-editable" contenteditable="true" onblur="updateBlockContent('${block.id}', this.innerHTML)" style="margin: 0; outline: none; min-height: 1.5rem; line-height: 1.75;">${block.content || 'Tulis teks paragraf di sini...'}</p>`;
+            } else if (block.type === 'list') {
+                contentHtml = `<ul class="builder-editable" contenteditable="true" onblur="updateBlockContent('${block.id}', this.innerHTML)" style="margin: 0; outline: none; padding-left: 1.5rem; min-height: 2rem;">${block.content || '<li>Item daftar pertama</li><li>Item daftar kedua</li>'}</ul>`;
+            } else if (block.type === 'callout') {
+                contentHtml = `
+                    <div class="material-callout material-callout-${block.calloutType || 'info'}" style="position: relative; margin: 0;">
+                        <div style="position: absolute; top: 0.5rem; right: 0.5rem; display: flex; gap: 0.25rem; align-items: center;" class="builder-block-controls-select">
+                            <select onchange="updateBlockCalloutType('${block.id}', this.value)" style="border: 1px solid #cbd5e1; border-radius: 4px; font-size: 0.7rem; padding: 2px 4px; background: #fff; cursor: pointer; font-family: 'Plus Jakarta Sans', sans-serif;">
+                                <option value="info" ${block.calloutType === 'info' ? 'selected' : ''}>Info</option>
+                                <option value="success" ${block.calloutType === 'success' ? 'selected' : ''}>Sukses</option>
+                                <option value="warning" ${block.calloutType === 'warning' ? 'selected' : ''}>Peringatan</option>
+                                <option value="danger" ${block.calloutType === 'danger' ? 'selected' : ''}>Bahaya</option>
+                            </select>
+                        </div>
+                        <div class="builder-editable" contenteditable="true" onblur="updateBlockContent('${block.id}', this.innerHTML)" style="outline: none; min-height: 1.5rem;">${block.content || 'Isi kotak info penting di sini...'}</div>
+                    </div>
+                `;
+            } else if (block.type === 'code') {
+                contentHtml = `
+                    <div style="background-color: #0f172a; padding: 1.25rem; border-radius: 8px; position: relative;">
+                        <div style="position: absolute; top: 0.5rem; right: 0.5rem; display: flex; gap: 0.25rem;" class="builder-block-controls-select">
+                            <select onchange="updateBlockLanguage('${block.id}', this.value)" style="border: none; border-radius: 4px; font-size: 0.7rem; padding: 2px 4px; background: #334155; color: #fff; cursor: pointer; font-family: 'Plus Jakarta Sans', sans-serif;">
+                                <option value="plaintext" ${block.language === 'plaintext' ? 'selected' : ''}>Plaintext</option>
+                                <option value="php" ${block.language === 'php' ? 'selected' : ''}>PHP</option>
+                                <option value="bash" ${block.language === 'bash' ? 'selected' : ''}>Bash / Shell</option>
+                                <option value="json" ${block.language === 'json' ? 'selected' : ''}>JSON</option>
+                                <option value="html" ${block.language === 'html' ? 'selected' : ''}>HTML</option>
+                            </select>
+                        </div>
+                        <textarea oninput="updateBlockContent('${block.id}', this.value)" style="width: 100%; background: transparent; color: #e2e8f0; font-family: 'Courier New', Courier, monospace; border: none; resize: vertical; min-height: 80px; outline: none; font-size: 0.85rem; line-height: 1.5; margin: 0; padding: 0;" placeholder="Tulis baris kode di sini...">${block.content || ''}</textarea>
+                    </div>
+                `;
+            } else if (block.type === 'image') {
+                contentHtml = `
+                    <div style="border: 1px solid #e2e8f0; border-radius: 8px; padding: 1rem; background-color: #f8fafc; display: flex; flex-direction: column; gap: 0.75rem;">
+                        <div style="display: flex; gap: 0.5rem; align-items: center;" class="builder-block-controls-select">
+                            <span style="font-size: 0.75rem; font-weight: 700; color: #475569;">URL Gambar:</span>
+                            <input type="text" value="${block.imageSrc || ''}" oninput="updateBlockImageSrc('${block.id}', this.value)" placeholder="<?= BASE_URL ?>/uploads/nama-file.png" style="flex: 1; height: 32px; padding: 0 0.5rem; font-size: 0.8rem; border-radius: 6px; border: 1px solid #cbd5e1;">
+                            <span style="font-size: 0.75rem; font-weight: 700; color: #475569;">Alt:</span>
+                            <input type="text" value="${block.imageAlt || ''}" oninput="updateBlockImageAlt('${block.id}', this.value)" placeholder="Deskripsi" style="width: 120px; height: 32px; padding: 0 0.5rem; font-size: 0.8rem; border-radius: 6px; border: 1px solid #cbd5e1;">
+                        </div>
+                        <div style="text-align: center; border: 1px dashed #cbd5e1; border-radius: 6px; background: #fff; padding: 0.5rem;">
+                            ${block.imageSrc ? `<img src="${block.imageSrc}" alt="${block.imageAlt || ''}" style="max-height: 200px; max-width: 100%; border-radius: 4px; display: inline-block;">` : `<span style="font-size: 0.75rem; color: #94a3b8;"><i data-lucide="image" style="width: 1rem; height: 1rem; display: inline-block; vertical-align: middle; margin-right: 0.25rem;"></i> Belum ada gambar dimasukkan</span>`}
+                        </div>
+                    </div>
+                `;
+            }
+
+            wrapper.innerHTML = controlsHtml + contentHtml;
+            canvas.appendChild(wrapper);
+        });
+
+        if (window.lucide) {
+            window.lucide.createIcons();
+        }
+    }
 </script>
