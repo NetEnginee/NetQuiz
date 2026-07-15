@@ -23,7 +23,7 @@ class MaterialRepository
      */
     public function getAll(): array
     {
-        $stmt = $this->db->prepare("SELECT * FROM materials ORDER BY created_at DESC");
+        $stmt = $this->db->prepare("SELECT id, title, category, difficulty, image_path, created_at, updated_at FROM materials ORDER BY created_at DESC");
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
