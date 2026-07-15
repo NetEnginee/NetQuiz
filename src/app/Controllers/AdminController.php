@@ -507,4 +507,62 @@ class AdminController extends Controller
         header('Location: ' . BASE_URL . '/admin#materials-section');
         exit;
     }
+
+    public function getMaterialJson($id)
+    {
+        $this->checkAdmin();
+        $id = (int) $id;
+        try {
+            $materialRepo = new \App\Repositories\MaterialRepository();
+            $material = $materialRepo->getById($id);
+            header('Content-Type: application/json');
+            if ($material) {
+                echo json_encode($material);
+            } else {
+                http_response_code(404);
+                echo json_encode(['error' => 'Materi tidak ditemukan.']);
+            }
+        } catch (\Exception $e) {
+            header('Content-Type: application/json');
+            http_response_code(500);
+            echo json_encode(['error' => $e->getMessage()]);
+        }
+        exit;
+    }
+
+    public function updateMaterial($id)
+    {
+        $this->checkAdmin();
+        $id = (int) $id;
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            if (!\App\Core\Security::validateCsrfToken()) {
+                $_SESSION['admin_error'] = 'Sesi tidak valid, silakan muat ulang halaman.';
+                header('Location: ' . BASE_URL . '/admin#materials-section');
+                exit;
+            }
+            $title = trim($_POST['title'] ?? '');
+            $content = trim($_POST['content'] ?? '');
+            $category = trim($_POST['category'] ?? 'Routing');
+            $difficulty = trim($_POST['difficulty'] ?? 'Mudah');
+
+            if (empty($title) || empty($content)) {
+                $_SESSION['admin_error'] = 'Judul dan Konten materi wajib diisi.';
+                header('Location: ' . BASE_URL . '/admin#materials-section');
+                exit;
+            }
+
+            try {
+                $materialRepo = new \App\Repositories\MaterialRepository();
+                $materialRepo->update($id, $title, $content, $category, $difficulty);
+                $_SESSION['admin_success'] = 'Materi berhasil diperbarui!';
+            } catch (\Exception $e) {
+                $_SESSION['admin_error'] = 'Gagal memperbarui materi: ' . $e->getMessage();
+            }
+
+            header('Location: ' . BASE_URL . '/admin#materials-section');
+            exit;
+        }
+    }
 }
+

@@ -112,6 +112,8 @@ $router->post('/admin/badge/create', [\App\Controllers\AdminController::class, '
 $router->post('/admin/badge/delete/{id}', [\App\Controllers\AdminController::class, 'deleteBadge']);
 $router->post('/admin/badge/delete-bulk', [\App\Controllers\AdminController::class, 'deleteBadgesBulk']);
 $router->post('/admin/material/create', [\App\Controllers\AdminController::class, 'createMaterial']);
+$router->post('/admin/material/update/{id}', [\App\Controllers\AdminController::class, 'updateMaterial']);
+$router->get('/admin/material/get/{id}', [\App\Controllers\AdminController::class, 'getMaterialJson']);
 $router->post('/admin/material/delete/{id}', [\App\Controllers\AdminController::class, 'deleteMaterial']);
 $router->get('/quiz/play/{id}', [\App\Controllers\QuizController::class, 'play']);
 $router->post('/quiz/pause/{id}', [\App\Controllers\QuizController::class, 'pause']);
