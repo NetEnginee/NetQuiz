@@ -2654,6 +2654,19 @@
         display: flex;
     }
 
+    /* Drag & Drop Visual Styles */
+    .builder-block-wrapper.dragging {
+        opacity: 0.4;
+        border: 1.5px dashed #7c3aed !important;
+        background-color: #f5f3ff !important;
+        transform: scale(0.99);
+    }
+
+    .builder-block-wrapper.drag-over {
+        border-top: 3px solid #7c3aed !important;
+        margin-top: 10px;
+    }
+
     .builder-control-btn {
         width: 26px;
         height: 26px;
@@ -3732,6 +3745,54 @@
             }
 
             wrapper.innerHTML = controlsHtml + contentHtml;
+
+            // NATIVE DRAG & DROP LOGIC (Only in Edit Mode)
+            if (activeBuilderMode === 'edit') {
+                wrapper.setAttribute('draggable', 'true');
+                
+                wrapper.addEventListener('dragstart', (e) => {
+                    // Bypass dragging if user is interacting with text inputs or editables
+                    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.closest('[contenteditable="true"]')) {
+                        e.preventDefault();
+                        return;
+                    }
+                    e.dataTransfer.effectAllowed = 'move';
+                    wrapper.classList.add('dragging');
+                    window.draggedElement = wrapper;
+                });
+
+                wrapper.addEventListener('dragend', () => {
+                    wrapper.classList.remove('dragging');
+                    const allWrappers = canvas.querySelectorAll('.builder-block-wrapper');
+                    allWrappers.forEach(w => w.classList.remove('drag-over'));
+                    
+                    // Rebuild builderBlocks array based on new DOM order
+                    const currentIds = Array.from(canvas.querySelectorAll('.builder-block-wrapper')).map(w => w.dataset.id);
+                    const newBlocks = [];
+                    currentIds.forEach(id => {
+                        const block = builderBlocks.find(b => b.id === id);
+                        if (block) newBlocks.push(block);
+                    });
+                    builderBlocks = newBlocks;
+                    renderBuilderBlocks();
+                });
+
+                wrapper.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    e.dataTransfer.dropEffect = 'move';
+                    
+                    if (window.draggedElement && window.draggedElement !== wrapper) {
+                        const rect = wrapper.getBoundingClientRect();
+                        const next = (e.clientY - rect.top) / (rect.bottom - rect.top) > 0.5;
+                        canvas.insertBefore(window.draggedElement, next ? wrapper.nextSibling : wrapper);
+                    }
+                });
+
+                wrapper.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                });
+            }
+
             canvas.appendChild(wrapper);
         });
 
