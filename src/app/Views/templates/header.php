@@ -686,16 +686,19 @@ if (isset($_SESSION['user'])) {
 
             <!-- Navigation Menu (Center) -->
             <nav style="display: flex; gap: 1.5rem; align-items: center; justify-content: center; flex: 1;">
-                <?php if (!$isAdmin): ?>
-                    <a href="<?= BASE_URL ?>/learn"
-                        style="color: #475569; text-decoration: none; font-weight: 500; transition: color 0.2s;"
-                        onmouseover="this.style.color='#7c3aed'" onmouseout="this.style.color='#475569'">Materi</a>
-                    <a href="<?= BASE_URL ?>/quiz"
-                        style="color: #475569; text-decoration: none; font-weight: 500; transition: color 0.2s;"
-                        onmouseover="this.style.color='#7c3aed'" onmouseout="this.style.color='#475569'">Quiz</a>
-                    <a href="<?= BASE_URL ?>/leaderboard"
-                        style="color: #475569; text-decoration: none; font-weight: 500; transition: color 0.2s;"
-                        onmouseover="this.style.color='#7c3aed'" onmouseout="this.style.color='#475569'">Leaderboard</a>
+                <a href="<?= BASE_URL ?>/learn"
+                    style="color: #475569; text-decoration: none; font-weight: 500; transition: color 0.2s;"
+                    onmouseover="this.style.color='#7c3aed'" onmouseout="this.style.color='#475569'">Materi</a>
+                <a href="<?= BASE_URL ?>/quiz"
+                    style="color: #475569; text-decoration: none; font-weight: 500; transition: color 0.2s;"
+                    onmouseover="this.style.color='#7c3aed'" onmouseout="this.style.color='#475569'">Quiz</a>
+                <a href="<?= BASE_URL ?>/leaderboard"
+                    style="color: #475569; text-decoration: none; font-weight: 500; transition: color 0.2s;"
+                    onmouseover="this.style.color='#7c3aed'" onmouseout="this.style.color='#475569'">Leaderboard</a>
+                <?php if ($isAdmin): ?>
+                    <a href="<?= BASE_URL ?>/admin"
+                        style="color: #7c3aed; text-decoration: none; font-weight: 700; transition: color 0.2s;"
+                        onmouseover="this.style.color='#6d28d9'" onmouseout="this.style.color='#7c3aed'">Admin Panel</a>
                 <?php endif; ?>
             </nav>
 
@@ -800,7 +803,6 @@ if (isset($_SESSION['user'])) {
             </div>
             <!-- Mobile Dropdown Menu -->
             <div id="mobile-menu">
-                <?php if (!$isAdmin): ?>
                     <a href="<?= BASE_URL ?>/learn"
                         style="color: #475569; text-decoration: none; font-weight: 600; padding: 0.6rem 0.75rem; border-radius: 8px; font-size: 0.9rem; display: block; transition: all 0.2s;"
                         onmouseover="this.style.backgroundColor='#f1f5f9'; this.style.color='#7c3aed';"
@@ -819,7 +821,14 @@ if (isset($_SESSION['user'])) {
                         onmouseout="this.style.backgroundColor='transparent'; this.style.color='#475569';">
                         Leaderboard
                     </a>
-                <?php endif; ?>
+                    <?php if ($isAdmin): ?>
+                        <a href="<?= BASE_URL ?>/admin"
+                            style="color: #7c3aed; text-decoration: none; font-weight: 700; padding: 0.6rem 0.75rem; border-radius: 8px; font-size: 0.9rem; display: block; transition: all 0.2s;"
+                            onmouseover="this.style.backgroundColor='#f5f3ff'; this.style.color='#6d28d9';"
+                            onmouseout="this.style.backgroundColor='transparent'; this.style.color='#7c3aed';">
+                            Admin Panel
+                        </a>
+                    <?php endif; ?>
 
                 <?php if (isset($_SESSION['user'])): ?>
                     <!-- Separator -->
