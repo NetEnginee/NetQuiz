@@ -2525,7 +2525,47 @@
                                 style="color: #7c3aed; background-color: #f5f3ff; width: 36px; height: 36px; border-radius: 6px; display: flex; align-items: center; justify-content: center;">
                                 <i data-lucide="image" style="width: 1.2rem; height: 1.2rem;"></i>
                             </div>
-                            <span style="font-size: 0.75rem; font-weight: 600; color: #475569;">Gambar</span>
+                            <span style="font-size: 0.75rem; font-weight: 700; color: #475569;">Gambar</span>
+                        </div>
+                        <div onclick="addBuilderBlock('progress')"
+                            style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 0.85rem; text-align: center; cursor: pointer; transition: all 0.15s; display: flex; flex-direction: column; align-items: center; gap: 0.4rem;"
+                            onmouseover="this.style.borderColor='#7c3aed'; this.style.backgroundColor='#f5f3ff';"
+                            onmouseout="this.style.borderColor='#e2e8f0'; this.style.backgroundColor='#f8fafc';">
+                            <div
+                                style="color: #7c3aed; background-color: #f5f3ff; width: 36px; height: 36px; border-radius: 6px; display: flex; align-items: center; justify-content: center;">
+                                <i data-lucide="sliders" style="width: 1.2rem; height: 1.2rem;"></i>
+                            </div>
+                            <span style="font-size: 0.75rem; font-weight: 600; color: #475569;">Progress Bar</span>
+                        </div>
+                        <div onclick="addBuilderBlock('alert')"
+                            style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 0.85rem; text-align: center; cursor: pointer; transition: all 0.15s; display: flex; flex-direction: column; align-items: center; gap: 0.4rem;"
+                            onmouseover="this.style.borderColor='#7c3aed'; this.style.backgroundColor='#f5f3ff';"
+                            onmouseout="this.style.borderColor='#e2e8f0'; this.style.backgroundColor='#f8fafc';">
+                            <div
+                                style="color: #7c3aed; background-color: #f5f3ff; width: 36px; height: 36px; border-radius: 6px; display: flex; align-items: center; justify-content: center;">
+                                <i data-lucide="alert-triangle" style="width: 1.2rem; height: 1.2rem;"></i>
+                            </div>
+                            <span style="font-size: 0.75rem; font-weight: 600; color: #475569;">Alert Box</span>
+                        </div>
+                        <div onclick="addBuilderBlock('card')"
+                            style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 0.85rem; text-align: center; cursor: pointer; transition: all 0.15s; display: flex; flex-direction: column; align-items: center; gap: 0.4rem;"
+                            onmouseover="this.style.borderColor='#7c3aed'; this.style.backgroundColor='#f5f3ff';"
+                            onmouseout="this.style.borderColor='#e2e8f0'; this.style.backgroundColor='#f8fafc';">
+                            <div
+                                style="color: #7c3aed; background-color: #f5f3ff; width: 36px; height: 36px; border-radius: 6px; display: flex; align-items: center; justify-content: center;">
+                                <i data-lucide="credit-card" style="width: 1.2rem; height: 1.2rem;"></i>
+                            </div>
+                            <span style="font-size: 0.75rem; font-weight: 600; color: #475569;">Card Box</span>
+                        </div>
+                        <div onclick="addBuilderBlock('timeline')"
+                            style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 0.85rem; text-align: center; cursor: pointer; transition: all 0.15s; display: flex; flex-direction: column; align-items: center; gap: 0.4rem;"
+                            onmouseover="this.style.borderColor='#7c3aed'; this.style.backgroundColor='#f5f3ff';"
+                            onmouseout="this.style.borderColor='#e2e8f0'; this.style.backgroundColor='#f8fafc';">
+                            <div
+                                style="color: #7c3aed; background-color: #f5f3ff; width: 36px; height: 36px; border-radius: 6px; display: flex; align-items: center; justify-content: center;">
+                                <i data-lucide="git-commit" style="width: 1.2rem; height: 1.2rem;"></i>
+                            </div>
+                            <span style="font-size: 0.75rem; font-weight: 600; color: #475569;">Timeline Langkah</span>
                         </div>
                     </div>
                 </div>
@@ -3180,6 +3220,32 @@
             block.icon = 'info';
             block.title = 'Info Penting';
             block.content = 'Isi penjelasan dari kotak info di sini...';
+        } else if (type === 'progress') {
+            block.label = 'Progres Konfigurasi';
+            block.percent = '70';
+        } else if (type === 'alert') {
+            block.alertType = 'success';
+            block.content = 'Konfigurasi IP Address pada Router MikroTik telah berhasil diselesaikan!';
+        } else if (type === 'card') {
+            block.imageSrc = 'https://images.unsplash.com/photo-1544197150-b99a580bb7a8?w=500';
+            block.cardTitle = 'Perangkat Jaringan MikroTik';
+            block.content = 'MikroTik merupakan perangkat jaringan tangguh yang digunakan secara luas untuk manajemen routing, hotspot, bandwidth limiter, dan firewall.';
+        } else if (type === 'timeline') {
+            block.content = `
+<div class="step-item">
+    <div class="step-node">1</div>
+    <div class="step-content">
+        <h5>Langkah Pertama</h5>
+        <p>Buka program Winbox pada komputer Anda dan lakukan scan MAC Address router MikroTik.</p>
+    </div>
+</div>
+<div class="step-item">
+    <div class="step-node">2</div>
+    <div class="step-content">
+        <h5>Langkah Kedua</h5>
+        <p>Klik tombol Connect untuk masuk ke menu utama RouterOS MikroTik secara GUI.</p>
+    </div>
+</div>`;
         }
 
         builderBlocks.push(block);
@@ -3316,6 +3382,44 @@
         }
     }
 
+    function updateBlockProgressLabel(id, val) {
+        const idx = builderBlocks.findIndex(b => b.id === id);
+        if (idx !== -1) {
+            builderBlocks[idx].label = val;
+        }
+    }
+
+    function updateBlockProgressPercent(id, val) {
+        const idx = builderBlocks.findIndex(b => b.id === id);
+        if (idx !== -1) {
+            builderBlocks[idx].percent = val;
+            renderBuilderBlocks();
+        }
+    }
+
+    function updateBlockAlertType(id, val) {
+        const idx = builderBlocks.findIndex(b => b.id === id);
+        if (idx !== -1) {
+            builderBlocks[idx].alertType = val;
+            renderBuilderBlocks();
+        }
+    }
+
+    function updateBlockCardImage(id, val) {
+        const idx = builderBlocks.findIndex(b => b.id === id);
+        if (idx !== -1) {
+            builderBlocks[idx].imageSrc = val;
+            renderBuilderBlocks();
+        }
+    }
+
+    function updateBlockCardTitle(id, val) {
+        const idx = builderBlocks.findIndex(b => b.id === id);
+        if (idx !== -1) {
+            builderBlocks[idx].cardTitle = val;
+        }
+    }
+
     function deleteBlock(id) {
         builderBlocks = builderBlocks.filter(b => b.id !== id);
         renderBuilderBlocks();
@@ -3393,6 +3497,30 @@
         <div class="tab-pane" id="${uniqueId}_2">${b.content2 || ''}</div>
     </div>
 </div>\n`;
+            } else if (b.type === 'progress') {
+                html += `
+<div class="material-progress">
+    <div class="progress-info">
+        <span>${b.label || 'Progress'}</span>
+        <span>${b.percent || '50'}%</span>
+    </div>
+    <div class="progress-bg">
+        <div class="progress-fill" style="width: ${b.percent || '50'}%;"></div>
+    </div>
+</div>\n`;
+            } else if (b.type === 'alert') {
+                html += `<div class="material-alert material-alert-${b.alertType || 'success'}">${b.content}</div>\n`;
+            } else if (b.type === 'card') {
+                html += `
+<div class="material-card-widget">
+    ${b.imageSrc ? `<img src="${b.imageSrc}" class="card-image" alt="card image">` : ''}
+    <div class="card-content">
+        <h4>${b.cardTitle || 'Judul Card'}</h4>
+        <p>${b.content || 'Deskripsi card...'}</p>
+    </div>
+</div>\n`;
+            } else if (b.type === 'timeline') {
+                html += `<div class="material-timeline-steps">${b.content}</div>\n`;
             }
         });
         return html;
@@ -3541,12 +3669,47 @@
                     type: 'video',
                     videoUrl: iframeEl ? iframeEl.getAttribute('src') : ''
                 });
-            } else if (tagName === 'img') {
+            } else if (tagName === 'div' && el.classList.contains('material-progress')) {
+                const infoText = el.querySelector('.progress-info span:first-child');
+                const fillEl = el.querySelector('.progress-fill');
+                let pct = '50';
+                if (fillEl && fillEl.style.width) {
+                    pct = fillEl.style.width.replace('%', '');
+                }
                 blocks.push({
                     id: 'block_' + Math.random().toString(36).substr(2, 9),
-                    type: 'image',
-                    imageSrc: el.getAttribute('src') || '',
-                    imageAlt: el.getAttribute('alt') || ''
+                    type: 'progress',
+                    label: infoText ? infoText.innerText : 'Progress',
+                    percent: pct
+                });
+            } else if (tagName === 'div' && el.classList.contains('material-alert')) {
+                let alertType = 'success';
+                if (el.classList.contains('material-alert-info')) alertType = 'info';
+                else if (el.classList.contains('material-alert-warning')) alertType = 'warning';
+                else if (el.classList.contains('material-alert-danger')) alertType = 'danger';
+                
+                blocks.push({
+                    id: 'block_' + Math.random().toString(36).substr(2, 9),
+                    type: 'alert',
+                    alertType: alertType,
+                    content: el.innerHTML
+                });
+            } else if (tagName === 'div' && el.classList.contains('material-card-widget')) {
+                const imgEl = el.querySelector('.card-image');
+                const h4El = el.querySelector('h4');
+                const pEl = el.querySelector('p');
+                blocks.push({
+                    id: 'block_' + Math.random().toString(36).substr(2, 9),
+                    type: 'card',
+                    imageSrc: imgEl ? imgEl.getAttribute('src') || '' : '',
+                    cardTitle: h4El ? h4El.innerHTML : 'Judul Card',
+                    content: pEl ? pEl.innerHTML : 'Isi deskripsi card...'
+                });
+            } else if (tagName === 'div' && el.classList.contains('material-timeline-steps')) {
+                blocks.push({
+                    id: 'block_' + Math.random().toString(36).substr(2, 9),
+                    type: 'timeline',
+                    content: el.innerHTML
                 });
             } else {
                 blocks.push({
@@ -3740,6 +3903,57 @@
                         <div style="text-align: center; border: 1px dashed #cbd5e1; border-radius: 6px; background: #fff; padding: 0.5rem;">
                             ${block.imageSrc ? `<img src="${block.imageSrc}" alt="${block.imageAlt || ''}" style="max-height: 200px; max-width: 100%; border-radius: 4px; display: inline-block;">` : `<span style="font-size: 0.75rem; color: #94a3b8;"><i data-lucide="image" style="width: 1rem; height: 1rem; display: inline-block; vertical-align: middle; margin-right: 0.25rem;"></i> Belum ada gambar dimasukkan</span>`}
                         </div>
+                    </div>
+                `;
+            } else if (block.type === 'progress') {
+                contentHtml = `
+                    <div class="material-progress" style="margin: 0;">
+                        <div class="progress-info">
+                            <span contenteditable="true" onblur="updateBlockProgressLabel('${block.id}', this.innerText)" style="outline: none; font-weight: 700;">${block.label || 'Progress'}</span>
+                            <span>${block.percent || '50'}%</span>
+                        </div>
+                        <div class="progress-bg">
+                            <div class="progress-fill" style="width: ${block.percent || '50'}%;"></div>
+                        </div>
+                        <div style="margin-top: 0.75rem; display: flex; gap: 0.5rem; align-items: center;" class="builder-block-controls-select">
+                            <span style="font-size: 0.75rem; color: #64748b;">Persentase:</span>
+                            <input type="range" min="0" max="100" value="${block.percent || '50'}" oninput="updateBlockProgressPercent('${block.id}', this.value)" style="flex: 1; height: 6px; cursor: pointer;">
+                            <span style="font-size: 0.75rem; font-weight: 700; color: #475569; width: 30px; text-align: right;">${block.percent || '50'}%</span>
+                        </div>
+                    </div>
+                `;
+            } else if (block.type === 'alert') {
+                contentHtml = `
+                    <div class="material-alert material-alert-${block.alertType || 'success'}" style="margin: 0; position: relative;">
+                        <div style="position: absolute; top: 0.5rem; right: 0.5rem;" class="builder-block-controls-select">
+                            <select onchange="updateBlockAlertType('${block.id}', this.value)" style="border: none; border-radius: 4px; font-size: 0.7rem; padding: 2px 4px; background: #fff; border: 1px solid #cbd5e1; color: #475569; cursor: pointer; font-family: 'Plus Jakarta Sans', sans-serif;">
+                                <option value="success" ${block.alertType === 'success' ? 'selected' : ''}>Success</option>
+                                <option value="info" ${block.alertType === 'info' ? 'selected' : ''}>Info</option>
+                                <option value="warning" ${block.alertType === 'warning' ? 'selected' : ''}>Warning</option>
+                                <option value="danger" ${block.alertType === 'danger' ? 'selected' : ''}>Danger</option>
+                            </select>
+                        </div>
+                        <div class="builder-editable" contenteditable="true" onblur="updateBlockContent('${block.id}', this.innerHTML)" style="outline: none; width: 100%; min-height: 1.5rem; padding-right: 4.5rem;">${block.content || 'Isi pesan alert...'}</div>
+                    </div>
+                `;
+            } else if (block.type === 'card') {
+                contentHtml = `
+                    <div class="material-card-widget" style="margin: 0;">
+                        <div style="padding: 0.75rem; background: #f8fafc; border-bottom: 1px solid #e2e8f0; display: flex; gap: 0.5rem; align-items: center;" class="builder-block-controls-select">
+                            <span style="font-size: 0.75rem; font-weight: 700; color: #475569;">Gambar Card URL:</span>
+                            <input type="text" value="${block.imageSrc || ''}" oninput="updateBlockCardImage('${block.id}', this.value)" placeholder="https://unsplash.com/image.jpg" style="flex: 1; height: 28px; padding: 0 0.5rem; font-size: 0.75rem; border-radius: 4px; border: 1px solid #cbd5e1; outline: none;">
+                        </div>
+                        ${block.imageSrc ? `<img src="${block.imageSrc}" class="card-image" alt="card image" style="width: 100%; height: 180px; object-fit: cover;">` : ''}
+                        <div class="card-content">
+                            <h4 contenteditable="true" onblur="updateBlockCardTitle('${block.id}', this.innerText)" style="outline: none; font-weight: 700;">${block.cardTitle || 'Judul Card'}</h4>
+                            <p class="builder-editable" contenteditable="true" onblur="updateBlockContent('${block.id}', this.innerHTML)" style="outline: none; margin: 0; min-height: 1.5rem;">${block.content || 'Deskripsi card...'}</p>
+                        </div>
+                    </div>
+                `;
+            } else if (block.type === 'timeline') {
+                contentHtml = `
+                    <div class="material-timeline-steps builder-editable" contenteditable="true" onblur="updateBlockContent('${block.id}', this.innerHTML)" style="margin: 0; padding-left: 2rem; outline: none;">
+                        ${block.content || '<div class="step-item"><div class="step-node">1</div><div class="step-content"><h5>Langkah 1</h5><p>Tulis langkah pertama...</p></div></div>'}
                     </div>
                 `;
             }

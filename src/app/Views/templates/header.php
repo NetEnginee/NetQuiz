@@ -689,7 +689,7 @@ if (isset($_SESSION['user'])) {
                 <?php if (!$isAdmin): ?>
                     <a href="<?= BASE_URL ?>/learn"
                         style="color: #475569; text-decoration: none; font-weight: 500; transition: color 0.2s;"
-                        onmouseover="this.style.color='#7c3aed'" onmouseout="this.style.color='#475569'">Belajar</a>
+                        onmouseover="this.style.color='#7c3aed'" onmouseout="this.style.color='#475569'">Materi</a>
                     <a href="<?= BASE_URL ?>/quiz"
                         style="color: #475569; text-decoration: none; font-weight: 500; transition: color 0.2s;"
                         onmouseover="this.style.color='#7c3aed'" onmouseout="this.style.color='#475569'">Quiz</a>
