@@ -447,3 +447,7 @@ Stack trace:
 [14-Jul-2026 04:22:19 UTC] Database Connection Error: SQLSTATE[HY000] [2002] Connection refused
 [14-Jul-2026 04:28:01 UTC] Database Connection Error: SQLSTATE[HY000] [2002] php_network_getaddresses: getaddrinfo for nvram-mysql failed: Temporary failure in name resolution
 [14-Jul-2026 04:28:03 UTC] Database Connection Error: SQLSTATE[HY000] [2002] Connection refused
+[15-Jul-2026 05:11:24 UTC] PHP Warning:  Undefined array key "content" in /var/webfeed/html/app/Views/learn/index.php on line 40
+[15-Jul-2026 05:11:24 UTC] PHP Deprecated:  strip_tags(): Passing null to parameter #1 ($string) of type string is deprecated in /var/webfeed/html/app/Views/learn/index.php on line 40
+[15-Jul-2026 05:11:51 UTC] PHP Warning:  Undefined array key "content" in /var/webfeed/html/app/Views/learn/index.php on line 40
+[15-Jul-2026 05:11:51 UTC] PHP Deprecated:  strip_tags(): Passing null to parameter #1 ($string) of type string is deprecated in /var/webfeed/html/app/Views/learn/index.php on line 40
