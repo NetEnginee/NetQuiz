@@ -1496,10 +1496,14 @@
                     }
                 }
 
-                // Auto-open visual builder when clicking Materi Belajar
+                // Auto-open visual builder when clicking Materi Belajar (unless just saved)
                 if (targetId === 'materials-section') {
                     if (typeof openVisualBuilderFromForm === 'function') {
-                        openVisualBuilderFromForm();
+                        if (sessionStorage.getItem('just_saved_material') === 'true') {
+                            sessionStorage.removeItem('just_saved_material');
+                        } else {
+                            openVisualBuilderFromForm();
+                        }
                     }
                 }
             }
@@ -1553,7 +1557,7 @@
                             document.getElementById('form-material-content').value = data.content;
 
                             // Open visual builder and go directly to preview mode
-                            openVisualBuilderFromForm();
+                            openVisualBuilderFromForm(true);
                             setBuilderMode('preview');
 
                             alert('Materi berhasil diimpor dari file JSON dan langsung diarahkan ke halaman Pratinjau (Preview) Visual Builder.');
@@ -2282,7 +2286,7 @@
 <div id="visual-builder-overlay"
     style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: #f8fafc; z-index: 99999; font-family: 'Plus Jakarta Sans', sans-serif; flex-direction: column;">
     <!-- Top Navbar -->
-    <div
+    <div class="builder-header-container"
         style="height: 64px; background-color: #ffffff; border-bottom: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: space-between; padding: 0 1.5rem; flex-shrink: 0; box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);">
         <div style="display: flex; align-items: center; gap: 0.75rem;">
             <div style="font-weight: 800; font-size: 1.2rem; color: #0f172a; letter-spacing: -0.02em;">
@@ -2305,30 +2309,30 @@
         </div>
 
         <!-- Action Buttons -->
-        <div style="display: flex; gap: 0.75rem; align-items: center;">
+        <div style="display: flex; gap: 0.75rem; align-items: center;" class="builder-actions-wrapper">
             <span id="builder-status-text"
                 style="font-size: 0.8rem; color: #10b981; font-weight: 600; display: flex; align-items: center; gap: 0.25rem; opacity: 0; transition: opacity 0.3s;">
-                <i data-lucide="check-circle-2" style="width: 0.9rem; height: 0.9rem;"></i> Tersimpan
+                <i data-lucide="check-circle-2" style="width: 0.9rem; height: 0.9rem;"></i> <span class="status-text">Tersimpan</span>
             </span>
             <button type="button" onclick="closeVisualBuilder()"
-                style="border: 1px solid #cbd5e1; background-color: #ffffff; padding: 0.5rem 1rem; border-radius: 8px; font-size: 0.85rem; font-weight: 600; color: #475569; cursor: pointer; transition: all 0.15s;"
+                style="border: 1px solid #cbd5e1; background-color: #ffffff; padding: 0.5rem 1rem; border-radius: 8px; font-size: 0.85rem; font-weight: 600; color: #475569; cursor: pointer; transition: all 0.15s; display: inline-flex; align-items: center; gap: 0.35rem;"
                 onmouseover="this.style.backgroundColor='#f1f5f9'" onmouseout="this.style.backgroundColor='#ffffff'">
-                Batal
+                <i data-lucide="x" style="width: 0.95rem; height: 0.95rem;"></i> <span class="btn-text">Batal</span>
             </button>
-            <button type="button" onclick="saveVisualBuilder(true)"
+            <button type="button" id="builder-save-btn" onclick="saveVisualBuilder(true)"
                 style="border: none; background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%); padding: 0.5rem 1.25rem; border-radius: 8px; font-size: 0.85rem; font-weight: 700; color: #ffffff; cursor: pointer; transition: all 0.15s; display: inline-flex; align-items: center; gap: 0.35rem; box-shadow: 0 4px 10px -3px rgba(124, 58, 237, 0.35);"
                 onmouseover="this.style.transform='translateY(-1px)'" onmouseout="this.style.transform='translateY(0)'">
-                <i data-lucide="save" style="width: 0.95rem; height: 0.95rem;"></i> Simpan Materi
+                <i data-lucide="save" style="width: 0.95rem; height: 0.95rem;"></i> <span class="btn-text">Simpan Materi</span>
             </button>
         </div>
     </div>
 
     <!-- Main Workspace -->
-    <div style="display: flex; flex: 1; min-height: 0;">
+    <div class="builder-workspace-container" style="display: flex; flex: 1; min-height: 0;">
         <!-- Left Sidebar -->
         <div id="builder-sidebar"
             style="width: 320px; background-color: #ffffff; border-right: 1px solid #e2e8f0; display: flex; flex-direction: column; flex-shrink: 0; min-height: 0;">
-            <div style="display: flex; border-bottom: 1px solid #f1f5f9; flex-shrink: 0;">
+            <div style="display: flex; border-bottom: 1px solid #f1f5f9; flex-shrink: 0; align-items: center; justify-content: space-between; padding-right: 0.5rem;">
                 <button type="button" id="sidebar-tab-widgets" onclick="setSidebarTab('widgets')"
                     style="flex: 1; border: none; background: transparent; padding: 0.9rem; font-size: 0.85rem; font-weight: 700; color: #7c3aed; border-bottom: 2px solid #7c3aed; cursor: pointer;">
                     Elemen
@@ -2336,6 +2340,9 @@
                 <button type="button" id="sidebar-tab-settings" onclick="setSidebarTab('settings')"
                     style="flex: 1; border: none; background: transparent; padding: 0.9rem; font-size: 0.85rem; font-weight: 600; color: #64748b; border-bottom: 2px solid transparent; cursor: pointer;">
                     Pengaturan Page
+                </button>
+                <button type="button" id="mobile-sidebar-close" onclick="toggleMobileSidebar(false)" style="border: none; background: transparent; color: #64748b; padding: 0.5rem; cursor: pointer;">
+                    <i data-lucide="x" style="width: 1.25rem; height: 1.25rem;"></i>
                 </button>
             </div>
 
@@ -2382,7 +2389,27 @@
                                 style="color: #7c3aed; background-color: #f5f3ff; width: 36px; height: 36px; border-radius: 6px; display: flex; align-items: center; justify-content: center;">
                                 <i data-lucide="list" style="width: 1.2rem; height: 1.2rem;"></i>
                             </div>
-                            <span style="font-size: 0.75rem; font-weight: 600; color: #475569;">Daftar List</span>
+                            <span style="font-size: 0.75rem; font-weight: 600; color: #475569;">Daftar Bullet</span>
+                        </div>
+                        <div onclick="addBuilderBlock('olist')"
+                            style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 0.85rem; text-align: center; cursor: pointer; transition: all 0.15s; display: flex; flex-direction: column; align-items: center; gap: 0.4rem;"
+                            onmouseover="this.style.borderColor='#7c3aed'; this.style.backgroundColor='#f5f3ff';"
+                            onmouseout="this.style.borderColor='#e2e8f0'; this.style.backgroundColor='#f8fafc';">
+                            <div
+                                style="color: #7c3aed; background-color: #f5f3ff; width: 36px; height: 36px; border-radius: 6px; display: flex; align-items: center; justify-content: center;">
+                                <i data-lucide="list-ordered" style="width: 1.2rem; height: 1.2rem;"></i>
+                            </div>
+                            <span style="font-size: 0.75rem; font-weight: 600; color: #475569;">Daftar Angka</span>
+                        </div>
+                        <div onclick="addBuilderBlock('divider')"
+                            style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 0.85rem; text-align: center; cursor: pointer; transition: all 0.15s; display: flex; flex-direction: column; align-items: center; gap: 0.4rem;"
+                            onmouseover="this.style.borderColor='#7c3aed'; this.style.backgroundColor='#f5f3ff';"
+                            onmouseout="this.style.borderColor='#e2e8f0'; this.style.backgroundColor='#f8fafc';">
+                            <div
+                                style="color: #7c3aed; background-color: #f5f3ff; width: 36px; height: 36px; border-radius: 6px; display: flex; align-items: center; justify-content: center;">
+                                <i data-lucide="minus" style="width: 1.2rem; height: 1.2rem;"></i>
+                            </div>
+                            <span style="font-size: 0.75rem; font-weight: 600; color: #475569;">Garis Pembatas</span>
                         </div>
                     </div>
 
@@ -2400,6 +2427,16 @@
                             </div>
                             <span style="font-size: 0.75rem; font-weight: 600; color: #475569;">Blok Kode</span>
                         </div>
+                        <div onclick="addBuilderBlock('terminal')"
+                            style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 0.85rem; text-align: center; cursor: pointer; transition: all 0.15s; display: flex; flex-direction: column; align-items: center; gap: 0.4rem;"
+                            onmouseover="this.style.borderColor='#7c3aed'; this.style.backgroundColor='#f5f3ff';"
+                            onmouseout="this.style.borderColor='#e2e8f0'; this.style.backgroundColor='#f8fafc';">
+                            <div
+                                style="color: #7c3aed; background-color: #f5f3ff; width: 36px; height: 36px; border-radius: 6px; display: flex; align-items: center; justify-content: center;">
+                                <i data-lucide="terminal" style="width: 1.2rem; height: 1.2rem;"></i>
+                            </div>
+                            <span style="font-size: 0.75rem; font-weight: 600; color: #475569;">Terminal OS</span>
+                        </div>
                         <div onclick="addBuilderBlock('callout')"
                             style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 0.85rem; text-align: center; cursor: pointer; transition: all 0.15s; display: flex; flex-direction: column; align-items: center; gap: 0.4rem;"
                             onmouseover="this.style.borderColor='#7c3aed'; this.style.backgroundColor='#f5f3ff';"
@@ -2409,6 +2446,76 @@
                                 <i data-lucide="alert-circle" style="width: 1.2rem; height: 1.2rem;"></i>
                             </div>
                             <span style="font-size: 0.75rem; font-weight: 600; color: #475569;">Kotak Info</span>
+                        </div>
+                        <div onclick="addBuilderBlock('quote')"
+                            style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 0.85rem; text-align: center; cursor: pointer; transition: all 0.15s; display: flex; flex-direction: column; align-items: center; gap: 0.4rem;"
+                            onmouseover="this.style.borderColor='#7c3aed'; this.style.backgroundColor='#f5f3ff';"
+                            onmouseout="this.style.borderColor='#e2e8f0'; this.style.backgroundColor='#f8fafc';">
+                            <div
+                                style="color: #7c3aed; background-color: #f5f3ff; width: 36px; height: 36px; border-radius: 6px; display: flex; align-items: center; justify-content: center;">
+                                <i data-lucide="quote" style="width: 1.2rem; height: 1.2rem;"></i>
+                            </div>
+                            <span style="font-size: 0.75rem; font-weight: 600; color: #475569;">Kutipan Quote</span>
+                        </div>
+                        <div onclick="addBuilderBlock('accordion')"
+                            style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 0.85rem; text-align: center; cursor: pointer; transition: all 0.15s; display: flex; flex-direction: column; align-items: center; gap: 0.4rem;"
+                            onmouseover="this.style.borderColor='#7c3aed'; this.style.backgroundColor='#f5f3ff';"
+                            onmouseout="this.style.borderColor='#e2e8f0'; this.style.backgroundColor='#f8fafc';">
+                            <div
+                                style="color: #7c3aed; background-color: #f5f3ff; width: 36px; height: 36px; border-radius: 6px; display: flex; align-items: center; justify-content: center;">
+                                <i data-lucide="chevrons-up-down" style="width: 1.2rem; height: 1.2rem;"></i>
+                            </div>
+                            <span style="font-size: 0.75rem; font-weight: 600; color: #475569;">Akordeon FAQ</span>
+                        </div>
+                        <div onclick="addBuilderBlock('tabs')"
+                            style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 0.85rem; text-align: center; cursor: pointer; transition: all 0.15s; display: flex; flex-direction: column; align-items: center; gap: 0.4rem;"
+                            onmouseover="this.style.borderColor='#7c3aed'; this.style.backgroundColor='#f5f3ff';"
+                            onmouseout="this.style.borderColor='#e2e8f0'; this.style.backgroundColor='#f8fafc';">
+                            <div
+                                style="color: #7c3aed; background-color: #f5f3ff; width: 36px; height: 36px; border-radius: 6px; display: flex; align-items: center; justify-content: center;">
+                                <i data-lucide="folder-open" style="width: 1.2rem; height: 1.2rem;"></i>
+                            </div>
+                            <span style="font-size: 0.75rem; font-weight: 600; color: #475569;">Tab Konten</span>
+                        </div>
+                        <div onclick="addBuilderBlock('iconbox')"
+                            style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 0.85rem; text-align: center; cursor: pointer; transition: all 0.15s; display: flex; flex-direction: column; align-items: center; gap: 0.4rem;"
+                            onmouseover="this.style.borderColor='#7c3aed'; this.style.backgroundColor='#f5f3ff';"
+                            onmouseout="this.style.borderColor='#e2e8f0'; this.style.backgroundColor='#f8fafc';">
+                            <div
+                                style="color: #7c3aed; background-color: #f5f3ff; width: 36px; height: 36px; border-radius: 6px; display: flex; align-items: center; justify-content: center;">
+                                <i data-lucide="info" style="width: 1.2rem; height: 1.2rem;"></i>
+                            </div>
+                            <span style="font-size: 0.75rem; font-weight: 600; color: #475569;">Kotak Info Box</span>
+                        </div>
+                        <div onclick="addBuilderBlock('table')"
+                            style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 0.85rem; text-align: center; cursor: pointer; transition: all 0.15s; display: flex; flex-direction: column; align-items: center; gap: 0.4rem;"
+                            onmouseover="this.style.borderColor='#7c3aed'; this.style.backgroundColor='#f5f3ff';"
+                            onmouseout="this.style.borderColor='#e2e8f0'; this.style.backgroundColor='#f8fafc';">
+                            <div
+                                style="color: #7c3aed; background-color: #f5f3ff; width: 36px; height: 36px; border-radius: 6px; display: flex; align-items: center; justify-content: center;">
+                                <i data-lucide="table" style="width: 1.2rem; height: 1.2rem;"></i>
+                            </div>
+                            <span style="font-size: 0.75rem; font-weight: 600; color: #475569;">Tabel Data</span>
+                        </div>
+                        <div onclick="addBuilderBlock('button')"
+                            style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 0.85rem; text-align: center; cursor: pointer; transition: all 0.15s; display: flex; flex-direction: column; align-items: center; gap: 0.4rem;"
+                            onmouseover="this.style.borderColor='#7c3aed'; this.style.backgroundColor='#f5f3ff';"
+                            onmouseout="this.style.borderColor='#e2e8f0'; this.style.backgroundColor='#f8fafc';">
+                            <div
+                                style="color: #7c3aed; background-color: #f5f3ff; width: 36px; height: 36px; border-radius: 6px; display: flex; align-items: center; justify-content: center;">
+                                <i data-lucide="link" style="width: 1.2rem; height: 1.2rem;"></i>
+                            </div>
+                            <span style="font-size: 0.75rem; font-weight: 600; color: #475569;">Tombol Tautan</span>
+                        </div>
+                        <div onclick="addBuilderBlock('video')"
+                            style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 0.85rem; text-align: center; cursor: pointer; transition: all 0.15s; display: flex; flex-direction: column; align-items: center; gap: 0.4rem;"
+                            onmouseover="this.style.borderColor='#7c3aed'; this.style.backgroundColor='#f5f3ff';"
+                            onmouseout="this.style.borderColor='#e2e8f0'; this.style.backgroundColor='#f8fafc';">
+                            <div
+                                style="color: #7c3aed; background-color: #f5f3ff; width: 36px; height: 36px; border-radius: 6px; display: flex; align-items: center; justify-content: center;">
+                                <i data-lucide="video" style="width: 1.2rem; height: 1.2rem;"></i>
+                            </div>
+                            <span style="font-size: 0.75rem; font-weight: 600; color: #475569;">Video Embed</span>
                         </div>
                         <div onclick="addBuilderBlock('image')"
                             style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 0.85rem; text-align: center; cursor: pointer; transition: all 0.15s; display: flex; flex-direction: column; align-items: center; gap: 0.4rem;"
@@ -2453,8 +2560,9 @@
         </div>
 
         <!-- Canvas area -->
-        <div style="flex: 1; padding: 2.5rem; overflow-y: auto; background-color: #f8fafc;">
-            <div style="width: 100%; max-width: 800px; margin: 0 auto; display: flex; flex-direction: column; gap: 1.5rem;">
+        <div class="builder-canvas-area" style="flex: 1; padding: 2.5rem; overflow-y: auto; background-color: #f8fafc;">
+            <div
+                style="width: 100%; max-width: 800px; margin: 0 auto; display: flex; flex-direction: column; gap: 1.5rem;">
 
                 <!-- Mock Page Title Area -->
                 <div
@@ -2487,6 +2595,30 @@
                                 Klik widget di panel kiri untuk mulai mendesain tata letak materi belajar Anda.</p>
                         </div>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Floating Action Button for mobile widget drawer -->
+    <button type="button" id="mobile-sidebar-toggle" onclick="toggleMobileSidebar()" style="display: none; position: fixed; bottom: 2rem; right: 2rem; background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%); color: white; width: 60px; height: 60px; border-radius: 50%; border: none; align-items: center; justify-content: center; box-shadow: 0 6px 20px rgba(124,58,237,0.45); z-index: 9999; cursor: pointer; transition: all 0.2s ease;">
+        <i data-lucide="plus" style="width: 1.75rem; height: 1.75rem;"></i>
+    </button>
+
+    <!-- Custom Save Confirm Modal -->
+    <div id="save-confirm-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: rgba(15, 23, 42, 0.4); backdrop-filter: blur(4px); z-index: 100000; align-items: center; justify-content: center;">
+        <div class="admin-modal-content" style="max-width: 440px; width: 90%; background: #ffffff; border-radius: 16px; padding: 2rem; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04); text-align: center;">
+            <div style="display: flex; flex-direction: column; align-items: center; gap: 1.25rem;">
+                <div style="background-color: #f5f3ff; color: #7c3aed; width: 56px; height: 56px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(124,58,237,0.15);">
+                    <i data-lucide="save" style="width: 1.75rem; height: 1.75rem;"></i>
+                </div>
+                <div>
+                    <h3 style="font-size: 1.25rem; font-weight: 800; color: #0f172a; margin: 0 0 0.5rem 0; letter-spacing: -0.025em;">Simpan Perubahan?</h3>
+                    <p style="font-size: 0.9rem; color: #64748b; margin: 0; line-height: 1.5;">Apakah Anda yakin ingin menyimpan seluruh perubahan pada materi belajar ini?</p>
+                </div>
+                <div style="display: flex; gap: 0.75rem; width: 100%; margin-top: 0.5rem;">
+                    <button type="button" onclick="closeSaveConfirmModal(false)" style="flex: 1; border: 1px solid #cbd5e1; background: #ffffff; color: #475569; padding: 0.75rem; border-radius: 10px; font-weight: 600; cursor: pointer; font-size: 0.85rem; transition: all 0.15s; outline: none;" onmouseover="this.style.backgroundColor='#f8fafc'" onmouseout="this.style.backgroundColor='#ffffff'">Batal</button>
+                    <button type="button" onclick="closeSaveConfirmModal(true)" style="flex: 1; border: none; background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%); color: #ffffff; padding: 0.75rem; border-radius: 10px; font-weight: 700; cursor: pointer; font-size: 0.85rem; box-shadow: 0 4px 12px rgba(124,58,237,0.25); transition: all 0.15s; outline: none;" onmouseover="this.style.transform='translateY(-1px)'" onmouseout="this.style.transform='translateY(0)'">Ya, Simpan</button>
                 </div>
             </div>
         </div>
@@ -2545,6 +2677,19 @@
         transform: translateY(-1px);
     }
 
+    #mobile-sidebar-close,
+    #mobile-sidebar-toggle {
+        display: none;
+    }
+
+    #builder-save-btn:disabled {
+        background: #cbd5e1 !important;
+        color: #94a3b8 !important;
+        cursor: not-allowed !important;
+        box-shadow: none !important;
+        pointer-events: none !important;
+    }
+
     /* Hide controls in preview mode */
     #builder-canvas.preview-mode .builder-block-wrapper {
         border: none;
@@ -2589,12 +2734,127 @@
             transform: rotate(360deg);
         }
     }
+
+    /* Media queries for mobile visual builder view */
+    @media (max-width: 1024px) {
+        #visual-builder-overlay {
+            height: 100vh !important;
+            overflow: hidden !important;
+        }
+        .builder-header-container {
+            height: 60px !important;
+            flex-direction: row !important;
+            justify-content: space-between !important;
+            padding: 0 0.75rem !important;
+            gap: 0.5rem !important;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        .builder-header-container > div:first-child {
+            display: none !important;
+        }
+        .builder-workspace-container {
+            flex-direction: row !important;
+            position: relative;
+            height: calc(100vh - 60px) !important;
+            overflow: hidden !important;
+        }
+        #mobile-sidebar-toggle {
+            display: flex !important;
+        }
+        #mobile-sidebar-close {
+            display: block !important;
+        }
+        #builder-sidebar {
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            bottom: 0 !important;
+            height: 100vh !important;
+            width: 300px !important;
+            max-height: none !important;
+            z-index: 99999 !important;
+            border-right: 1px solid #e2e8f0;
+            box-shadow: 4px 0 24px rgba(15, 23, 42, 0.15);
+            transform: translateX(-100%);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        #builder-sidebar.mobile-open {
+            transform: translateX(0) !important;
+        }
+        
+        /* Compact tab controls */
+        #builder-tab-edit, #builder-tab-preview {
+            padding: 0.4rem 0.65rem !important;
+            font-size: 0.8rem !important;
+        }
+        
+        /* Compact actions buttons & status */
+        .builder-actions-wrapper {
+            gap: 0.4rem !important;
+        }
+        .builder-actions-wrapper button {
+            padding: 0.4rem 0.65rem !important;
+            font-size: 0.8rem !important;
+        }
+        .builder-actions-wrapper .btn-text,
+        .builder-actions-wrapper .status-text {
+            display: none !important;
+        }
+    }
+        #sidebar-widgets-panel {
+            padding: 1rem !important;
+            gap: 1rem !important;
+        }
+        #sidebar-widgets-panel > div[style*="display: grid;"] {
+            grid-template-columns: repeat(2, 1fr) !important;
+            gap: 0.5rem !important;
+        }
+        .builder-canvas-area {
+            padding: 1.25rem 0.75rem !important;
+            height: 100% !important;
+            width: 100% !important;
+        }
+        .builder-block-controls {
+            top: 2px !important;
+            right: 2px !important;
+        }
+        .builder-block-wrapper {
+            padding: 0.5rem !important;
+        }
+    }
 </style>
 
 <script>
     // --- NETQUIZ VISUAL BUILDER (ELEMENTOR MODE) STATE ---
     let builderBlocks = [];
     let activeBuilderMode = 'edit';
+    let originalMaterialTitle = '';
+
+    function checkTitleChanged() {
+        const currentTitle = document.getElementById('builder-meta-title').value.trim();
+        const saveBtn = document.getElementById('builder-save-btn');
+        if (!saveBtn) return;
+        
+        if (currentTitle === '' || currentTitle === originalMaterialTitle) {
+            saveBtn.disabled = true;
+        } else {
+            saveBtn.disabled = false;
+        }
+    }
+
+    function toggleMobileSidebar(forceState) {
+        const sidebar = document.getElementById('builder-sidebar');
+        if (!sidebar) return;
+        if (forceState !== undefined) {
+            if (forceState) {
+                sidebar.classList.add('mobile-open');
+            } else {
+                sidebar.classList.remove('mobile-open');
+            }
+        } else {
+            sidebar.classList.toggle('mobile-open');
+        }
+    }
 
     function toggleClassicEditor() {
         const container = document.getElementById('classic-editor-container');
@@ -2614,11 +2874,16 @@
         const diffVal = document.getElementById('form-material-difficulty').value;
         const contentVal = document.getElementById('form-material-content').value;
 
+        // Set the original title to track updates
+        const editId = document.getElementById('edit-material-id').value;
+        originalMaterialTitle = editId ? titleVal.trim() : '';
+
         document.getElementById('builder-meta-title').value = titleVal;
         document.getElementById('builder-meta-category').value = catVal;
         document.getElementById('builder-meta-difficulty').value = diffVal;
 
         updateBuilderMetaTitle();
+        checkTitleChanged();
 
         // Sync preview badge state
         const diffEl = document.getElementById('canvas-meta-difficulty');
@@ -2732,6 +2997,14 @@
         setTimeout(() => { statusText.style.opacity = '0'; }, 1500);
 
         if (shouldSubmit) {
+            document.getElementById('save-confirm-modal').style.display = 'flex';
+        }
+    }
+
+    function closeSaveConfirmModal(confirmSave) {
+        document.getElementById('save-confirm-modal').style.display = 'none';
+        if (confirmSave) {
+            sessionStorage.setItem('just_saved_material', 'true');
             closeVisualBuilder();
             document.getElementById('create-material-form').submit();
         }
@@ -2766,6 +3039,7 @@
         const previewBtn = document.getElementById('builder-tab-preview');
         const sidebar = document.getElementById('builder-sidebar');
         const canvas = document.getElementById('builder-canvas');
+        const mobileToggleBtn = document.getElementById('mobile-sidebar-toggle');
 
         if (mode === 'edit') {
             editBtn.style.backgroundColor = '#ffffff';
@@ -2773,6 +3047,9 @@
             previewBtn.style.backgroundColor = 'transparent';
             previewBtn.style.color = '#64748b';
             sidebar.style.display = 'flex';
+            if (mobileToggleBtn) {
+                mobileToggleBtn.style.setProperty('display', '', 'important');
+            }
             canvas.classList.remove('preview-mode');
             renderBuilderBlocks();
         } else {
@@ -2781,6 +3058,9 @@
             editBtn.style.backgroundColor = 'transparent';
             editBtn.style.color = '#64748b';
             sidebar.style.display = 'none';
+            if (mobileToggleBtn) {
+                mobileToggleBtn.style.setProperty('display', 'none', 'important');
+            }
             canvas.classList.add('preview-mode');
             renderPreviewInCanvas();
         }
@@ -2805,6 +3085,7 @@
     function updateBuilderMetaTitle() {
         const val = document.getElementById('builder-meta-title').value;
         document.getElementById('canvas-meta-title').innerText = val || 'Judul Materi Pembelajaran';
+        checkTitleChanged();
     }
 
     document.addEventListener('DOMContentLoaded', () => {
@@ -2857,11 +3138,44 @@
         } else if (type === 'p') {
             block.content = 'Tulis teks paragraf di sini...';
         } else if (type === 'list') {
-            block.content = '<li>Item daftar pertama</li><li>Item daftar kedua</li>';
+            block.content = '<li>Item daftar bullet pertama</li><li>Item daftar bullet kedua</li>';
+        } else if (type === 'olist') {
+            block.content = '<li>Langkah angka pertama</li><li>Langkah angka kedua</li>';
+        } else if (type === 'divider') {
+            block.content = '';
+        } else if (type === 'accordion') {
+            block.title = 'Judul Akordeon FAQ baru';
+            block.content = 'Isi penjelasan akordeon atau jawaban FAQ di sini...';
+        } else if (type === 'button') {
+            block.btnText = 'Klik Di Sini';
+            block.btnUrl = '#';
+        } else if (type === 'video') {
+            block.videoUrl = '';
+        } else if (type === 'terminal') {
+            block.prompt = '[admin@MikroTik] >';
+            block.content = 'ip address print';
+        } else if (type === 'quote') {
+            block.content = 'Tulis kalimat kutipan penting di sini...';
+        } else if (type === 'table') {
+            block.content = '<tr><td>IP Address</td><td>192.168.88.1/24</td></tr><tr><td>Interface</td><td>ether1</td></tr>';
+        } else if (type === 'tabs') {
+            block.title1 = 'Tab 1';
+            block.content1 = 'Konten Tab Pertama...';
+            block.title2 = 'Tab 2';
+            block.content2 = 'Konten Tab Kedua...';
+        } else if (type === 'iconbox') {
+            block.icon = 'info';
+            block.title = 'Info Penting';
+            block.content = 'Isi penjelasan dari kotak info di sini...';
         }
 
         builderBlocks.push(block);
         renderBuilderBlocks();
+        
+        // Auto-close sidebar on mobile after adding block
+        if (window.innerWidth <= 1024) {
+            toggleMobileSidebar(false);
+        }
     }
 
     function updateBlockContent(id, content) {
@@ -2901,6 +3215,94 @@
         }
     }
 
+    function updateBlockAccordionTitle(id, val) {
+        const idx = builderBlocks.findIndex(b => b.id === id);
+        if (idx !== -1) {
+            builderBlocks[idx].title = val;
+        }
+    }
+
+    function updateBlockBtnText(id, val) {
+        const idx = builderBlocks.findIndex(b => b.id === id);
+        if (idx !== -1) {
+            builderBlocks[idx].btnText = val;
+            renderBuilderBlocks();
+        }
+    }
+
+    function updateBlockBtnUrl(id, val) {
+        const idx = builderBlocks.findIndex(b => b.id === id);
+        if (idx !== -1) {
+            builderBlocks[idx].btnUrl = val;
+        }
+    }
+
+    function updateBlockVideoUrl(id, val) {
+        const idx = builderBlocks.findIndex(b => b.id === id);
+        if (idx !== -1) {
+            builderBlocks[idx].videoUrl = val;
+            renderBuilderBlocks();
+        }
+    }
+
+    function updateBlockTerminalPrompt(id, val) {
+        const idx = builderBlocks.findIndex(b => b.id === id);
+        if (idx !== -1) {
+            builderBlocks[idx].prompt = val;
+        }
+    }
+
+    /* Tabs updaters */
+    function updateBlockTabsTitle1(id, val) {
+        const idx = builderBlocks.findIndex(b => b.id === id);
+        if (idx !== -1) {
+            builderBlocks[idx].title1 = val;
+        }
+    }
+
+    function updateBlockTabsContent1(id, val) {
+        const idx = builderBlocks.findIndex(b => b.id === id);
+        if (idx !== -1) {
+            builderBlocks[idx].content1 = val;
+        }
+    }
+
+    function updateBlockTabsTitle2(id, val) {
+        const idx = builderBlocks.findIndex(b => b.id === id);
+        if (idx !== -1) {
+            builderBlocks[idx].title2 = val;
+        }
+    }
+
+    function updateBlockTabsContent2(id, val) {
+        const idx = builderBlocks.findIndex(b => b.id === id);
+        if (idx !== -1) {
+            builderBlocks[idx].content2 = val;
+        }
+    }
+
+    function updateBlockIconboxIcon(id, val) {
+        const idx = builderBlocks.findIndex(b => b.id === id);
+        if (idx !== -1) {
+            builderBlocks[idx].icon = val;
+            renderBuilderBlocks();
+        }
+    }
+
+    function updateBlockIconboxTitle(id, val) {
+        const idx = builderBlocks.findIndex(b => b.id === id);
+        if (idx !== -1) {
+            builderBlocks[idx].title = val;
+        }
+    }
+
+    function updateBlockIconboxDesc(id, val) {
+        const idx = builderBlocks.findIndex(b => b.id === id);
+        if (idx !== -1) {
+            builderBlocks[idx].content = val;
+        }
+    }
+
     function deleteBlock(id) {
         builderBlocks = builderBlocks.filter(b => b.id !== id);
         renderBuilderBlocks();
@@ -2935,6 +3337,16 @@
                 html += `<p>${b.content}</p>\n`;
             } else if (b.type === 'list') {
                 html += `<ul>${b.content}</ul>\n`;
+            } else if (b.type === 'olist') {
+                html += `<ol>${b.content}</ol>\n`;
+            } else if (b.type === 'divider') {
+                html += `<hr class="material-divider">\n`;
+            } else if (b.type === 'accordion') {
+                html += `<details class="material-accordion"><summary>${b.title}</summary><div class="material-accordion-content">${b.content}</div></details>\n`;
+            } else if (b.type === 'button') {
+                html += `<div class="material-btn-wrapper"><a href="${b.btnUrl || '#'}" class="material-btn">${b.btnText || 'Tautan'}</a></div>\n`;
+            } else if (b.type === 'video') {
+                html += `<div class="material-video-container"><iframe src="${b.videoUrl || ''}" allowfullscreen></iframe></div>\n`;
             } else if (b.type === 'callout') {
                 html += `<div class="material-callout material-callout-${b.calloutType || 'info'}">${b.content}</div>\n`;
             } else if (b.type === 'code') {
@@ -2947,6 +3359,27 @@
                 html += `<pre><code class="language-${b.language || 'plaintext'}">${escaped}</code></pre>\n`;
             } else if (b.type === 'image') {
                 html += `<img src="${b.imageSrc}" alt="${b.imageAlt || ''}" class="material-img">\n`;
+            } else if (b.type === 'quote') {
+                html += `<blockquote class="material-quote">${b.content}</blockquote>\n`;
+            } else if (b.type === 'terminal') {
+                html += `<div class="material-terminal"><div class="prompt">${b.prompt || '[admin@MikroTik] &gt;'}</div><pre>${b.content}</pre></div>\n`;
+            } else if (b.type === 'iconbox') {
+                html += `<div class="material-icon-box"><div class="icon-wrapper"><i data-lucide="${b.icon || 'info'}"></i></div><div><h4>${b.title}</h4><p>${b.content}</p></div></div>\n`;
+            } else if (b.type === 'table') {
+                html += `<table class="material-table"><thead><tr><th>Parameter</th><th>Value</th></tr></thead><tbody>${b.content}</tbody></table>\n`;
+            } else if (b.type === 'tabs') {
+                const uniqueId = 'tab_' + Math.random().toString(36).substr(2, 9);
+                html += `
+<div class="material-tabs" id="${uniqueId}">
+    <div class="tabs-header">
+        <button class="tab-btn active" onclick="document.querySelectorAll('#${uniqueId} .tab-btn').forEach(b=>b.classList.remove('active')); this.classList.add('active'); document.querySelectorAll('#${uniqueId} .tab-pane').forEach(p=>p.classList.remove('active')); document.getElementById('${uniqueId}_1').classList.add('active');">${b.title1 || 'Tab 1'}</button>
+        <button class="tab-btn" onclick="document.querySelectorAll('#${uniqueId} .tab-btn').forEach(b=>b.classList.remove('active')); this.classList.add('active'); document.querySelectorAll('#${uniqueId} .tab-pane').forEach(p=>p.classList.remove('active')); document.getElementById('${uniqueId}_2').classList.add('active');">${b.title2 || 'Tab 2'}</button>
+    </div>
+    <div class="tabs-body">
+        <div class="tab-pane active" id="${uniqueId}_1">${b.content1 || ''}</div>
+        <div class="tab-pane" id="${uniqueId}_2">${b.content2 || ''}</div>
+    </div>
+</div>\n`;
             }
         });
         return html;
@@ -2994,6 +3427,50 @@
                     content: el.innerHTML,
                     calloutType: type
                 });
+            } else if (tagName === 'blockquote' && el.classList.contains('material-quote')) {
+                blocks.push({
+                    id: 'block_' + Math.random().toString(36).substr(2, 9),
+                    type: 'quote',
+                    content: el.innerHTML
+                });
+            } else if (tagName === 'div' && el.classList.contains('material-terminal')) {
+                const promptEl = el.querySelector('.prompt');
+                const preEl = el.querySelector('pre');
+                blocks.push({
+                    id: 'block_' + Math.random().toString(36).substr(2, 9),
+                    type: 'terminal',
+                    prompt: promptEl ? promptEl.innerText : '[admin@MikroTik] >',
+                    content: preEl ? preEl.innerText : ''
+                });
+            } else if (tagName === 'div' && el.classList.contains('material-icon-box')) {
+                const iconEl = el.querySelector('i');
+                const h4El = el.querySelector('h4');
+                const pEl = el.querySelector('p') || el.querySelector('div:last-child');
+                blocks.push({
+                    id: 'block_' + Math.random().toString(36).substr(2, 9),
+                    type: 'iconbox',
+                    icon: iconEl ? iconEl.getAttribute('data-lucide') || 'info' : 'info',
+                    title: h4El ? h4El.innerHTML : 'Info Penting',
+                    content: pEl ? pEl.innerHTML : ''
+                });
+            } else if (tagName === 'table' && el.classList.contains('material-table')) {
+                const tbody = el.querySelector('tbody');
+                blocks.push({
+                    id: 'block_' + Math.random().toString(36).substr(2, 9),
+                    type: 'table',
+                    content: tbody ? tbody.innerHTML : el.innerHTML
+                });
+            } else if (tagName === 'div' && el.classList.contains('material-tabs')) {
+                const tabBtns = el.querySelectorAll('.tabs-header .tab-btn');
+                const tabPanes = el.querySelectorAll('.tabs-body .tab-pane');
+                blocks.push({
+                    id: 'block_' + Math.random().toString(36).substr(2, 9),
+                    type: 'tabs',
+                    title1: tabBtns[0] ? tabBtns[0].innerText : 'Tab 1',
+                    content1: tabPanes[0] ? tabPanes[0].innerHTML : '',
+                    title2: tabBtns[1] ? tabBtns[1].innerText : 'Tab 2',
+                    content2: tabPanes[1] ? tabPanes[1].innerHTML : ''
+                });
             } else if (tagName === 'pre') {
                 const codeEl = el.querySelector('code');
                 let codeContent = el.innerText;
@@ -3009,11 +3486,47 @@
                     content: codeContent,
                     language: lang
                 });
-            } else if (tagName === 'ul' || tagName === 'ol') {
+            } else if (tagName === 'ul') {
                 blocks.push({
                     id: 'block_' + Math.random().toString(36).substr(2, 9),
                     type: 'list',
                     content: el.innerHTML
+                });
+            } else if (tagName === 'ol') {
+                blocks.push({
+                    id: 'block_' + Math.random().toString(36).substr(2, 9),
+                    type: 'olist',
+                    content: el.innerHTML
+                });
+            } else if (tagName === 'hr') {
+                blocks.push({
+                    id: 'block_' + Math.random().toString(36).substr(2, 9),
+                    type: 'divider',
+                    content: ''
+                });
+            } else if (tagName === 'details') {
+                const summaryEl = el.querySelector('summary');
+                const contentEl = el.querySelector('.material-accordion-content') || el.querySelector('div') || el;
+                blocks.push({
+                    id: 'block_' + Math.random().toString(36).substr(2, 9),
+                    type: 'accordion',
+                    title: summaryEl ? summaryEl.innerHTML : 'Judul Akordeon',
+                    content: contentEl ? contentEl.innerHTML : 'Isi penjelasan...'
+                });
+            } else if (tagName === 'div' && el.classList.contains('material-btn-wrapper')) {
+                const linkEl = el.querySelector('a');
+                blocks.push({
+                    id: 'block_' + Math.random().toString(36).substr(2, 9),
+                    type: 'button',
+                    btnText: linkEl ? linkEl.innerText : 'Tautan',
+                    btnUrl: linkEl ? linkEl.getAttribute('href') : '#'
+                });
+            } else if (tagName === 'div' && el.classList.contains('material-video-container')) {
+                const iframeEl = el.querySelector('iframe');
+                blocks.push({
+                    id: 'block_' + Math.random().toString(36).substr(2, 9),
+                    type: 'video',
+                    videoUrl: iframeEl ? iframeEl.getAttribute('src') : ''
                 });
             } else if (tagName === 'img') {
                 blocks.push({
@@ -3070,6 +3583,109 @@
                 contentHtml = `<p class="builder-editable" contenteditable="true" onblur="updateBlockContent('${block.id}', this.innerHTML)" style="margin: 0; outline: none; min-height: 1.5rem; line-height: 1.75;">${block.content || 'Tulis teks paragraf di sini...'}</p>`;
             } else if (block.type === 'list') {
                 contentHtml = `<ul class="builder-editable" contenteditable="true" onblur="updateBlockContent('${block.id}', this.innerHTML)" style="margin: 0; outline: none; padding-left: 1.5rem; min-height: 2rem;">${block.content || '<li>Item daftar pertama</li><li>Item daftar kedua</li>'}</ul>`;
+            } else if (block.type === 'olist') {
+                contentHtml = `<ol class="builder-editable" contenteditable="true" onblur="updateBlockContent('${block.id}', this.innerHTML)" style="margin: 0; outline: none; padding-left: 1.5rem; min-height: 2rem;">${block.content || '<li>Item berurutan pertama</li><li>Item berurutan kedua</li>'}</ol>`;
+            } else if (block.type === 'divider') {
+                contentHtml = `<hr class="material-divider" style="margin: 1rem 0;">`;
+            } else if (block.type === 'quote') {
+                contentHtml = `<blockquote class="material-quote builder-editable" contenteditable="true" onblur="updateBlockContent('${block.id}', this.innerHTML)" style="outline: none; margin: 0;">${block.content || 'Tulis kalimat kutipan penting di sini...'}</blockquote>`;
+            } else if (block.type === 'terminal') {
+                contentHtml = `
+                    <div class="material-terminal" style="margin: 0; position: relative;">
+                        <div style="display: flex; gap: 0.5rem; align-items: center; margin-bottom: 0.5rem;" class="builder-block-controls-select">
+                            <span style="font-size: 0.7rem; color: #4ade80;">Prompt:</span>
+                            <input type="text" value="${block.prompt || '[admin@MikroTik] >'}" oninput="updateBlockTerminalPrompt('${block.id}', this.value)" style="background: #1e293b; color: #4ade80; border: none; font-size: 0.75rem; border-radius: 4px; padding: 2px 6px; width: 150px; font-family: monospace; outline: none;">
+                        </div>
+                        <textarea oninput="updateBlockContent('${block.id}', this.value)" style="width: 100%; background: transparent; color: #f1f5f9; font-family: monospace; border: none; resize: vertical; min-height: 50px; outline: none; font-size: 0.85rem; line-height: 1.5; margin: 0; padding: 0;" placeholder="Tulis baris perintah terminal di sini...">${block.content || ''}</textarea>
+                    </div>
+                `;
+            } else if (block.type === 'iconbox') {
+                contentHtml = `
+                    <div class="material-icon-box" style="margin: 0; position: relative; width: 100%;">
+                        <div style="position: absolute; top: 0.5rem; right: 0.5rem;" class="builder-block-controls-select">
+                            <select onchange="updateBlockIconboxIcon('${block.id}', this.value)" style="border: 1px solid #cbd5e1; border-radius: 4px; font-size: 0.7rem; padding: 2px 4px; background: #fff; cursor: pointer; font-family: 'Plus Jakarta Sans', sans-serif;">
+                                <option value="info" ${block.icon === 'info' ? 'selected' : ''}>Info</option>
+                                <option value="help-circle" ${block.icon === 'help-circle' ? 'selected' : ''}>Bantuan</option>
+                                <option value="check-circle" ${block.icon === 'check-circle' ? 'selected' : ''}>Verifikasi</option>
+                                <option value="alert-triangle" ${block.icon === 'alert-triangle' ? 'selected' : ''}>Peringatan</option>
+                                <option value="settings" ${block.icon === 'settings' ? 'selected' : ''}>Setting</option>
+                            </select>
+                        </div>
+                        <div class="icon-wrapper" style="pointer-events: none;"><i data-lucide="${block.icon || 'info'}" style="width: 1.5rem; height: 1.5rem;"></i></div>
+                        <div style="flex: 1;">
+                            <h4 class="builder-editable" contenteditable="true" onblur="updateBlockIconboxTitle('${block.id}', this.innerHTML)" style="outline: none;">${block.title || 'Judul Info Box'}</h4>
+                            <div class="builder-editable" contenteditable="true" onblur="updateBlockIconboxDesc('${block.id}', this.innerHTML)" style="outline: none; color: #475569; font-size: 0.9rem;">${block.content || 'Isi deskripsi info box...'}</div>
+                        </div>
+                    </div>
+                `;
+            } else if (block.type === 'table') {
+                contentHtml = `
+                    <div style="border: 1px solid #e2e8f0; border-radius: 12px; padding: 1.25rem; background: #f8fafc; display: flex; flex-direction: column; gap: 0.75rem; width: 100%;">
+                        <div style="font-size: 0.75rem; font-weight: 700; color: #7c3aed; text-transform: uppercase;">Table Widget (Edit baris data di bawah):</div>
+                        <table class="material-table" style="margin: 0; background: #fff; width: 100%;">
+                            <thead>
+                                <tr>
+                                    <th style="padding: 0.5rem 0.75rem;">Parameter</th>
+                                    <th style="padding: 0.5rem 0.75rem;">Value / Deskripsi</th>
+                                </tr>
+                            </thead>
+                            <tbody class="builder-editable" contenteditable="true" onblur="updateBlockContent('${block.id}', this.innerHTML)" style="outline: none;">
+                                ${block.content || '<tr><td>IP Address</td><td>192.168.88.1/24</td></tr><tr><td>Interface</td><td>ether1</td></tr>'}
+                            </tbody>
+                        </table>
+                        <div style="font-size: 0.7rem; color: #64748b;"><i data-lucide="info" style="width: 0.8rem; height: 0.8rem; display: inline; vertical-align: middle;"></i> Tip: Ubah isi tabel secara langsung. Anda dapat menekan Enter untuk menambah baris baru &lt;tr&gt; di dalam kode tabel.</div>
+                    </div>
+                `;
+            } else if (block.type === 'tabs') {
+                contentHtml = `
+                    <div class="material-tabs" style="margin: 0; border: 1px solid #e2e8f0; border-radius: 12px; padding: 1.25rem; background: #f8fafc; display: flex; flex-direction: column; gap: 0.75rem; width: 100%;">
+                        <div style="font-size: 0.75rem; font-weight: 700; color: #7c3aed; text-transform: uppercase;">Tabs Widget (Ubah tab di bawah):</div>
+                        <div style="display: flex; gap: 0.5rem;" class="builder-block-controls-select">
+                            <input type="text" value="${block.title1 || 'Tab 1'}" oninput="updateBlockTabsTitle1('${block.id}', this.value)" placeholder="Judul Tab 1" style="flex: 1; height: 32px; padding: 0 0.5rem; font-size: 0.8rem; border-radius: 6px; border: 1px solid #cbd5e1; outline: none;">
+                            <input type="text" value="${block.title2 || 'Tab 2'}" oninput="updateBlockTabsTitle2('${block.id}', this.value)" placeholder="Judul Tab 2" style="flex: 1; height: 32px; padding: 0 0.5rem; font-size: 0.8rem; border-radius: 6px; border: 1px solid #cbd5e1; outline: none;">
+                        </div>
+                        <div style="font-size: 0.7rem; font-weight: 700; color: #475569;">Konten Tab 1:</div>
+                        <div class="builder-editable" contenteditable="true" onblur="updateBlockTabsContent1('${block.id}', this.innerHTML)" style="outline: none; padding: 0.75rem; border-radius: 6px; border: 1px solid #e2e8f0; background: #fff; font-size: 0.85rem;">${block.content1 || 'Konten Tab Pertama...'}</div>
+                        <div style="font-size: 0.7rem; font-weight: 700; color: #475569;">Konten Tab 2:</div>
+                        <div class="builder-editable" contenteditable="true" onblur="updateBlockTabsContent2('${block.id}', this.innerHTML)" style="outline: none; padding: 0.75rem; border-radius: 6px; border: 1px solid #e2e8f0; background: #fff; font-size: 0.85rem;">${block.content2 || 'Konten Tab Kedua...'}</div>
+                    </div>
+                `;
+            } else if (block.type === 'accordion') {
+                contentHtml = `
+                    <div class="material-accordion" style="margin: 0; position: relative;">
+                        <div style="background-color: #f8fafc; padding: 0.85rem 1.25rem; border-bottom: 1px solid #f1f5f9; font-weight: 700; font-size: 0.95rem; color: #0f172a; display: flex; align-items: center;" class="builder-block-controls-select">
+                            <span style="font-size: 0.75rem; color: #7c3aed; margin-right: 0.5rem; text-transform: uppercase;">Accordion Title:</span>
+                            <div class="builder-editable" contenteditable="true" onblur="updateBlockAccordionTitle('${block.id}', this.innerHTML)" style="outline: none; flex: 1;">${block.title || 'Judul Akordeon'}</div>
+                        </div>
+                        <div class="material-accordion-content builder-editable" contenteditable="true" onblur="updateBlockContent('${block.id}', this.innerHTML)" style="outline: none; padding: 1.25rem; background: #fff; font-size: 0.9rem;">${block.content || 'Isi detail penjelasan FAQ/Akordeon di sini...'}</div>
+                    </div>
+                `;
+            } else if (block.type === 'button') {
+                contentHtml = `
+                    <div class="material-btn-wrapper" style="margin: 0; border: 1px solid #e2e8f0; border-radius: 12px; padding: 1.25rem; background: #f8fafc; display: flex; flex-direction: column; gap: 0.75rem;">
+                        <div style="display: flex; gap: 0.5rem; align-items: center;" class="builder-block-controls-select">
+                            <span style="font-size: 0.75rem; font-weight: 700; color: #475569;">Teks:</span>
+                            <input type="text" value="${block.btnText || ''}" oninput="updateBlockBtnText('${block.id}', this.value)" placeholder="Nama Tombol" style="flex: 1; height: 32px; padding: 0 0.5rem; font-size: 0.8rem; border-radius: 6px; border: 1px solid #cbd5e1; outline: none;">
+                            <span style="font-size: 0.75rem; font-weight: 700; color: #475569;">URL:</span>
+                            <input type="text" value="${block.btnUrl || ''}" oninput="updateBlockBtnUrl('${block.id}', this.value)" placeholder="https://..." style="flex: 2; height: 32px; padding: 0 0.5rem; font-size: 0.8rem; border-radius: 6px; border: 1px solid #cbd5e1; outline: none;">
+                        </div>
+                        <div style="text-align: center; margin-top: 0.25rem;">
+                            <span class="material-btn" style="pointer-events: none; margin: 0;">${block.btnText || 'Tombol Tautan'}</span>
+                        </div>
+                    </div>
+                `;
+            } else if (block.type === 'video') {
+                contentHtml = `
+                    <div style="border: 1px solid #e2e8f0; border-radius: 12px; padding: 1.25rem; background-color: #f8fafc; display: flex; flex-direction: column; gap: 0.75rem;">
+                        <div style="display: flex; gap: 0.5rem; align-items: center;" class="builder-block-controls-select">
+                            <span style="font-size: 0.75rem; font-weight: 700; color: #475569;">URL Youtube Embed:</span>
+                            <input type="text" value="${block.videoUrl || ''}" oninput="updateBlockVideoUrl('${block.id}', this.value)" placeholder="https://www.youtube.com/embed/..." style="flex: 1; height: 32px; padding: 0 0.5rem; font-size: 0.8rem; border-radius: 6px; border: 1px solid #cbd5e1; outline: none;">
+                        </div>
+                        <div class="material-video-container" style="margin: 0; pointer-events: none;">
+                            ${block.videoUrl ? `<iframe src="${block.videoUrl}"></iframe>` : `<div style="text-align: center; padding: 2rem; color: #94a3b8; font-size: 0.8rem;"><i data-lucide="video" style="width: 1.25rem; height: 1.25rem; display: inline-block; vertical-align: middle; margin-right: 0.25rem;"></i> Masukkan URL YouTube Embed Anda</div>`}
+                        </div>
+                    </div>
+                `;
             } else if (block.type === 'callout') {
                 contentHtml = `
                     <div class="material-callout material-callout-${block.calloutType || 'info'}" style="position: relative; margin: 0;">
@@ -3104,9 +3720,9 @@
                     <div style="border: 1px solid #e2e8f0; border-radius: 8px; padding: 1rem; background-color: #f8fafc; display: flex; flex-direction: column; gap: 0.75rem;">
                         <div style="display: flex; gap: 0.5rem; align-items: center;" class="builder-block-controls-select">
                             <span style="font-size: 0.75rem; font-weight: 700; color: #475569;">URL Gambar:</span>
-                            <input type="text" value="${block.imageSrc || ''}" oninput="updateBlockImageSrc('${block.id}', this.value)" placeholder="<?= BASE_URL ?>/uploads/nama-file.png" style="flex: 1; height: 32px; padding: 0 0.5rem; font-size: 0.8rem; border-radius: 6px; border: 1px solid #cbd5e1;">
+                            <input type="text" value="${block.imageSrc || ''}" oninput="updateBlockImageSrc('${block.id}', this.value)" placeholder="<?= BASE_URL ?>/uploads/nama-file.png" style="flex: 1; height: 32px; padding: 0 0.5rem; font-size: 0.8rem; border-radius: 6px; border: 1px solid #cbd5e1; outline: none;">
                             <span style="font-size: 0.75rem; font-weight: 700; color: #475569;">Alt:</span>
-                            <input type="text" value="${block.imageAlt || ''}" oninput="updateBlockImageAlt('${block.id}', this.value)" placeholder="Deskripsi" style="width: 120px; height: 32px; padding: 0 0.5rem; font-size: 0.8rem; border-radius: 6px; border: 1px solid #cbd5e1;">
+                            <input type="text" value="${block.imageAlt || ''}" oninput="updateBlockImageAlt('${block.id}', this.value)" placeholder="Deskripsi" style="width: 120px; height: 32px; padding: 0 0.5rem; font-size: 0.8rem; border-radius: 6px; border: 1px solid #cbd5e1; outline: none;">
                         </div>
                         <div style="text-align: center; border: 1px dashed #cbd5e1; border-radius: 6px; background: #fff; padding: 0.5rem;">
                             ${block.imageSrc ? `<img src="${block.imageSrc}" alt="${block.imageAlt || ''}" style="max-height: 200px; max-width: 100%; border-radius: 4px; display: inline-block;">` : `<span style="font-size: 0.75rem; color: #94a3b8;"><i data-lucide="image" style="width: 1rem; height: 1rem; display: inline-block; vertical-align: middle; margin-right: 0.25rem;"></i> Belum ada gambar dimasukkan</span>`}
@@ -3123,4 +3739,5 @@
             window.lucide.createIcons();
         }
     }
+
 </script>
