@@ -7,90 +7,104 @@ use PDO;
 use App\Core\Database;
 
 /**
- * MaterialRepository - Handles database operations for Material entity.
+ * MaterialRepository - Article and Learning Material Data Access.
  */
-class MaterialRepository
+class MaterialRepository implements MaterialRepositoryInterface
 {
     private PDO $db;
 
-    public function __construct()
+    public function __construct(?Database $database = null)
     {
-        $this->db = Database::getInstance()->getConnection();
+        $this->db = ($database ?? Database::getInstance())->getConnection();
     }
 
     /**
-     * Get all materials.
+     * Fetch all learning materials ordered by newest.
      */
     public function getAll(): array
     {
-        $stmt = $this->db->prepare("SELECT id, title, category, difficulty, image_path, created_at, updated_at FROM materials ORDER BY created_at DESC");
-        $stmt->execute();
+        $stmt = $this->db->query("SELECT * FROM materials ORDER BY id DESC");
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
     /**
-     * Get material by ID.
+     * Get learning material by ID.
      */
     public function getById(int $id): ?array
     {
         $stmt = $this->db->prepare("SELECT * FROM materials WHERE id = :id LIMIT 1");
         $stmt->execute(['id' => $id]);
-        $material = $stmt->fetch();
-        return $material ?: null;
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $row ?: null;
     }
 
     /**
-     * Get materials by category.
+     * Get learning materials in the same category.
      */
     public function getByCategory(string $category): array
     {
-        $stmt = $this->db->prepare("SELECT * FROM materials WHERE category = :category ORDER BY created_at DESC");
+        $stmt = $this->db->prepare("SELECT * FROM materials WHERE category = :category ORDER BY id DESC");
         $stmt->execute(['category' => $category]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
     /**
-     * Create a new learning material.
+     * Create new learning material.
      */
-    public function create(string $title, string $content, string $category, string $difficulty, ?string $image_path = null): int
-    {
-        $stmt = $this->db->prepare(
-            "INSERT INTO materials (title, content, category, difficulty, image_path) 
-             VALUES (:title, :content, :category, :difficulty, :image_path)"
-        );
+    public function create(
+        string $title,
+        string $content,
+        string $category,
+        string $difficulty,
+        ?string $imagePath = null
+    ): int {
+        $stmt = $this->db->prepare("
+            INSERT INTO materials (title, content, category, difficulty, image_path) 
+            VALUES (:title, :content, :category, :difficulty, :image_path)
+        ");
         $stmt->execute([
             'title' => $title,
             'content' => $content,
             'category' => $category,
             'difficulty' => $difficulty,
-            'image_path' => $image_path
+            'image_path' => $imagePath
         ]);
 
         return (int)$this->db->lastInsertId();
     }
 
     /**
-     * Update an existing material.
+     * Update existing learning material.
      */
-    public function update(int $id, string $title, string $content, string $category, string $difficulty, ?string $image_path = null): bool
-    {
-        $stmt = $this->db->prepare(
-            "UPDATE materials 
-             SET title = :title, content = :content, category = :category, difficulty = :difficulty, image_path = :image_path
-             WHERE id = :id"
-        );
-        return $stmt->execute([
+    public function update(
+        int $id,
+        string $title,
+        string $content,
+        string $category,
+        string $difficulty,
+        ?string $imagePath = null
+    ): bool {
+        $sql = "UPDATE materials SET title = :title, content = :content, category = :category, difficulty = :difficulty";
+        $params = [
+            'id' => $id,
             'title' => $title,
             'content' => $content,
             'category' => $category,
-            'difficulty' => $difficulty,
-            'image_path' => $image_path,
-            'id' => $id
-        ]);
+            'difficulty' => $difficulty
+        ];
+
+        if ($imagePath !== null) {
+            $sql .= ", image_path = :image_path";
+            $params['image_path'] = $imagePath;
+        }
+
+        $sql .= " WHERE id = :id";
+        $stmt = $this->db->prepare($sql);
+        return $stmt->execute($params);
     }
 
     /**
-     * Delete a material by ID.
+     * Delete learning material.
      */
     public function delete(int $id): bool
     {

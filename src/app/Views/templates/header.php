@@ -778,14 +778,6 @@ if (isset($_SESSION['user'])) {
                                 <div style="height: 1px; background-color: #e2e8f0; margin: 0.4rem 0;"></div>
 
                                 <!-- Menu Links -->
-
-                                <a href="<?= BASE_URL ?>/settings"
-                                    style="display: flex; align-items: center; gap: 0.65rem; padding: 0.6rem 0.75rem; color: #475569; font-size: 0.85rem; font-weight: 500; border-radius: 8px; text-decoration: none; transition: background-color 0.2s, color 0.2s;"
-                                    onmouseover="this.style.backgroundColor='#f1f5f9'; this.style.color='#7c3aed';"
-                                    onmouseout="this.style.backgroundColor='transparent'; this.style.color='#475569';">
-                                    <i data-lucide="user-cog" style="width: 1rem; height: 1rem;"></i>
-                                    Pengaturan Akun
-                                </a>
                                 <a href="<?= BASE_URL ?>/logout"
                                     style="display: flex; align-items: center; gap: 0.65rem; padding: 0.6rem 0.75rem; color: #f43f5e; font-size: 0.85rem; font-weight: 600; border-radius: 8px; text-decoration: none; transition: background-color 0.2s;"
                                     onmouseover="this.style.backgroundColor='#fff1f2';"
@@ -841,16 +833,6 @@ if (isset($_SESSION['user'])) {
 
 
 
-
-                    <?php if (!$isAdmin): ?>
-                        <!-- Settings option -->
-                        <a href="<?= BASE_URL ?>/settings"
-                            style="color: #475569; text-decoration: none; font-weight: 600; padding: 0.6rem 0.75rem; border-radius: 8px; font-size: 0.9rem; display: block; transition: all 0.2s;"
-                            onmouseover="this.style.backgroundColor='#f1f5f9'; this.style.color='#7c3aed';"
-                            onmouseout="this.style.backgroundColor='transparent'; this.style.color='#475569';">
-                            Pengaturan Profil
-                        </a>
-                    <?php endif; ?>
 
                     <!-- Logout option -->
                     <a href="<?= BASE_URL ?>/logout"

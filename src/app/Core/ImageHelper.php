@@ -1,66 +1,142 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Core;
 
+use RuntimeException;
+
+/**
+ * Secure Image Processing & Conversion Helper.
+ * Enforces magic-byte MIME validation, randomized hash filenames, and WebP compression.
+ */
 class ImageHelper
 {
+    private const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB limit
+    private const ALLOWED_MIME_TYPES = [
+        'image/jpeg' => 'jpg',
+        'image/png' => 'png',
+        'image/webp' => 'webp',
+    ];
+
     /**
-     * Converts and compresses any uploaded image to WebP format.
+     * Validate and convert uploaded image to WebP format securely.
      *
-     * @param array $file The $_FILES['image'] payload.
-     * @param string $targetDir Target upload folder path.
-     * @param int $quality Compression quality (0-100).
-     * @return string|false Return relative file path on success, false on failure.
+     * @param array $file $_FILES element
+     * @param string $targetDir Destination folder path
+     * @param int $quality WebP compression quality (1-100)
+     * @return string|false Relative file path on success, false on failure
      */
     public static function uploadAndConvertToWebP(array $file, string $targetDir, int $quality = 80): string|false
     {
-        if ($file['error'] !== UPLOAD_ERR_OK) {
+        if (!isset($file['error']) || $file['error'] !== UPLOAD_ERR_OK) {
             return false;
         }
 
-        // Generate unique filename
-        $fileName = uniqid('img_', true) . '.webp';
-        $destination = rtrim($targetDir, '/') . '/' . $fileName;
+        if (!isset($file['tmp_name']) || !is_uploaded_file($file['tmp_name'])) {
+            return false;
+        }
 
-        // Ensure directory exists
+        if (($file['size'] ?? 0) > self::MAX_FILE_SIZE) {
+            return false;
+        }
+
+        $tmpPath = $file['tmp_name'];
+
+        // Strict Server-Side MIME-Type Detection via Magic Bytes
+        $finfo = finfo_open(FILEINFO_MIME_TYPE);
+        if (!$finfo) {
+            return false;
+        }
+        $mimeType = finfo_file($finfo, $tmpPath);
+        finfo_close($finfo);
+
+        if (!array_key_exists($mimeType, self::ALLOWED_MIME_TYPES)) {
+            return false;
+        }
+
+        // Generate cryptographically random filename
+        $randomHash = bin2hex(random_bytes(16));
+        $newFilename = "img_{$randomHash}.webp";
+
         if (!is_dir($targetDir)) {
             mkdir($targetDir, 0755, true);
         }
 
-        $tempPath = $file['tmp_name'];
-        // Detect MIME type securely using server-side detection to prevent MIME-spoofing bypass
-        $imageType = mime_content_type($tempPath);
+        $destination = rtrim($targetDir, '/') . '/' . $newFilename;
 
-        // Create image resource based on original type
-        switch ($imageType) {
-            case 'image/jpeg':
-            case 'image/jpg':
-                $image = imagecreatefromjpeg($tempPath);
-                break;
-            case 'image/png':
-                $image = imagecreatefrompng($tempPath);
-                // Preserve transparency details for WebP
-                if ($image) {
-                    imagepalettetotruecolor($image);
-                    imagealphablending($image, true);
-                    imagesavealpha($image, true);
-                }
-                break;
-            case 'image/webp':
-                $image = imagecreatefromwebp($tempPath);
-                break;
-            default:
-                return false; // Unsupported format
-        }
+        // Create image resource based on actual magic-byte MIME
+        $image = match ($mimeType) {
+            'image/jpeg' => @imagecreatefromjpeg($tmpPath),
+            'image/png' => @imagecreatefrompng($tmpPath),
+            'image/webp' => @imagecreatefromwebp($tmpPath),
+            default => null
+        };
 
         if (!$image) {
             return false;
         }
 
-        // Save WebP image
-        $success = imagewebp($image, $destination, $quality);
+        // Preserve alpha transparency for PNG / WebP
+        imagepalettetotruecolor($image);
+        imagealphablending($image, true);
+        imagesavealpha($image, true);
+
+        $success = imagewebp($image, $destination, max(1, min(100, $quality)));
         imagedestroy($image);
 
         return $success ? $destination : false;
+    }
+
+    /**
+     * Process base64 data URI image and save as WebP securely.
+     */
+    public static function saveBase64ToWebP(string $dataUri, string $targetDir, int $quality = 80): ?string
+    {
+        if (!str_starts_with($dataUri, 'data:image/')) {
+            return null;
+        }
+
+        $dataUri = str_replace(' ', '+', $dataUri);
+        $parts = explode(';', $dataUri, 2);
+        if (count($parts) !== 2) {
+            return null;
+        }
+
+        $mimePart = str_replace('data:', '', $parts[0]);
+        if (!array_key_exists($mimePart, self::ALLOWED_MIME_TYPES)) {
+            return null;
+        }
+
+        $dataPart = explode(',', $parts[1], 2);
+        if (count($dataPart) !== 2) {
+            return null;
+        }
+
+        $binaryData = base64_decode($dataPart[1], true);
+        if ($binaryData === false || strlen($binaryData) > self::MAX_FILE_SIZE) {
+            return null;
+        }
+
+        $image = @imagecreatefromstring($binaryData);
+        if (!$image) {
+            return null;
+        }
+
+        if (!is_dir($targetDir)) {
+            mkdir($targetDir, 0755, true);
+        }
+
+        $randomHash = bin2hex(random_bytes(16));
+        $newFilename = "qimg_{$randomHash}.webp";
+        $fullPath = rtrim($targetDir, '/') . '/' . $newFilename;
+
+        imagepalettetotruecolor($image);
+        imagealphablending($image, true);
+        imagesavealpha($image, true);
+
+        $saved = imagewebp($image, $fullPath, max(1, min(100, $quality)));
+        imagedestroy($image);
+
+        return $saved ? $newFilename : null;
     }
 }

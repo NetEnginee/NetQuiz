@@ -1,0 +1,20 @@
+# Environment & local credentials
+.env
+.env.local
+
+# Logs and runtime dumps
+src/logs/*.log
+*.log
+
+# Uploads cache (optional, keep default structure)
+src/public/uploads/questions/*
+!src/public/uploads/questions/.gitkeep
+src/public/uploads/materials/*
+!src/public/uploads/materials/.gitkeep
+
+# OS / IDE artifacts
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp

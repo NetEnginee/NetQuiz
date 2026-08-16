@@ -3,35 +3,39 @@ declare(strict_types=1);
 
 namespace App\Core;
 
-class Controller
+/**
+ * Base Controller.
+ * Provides helper methods for rendering views, returning JSON responses, and redirects.
+ */
+abstract class Controller
 {
     /**
      * Renders a view file and injects variables into it.
      *
      * @param string $view Name of the view file (e.g. 'home/index')
-     * @param array $data Associative array of data to be extracted to variables
+     * @param array<string, mixed> $data Associative array of data to be extracted to variables
      */
-    protected function view(string $view, array $data = []): void
+    protected function view(string $view, array $data = []): Response
     {
-        // Make data available to view without extract()
-        foreach ($data as $__key => $__value) {
-            $$__key = $__value;
-        }
-        unset($__key, $__value);
-        require_once APP_ROOT . '/Views/' . $view . '.php';
+        return Response::view($view, $data);
     }
 
     /**
-     * Sends a JSON response and terminates execution.
+     * Returns a JSON response.
      *
-     * @param array $data Data to be encoded to JSON
+     * @param array<string, mixed> $data Data to be encoded to JSON
      * @param int $statusCode HTTP response status code (default 200)
      */
-    protected function jsonResponse(array $data, int $statusCode = 200): void
+    protected function jsonResponse(array $data, int $statusCode = 200): Response
     {
-        header('Content-Type: application/json; charset=utf-8');
-        http_response_code($statusCode);
-        echo json_encode($data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
-        exit;
+        return Response::json($data, $statusCode);
+    }
+
+    /**
+     * Returns a redirect response.
+     */
+    protected function redirect(string $url, int $statusCode = 302): Response
+    {
+        return Response::redirect($url, $statusCode);
     }
 }
