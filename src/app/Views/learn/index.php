@@ -37,7 +37,7 @@
                 <div class="materials-grid">
                     <?php foreach ($items as $material):
                         // Clean excerpt from HTML
-                        $excerpt = strip_tags($material['content']);
+                        $excerpt = strip_tags($material['content'] ?? '');
                         ?>
                         <a href="<?= BASE_URL ?>/learn/<?= $material['id'] ?>" class="material-card">
                             <div>

@@ -1,1137 +1,1731 @@
-// --- NETQUIZ VISUAL BUILDER (ELEMENTOR MODE) STATE ---
-let builderBlocks = [];
-let activeBuilderMode = 'edit';
-let originalMaterialTitle = '';
+/**
+ * NetQuiz Admin Console - Unified Single Panel & Grid 12 Builder (Upgraded UX/UI)
+ * Standards: Vercel Geist Light Theme, Dual-Layer CAD Blueprint, Zero AI Slop
+ */
 
-function checkTitleChanged() {
-    const currentTitle = document.getElementById('builder-meta-title').value.trim();
-    const saveBtn = document.getElementById('builder-save-btn');
-    if (!saveBtn) return;
+// ==========================================================================
+// 1. GLOBAL TOAST & CONFIRM MODAL SYSTEM (GEIST STANDARDS)
+// ==========================================================================
+
+/** Global non-blocking floating toast notification */
+window.showGeistToast = function(type, title, message, duration = 3500) {
+    const toaster = document.getElementById('geist-toaster');
+    if (!toaster) return;
+
+    const toast = document.createElement('div');
+    toast.className = `geist-toast toast-${type}`;
     
-    if (currentTitle === '' || currentTitle === originalMaterialTitle) {
-        saveBtn.disabled = true;
-    } else {
-        saveBtn.disabled = false;
-    }
-}
+    let iconName = 'check-circle';
+    if (type === 'error') iconName = 'alert-circle';
+    else if (type === 'info') iconName = 'info';
 
-function toggleMobileSidebar(forceState) {
-    const sidebar = document.getElementById('builder-sidebar');
-    if (!sidebar) return;
-    if (forceState !== undefined) {
-        if (forceState) {
-            sidebar.classList.add('mobile-open');
-        } else {
-            sidebar.classList.remove('mobile-open');
-        }
-    } else {
-        sidebar.classList.toggle('mobile-open');
-    }
-}
-
-function toggleClassicEditor() {
-    const container = document.getElementById('classic-editor-container');
-    const btn = document.getElementById('classic-editor-toggle-btn');
-    if (container.style.display === 'none') {
-        container.style.display = 'block';
-        btn.innerText = 'Sembunyikan Editor HTML Klasik';
-    } else {
-        container.style.display = 'none';
-        btn.innerText = 'Tampilkan Editor HTML Klasik';
-    }
-}
-
-function openVisualBuilderFromForm() {
-    const titleVal = document.getElementById('form-material-title').value;
-    const catVal = document.getElementById('form-material-category').value;
-    const diffVal = document.getElementById('form-material-difficulty').value;
-    const contentVal = document.getElementById('form-material-content').value;
-
-    // Set the original title to track updates
-    const editId = document.getElementById('edit-material-id').value;
-    originalMaterialTitle = editId ? titleVal.trim() : '';
-
-    document.getElementById('builder-meta-title').value = titleVal;
-    document.getElementById('builder-meta-category').value = catVal;
-    document.getElementById('builder-meta-difficulty').value = diffVal;
-
-    updateBuilderMetaTitle();
-    checkTitleChanged();
-
-    // Sync preview badge state
-    const diffEl = document.getElementById('canvas-meta-difficulty');
-    diffEl.innerText = diffVal;
-    diffEl.className = '';
-    if (diffVal === 'Mudah') {
-        diffEl.style.backgroundColor = '#ecfdf5';
-        diffEl.style.color = '#059669';
-    } else if (diffVal === 'Sedang') {
-        diffEl.style.backgroundColor = '#fffbeb';
-        diffEl.style.color = '#d97706';
-    } else {
-        diffEl.style.backgroundColor = '#fef2f2';
-        diffEl.style.color = '#dc2626';
-    }
-    document.getElementById('canvas-meta-category').innerText = catVal;
-
-    builderBlocks = parseHtmlToBlocks(contentVal);
-
-    document.getElementById('visual-builder-overlay').style.display = 'flex';
-    document.body.style.overflow = 'hidden';
-
-    setBuilderMode('edit');
-    renderBuilderBlocks();
-}
-
-function editMaterialVisual(id) {
-    const config = window.NetQuizConfig || { baseUrl: '' };
-    const rowItem = document.querySelector(`button[onclick="editMaterialVisual(${id})"]`);
-    const originalContent = rowItem.innerHTML;
-    rowItem.disabled = true;
-    rowItem.innerHTML = '<i data-lucide="loader" class="animate-spin" style="width: 0.85rem; height: 0.85rem; display: inline-block;"></i>...';
-    if (window.lucide) window.lucide.createIcons();
-
-    fetch(`${config.baseUrl}/admin/material/get/${id}`)
-        .then(res => res.json())
-        .then(data => {
-            rowItem.disabled = false;
-            rowItem.innerHTML = originalContent;
-            if (window.lucide) window.lucide.createIcons();
-
-            const listModal = document.getElementById('quiz-list-modal');
-            if (listModal) {
-                listModal.classList.remove('active');
-            }
-
-            document.getElementById('edit-material-id').value = data.id;
-            document.getElementById('form-material-title').value = data.title;
-            document.getElementById('form-material-category').value = data.category;
-            document.getElementById('form-material-difficulty').value = data.difficulty || 'Mudah';
-            document.getElementById('form-material-content').value = data.content;
-
-            const form = document.getElementById('create-material-form');
-            form.action = `${config.baseUrl}/admin/material/update/${data.id}`;
-            document.getElementById('form-material-card-title').innerHTML = `
-                <i data-lucide="edit" style="width: 1.25rem; height: 1.25rem; color: #7c3aed;"></i>
-                Sunting Materi: ${data.title}
-            `;
-            document.getElementById('btn-publish-material-text').innerText = 'Simpan Perubahan';
-            document.getElementById('btn-cancel-edit-material').style.display = 'flex';
-            if (window.lucide) window.lucide.createIcons();
-
-            document.getElementById('materials-section').scrollIntoView({ behavior: 'smooth' });
-
-            openVisualBuilderFromForm();
-        })
-        .catch(err => {
-            rowItem.disabled = false;
-            rowItem.innerHTML = originalContent;
-            if (window.lucide) window.lucide.createIcons();
-            alert('Gagal mengambil data materi: ' + err.message);
-        });
-}
-
-function resetMaterialForm() {
-    const config = window.NetQuizConfig || { baseUrl: '' };
-    document.getElementById('edit-material-id').value = '';
-    document.getElementById('form-material-title').value = '';
-    document.getElementById('form-material-category').value = 'Routing';
-    document.getElementById('form-material-difficulty').value = 'Mudah';
-    document.getElementById('form-material-content').value = '';
-
-    const form = document.getElementById('create-material-form');
-    form.action = `${config.baseUrl}/admin/material/create`;
-    document.getElementById('form-material-card-title').innerHTML = `
-        <i data-lucide="book-open" style="width: 1.25rem; height: 1.25rem; color: #7c3aed;"></i>
-        Buat Materi Belajar Baru
+    toast.innerHTML = `
+        <div class="toast-icon-wrapper">
+            <i data-lucide="${iconName}" style="width: 15px; height: 15px;"></i>
+        </div>
+        <div class="toast-body">
+            <div class="toast-title">${escapeHtml(title)}</div>
+            ${message ? `<div class="toast-message">${escapeHtml(message)}</div>` : ''}
+        </div>
+        <button type="button" class="toast-close-btn" title="Tutup">
+            <i data-lucide="x" style="width: 14px; height: 14px;"></i>
+        </button>
+        <div class="toast-progress-bar" style="animation-duration: ${duration}ms;"></div>
     `;
-    document.getElementById('btn-publish-material-text').innerText = 'Publikasikan Materi';
-    document.getElementById('btn-cancel-edit-material').style.display = 'none';
+
+    toaster.appendChild(toast);
     if (window.lucide) window.lucide.createIcons();
-}
 
-function closeVisualBuilder() {
-    document.getElementById('visual-builder-overlay').style.display = 'none';
-    document.body.style.overflow = 'auto';
-}
-
-function saveVisualBuilder(shouldSubmit = false) {
-    const html = compileBlocksToHtml();
-
-    const titleVal = document.getElementById('builder-meta-title').value;
-    const catVal = document.getElementById('builder-meta-category').value;
-    const diffVal = document.getElementById('builder-meta-difficulty').value;
-
-    document.getElementById('form-material-title').value = titleVal;
-    document.getElementById('form-material-category').value = catVal;
-    document.getElementById('form-material-difficulty').value = diffVal;
-    document.getElementById('form-material-content').value = html;
-
-    const statusText = document.getElementById('builder-status-text');
-    statusText.style.opacity = '1';
-    setTimeout(() => { statusText.style.opacity = '0'; }, 1500);
-
-    if (shouldSubmit) {
-        document.getElementById('save-confirm-modal').style.display = 'flex';
-    }
-}
-
-function closeSaveConfirmModal(confirmSave) {
-    document.getElementById('save-confirm-modal').style.display = 'none';
-    if (confirmSave) {
-        sessionStorage.setItem('just_saved_material', 'true');
-        closeVisualBuilder();
-        document.getElementById('create-material-form').submit();
-    }
-}
-
-function setSidebarTab(tab) {
-    const widgetsBtn = document.getElementById('sidebar-tab-widgets');
-    const settingsBtn = document.getElementById('sidebar-tab-settings');
-    const widgetsPanel = document.getElementById('sidebar-widgets-panel');
-    const settingsPanel = document.getElementById('sidebar-settings-panel');
-
-    if (tab === 'widgets') {
-        widgetsBtn.style.color = '#7c3aed';
-        widgetsBtn.style.borderBottomColor = '#7c3aed';
-        settingsBtn.style.color = '#64748b';
-        settingsBtn.style.borderBottomColor = 'transparent';
-        widgetsPanel.style.display = 'flex';
-        settingsPanel.style.display = 'none';
-    } else {
-        settingsBtn.style.color = '#7c3aed';
-        settingsBtn.style.borderBottomColor = '#7c3aed';
-        widgetsBtn.style.color = '#64748b';
-        widgetsBtn.style.borderBottomColor = 'transparent';
-        settingsPanel.style.display = 'flex';
-        widgetsPanel.style.display = 'none';
-    }
-}
-
-function setBuilderMode(mode) {
-    activeBuilderMode = mode;
-    const editBtn = document.getElementById('builder-tab-edit');
-    const previewBtn = document.getElementById('builder-tab-preview');
-    const sidebar = document.getElementById('builder-sidebar');
-    const canvas = document.getElementById('builder-canvas');
-    const mobileToggleBtn = document.getElementById('mobile-sidebar-toggle');
-
-    if (mode === 'edit') {
-        editBtn.style.backgroundColor = '#ffffff';
-        editBtn.style.color = '#0f172a';
-        previewBtn.style.backgroundColor = 'transparent';
-        previewBtn.style.color = '#64748b';
-        sidebar.style.display = 'flex';
-        if (mobileToggleBtn) {
-            mobileToggleBtn.style.setProperty('display', '', 'important');
-        }
-        canvas.classList.remove('preview-mode');
-        renderBuilderBlocks();
-    } else {
-        previewBtn.style.backgroundColor = '#ffffff';
-        previewBtn.style.color = '#0f172a';
-        editBtn.style.backgroundColor = 'transparent';
-        editBtn.style.color = '#64748b';
-        sidebar.style.display = 'none';
-        if (mobileToggleBtn) {
-            mobileToggleBtn.style.setProperty('display', 'none', 'important');
-        }
-        canvas.classList.add('preview-mode');
-        renderPreviewInCanvas();
-    }
-}
-
-function renderPreviewInCanvas() {
-    const canvas = document.getElementById('builder-canvas');
-    const html = compileBlocksToHtml();
-
-    const oldWrappers = canvas.querySelectorAll('.builder-block-wrapper');
-    oldWrappers.forEach(w => w.remove());
-
-    const previewContainer = document.createElement('div');
-    previewContainer.className = 'builder-block-wrapper';
-    previewContainer.style.border = 'none';
-    previewContainer.style.padding = '0';
-    previewContainer.style.margin = '0';
-    previewContainer.innerHTML = html;
-    canvas.appendChild(previewContainer);
-}
-
-function updateBuilderMetaTitle() {
-    const val = document.getElementById('builder-meta-title').value;
-    document.getElementById('canvas-meta-title').innerText = val || 'Judul Materi Pembelajaran';
-    checkTitleChanged();
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-    const metaCatSelect = document.getElementById('builder-meta-category');
-    const metaDiffSelect = document.getElementById('builder-meta-difficulty');
-
-    if (metaCatSelect && metaDiffSelect) {
-        metaCatSelect.addEventListener('change', (e) => {
-            document.getElementById('canvas-meta-category').innerText = e.target.value;
-        });
-        metaDiffSelect.addEventListener('change', (e) => {
-            const val = e.target.value;
-            const diffEl = document.getElementById('canvas-meta-difficulty');
-            diffEl.innerText = val;
-            diffEl.className = '';
-            if (val === 'Mudah') {
-                diffEl.style.backgroundColor = '#ecfdf5';
-                diffEl.style.color = '#059669';
-            } else if (val === 'Sedang') {
-                diffEl.style.backgroundColor = '#fffbeb';
-                diffEl.style.color = '#d97706';
-            } else {
-                diffEl.style.backgroundColor = '#fef2f2';
-                diffEl.style.color = '#dc2626';
-            }
-        });
-    }
-});
-
-function addBuilderBlock(type) {
-    let block = {
-        id: 'block_' + Math.random().toString(36).substr(2, 9),
-        type: type,
-        content: ''
+    let dismissTimeout;
+    const dismiss = () => {
+        if (toast.classList.contains('hiding')) return;
+        toast.classList.add('hiding');
+        setTimeout(() => toast.remove(), 220);
     };
 
-    if (type === 'callout') {
-        block.calloutType = 'info';
-        block.content = 'Isi kotak info penting di sini...';
-    } else if (type === 'code') {
-        block.language = 'plaintext';
-        block.content = '';
-    } else if (type === 'image') {
-        block.imageSrc = '';
-        block.imageAlt = '';
-    } else if (type === 'h2') {
-        block.content = 'Subjudul H2 baru';
-    } else if (type === 'h3') {
-        block.content = 'Detail H3 baru';
-    } else if (type === 'p') {
-        block.content = 'Tulis teks paragraf di sini...';
-    } else if (type === 'list') {
-        block.content = '<li>Item daftar bullet pertama</li><li>Item daftar bullet kedua</li>';
-    } else if (type === 'olist') {
-        block.content = '<li>Langkah angka pertama</li><li>Langkah angka kedua</li>';
-    } else if (type === 'divider') {
-        block.content = '';
-    } else if (type === 'accordion') {
-        block.title = 'Judul Akordeon FAQ baru';
-        block.content = 'Isi penjelasan akordeon atau jawaban FAQ di sini...';
-    } else if (type === 'button') {
-        block.btnText = 'Klik Di Sini';
-        block.btnUrl = '#';
-    } else if (type === 'video') {
-        block.videoUrl = '';
-    } else if (type === 'terminal') {
-        block.prompt = '[admin@MikroTik] >';
-        block.content = 'ip address print';
-    } else if (type === 'quote') {
-        block.content = 'Tulis kalimat kutipan penting di sini...';
-    } else if (type === 'table') {
-        block.content = '<tr><td>IP Address</td><td>192.168.88.1/24</td></tr><tr><td>Interface</td><td>ether1</td></tr>';
-    } else if (type === 'tabs') {
-        block.title1 = 'Tab 1';
-        block.content1 = 'Konten Tab Pertama...';
-        block.title2 = 'Tab 2';
-        block.content2 = 'Konten Tab Kedua...';
-    } else if (type === 'iconbox') {
-        block.icon = 'info';
-        block.title = 'Info Penting';
-        block.content = 'Isi penjelasan dari kotak info di sini...';
-    } else if (type === 'progress') {
-        block.label = 'Progres Konfigurasi';
-        block.percent = '70';
-    } else if (type === 'alert') {
-        block.alertType = 'success';
-        block.content = 'Konfigurasi IP Address pada Router MikroTik telah berhasil diselesaikan!';
-    } else if (type === 'card') {
-        block.imageSrc = 'https://images.unsplash.com/photo-1544197150-b99a580bb7a8?w=500';
-        block.cardTitle = 'Perangkat Jaringan MikroTik';
-        block.content = 'MikroTik merupakan perangkat jaringan tangguh yang digunakan secara luas untuk manajemen routing, hotspot, bandwidth limiter, dan firewall.';
-    } else if (type === 'timeline') {
-        block.content = `
-<div class="step-item">
-    <div class="step-node">1</div>
-    <div class="step-content">
-        <h5>Langkah Pertama</h5>
-        <p>Buka program Winbox pada komputer Anda dan lakukan scan MAC Address router MikroTik.</p>
-    </div>
-</div>
-<div class="step-item">
-    <div class="step-node">2</div>
-    <div class="step-content">
-        <h5>Langkah Kedua</h5>
-        <p>Klik tombol Connect untuk masuk ke menu utama RouterOS MikroTik secara GUI.</p>
-    </div>
-</div>`;
+    dismissTimeout = setTimeout(dismiss, duration);
+
+    const closeBtn = toast.querySelector('.toast-close-btn');
+    if (closeBtn) {
+        closeBtn.addEventListener('click', () => {
+            clearTimeout(dismissTimeout);
+            dismiss();
+        });
     }
+};
 
-    builderBlocks.push(block);
-    renderBuilderBlocks();
-    
-    // Auto-close sidebar on mobile after adding block
-    if (window.innerWidth <= 1024) {
-        toggleMobileSidebar(false);
-    }
-}
+/** Global custom confirmation modal dialog with focus trap & scroll lock */
+window.showGeistConfirm = function(title, message, confirmText, onConfirm, isDanger = true) {
+    const overlay = document.getElementById('geist-confirm-overlay');
+    const titleEl = document.getElementById('confirm-modal-title');
+    const msgEl = document.getElementById('confirm-modal-message');
+    const cancelBtn = document.getElementById('btn-confirm-cancel');
+    const submitBtn = document.getElementById('btn-confirm-submit');
+    const iconContainer = document.getElementById('confirm-icon-container');
 
-function updateBlockContent(id, content) {
-    const idx = builderBlocks.findIndex(b => b.id === id);
-    if (idx !== -1) {
-        builderBlocks[idx].content = content;
-    }
-}
-
-function updateBlockCalloutType(id, val) {
-    const idx = builderBlocks.findIndex(b => b.id === id);
-    if (idx !== -1) {
-        builderBlocks[idx].calloutType = val;
-        renderBuilderBlocks();
-    }
-}
-
-function updateBlockLanguage(id, val) {
-    const idx = builderBlocks.findIndex(b => b.id === id);
-    if (idx !== -1) {
-        builderBlocks[idx].language = val;
-    }
-}
-
-function updateBlockImageSrc(id, val) {
-    const idx = builderBlocks.findIndex(b => b.id === id);
-    if (idx !== -1) {
-        builderBlocks[idx].imageSrc = val;
-        renderBuilderBlocks();
-    }
-}
-
-function updateBlockImageAlt(id, val) {
-    const idx = builderBlocks.findIndex(b => b.id === id);
-    if (idx !== -1) {
-        builderBlocks[idx].imageAlt = val;
-    }
-}
-
-function updateBlockAccordionTitle(id, val) {
-    const idx = builderBlocks.findIndex(b => b.id === id);
-    if (idx !== -1) {
-        builderBlocks[idx].title = val;
-    }
-}
-
-function updateBlockBtnText(id, val) {
-    const idx = builderBlocks.findIndex(b => b.id === id);
-    if (idx !== -1) {
-        builderBlocks[idx].btnText = val;
-        renderBuilderBlocks();
-    }
-}
-
-function updateBlockBtnUrl(id, val) {
-    const idx = builderBlocks.findIndex(b => b.id === id);
-    if (idx !== -1) {
-        builderBlocks[idx].btnUrl = val;
-    }
-}
-
-function updateBlockVideoUrl(id, val) {
-    const idx = builderBlocks.findIndex(b => b.id === id);
-    if (idx !== -1) {
-        builderBlocks[idx].videoUrl = val;
-        renderBuilderBlocks();
-    }
-}
-
-function updateBlockTerminalPrompt(id, val) {
-    const idx = builderBlocks.findIndex(b => b.id === id);
-    if (idx !== -1) {
-        builderBlocks[idx].prompt = val;
-    }
-}
-
-/* Tabs updaters */
-function updateBlockTabsTitle1(id, val) {
-    const idx = builderBlocks.findIndex(b => b.id === id);
-    if (idx !== -1) {
-        builderBlocks[idx].title1 = val;
-    }
-}
-
-function updateBlockTabsContent1(id, val) {
-    const idx = builderBlocks.findIndex(b => b.id === id);
-    if (idx !== -1) {
-        builderBlocks[idx].content1 = val;
-    }
-}
-
-function updateBlockTabsTitle2(id, val) {
-    const idx = builderBlocks.findIndex(b => b.id === id);
-    if (idx !== -1) {
-        builderBlocks[idx].title2 = val;
-    }
-}
-
-function updateBlockTabsContent2(id, val) {
-    const idx = builderBlocks.findIndex(b => b.id === id);
-    if (idx !== -1) {
-        builderBlocks[idx].content2 = val;
-    }
-}
-
-function updateBlockIconboxIcon(id, val) {
-    const idx = builderBlocks.findIndex(b => b.id === id);
-    if (idx !== -1) {
-        builderBlocks[idx].icon = val;
-        renderBuilderBlocks();
-    }
-}
-
-function updateBlockIconboxTitle(id, val) {
-    const idx = builderBlocks.findIndex(b => b.id === id);
-    if (idx !== -1) {
-        builderBlocks[idx].title = val;
-    }
-}
-
-function updateBlockIconboxDesc(id, val) {
-    const idx = builderBlocks.findIndex(b => b.id === id);
-    if (idx !== -1) {
-        builderBlocks[idx].content = val;
-    }
-}
-
-function updateBlockProgressLabel(id, val) {
-    const idx = builderBlocks.findIndex(b => b.id === id);
-    if (idx !== -1) {
-        builderBlocks[idx].label = val;
-    }
-}
-
-function updateBlockProgressPercent(id, val) {
-    const idx = builderBlocks.findIndex(b => b.id === id);
-    if (idx !== -1) {
-        builderBlocks[idx].percent = val;
-        renderBuilderBlocks();
-    }
-}
-
-function updateBlockAlertType(id, val) {
-    const idx = builderBlocks.findIndex(b => b.id === id);
-    if (idx !== -1) {
-        builderBlocks[idx].alertType = val;
-        renderBuilderBlocks();
-    }
-}
-
-function updateBlockCardImage(id, val) {
-    const idx = builderBlocks.findIndex(b => b.id === id);
-    if (idx !== -1) {
-        builderBlocks[idx].imageSrc = val;
-        renderBuilderBlocks();
-    }
-}
-
-function updateBlockCardTitle(id, val) {
-    const idx = builderBlocks.findIndex(b => b.id === id);
-    if (idx !== -1) {
-        builderBlocks[idx].cardTitle = val;
-    }
-}
-
-function deleteBlock(id) {
-    builderBlocks = builderBlocks.filter(b => b.id !== id);
-    renderBuilderBlocks();
-}
-
-function moveBlockUp(idx) {
-    if (idx > 0) {
-        const temp = builderBlocks[idx];
-        builderBlocks[idx] = builderBlocks[idx - 1];
-        builderBlocks[idx - 1] = temp;
-        renderBuilderBlocks();
-    }
-}
-
-function moveBlockDown(idx) {
-    if (idx < builderBlocks.length - 1) {
-        const temp = builderBlocks[idx];
-        builderBlocks[idx] = builderBlocks[idx + 1];
-        builderBlocks[idx + 1] = temp;
-        renderBuilderBlocks();
-    }
-}
-
-function compileBlocksToHtml() {
-    let html = '';
-    builderBlocks.forEach(b => {
-        if (b.type === 'h2') {
-            html += `<h2>${b.content}</h2>\n`;
-        } else if (b.type === 'h3') {
-            html += `<h3>${b.content}</h3>\n`;
-        } else if (b.type === 'p') {
-            html += `<p>${b.content}</p>\n`;
-        } else if (b.type === 'list') {
-            html += `<ul>${b.content}</ul>\n`;
-        } else if (b.type === 'olist') {
-            html += `<ol>${b.content}</ol>\n`;
-        } else if (b.type === 'divider') {
-            html += `<hr class="material-divider">\n`;
-        } else if (b.type === 'accordion') {
-            html += `<details class="material-accordion"><summary>${b.title}</summary><div class="material-accordion-content">${b.content}</div></details>\n`;
-        } else if (b.type === 'button') {
-            html += `<div class="material-btn-wrapper"><a href="${b.btnUrl || '#'}" class="material-btn">${b.btnText || 'Tautan'}</a></div>\n`;
-        } else if (b.type === 'video') {
-            html += `<div class="material-video-container"><iframe src="${b.videoUrl || ''}" allowfullscreen></iframe></div>\n`;
-        } else if (b.type === 'callout') {
-            html += `<div class="material-callout material-callout-${b.calloutType || 'info'}">${b.content}</div>\n`;
-        } else if (b.type === 'code') {
-            const escaped = b.content
-                .replace(/&/g, "&amp;")
-                .replace(/</g, "&lt;")
-                .replace(/>/g, "&gt;")
-                .replace(/"/g, "&quot;")
-                .replace(/'/g, "&#039;");
-            html += `<pre><code class="language-${b.language || 'plaintext'}">${escaped}</code></pre>\n`;
-        } else if (b.type === 'image') {
-            html += `<img src="${b.imageSrc}" alt="${b.imageAlt || ''}" class="material-img">\n`;
-        } else if (b.type === 'quote') {
-            html += `<blockquote class="material-quote">${b.content}</blockquote>\n`;
-        } else if (b.type === 'terminal') {
-            html += `<div class="material-terminal"><div class="prompt">${b.prompt || '[admin@MikroTik] &gt;'}</div><pre>${b.content}</pre></div>\n`;
-        } else if (b.type === 'iconbox') {
-            html += `<div class="material-icon-box"><div class="icon-wrapper"><i data-lucide="${b.icon || 'info'}"></i></div><div><h4>${b.title}</h4><p>${b.content}</p></div></div>\n`;
-        } else if (b.type === 'table') {
-            html += `<table class="material-table"><thead><tr><th>Parameter</th><th>Value</th></tr></thead><tbody>${b.content}</tbody></table>\n`;
-        } else if (b.type === 'tabs') {
-            const uniqueId = 'tab_' + Math.random().toString(36).substr(2, 9);
-            html += `
-<div class="material-tabs" id="${uniqueId}">
-    <div class="tabs-header">
-        <button class="tab-btn active" onclick="document.querySelectorAll('#${uniqueId} .tab-btn').forEach(b=>b.classList.remove('active')); this.classList.add('active'); document.querySelectorAll('#${uniqueId} .tab-pane').forEach(p=>p.classList.remove('active')); document.getElementById('${uniqueId}_1').classList.add('active');">${b.title1 || 'Tab 1'}</button>
-        <button class="tab-btn" onclick="document.querySelectorAll('#${uniqueId} .tab-btn').forEach(b=>b.classList.remove('active')); this.classList.add('active'); document.querySelectorAll('#${uniqueId} .tab-pane').forEach(p=>p.classList.remove('active')); document.getElementById('${uniqueId}_2').classList.add('active');">${b.title2 || 'Tab 2'}</button>
-    </div>
-    <div class="tabs-body">
-        <div class="tab-pane active" id="${uniqueId}_1">${b.content1 || ''}</div>
-        <div class="tab-pane" id="${uniqueId}_2">${b.content2 || ''}</div>
-    </div>
-</div>\n`;
-        } else if (b.type === 'progress') {
-            html += `
-<div class="material-progress">
-    <div class="progress-info">
-        <span>${b.label || 'Progress'}</span>
-        <span>${b.percent || '50'}%</span>
-    </div>
-    <div class="progress-bg">
-        <div class="progress-fill" style="width: ${b.percent || '50'}%;"></div>
-    </div>
-</div>\n`;
-        } else if (b.type === 'alert') {
-            html += `<div class="material-alert material-alert-${b.alertType || 'success'}">${b.content}</div>\n`;
-        } else if (b.type === 'card') {
-            html += `
-<div class="material-card-widget">
-    ${b.imageSrc ? `<img src="${b.imageSrc}" class="card-image" alt="card image">` : ''}
-    <div class="card-content">
-        <h4>${b.cardTitle || 'Judul Card'}</h4>
-        <p>${b.content || 'Deskripsi card...'}</p>
-    </div>
-</div>\n`;
-        } else if (b.type === 'timeline') {
-            html += `<div class="material-timeline-steps">${b.content}</div>\n`;
-        }
-    });
-    return html;
-}
-
-function parseHtmlToBlocks(html) {
-    if (!html || !html.trim()) return [];
-
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(html, 'text/html');
-    const container = doc.body;
-    const blocks = [];
-
-    for (let i = 0; i < container.children.length; i++) {
-        const el = container.children[i];
-        const tagName = el.tagName.toLowerCase();
-
-        if (tagName === 'h2') {
-            blocks.push({
-                id: 'block_' + Math.random().toString(36).substr(2, 9),
-                type: 'h2',
-                content: el.innerHTML
-            });
-        } else if (tagName === 'h3') {
-            blocks.push({
-                id: 'block_' + Math.random().toString(36).substr(2, 9),
-                type: 'h3',
-                content: el.innerHTML
-            });
-        } else if (tagName === 'p') {
-            blocks.push({
-                id: 'block_' + Math.random().toString(36).substr(2, 9),
-                type: 'p',
-                content: el.innerHTML
-            });
-        } else if (tagName === 'div' && el.classList.contains('material-callout')) {
-            let type = 'info';
-            if (el.classList.contains('material-callout-success')) type = 'success';
-            else if (el.classList.contains('material-callout-warning')) type = 'warning';
-            else if (el.classList.contains('material-callout-danger')) type = 'danger';
-
-            blocks.push({
-                id: 'block_' + Math.random().toString(36).substr(2, 9),
-                type: 'callout',
-                content: el.innerHTML,
-                calloutType: type
-            });
-        } else if (tagName === 'blockquote' && el.classList.contains('material-quote')) {
-            blocks.push({
-                id: 'block_' + Math.random().toString(36).substr(2, 9),
-                type: 'quote',
-                content: el.innerHTML
-            });
-        } else if (tagName === 'div' && el.classList.contains('material-terminal')) {
-            const promptEl = el.querySelector('.prompt');
-            const preEl = el.querySelector('pre');
-            blocks.push({
-                id: 'block_' + Math.random().toString(36).substr(2, 9),
-                type: 'terminal',
-                prompt: promptEl ? promptEl.innerText : '[admin@MikroTik] >',
-                content: preEl ? preEl.innerText : ''
-            });
-        } else if (tagName === 'div' && el.classList.contains('material-icon-box')) {
-            const iconEl = el.querySelector('i');
-            const h4El = el.querySelector('h4');
-            const pEl = el.querySelector('p') || el.querySelector('div:last-child');
-            blocks.push({
-                id: 'block_' + Math.random().toString(36).substr(2, 9),
-                type: 'iconbox',
-                icon: iconEl ? iconEl.getAttribute('data-lucide') || 'info' : 'info',
-                title: h4El ? h4El.innerHTML : 'Info Penting',
-                content: pEl ? pEl.innerHTML : ''
-            });
-        } else if (tagName === 'table' && el.classList.contains('material-table')) {
-            const tbody = el.querySelector('tbody');
-            blocks.push({
-                id: 'block_' + Math.random().toString(36).substr(2, 9),
-                type: 'table',
-                content: tbody ? tbody.innerHTML : el.innerHTML
-            });
-        } else if (tagName === 'div' && el.classList.contains('material-tabs')) {
-            const tabBtns = el.querySelectorAll('.tabs-header .tab-btn');
-            const tabPanes = el.querySelectorAll('.tabs-body .tab-pane');
-            blocks.push({
-                id: 'block_' + Math.random().toString(36).substr(2, 9),
-                type: 'tabs',
-                title1: tabBtns[0] ? tabBtns[0].innerText : 'Tab 1',
-                content1: tabPanes[0] ? tabPanes[0].innerHTML : '',
-                title2: tabBtns[1] ? tabBtns[1].innerText : 'Tab 2',
-                content2: tabPanes[1] ? tabPanes[1].innerHTML : ''
-            });
-        } else if (tagName === 'pre') {
-            const codeEl = el.querySelector('code');
-            let codeContent = el.innerText;
-            let lang = 'plaintext';
-            if (codeEl) {
-                codeContent = codeEl.innerText;
-                const match = codeEl.className.match(/language-(\w+)/);
-                if (match) lang = match[1];
-            }
-            blocks.push({
-                id: 'block_' + Math.random().toString(36).substr(2, 9),
-                type: 'code',
-                content: codeContent,
-                language: lang
-            });
-        } else if (tagName === 'ul') {
-            blocks.push({
-                id: 'block_' + Math.random().toString(36).substr(2, 9),
-                type: 'list',
-                content: el.innerHTML
-            });
-        } else if (tagName === 'ol') {
-            blocks.push({
-                id: 'block_' + Math.random().toString(36).substr(2, 9),
-                type: 'olist',
-                content: el.innerHTML
-            });
-        } else if (tagName === 'hr') {
-            blocks.push({
-                id: 'block_' + Math.random().toString(36).substr(2, 9),
-                type: 'divider',
-                content: ''
-            });
-        } else if (tagName === 'details') {
-            const summaryEl = el.querySelector('summary');
-            const contentEl = el.querySelector('.material-accordion-content') || el.querySelector('div') || el;
-            blocks.push({
-                id: 'block_' + Math.random().toString(36).substr(2, 9),
-                type: 'accordion',
-                title: summaryEl ? summaryEl.innerHTML : 'Judul Akordeon',
-                content: contentEl ? contentEl.innerHTML : 'Isi penjelasan...'
-            });
-        } else if (tagName === 'div' && el.classList.contains('material-btn-wrapper')) {
-            const linkEl = el.querySelector('a');
-            blocks.push({
-                id: 'block_' + Math.random().toString(36).substr(2, 9),
-                type: 'button',
-                btnText: linkEl ? linkEl.innerText : 'Tautan',
-                btnUrl: linkEl ? linkEl.getAttribute('href') : '#'
-            });
-        } else if (tagName === 'div' && el.classList.contains('material-video-container')) {
-            const iframeEl = el.querySelector('iframe');
-            blocks.push({
-                id: 'block_' + Math.random().toString(36).substr(2, 9),
-                type: 'video',
-                videoUrl: iframeEl ? iframeEl.getAttribute('src') : ''
-            });
-        } else if (tagName === 'div' && el.classList.contains('material-progress')) {
-            const infoText = el.querySelector('.progress-info span:first-child');
-            const fillEl = el.querySelector('.progress-fill');
-            let pct = '50';
-            if (fillEl && fillEl.style.width) {
-                pct = fillEl.style.width.replace('%', '');
-            }
-            blocks.push({
-                id: 'block_' + Math.random().toString(36).substr(2, 9),
-                type: 'progress',
-                label: infoText ? infoText.innerText : 'Progress',
-                percent: pct
-            });
-        } else if (tagName === 'div' && el.classList.contains('material-alert')) {
-            let alertType = 'success';
-            if (el.classList.contains('material-alert-info')) alertType = 'info';
-            else if (el.classList.contains('material-alert-warning')) alertType = 'warning';
-            else if (el.classList.contains('material-alert-danger')) alertType = 'danger';
-            
-            blocks.push({
-                id: 'block_' + Math.random().toString(36).substr(2, 9),
-                type: 'alert',
-                alertType: alertType,
-                content: el.innerHTML
-            });
-        } else if (tagName === 'div' && el.classList.contains('material-card-widget')) {
-            const imgEl = el.querySelector('.card-image');
-            const h4El = el.querySelector('h4');
-            const pEl = el.querySelector('p');
-            blocks.push({
-                id: 'block_' + Math.random().toString(36).substr(2, 9),
-                type: 'card',
-                imageSrc: imgEl ? imgEl.getAttribute('src') || '' : '',
-                cardTitle: h4El ? h4El.innerHTML : 'Judul Card',
-                content: pEl ? pEl.innerHTML : 'Isi deskripsi card...'
-            });
-        } else if (tagName === 'div' && el.classList.contains('material-timeline-steps')) {
-            blocks.push({
-                id: 'block_' + Math.random().toString(36).substr(2, 9),
-                type: 'timeline',
-                content: el.innerHTML
-            });
-        } else {
-            blocks.push({
-                id: 'block_' + Math.random().toString(36).substr(2, 9),
-                type: 'p',
-                content: el.outerHTML
-            });
-        }
-    }
-    return blocks;
-}
-
-function renderBuilderBlocks() {
-    const config = window.NetQuizConfig || { baseUrl: '' };
-    const canvas = document.getElementById('builder-canvas');
-    const emptyState = document.getElementById('canvas-empty-state');
-
-    const oldWrappers = canvas.querySelectorAll('.builder-block-wrapper');
-    oldWrappers.forEach(w => w.remove());
-
-    if (builderBlocks.length === 0) {
-        if (emptyState) emptyState.style.display = 'flex';
+    if (!overlay || !submitBtn) {
+        if (confirm(message)) onConfirm();
         return;
-    } else {
-        if (emptyState) emptyState.style.display = 'none';
     }
 
-    builderBlocks.forEach((block, index) => {
-        const wrapper = document.createElement('div');
-        wrapper.className = 'builder-block-wrapper';
-        wrapper.dataset.id = block.id;
+    if (titleEl) titleEl.textContent = title;
+    if (msgEl) msgEl.textContent = message;
+    if (submitBtn) {
+        submitBtn.textContent = confirmText || 'Lanjutkan';
+        submitBtn.className = isDanger ? 'btn-confirm-danger' : 'btn-primary-black';
+    }
+    if (iconContainer) {
+        iconContainer.className = isDanger ? 'confirm-icon-box confirm-icon-danger' : 'confirm-icon-box confirm-icon-info';
+    }
 
-        let controlsHtml = `
-            <div class="builder-block-controls">
-                <button type="button" class="builder-control-btn" onclick="moveBlockUp(${index})" title="Pindahkan Ke Atas"><i data-lucide="chevron-up" style="width: 0.85rem; height: 0.85rem;"></i></button>
-                <button type="button" class="builder-control-btn" onclick="moveBlockDown(${index})" title="Pindahkan Ke Bawah"><i data-lucide="chevron-down" style="width: 0.85rem; height: 0.85rem;"></i></button>
-                <button type="button" class="builder-control-btn" onclick="deleteBlock('${block.id}')" title="Hapus Elemen" style="color: #ef4444;"><i data-lucide="trash-2" style="width: 0.85rem; height: 0.85rem;"></i></button>
-            </div>
-        `;
+    // Lock body scroll
+    document.body.style.overflow = 'hidden';
+    overlay.classList.add('active');
 
-        let contentHtml = '';
+    if (cancelBtn) cancelBtn.focus();
 
-        if (block.type === 'h2') {
-            contentHtml = `<h2 class="builder-editable" contenteditable="true" onblur="updateBlockContent('${block.id}', this.innerHTML)" style="margin: 0; outline: none; border-bottom: 2px solid transparent; min-height: 2rem;">${block.content || 'Subjudul H2 baru'}</h2>`;
-        } else if (block.type === 'h3') {
-            contentHtml = `<h3 class="builder-editable" contenteditable="true" onblur="updateBlockContent('${block.id}', this.innerHTML)" style="margin: 0; outline: none; min-height: 1.5rem;">${block.content || 'Detail H3 baru'}</h3>`;
-        } else if (block.type === 'p') {
-            contentHtml = `<p class="builder-editable" contenteditable="true" onblur="updateBlockContent('${block.id}', this.innerHTML)" style="margin: 0; outline: none; min-height: 1.5rem; line-height: 1.75;">${block.content || 'Tulis teks paragraf di sini...'}</p>`;
-        } else if (block.type === 'list') {
-            contentHtml = `<ul class="builder-editable" contenteditable="true" onblur="updateBlockContent('${block.id}', this.innerHTML)" style="margin: 0; outline: none; padding-left: 1.5rem; min-height: 2rem;">${block.content || '<li>Item daftar pertama</li><li>Item daftar kedua</li>'}</ul>`;
-        } else if (block.type === 'olist') {
-            contentHtml = `<ol class="builder-editable" contenteditable="true" onblur="updateBlockContent('${block.id}', this.innerHTML)" style="margin: 0; outline: none; padding-left: 1.5rem; min-height: 2rem;">${block.content || '<li>Item berurutan pertama</li><li>Item berurutan kedua</li>'}</ol>`;
-        } else if (block.type === 'divider') {
-            contentHtml = `<hr class="material-divider" style="margin: 1rem 0;">`;
-        } else if (block.type === 'quote') {
-            contentHtml = `<blockquote class="material-quote builder-editable" contenteditable="true" onblur="updateBlockContent('${block.id}', this.innerHTML)" style="outline: none; margin: 0;">${block.content || 'Tulis kalimat kutipan penting di sini...'}</blockquote>`;
-        } else if (block.type === 'terminal') {
-            contentHtml = `
-                <div class="material-terminal" style="margin: 0; position: relative;">
-                    <div style="display: flex; gap: 0.5rem; align-items: center; margin-bottom: 0.5rem;" class="builder-block-controls-select">
-                        <span style="font-size: 0.7rem; color: #4ade80;">Prompt:</span>
-                        <input type="text" value="${block.prompt || '[admin@MikroTik] >'}" oninput="updateBlockTerminalPrompt('${block.id}', this.value)" style="background: #1e293b; color: #4ade80; border: none; font-size: 0.75rem; border-radius: 4px; padding: 2px 6px; width: 150px; font-family: monospace; outline: none;">
-                    </div>
-                    <textarea oninput="updateBlockContent('${block.id}', this.value)" style="width: 100%; background: transparent; color: #f1f5f9; font-family: monospace; border: none; resize: vertical; min-height: 50px; outline: none; font-size: 0.85rem; line-height: 1.5; margin: 0; padding: 0;" placeholder="Tulis baris perintah terminal di sini...">${block.content || ''}</textarea>
-                </div>
-            `;
-        } else if (block.type === 'iconbox') {
-            contentHtml = `
-                <div class="material-icon-box" style="margin: 0; position: relative; width: 100%;">
-                    <div style="position: absolute; top: 0.5rem; right: 0.5rem;" class="builder-block-controls-select">
-                        <select onchange="updateBlockIconboxIcon('${block.id}', this.value)" style="border: 1px solid #cbd5e1; border-radius: 4px; font-size: 0.7rem; padding: 2px 4px; background: #fff; cursor: pointer; font-family: 'Plus Jakarta Sans', sans-serif;">
-                            <option value="info" ${block.icon === 'info' ? 'selected' : ''}>Info</option>
-                            <option value="help-circle" ${block.icon === 'help-circle' ? 'selected' : ''}>Bantuan</option>
-                            <option value="check-circle" ${block.icon === 'check-circle' ? 'selected' : ''}>Verifikasi</option>
-                            <option value="alert-triangle" ${block.icon === 'alert-triangle' ? 'selected' : ''}>Peringatan</option>
-                            <option value="settings" ${block.icon === 'settings' ? 'selected' : ''}>Setting</option>
-                        </select>
-                    </div>
-                    <div class="icon-wrapper" style="pointer-events: none;"><i data-lucide="${block.icon || 'info'}" style="width: 1.5rem; height: 1.5rem;"></i></div>
-                    <div style="flex: 1;">
-                        <h4 class="builder-editable" contenteditable="true" onblur="updateBlockIconboxTitle('${block.id}', this.innerHTML)" style="outline: none;">${block.title || 'Judul Info Box'}</h4>
-                        <div class="builder-editable" contenteditable="true" onblur="updateBlockIconboxDesc('${block.id}', this.innerHTML)" style="outline: none; color: #475569; font-size: 0.9rem;">${block.content || 'Isi deskripsi info box...'}</div>
-                    </div>
-                </div>
-            `;
-        } else if (block.type === 'table') {
-            contentHtml = `
-                <div style="border: 1px solid #e2e8f0; border-radius: 12px; padding: 1.25rem; background: #f8fafc; display: flex; flex-direction: column; gap: 0.75rem; width: 100%;">
-                    <div style="font-size: 0.75rem; font-weight: 700; color: #7c3aed; text-transform: uppercase;">Table Widget (Edit baris data di bawah):</div>
-                    <table class="material-table" style="margin: 0; background: #fff; width: 100%;">
-                        <thead>
-                            <tr>
-                                <th style="padding: 0.5rem 0.75rem;">Parameter</th>
-                                <th style="padding: 0.5rem 0.75rem;">Value / Deskripsi</th>
-                            </tr>
-                        </thead>
-                        <tbody class="builder-editable" contenteditable="true" onblur="updateBlockContent('${block.id}', this.innerHTML)" style="outline: none;">
-                            ${block.content || '<tr><td>IP Address</td><td>192.168.88.1/24</td></tr><tr><td>Interface</td><td>ether1</td></tr>'}
-                        </tbody>
-                    </table>
-                    <div style="font-size: 0.7rem; color: #64748b;"><i data-lucide="info" style="width: 0.8rem; height: 0.8rem; display: inline; vertical-align: middle;"></i> Tip: Ubah isi tabel secara langsung. Anda dapat menekan Enter untuk menambah baris baru &lt;tr&gt; di dalam kode tabel.</div>
-                </div>
-            `;
-        } else if (block.type === 'tabs') {
-            contentHtml = `
-                <div class="material-tabs" style="margin: 0; border: 1px solid #e2e8f0; border-radius: 12px; padding: 1.25rem; background: #f8fafc; display: flex; flex-direction: column; gap: 0.75rem; width: 100%;">
-                    <div style="font-size: 0.75rem; font-weight: 700; color: #7c3aed; text-transform: uppercase;">Tabs Widget (Ubah tab di bawah):</div>
-                    <div style="display: flex; gap: 0.5rem;" class="builder-block-controls-select">
-                        <input type="text" value="${block.title1 || 'Tab 1'}" oninput="updateBlockTabsTitle1('${block.id}', this.value)" placeholder="Judul Tab 1" style="flex: 1; height: 32px; padding: 0 0.5rem; font-size: 0.8rem; border-radius: 6px; border: 1px solid #cbd5e1; outline: none;">
-                        <input type="text" value="${block.title2 || 'Tab 2'}" oninput="updateBlockTabsTitle2('${block.id}', this.value)" placeholder="Judul Tab 2" style="flex: 1; height: 32px; padding: 0 0.5rem; font-size: 0.8rem; border-radius: 6px; border: 1px solid #cbd5e1; outline: none;">
-                    </div>
-                    <div style="font-size: 0.7rem; font-weight: 700; color: #475569;">Konten Tab 1:</div>
-                    <div class="builder-editable" contenteditable="true" onblur="updateBlockTabsContent1('${block.id}', this.innerHTML)" style="outline: none; padding: 0.75rem; border-radius: 6px; border: 1px solid #e2e8f0; background: #fff; font-size: 0.85rem;">${block.content1 || 'Konten Tab Pertama...'}</div>
-                    <div style="font-size: 0.7rem; font-weight: 700; color: #475569;">Konten Tab 2:</div>
-                    <div class="builder-editable" contenteditable="true" onblur="updateBlockTabsContent2('${block.id}', this.innerHTML)" style="outline: none; padding: 0.75rem; border-radius: 6px; border: 1px solid #e2e8f0; background: #fff; font-size: 0.85rem;">${block.content2 || 'Konten Tab Kedua...'}</div>
-                </div>
-            `;
-        } else if (block.type === 'accordion') {
-            contentHtml = `
-                <div class="material-accordion" style="margin: 0; position: relative;">
-                    <div style="background-color: #f8fafc; padding: 0.85rem 1.25rem; border-bottom: 1px solid #f1f5f9; font-weight: 700; font-size: 0.95rem; color: #0f172a; display: flex; align-items: center;" class="builder-block-controls-select">
-                        <span style="font-size: 0.75rem; color: #7c3aed; margin-right: 0.5rem; text-transform: uppercase;">Accordion Title:</span>
-                        <div class="builder-editable" contenteditable="true" onblur="updateBlockAccordionTitle('${block.id}', this.innerHTML)" style="outline: none; flex: 1;">${block.title || 'Judul Akordeon'}</div>
-                    </div>
-                    <div class="material-accordion-content builder-editable" contenteditable="true" onblur="updateBlockContent('${block.id}', this.innerHTML)" style="outline: none; padding: 1.25rem; background: #fff; font-size: 0.9rem;">${block.content || 'Isi detail penjelasan FAQ/Akordeon di sini...'}</div>
-                </div>
-            `;
-        } else if (block.type === 'button') {
-            contentHtml = `
-                <div class="material-btn-wrapper" style="margin: 0; border: 1px solid #e2e8f0; border-radius: 12px; padding: 1.25rem; background: #f8fafc; display: flex; flex-direction: column; gap: 0.75rem;">
-                    <div style="display: flex; gap: 0.5rem; align-items: center;" class="builder-block-controls-select">
-                        <span style="font-size: 0.75rem; font-weight: 700; color: #475569;">Teks:</span>
-                        <input type="text" value="${block.btnText || ''}" oninput="updateBlockBtnText('${block.id}', this.value)" placeholder="Nama Tombol" style="flex: 1; height: 32px; padding: 0 0.5rem; font-size: 0.8rem; border-radius: 6px; border: 1px solid #cbd5e1; outline: none;">
-                        <span style="font-size: 0.75rem; font-weight: 700; color: #475569;">URL:</span>
-                        <input type="text" value="${block.btnUrl || ''}" oninput="updateBlockBtnUrl('${block.id}', this.value)" placeholder="https://..." style="flex: 2; height: 32px; padding: 0 0.5rem; font-size: 0.8rem; border-radius: 6px; border: 1px solid #cbd5e1; outline: none;">
-                    </div>
-                    <div style="text-align: center; margin-top: 0.25rem;">
-                        <span class="material-btn" style="pointer-events: none; margin: 0;">${block.btnText || 'Tombol Tautan'}</span>
-                    </div>
-                </div>
-            `;
-        } else if (block.type === 'video') {
-            contentHtml = `
-                <div style="border: 1px solid #e2e8f0; border-radius: 12px; padding: 1.25rem; background-color: #f8fafc; display: flex; flex-direction: column; gap: 0.75rem;">
-                    <div style="display: flex; gap: 0.5rem; align-items: center;" class="builder-block-controls-select">
-                        <span style="font-size: 0.75rem; font-weight: 700; color: #475569;">URL Youtube Embed:</span>
-                        <input type="text" value="${block.videoUrl || ''}" oninput="updateBlockVideoUrl('${block.id}', this.value)" placeholder="https://www.youtube.com/embed/..." style="flex: 1; height: 32px; padding: 0 0.5rem; font-size: 0.8rem; border-radius: 6px; border: 1px solid #cbd5e1; outline: none;">
-                    </div>
-                    <div class="material-video-container" style="margin: 0; pointer-events: none;">
-                        ${block.videoUrl ? `<iframe src="${block.videoUrl}"></iframe>` : `<div style="text-align: center; padding: 2rem; color: #94a3b8; font-size: 0.8rem;"><i data-lucide="video" style="width: 1.25rem; height: 1.25rem; display: inline-block; vertical-align: middle; margin-right: 0.25rem;"></i> Masukkan URL YouTube Embed Anda</div>`}
-                    </div>
-                </div>
-            `;
-        } else if (block.type === 'callout') {
-            contentHtml = `
-                <div class="material-callout material-callout-${block.calloutType || 'info'}" style="position: relative; margin: 0;">
-                    <div style="position: absolute; top: 0.5rem; right: 0.5rem; display: flex; gap: 0.25rem; align-items: center;" class="builder-block-controls-select">
-                        <select onchange="updateBlockCalloutType('${block.id}', this.value)" style="border: 1px solid #cbd5e1; border-radius: 4px; font-size: 0.7rem; padding: 2px 4px; background: #fff; cursor: pointer; font-family: 'Plus Jakarta Sans', sans-serif;">
-                            <option value="info" ${block.calloutType === 'info' ? 'selected' : ''}>Info</option>
-                            <option value="success" ${block.calloutType === 'success' ? 'selected' : ''}>Sukses</option>
-                            <option value="warning" ${block.calloutType === 'warning' ? 'selected' : ''}>Peringatan</option>
-                            <option value="danger" ${block.calloutType === 'danger' ? 'selected' : ''}>Bahaya</option>
-                        </select>
-                    </div>
-                    <div class="builder-editable" contenteditable="true" onblur="updateBlockContent('${block.id}', this.innerHTML)" style="outline: none; min-height: 1.5rem;">${block.content || 'Isi kotak info penting di sini...'}</div>
-                </div>
-            `;
-        } else if (block.type === 'code') {
-            contentHtml = `
-                <div style="background-color: #0f172a; padding: 1.25rem; border-radius: 8px; position: relative;">
-                    <div style="position: absolute; top: 0.5rem; right: 0.5rem; display: flex; gap: 0.25rem;" class="builder-block-controls-select">
-                        <select onchange="updateBlockLanguage('${block.id}', this.value)" style="border: none; border-radius: 4px; font-size: 0.7rem; padding: 2px 4px; background: #334155; color: #fff; cursor: pointer; font-family: 'Plus Jakarta Sans', sans-serif;">
-                            <option value="plaintext" ${block.language === 'plaintext' ? 'selected' : ''}>Plaintext</option>
-                            <option value="php" ${block.language === 'php' ? 'selected' : ''}>PHP</option>
-                            <option value="bash" ${block.language === 'bash' ? 'selected' : ''}>Bash / Shell</option>
-                            <option value="json" ${block.language === 'json' ? 'selected' : ''}>JSON</option>
-                            <option value="html" ${block.language === 'html' ? 'selected' : ''}>HTML</option>
-                        </select>
-                    </div>
-                    <textarea oninput="updateBlockContent('${block.id}', this.value)" style="width: 100%; background: transparent; color: #e2e8f0; font-family: 'Courier New', Courier, monospace; border: none; resize: vertical; min-height: 80px; outline: none; font-size: 0.85rem; line-height: 1.5; margin: 0; padding: 0;" placeholder="Tulis baris kode di sini...">${block.content || ''}</textarea>
-                </div>
-            `;
-        } else if (block.type === 'image') {
-            contentHtml = `
-                <div style="border: 1px solid #e2e8f0; border-radius: 8px; padding: 1rem; background-color: #f8fafc; display: flex; flex-direction: column; gap: 0.75rem;">
-                    <div style="display: flex; gap: 0.5rem; align-items: center;" class="builder-block-controls-select">
-                        <span style="font-size: 0.75rem; font-weight: 700; color: #475569;">URL Gambar:</span>
-                        <input type="text" value="${block.imageSrc || ''}" oninput="updateBlockImageSrc('${block.id}', this.value)" placeholder="${config.baseUrl}/uploads/nama-file.png" style="flex: 1; height: 32px; padding: 0 0.5rem; font-size: 0.8rem; border-radius: 6px; border: 1px solid #cbd5e1; outline: none;">
-                        <span style="font-size: 0.75rem; font-weight: 700; color: #475569;">Alt:</span>
-                        <input type="text" value="${block.imageAlt || ''}" oninput="updateBlockImageAlt('${block.id}', this.value)" placeholder="Deskripsi" style="width: 120px; height: 32px; padding: 0 0.5rem; font-size: 0.8rem; border-radius: 6px; border: 1px solid #cbd5e1; outline: none;">
-                    </div>
-                    <div style="text-align: center; border: 1px dashed #cbd5e1; border-radius: 6px; background: #fff; padding: 0.5rem;">
-                        ${block.imageSrc ? `<img src="${block.imageSrc}" alt="${block.imageAlt || ''}" style="max-height: 200px; max-width: 100%; border-radius: 4px; display: inline-block;">` : `<span style="font-size: 0.75rem; color: #94a3b8;"><i data-lucide="image" style="width: 1rem; height: 1rem; display: inline-block; vertical-align: middle; margin-right: 0.25rem;"></i> Belum ada gambar dimasukkan</span>`}
-                    </div>
-                </div>
-            `;
-        } else if (block.type === 'progress') {
-            contentHtml = `
-                <div class="material-progress" style="margin: 0;">
-                    <div class="progress-info">
-                        <span contenteditable="true" onblur="updateBlockProgressLabel('${block.id}', this.innerText)" style="outline: none; font-weight: 700;">${block.label || 'Progress'}</span>
-                        <span>${block.percent || '50'}%</span>
-                    </div>
-                    <div class="progress-bg">
-                        <div class="progress-fill" style="width: ${block.percent || '50'}%;"></div>
-                    </div>
-                    <div style="margin-top: 0.75rem; display: flex; gap: 0.5rem; align-items: center;" class="builder-block-controls-select">
-                        <span style="font-size: 0.75rem; color: #64748b;">Persentase:</span>
-                        <input type="range" min="0" max="100" value="${block.percent || '50'}" oninput="updateBlockProgressPercent('${block.id}', this.value)" style="flex: 1; height: 6px; cursor: pointer;">
-                        <span style="font-size: 0.75rem; font-weight: 700; color: #475569; width: 30px; text-align: right;">${block.percent || '50'}%</span>
-                    </div>
-                </div>
-            `;
-        } else if (block.type === 'alert') {
-            contentHtml = `
-                <div class="material-alert material-alert-${block.alertType || 'success'}" style="margin: 0; position: relative;">
-                    <div style="position: absolute; top: 0.5rem; right: 0.5rem;" class="builder-block-controls-select">
-                        <select onchange="updateBlockAlertType('${block.id}', this.value)" style="border: none; border-radius: 4px; font-size: 0.7rem; padding: 2px 4px; background: #fff; border: 1px solid #cbd5e1; color: #475569; cursor: pointer; font-family: 'Plus Jakarta Sans', sans-serif;">
-                            <option value="success" ${block.alertType === 'success' ? 'selected' : ''}>Success</option>
-                            <option value="info" ${block.alertType === 'info' ? 'selected' : ''}>Info</option>
-                            <option value="warning" ${block.alertType === 'warning' ? 'selected' : ''}>Warning</option>
-                            <option value="danger" ${block.alertType === 'danger' ? 'selected' : ''}>Danger</option>
-                        </select>
-                    </div>
-                    <div class="builder-editable" contenteditable="true" onblur="updateBlockContent('${block.id}', this.innerHTML)" style="outline: none; width: 100%; min-height: 1.5rem; padding-right: 4.5rem;">${block.content || 'Isi pesan alert...'}</div>
-                </div>
-            `;
-        } else if (block.type === 'card') {
-            contentHtml = `
-                <div class="material-card-widget" style="margin: 0;">
-                    <div style="padding: 0.75rem; background: #f8fafc; border-bottom: 1px solid #e2e8f0; display: flex; gap: 0.5rem; align-items: center;" class="builder-block-controls-select">
-                        <span style="font-size: 0.75rem; font-weight: 700; color: #475569;">Gambar Card URL:</span>
-                        <input type="text" value="${block.imageSrc || ''}" oninput="updateBlockCardImage('${block.id}', this.value)" placeholder="https://unsplash.com/image.jpg" style="flex: 1; height: 28px; padding: 0 0.5rem; font-size: 0.75rem; border-radius: 4px; border: 1px solid #cbd5e1; outline: none;">
-                    </div>
-                    ${block.imageSrc ? `<img src="${block.imageSrc}" class="card-image" alt="card image" style="width: 100%; height: 180px; object-fit: cover;">` : ''}
-                    <div class="card-content">
-                        <h4 contenteditable="true" onblur="updateBlockCardTitle('${block.id}', this.innerText)" style="outline: none; font-weight: 700;">${block.cardTitle || 'Judul Card'}</h4>
-                        <p class="builder-editable" contenteditable="true" onblur="updateBlockContent('${block.id}', this.innerHTML)" style="outline: none; margin: 0; min-height: 1.5rem;">${block.content || 'Deskripsi card...'}</p>
-                    </div>
-                </div>
-            `;
-        } else if (block.type === 'timeline') {
-            contentHtml = `
-                <div class="material-timeline-steps builder-editable" contenteditable="true" onblur="updateBlockContent('${block.id}', this.innerHTML)" style="margin: 0; padding-left: 2rem; outline: none;">
-                    ${block.content || '<div class="step-item"><div class="step-node">1</div><div class="step-content"><h5>Langkah 1</h5><p>Tulis langkah pertama...</p></div></div>'}
-                </div>
-            `;
-        }
+    const handleConfirm = () => {
+        cleanup();
+        if (typeof onConfirm === 'function') onConfirm();
+    };
 
-        wrapper.innerHTML = controlsHtml + contentHtml;
+    const handleCancel = () => {
+        cleanup();
+    };
 
-        // NATIVE DRAG & DROP LOGIC (Only in Edit Mode)
-        if (activeBuilderMode === 'edit') {
-            wrapper.setAttribute('draggable', 'true');
-            
-            wrapper.addEventListener('dragstart', (e) => {
-                if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.closest('[contenteditable="true"]')) {
-                    e.preventDefault();
-                    return;
-                }
-                e.dataTransfer.effectAllowed = 'move';
-                wrapper.classList.add('dragging');
-                window.draggedElement = wrapper;
-            });
-
-            wrapper.addEventListener('dragend', () => {
-                wrapper.classList.remove('dragging');
-                const allWrappers = canvas.querySelectorAll('.builder-block-wrapper');
-                allWrappers.forEach(w => w.classList.remove('drag-over'));
-                
-                const currentIds = Array.from(canvas.querySelectorAll('.builder-block-wrapper')).map(w => w.dataset.id);
-                const newBlocks = [];
-                currentIds.forEach(id => {
-                    const block = builderBlocks.find(b => b.id === id);
-                    if (block) newBlocks.push(block);
-                });
-                builderBlocks = newBlocks;
-                renderBuilderBlocks();
-            });
-
-            wrapper.addEventListener('dragover', (e) => {
+    const handleKeyDown = (e) => {
+        if (e.key === 'Escape') {
+            cleanup();
+        } else if (e.key === 'Tab') {
+            // Focus trap between Cancel and Submit
+            const focusables = [cancelBtn, submitBtn];
+            const first = focusables[0];
+            const last = focusables[1];
+            if (e.shiftKey && document.activeElement === first) {
                 e.preventDefault();
-                e.dataTransfer.dropEffect = 'move';
-                
-                if (window.draggedElement && window.draggedElement !== wrapper) {
-                    const rect = wrapper.getBoundingClientRect();
-                    const next = (e.clientY - rect.top) / (rect.bottom - rect.top) > 0.5;
-                    canvas.insertBefore(window.draggedElement, next ? wrapper.nextSibling : wrapper);
-                }
-            });
-
-            wrapper.addEventListener('drop', (e) => {
+                last.focus();
+            } else if (!e.shiftKey && document.activeElement === last) {
                 e.preventDefault();
-            });
+                first.focus();
+            }
         }
+    };
 
-        canvas.appendChild(wrapper);
+    function cleanup() {
+        overlay.classList.remove('active');
+        document.body.style.overflow = '';
+        submitBtn.removeEventListener('click', handleConfirm);
+        cancelBtn.removeEventListener('click', handleCancel);
+        document.removeEventListener('keydown', handleKeyDown);
+    }
+
+    submitBtn.addEventListener('click', handleConfirm);
+    cancelBtn.addEventListener('click', handleCancel);
+    document.addEventListener('keydown', handleKeyDown);
+};
+
+/** Update sidebar live counter badges */
+window.updateSidebarCounters = function() {
+    const quizzesCount = Array.isArray(window.NETQUIZ_QUIZZES) ? window.NETQUIZ_QUIZZES.length : 0;
+    const membersCount = Array.isArray(window.NETQUIZ_MEMBERS) ? window.NETQUIZ_MEMBERS.length : 0;
+    const materialsCount = Array.isArray(window.NETQUIZ_MATERIALS) ? window.NETQUIZ_MATERIALS.length : 0;
+    const badgesCount = Array.isArray(window.NETQUIZ_BADGES) ? window.NETQUIZ_BADGES.length : 0;
+
+    const elQ = document.getElementById('sidebar-count-quizzes');
+    const elM = document.getElementById('sidebar-count-members');
+    const elMat = document.getElementById('sidebar-count-materials');
+    const elB = document.getElementById('sidebar-count-badges');
+
+    if (elQ) elQ.textContent = quizzesCount;
+    if (elM) elM.textContent = membersCount;
+    if (elMat) elMat.textContent = materialsCount;
+    if (elB) elB.textContent = badgesCount;
+};
+
+/** Helper to bind show/hide password eye buttons */
+window.bindPasswordToggles = function() {
+    const toggleBtns = document.querySelectorAll('.btn-toggle-password');
+    toggleBtns.forEach(btn => {
+        if (btn.getAttribute('data-bound')) return;
+        btn.setAttribute('data-bound', 'true');
+
+        btn.addEventListener('click', function() {
+            const targetId = this.getAttribute('data-target');
+            const input = document.getElementById(targetId);
+            if (!input) return;
+
+            if (input.type === 'password') {
+                input.type = 'text';
+                this.innerHTML = '<i data-lucide="eye-off" style="width: 15px; height: 15px;"></i>';
+                this.title = 'Sembunyikan Kata Sandi';
+            } else {
+                input.type = 'password';
+                this.innerHTML = '<i data-lucide="eye" style="width: 15px; height: 15px;"></i>';
+                this.title = 'Lihat Kata Sandi';
+            }
+            if (window.lucide) window.lucide.createIcons();
+        });
+    });
+};
+
+//** Global Helper to Open and Close Quiz Studio */
+window.openQuizStudio = function() {
+    const container = document.getElementById('quiz-builder-container');
+    if (container) {
+        container.style.display = 'block';
+        const titleInput = document.getElementById('quiz-input-title');
+        if (titleInput) titleInput.focus();
+        container.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+};
+
+window.closeQuizStudio = function() {
+    const container = document.getElementById('quiz-builder-container');
+    if (container) {
+        container.style.display = 'none';
+    }
+};
+
+/** Global Helper to Open and Close Material Form */
+window.openMaterialForm = function() {
+    const container = document.getElementById('material-form-container');
+    if (container) {
+        container.style.display = 'block';
+        const titleInput = document.getElementById('material-input-title');
+        if (titleInput) titleInput.focus();
+        container.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+};
+
+window.closeMaterialForm = function() {
+    const container = document.getElementById('material-form-container');
+    if (container) {
+        container.style.display = 'none';
+    }
+};
+
+/** Global Helper to Open and Close Badge Form */
+window.openBadgeForm = function() {
+    const container = document.getElementById('badge-form-container');
+    if (container) {
+        container.style.display = 'block';
+        const titleInput = container.querySelector('input[name="title"]');
+        if (titleInput) titleInput.focus();
+        container.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+};
+
+window.closeBadgeForm = function() {
+    const container = document.getElementById('badge-form-container');
+    if (container) {
+        container.style.display = 'none';
+    }
+};
+
+/** Global Helper to Open and Close Edit Member Modal */
+window.openEditMemberModal = function(id, username, email) {
+    const modal = document.getElementById('edit-member-modal');
+    const form = document.getElementById('edit-member-form');
+    if (!modal || !form) return;
+    
+    form.action = `${window.BASE_URL}/admin/users/update/${id}`;
+    const unInput = document.getElementById('edit-member-username');
+    const emInput = document.getElementById('edit-member-email');
+    const pwInput = document.getElementById('edit-member-password');
+    if (unInput) unInput.value = username || '';
+    if (emInput) emInput.value = email || '';
+    if (pwInput) pwInput.value = '';
+    
+    modal.classList.add('active');
+    modal.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+    
+    if (unInput) setTimeout(() => unInput.focus(), 50);
+    if (window.bindPasswordToggles) window.bindPasswordToggles();
+    if (window.lucide) window.lucide.createIcons();
+};
+
+window.closeEditMemberModal = function() {
+    const modal = document.getElementById('edit-member-modal');
+    if (!modal) return;
+    modal.classList.remove('active');
+    modal.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+};
+
+// Global backdrop click & escape key listener for edit modal
+document.addEventListener('DOMContentLoaded', () => {
+    const editModal = document.getElementById('edit-member-modal');
+    if (editModal) {
+        editModal.addEventListener('click', (e) => {
+            if (e.target === editModal) closeEditMemberModal();
+        });
+    }
+    window.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            const activeModal = document.querySelector('.admin-modal-overlay.active');
+            if (activeModal && activeModal.id === 'edit-member-modal') {
+                closeEditMemberModal();
+            }
+        }
+    });
+});
+
+// ==========================================================================
+// 2. DOCUMENT INITIALIZATION
+// ==========================================================================
+document.addEventListener('DOMContentLoaded', () => {
+    // Render all 5 workspace module sections
+    renderQuizSection();
+    renderMemberSection();
+    renderManageMemberSection();
+    renderMaterialsSection();
+    renderBadgeSection();
+
+    // Update Sidebar counters
+    updateSidebarCounters();
+
+    // Bind eye icons
+    bindPasswordToggles();
+
+    // Global keyboard shortcut '/' for search
+    document.addEventListener('keydown', (e) => {
+        if (e.key === '/' && !['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName)) {
+            e.preventDefault();
+            const activeSection = document.querySelector('.admin-section-content.active');
+            if (activeSection) {
+                const searchInput = activeSection.querySelector('.panel-search-input');
+                if (searchInput) {
+                    searchInput.focus();
+                    searchInput.select();
+                }
+            }
+        }
     });
 
+    // Re-initialize Lucide Icons
     if (window.lucide) {
         window.lucide.createIcons();
     }
+});
+
+// ==========================================================================
+// 3. MODUL 1: BUAT KUIS (Quizzes High-Density Table & Live Question Studio)
+// ==========================================================================
+function renderQuizSection() {
+    const sec = document.getElementById('quiz-section');
+    if (!sec) return;
+
+    const rawQuizzes = Array.isArray(window.NETQUIZ_QUIZZES) ? window.NETQUIZ_QUIZZES : [];
+
+    sec.innerHTML = `
+        <div class="supabase-panel-card" style="margin-bottom: 2rem;">
+            <!-- Precision Corner Crosshairs -->
+            <span class="corner-crosshair corner-tl">+</span>
+            <span class="corner-crosshair corner-tr">+</span>
+            <span class="corner-crosshair corner-bl">+</span>
+            <span class="corner-crosshair corner-br">+</span>
+
+            <!-- Quiz Studio Form (Collapsible) -->
+            <div id="quiz-builder-container" style="display: none; padding: 1.5rem; border-bottom: 1px solid #E5E7EB; background-color: #FAFAFA;">
+                <form id="form-create-quiz" action="${window.BASE_URL}/admin/quizzes" method="POST">
+                    <input type="hidden" name="csrf_token" value="${window.CSRF_TOKEN || ''}">
+                    
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.25rem; padding-bottom: 0.75rem; border-bottom: 1px solid #E5E7EB;">
+                        <div>
+                            <h3 style="font-family: var(--font-heading); font-size: 1.05rem; font-weight: 800; color: #18181B; margin: 0;">Studio Pembuatan Kuis & Soal Ujian</h3>
+                            <p style="font-size: 0.8rem; color: #52525B; margin-top: 0.2rem;">Lengkapi data kuis, konfigurasi durasi, dan susun butir-butir pertanyaan.</p>
+                        </div>
+                        <button type="button" onclick="window.closeQuizStudio()" class="btn-secondary-outline" style="padding: 0.35rem 0.75rem; font-size: 0.8rem;">Tutup Studio</button>
+                    </div>
+
+                    <!-- 1. Metadata Kuis -->
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                        <div class="form-field-group">
+                            <label class="form-field-label">Judul Kuis / Ujian</label>
+                            <input type="text" class="form-field-input" name="title" id="quiz-input-title" placeholder="Contoh: Ujian OSPF Routing MTCNA" required>
+                        </div>
+                        <div class="form-field-group">
+                            <label class="form-field-label">Kategori MikroTik</label>
+                            <select class="panel-select" name="category" id="quiz-input-category" style="width: 100%;" required>
+                                <option value="Routing">Routing & Gateway (MTCNA/MTCRE)</option>
+                                <option value="Security">Firewall, NAT & Security</option>
+                                <option value="Wireless">Wireless & CAPsMAN</option>
+                                <option value="Network Management">Network Management & QoS</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                        <div class="form-field-group">
+                            <label class="form-field-label">Durasi Ujian (Menit)</label>
+                            <input type="number" class="form-field-input" name="duration" id="quiz-input-duration" value="15" min="1" max="180" required>
+                        </div>
+                        <div class="form-field-group">
+                            <label class="form-field-label">Tingkat Kesulitan</label>
+                            <select class="panel-select" name="difficulty" id="quiz-input-difficulty" style="width: 100%;" required>
+                                <option value="Mudah">Mudah (Basic MTCNA)</option>
+                                <option value="Sedang">Sedang (Intermediate MTCRE)</option>
+                                <option value="Sulit">Sulit (Advanced MTCWE/MTCTCE)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-field-group">
+                        <label class="form-field-label">Deskripsi Cakupan Ujian</label>
+                        <textarea class="form-field-input" name="description" id="quiz-input-desc" rows="2" placeholder="Tuliskan ringkasan materi atau tujuan dari ujian kuis ini..." required></textarea>
+                    </div>
+
+                    <!-- 2. Question Repeater Studio -->
+                    <div style="margin-top: 1.75rem; padding-top: 1.25rem; border-top: 1px dashed #E5E7EB;">
+                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem;">
+                            <div>
+                                <h4 style="font-family: var(--font-heading); font-size: 0.95rem; font-weight: 800; color: #18181B; margin: 0;">
+                                    Daftar Soal Pertanyaan (<span id="quiz-question-counter">1</span> Soal)
+                                </h4>
+                                <p style="font-size: 0.775rem; color: #71717A; margin-top: 0.15rem;">Setiap soal wajib memiliki teks pertanyaan, 4 pilihan jawaban, dan 1 kunci jawaban benar.</p>
+                            </div>
+                            <button type="button" id="btn-add-quiz-question" class="btn-secondary-outline" style="font-size: 0.8rem; padding: 0.4rem 0.85rem; display: inline-flex; align-items: center; gap: 0.35rem;">
+                                <i data-lucide="plus" style="width: 14px; height: 14px;"></i>
+                                <span>+ Tambah Soal</span>
+                            </button>
+                        </div>
+
+                        <!-- Question Repeater Container -->
+                        <div id="quiz-questions-repeater-stack" class="quiz-question-repeater-stack">
+                            <!-- Injected dynamically via JS -->
+                        </div>
+                    </div>
+
+                    <!-- Studio Actions -->
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 1.5rem; padding-top: 1.25rem; border-top: 1px solid #E5E7EB;">
+                        <button type="button" id="btn-add-another-question" class="btn-secondary-outline" style="font-size: 0.825rem; padding: 0.45rem 0.9rem;">
+                            <i data-lucide="plus" style="width: 14px; height: 14px;"></i>
+                            <span>+ Tambah Soal Lagi</span>
+                        </button>
+                        <div style="display: flex; gap: 0.75rem;">
+                            <button type="button" onclick="window.closeQuizStudio()" class="btn-secondary-outline">Batal</button>
+                            <button type="submit" class="btn-primary-black">
+                                <i data-lucide="check" style="width: 15px; height: 15px;"></i>
+                                <span>Simpan & Terbitkan Kuis</span>
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Toolbar & Search (Anti-Slop Clean Input with Shortcut Badge) -->
+            <div class="panel-toolbar">
+                <div class="panel-toolbar-left">
+                    <div class="search-input-wrapper">
+                        <input type="text" id="quiz-search-input" class="panel-search-input" placeholder="Cari judul kuis atau kategori...">
+                        <span class="search-shortcut-badge" title="Tekan '/' pada keyboard untuk mencari">/</span>
+                    </div>
+                </div>
+                <div class="panel-toolbar-right">
+                    <button type="button" class="btn-primary-black" onclick="window.openQuizStudio()" style="font-size: 0.8rem; padding: 0.45rem 0.9rem; display: inline-flex; align-items: center; gap: 0.35rem;">
+                        <i data-lucide="plus" style="width: 14px; height: 14px;"></i>
+                        <span>+ Buat Kuis Baru</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Data Table -->
+            <div class="panel-table-container">
+                <table class="supabase-data-table">
+                    <thead>
+                        <tr>
+                            <th>JUDUL KUIS</th>
+                            <th>KATEGORI</th>
+                            <th>KESULITAN</th>
+                            <th>DURASI</th>
+                            <th style="text-align: right; width: 90px;">AKSI</th>
+                        </tr>
+                    </thead>
+                    <tbody id="quiz-table-body">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    `;
+
+    const qTbody = document.getElementById('quiz-table-body');
+    const qSearch = document.getElementById('quiz-search-input');
+    const repeaterStack = document.getElementById('quiz-questions-repeater-stack');
+    const counterEl = document.getElementById('quiz-question-counter');
+
+    let questionCount = 0;
+
+    function createQuestionBlock(index) {
+        const card = document.createElement('div');
+        card.className = 'quiz-question-card';
+        card.setAttribute('data-index', index);
+        card.innerHTML = `
+            <div class="q-card-top-bar">
+                <span class="q-number-pill">SOAL #${index + 1}</span>
+                <button type="button" class="btn-remove-question" title="Hapus butir soal ini" onclick="removeQuestionBlock(${index})">
+                    <i data-lucide="trash-2" style="width: 13px; height: 13px;"></i>
+                    <span>Hapus</span>
+                </button>
+            </div>
+            
+            <div class="form-field-group" style="margin-bottom: 0.75rem;">
+                <label class="form-field-label">Teks Pertanyaan Soal</label>
+                <textarea class="form-field-input" name="questions[${index}][question]" rows="2" placeholder="Tuliskan pertanyaan atau skenario konfigurasi di sini..." required></textarea>
+            </div>
+
+            <div class="q-options-grid-2x2">
+                <div class="form-field-group">
+                    <label class="form-field-label">Pilihan A</label>
+                    <input type="text" class="form-field-input" name="questions[${index}][option_a]" placeholder="Teks opsi pilihan A" required>
+                </div>
+                <div class="form-field-group">
+                    <label class="form-field-label">Pilihan B</label>
+                    <input type="text" class="form-field-input" name="questions[${index}][option_b]" placeholder="Teks opsi pilihan B" required>
+                </div>
+                <div class="form-field-group">
+                    <label class="form-field-label">Pilihan C</label>
+                    <input type="text" class="form-field-input" name="questions[${index}][option_c]" placeholder="Teks opsi pilihan C" required>
+                </div>
+                <div class="form-field-group">
+                    <label class="form-field-label">Pilihan D</label>
+                    <input type="text" class="form-field-input" name="questions[${index}][option_d]" placeholder="Teks opsi pilihan D" required>
+                </div>
+            </div>
+
+            <div class="q-meta-grid-2col">
+                <div class="form-field-group">
+                    <label class="form-field-label">Kunci Jawaban Benar</label>
+                    <select class="panel-select" name="questions[${index}][correct]" style="width: 100%; font-weight: 700;" required>
+                        <option value="A">Kunci: Pilihan A</option>
+                        <option value="B">Kunci: Pilihan B</option>
+                        <option value="C">Kunci: Pilihan C</option>
+                        <option value="D">Kunci: Pilihan D</option>
+                    </select>
+                </div>
+                <div class="form-field-group">
+                    <label class="form-field-label">Penjelasan / Pembahasan Soal (Opsional)</label>
+                    <input type="text" class="form-field-input" name="questions[${index}][explanation]" placeholder="Alasan mengapa kunci ini benar (ditampilkan pada ulasan ujian)">
+                </div>
+            </div>
+        `;
+        return card;
+    }
+
+    function syncQuestionBlocks() {
+        if (!repeaterStack) return;
+        const cards = repeaterStack.querySelectorAll('.quiz-question-card');
+        questionCount = cards.length;
+        if (counterEl) counterEl.textContent = questionCount;
+
+        cards.forEach((card, idx) => {
+            card.setAttribute('data-index', idx);
+            const pill = card.querySelector('.q-number-pill');
+            if (pill) pill.textContent = `SOAL #${idx + 1}`;
+
+            // Update input names
+            const qText = card.querySelector('textarea[name*="[question]"]');
+            if (qText) qText.name = `questions[${idx}][question]`;
+
+            const optA = card.querySelector('input[name*="[option_a]"]');
+            if (optA) optA.name = `questions[${idx}][option_a]`;
+
+            const optB = card.querySelector('input[name*="[option_b]"]');
+            if (optB) optB.name = `questions[${idx}][option_b]`;
+
+            const optC = card.querySelector('input[name*="[option_c]"]');
+            if (optC) optC.name = `questions[${idx}][option_c]`;
+
+            const optD = card.querySelector('input[name*="[option_d]"]');
+            if (optD) optD.name = `questions[${idx}][option_d]`;
+
+            const correct = card.querySelector('select[name*="[correct]"]');
+            if (correct) correct.name = `questions[${idx}][correct]`;
+
+            const exp = card.querySelector('input[name*="[explanation]"]');
+            if (exp) exp.name = `questions[${idx}][explanation]`;
+
+            // Disable delete if only 1 question remains
+            const delBtn = card.querySelector('.btn-remove-question');
+            if (delBtn) {
+                delBtn.disabled = cards.length <= 1;
+                delBtn.setAttribute('onclick', `removeQuestionBlock(${idx})`);
+            }
+        });
+
+        if (window.lucide) window.lucide.createIcons();
+    }
+
+    window.addQuestionBlock = function() {
+        if (!repeaterStack) return;
+        const newCard = createQuestionBlock(questionCount);
+        repeaterStack.appendChild(newCard);
+        syncQuestionBlocks();
+        const firstInput = newCard.querySelector('textarea');
+        if (firstInput) firstInput.focus();
+    };
+
+    window.removeQuestionBlock = function(idx) {
+        if (!repeaterStack) return;
+        const cards = repeaterStack.querySelectorAll('.quiz-question-card');
+        if (cards.length <= 1) {
+            if (window.showGeistToast) {
+                window.showGeistToast('info', 'Minimal 1 Soal', 'Kuis wajib memiliki setidaknya 1 butir pertanyaan.');
+            }
+            return;
+        }
+        if (cards[idx]) {
+            cards[idx].remove();
+            syncQuestionBlocks();
+        }
+    };
+
+    // Initialize with 1 default question
+    if (repeaterStack && repeaterStack.children.length === 0) {
+        repeaterStack.appendChild(createQuestionBlock(0));
+        syncQuestionBlocks();
+    }
+
+    const btnAddQ = document.getElementById('btn-add-quiz-question');
+    const btnAddQ2 = document.getElementById('btn-add-another-question');
+    if (btnAddQ) btnAddQ.addEventListener('click', window.addQuestionBlock);
+    if (btnAddQ2) btnAddQ2.addEventListener('click', window.addQuestionBlock);
+
+    function renderQuizRows(list) {
+        if (!qTbody) return;
+        if (list.length === 0) {
+            qTbody.innerHTML = `
+                <tr>
+                    <td colspan="5">
+                        <div class="panel-empty-state">
+                            <div class="empty-state-icon-box">
+                                <i data-lucide="file-question" style="width: 24px; height: 24px;"></i>
+                            </div>
+                            <div class="empty-state-title">Belum Ada Kuis</div>
+                            <div class="empty-state-text">Mulai buat kuis baru atau gunakan formulir kuis untuk menambahkan ujian MikroTik.</div>
+                        </div>
+                    </td>
+                </tr>
+            `;
+            if (window.lucide) window.lucide.createIcons();
+            return;
+        }
+
+        qTbody.innerHTML = list.map(q => `
+            <tr>
+                <td style="font-weight: 700; color: #18181B;">${escapeHtml(q.title)}</td>
+                <td><span class="role-pill">${escapeHtml(q.category || 'Routing')}</span></td>
+                <td><span class="status-badge status-active">${escapeHtml(q.difficulty || 'Mudah')}</span></td>
+                <td class="font-mono text-muted">${q.duration || 15} Menit</td>
+                <td style="text-align: right;">
+                    <div class="table-actions-group">
+                        <button type="button" class="btn-icon-action btn-action-danger" title="Hapus Kuis" onclick="confirmDeleteQuiz(${q.id}, '${escapeHtml(q.title).replace(/'/g, "\\'")}')">
+                            <i data-lucide="trash-2"></i>
+                        </button>
+                    </div>
+                </td>
+            </tr>
+        `).join('');
+
+        if (window.lucide) window.lucide.createIcons();
+    }
+
+    renderQuizRows(rawQuizzes);
+
+    // Live Quiz Search Filter
+    if (qSearch) {
+        qSearch.addEventListener('input', (e) => {
+            const query = e.target.value.toLowerCase().trim();
+            const filtered = rawQuizzes.filter(q => 
+                (q.title && q.title.toLowerCase().includes(query)) ||
+                (q.category && q.category.toLowerCase().includes(query))
+            );
+            renderQuizRows(filtered);
+        });
+    }
+
+    // Toggle Form Handlers
+    const btnToggle = document.getElementById('btn-toggle-quiz-builder');
+    const btnClose = document.getElementById('btn-close-quiz-builder');
+    const btnCancel = document.getElementById('btn-cancel-quiz-form');
+    const container = document.getElementById('quiz-builder-container');
+    const qTitleInput = document.getElementById('quiz-input-title');
+
+    function openQuizStudio() {
+        if (container) {
+            container.style.display = 'block';
+            if (qTitleInput) qTitleInput.focus();
+            container.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+    }
+
+    function closeQuizStudio() {
+        if (container) container.style.display = 'none';
+    }
+
+    if (btnToggle) btnToggle.addEventListener('click', () => {
+        if (container.style.display === 'none') {
+            openQuizStudio();
+        } else {
+            closeQuizStudio();
+        }
+    });
+
+    if (btnClose) btnClose.addEventListener('click', closeQuizStudio);
+    if (btnCancel) btnCancel.addEventListener('click', closeQuizStudio);
+
+    window.confirmDeleteQuiz = function(id, title) {
+        showGeistConfirm(
+            'Hapus Kuis',
+            `Apakah Anda yakin ingin menghapus kuis "${title}"? Seluruh data pertanyaan di dalamnya akan ikut terhapus.`,
+            'Hapus Kuis',
+            () => {
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = `${window.BASE_URL}/admin/quizzes/delete/${id}`;
+                form.innerHTML = `<input type="hidden" name="csrf_token" value="${window.CSRF_TOKEN || ''}">`;
+                document.body.appendChild(form);
+                form.submit();
+            },
+            true
+        );
+    };
+}
+
+// ==========================================================================
+// 4. MODUL 2: DAFTARKAN MEMBER (High-Precision Form & Recent Feed)
+// ==========================================================================
+function renderMemberSection() {
+    const sec = document.getElementById('member-section');
+    if (!sec) return;
+
+    const rawMembers = Array.isArray(window.NETQUIZ_MEMBERS) ? window.NETQUIZ_MEMBERS : [];
+    const recentMembers = rawMembers.slice(0, 5);
+
+    sec.innerHTML = `
+        <div class="member-provision-stack">
+            <!-- 1. Formulir Pendaftaran Siswa Card -->
+            <div class="supabase-panel-card">
+                <!-- Precision Corner Crosshairs -->
+                <span class="corner-crosshair corner-tl">+</span>
+                <span class="corner-crosshair corner-tr">+</span>
+                <span class="corner-crosshair corner-bl">+</span>
+                <span class="corner-crosshair corner-br">+</span>
+
+                <form action="${window.BASE_URL}/admin/users/create" method="POST" id="register-member-form">
+                    <input type="hidden" name="csrf_token" value="${window.CSRF_TOKEN || ''}">
+                    
+                    <div class="provision-form-grid">
+                        <!-- Field 1: Username -->
+                        <div class="form-field-group" style="margin-bottom: 0;">
+                            <div class="provision-field-header">
+                                <label class="form-field-label" style="margin: 0;">Username Siswa</label>
+                                <span class="font-mono text-muted" style="font-size: 0.7rem;">Wajib</span>
+                            </div>
+                            <input type="text" class="form-field-input" name="username" id="reg-username" placeholder="budi_santoso" required autocomplete="off">
+                        </div>
+
+                        <!-- Field 2: Email -->
+                        <div class="form-field-group" style="margin-bottom: 0;">
+                            <div class="provision-field-header">
+                                <label class="form-field-label" style="margin: 0;">Alamat Email</label>
+                                <span class="font-mono text-muted" style="font-size: 0.7rem;">Wajib</span>
+                            </div>
+                            <input type="email" class="form-field-input" name="email" id="reg-email" placeholder="budi@sekolah.sch.id" required autocomplete="off">
+                        </div>
+
+                        <!-- Field 3: Kata Sandi -->
+                        <div class="form-field-group" style="margin-bottom: 0;">
+                            <div class="provision-field-header">
+                                <label class="form-field-label" style="margin: 0;">Kata Sandi Akses</label>
+                                <button type="button" class="btn-inline-generate" id="btn-generate-pw" title="Buat password acak">
+                                    <i data-lucide="key" style="width: 12px; height: 12px;"></i>
+                                    <span>Acak Sandi</span>
+                                </button>
+                            </div>
+                            <div class="password-input-wrapper">
+                                <input type="password" class="form-field-input" name="password" id="reg-password" placeholder="Minimal 8 karakter" required minlength="8">
+                                <button type="button" class="btn-toggle-password" data-target="reg-password" title="Lihat/Sembunyikan Kata Sandi">
+                                    <i data-lucide="eye" style="width: 15px; height: 15px;"></i>
+                                </button>
+                            </div>
+                            <div id="password-strength-bar" class="password-strength-container" style="margin-top: 0.4rem;">
+                                <div class="password-strength-track">
+                                    <div id="password-strength-fill" class="password-strength-fill"></div>
+                                </div>
+                                <span id="password-strength-text" class="password-strength-text"></span>
+                            </div>
+                        </div>
+
+                        <!-- Field 4: Konfirmasi Kata Sandi -->
+                        <div class="form-field-group" style="margin-bottom: 0;">
+                            <div class="provision-field-header">
+                                <label class="form-field-label" style="margin: 0;">Konfirmasi Kata Sandi</label>
+                                <span id="password-match-msg" class="password-match-msg font-mono" style="font-size: 0.7rem;"></span>
+                            </div>
+                            <div class="password-input-wrapper">
+                                <input type="password" class="form-field-input" name="confirm_password" id="reg-confirm-password" placeholder="Ulangi kata sandi" required minlength="8">
+                                <button type="button" class="btn-toggle-password" data-target="reg-confirm-password" title="Lihat/Sembunyikan Kata Sandi">
+                                    <i data-lucide="eye" style="width: 15px; height: 15px;"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Footer Bar -->
+                    <div class="provision-footer">
+                        <span class="provision-footer-note font-mono">Akun berstatus aktif dan dapat langsung digunakan login.</span>
+                        <div style="display: flex; gap: 0.5rem;">
+                            <button type="reset" class="btn-secondary-outline" id="btn-reset-member-form">Batal</button>
+                            <button type="submit" class="btn-primary-black" id="btn-submit-member">
+                                <i data-lucide="user-plus" style="width: 14px; height: 14px;"></i>
+                                <span>Daftarkan Siswa</span>
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <!-- 2. Recent Registered Members Feed -->
+            <div class="supabase-panel-card">
+                <!-- Precision Corner Crosshairs -->
+                <span class="corner-crosshair corner-tl">+</span>
+                <span class="corner-crosshair corner-tr">+</span>
+                <span class="corner-crosshair corner-bl">+</span>
+                <span class="corner-crosshair corner-br">+</span>
+
+                <div class="recent-members-header">
+                    <span class="recent-members-title">
+                        <i data-lucide="users" style="width: 15px; height: 15px; color: #71717A;"></i>
+                        <span>Member Terdaftar Terbaru (${recentMembers.length})</span>
+                    </span>
+                    <a href="#manage-section" class="btn-inline-generate" onclick="const b=document.querySelector('.sidebar-menu-btn[data-target=manage-section]'); if(b) b.click();">
+                        <span>Lihat Semua Member &rarr;</span>
+                    </a>
+                </div>
+
+                <div class="panel-table-container">
+                    <table class="supabase-data-table">
+                        <thead>
+                            <tr>
+                                <th>MEMBER</th>
+                                <th style="width: 130px;">ROLE</th>
+                                <th style="width: 110px;">STATUS</th>
+                                <th style="width: 150px;">TANGGAL BERGABUNG</th>
+                                <th style="text-align: right; width: 110px;">AKSI</th>
+                            </tr>
+                        </thead>
+                        <tbody id="recent-members-tbody">
+                            ${recentMembers.length === 0 ? `
+                                <tr>
+                                    <td colspan="5" style="text-align: center; color: #71717A; padding: 2rem;">Belum ada member terdaftar.</td>
+                                </tr>
+                            ` : recentMembers.map(m => {
+                                const initials = getInitials(m.username || m.email);
+                                const role = m.role || (m.email.includes('admin') ? 'Administrator' : 'Siswa');
+                                const dateStr = formatDate(m.created_at);
+                                const avatarColorClass = getAvatarBgClass(m.id || 1);
+                                const status = m.status || 'Aktif';
+                                const statusClass = status === 'Aktif' ? 'status-active' : 'status-inactive';
+                                const safeUsername = escapeHtml(m.username).replace(/'/g, "\\'");
+                                const safeEmail = escapeHtml(m.email).replace(/'/g, "\\'");
+
+                                return `
+                                    <tr>
+                                        <td>
+                                            <div class="member-user-cell">
+                                                <div class="member-avatar ${avatarColorClass} font-mono">${escapeHtml(initials)}</div>
+                                                <div class="member-user-info">
+                                                    <span class="member-name">${escapeHtml(m.username)}</span>
+                                                    <span class="member-email font-mono">${escapeHtml(m.email)}</span>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td><span class="role-pill ${role === 'Administrator' ? 'role-admin' : ''}">${escapeHtml(role)}</span></td>
+                                        <td><span class="status-badge ${statusClass}">${escapeHtml(status)}</span></td>
+                                        <td class="font-mono text-muted">${escapeHtml(dateStr)}</td>
+                                        <td style="text-align: right;">
+                                            <div class="table-actions-group">
+                                                <button type="button" class="btn-icon-action" title="Salin Email" onclick="navigator.clipboard.writeText('${safeEmail}'); showGeistToast('success', 'Email Tersalin', '${safeEmail}');">
+                                                    <i data-lucide="copy"></i>
+                                                </button>
+                                                <button type="button" class="btn-icon-action" title="Edit Member" onclick="const b=document.querySelector('.sidebar-menu-btn[data-target=manage-section]'); if(b) b.click(); setTimeout(() => openEditMemberModal(${m.id}, '${safeUsername}', '${safeEmail}'), 100);">
+                                                    <i data-lucide="pencil"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                `;
+                            }).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    `;
+
+    const regPwdInput = document.getElementById('reg-password');
+    const confirmPwdInput = document.getElementById('reg-confirm-password');
+    const strengthFill = document.getElementById('password-strength-fill');
+    const strengthText = document.getElementById('password-strength-text');
+    const matchMsg = document.getElementById('password-match-msg');
+    const btnGenPw = document.getElementById('btn-generate-pw');
+    const regForm = document.getElementById('register-member-form');
+
+    // 1-Click Password Generator
+    if (btnGenPw && regPwdInput && confirmPwdInput) {
+        btnGenPw.addEventListener('click', () => {
+            const chars = 'abcdefghjkmnpqrstuvwxyzABCDEFGHJKMNPQRSTUVWXYZ23456789!@#$%&*';
+            let generated = '';
+            for (let i = 0; i < 12; i++) {
+                generated += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            regPwdInput.type = 'text';
+            confirmPwdInput.type = 'text';
+            regPwdInput.value = generated;
+            confirmPwdInput.value = generated;
+
+            // Trigger strength calculation
+            regPwdInput.dispatchEvent(new Event('input'));
+            checkPasswordMatch();
+
+            // Copy to clipboard
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(generated).catch(() => {});
+            }
+
+            showGeistToast('info', 'Password Dibuat', `Password acak tersalin ke clipboard.`);
+        });
+    }
+
+    // Password Strength Indicator
+    if (regPwdInput && strengthFill && strengthText) {
+        regPwdInput.addEventListener('input', function() {
+            const val = this.value;
+            let score = 0;
+            if (val.length >= 1) score++;
+            if (val.length >= 8) score++;
+            if (/[a-z]/.test(val) && /[A-Z]/.test(val)) score++;
+            if (/[0-9]/.test(val)) score++;
+            if (/[^a-zA-Z0-9]/.test(val)) score++;
+
+            if (val.length === 0) {
+                strengthFill.style.width = '0%';
+                strengthFill.style.backgroundColor = '#E5E7EB';
+                strengthText.textContent = '';
+            } else if (score <= 2) {
+                strengthFill.style.width = '33%';
+                strengthFill.style.backgroundColor = '#EF4444';
+                strengthText.textContent = 'Lemah';
+                strengthText.style.color = '#EF4444';
+            } else if (score <= 3) {
+                strengthFill.style.width = '66%';
+                strengthFill.style.backgroundColor = '#F59E0B';
+                strengthText.textContent = 'Sedang';
+                strengthText.style.color = '#F59E0B';
+            } else {
+                strengthFill.style.width = '100%';
+                strengthFill.style.backgroundColor = '#10B981';
+                strengthText.textContent = 'Kuat';
+                strengthText.style.color = '#10B981';
+            }
+            if (confirmPwdInput && confirmPwdInput.value.length > 0) {
+                checkPasswordMatch();
+            }
+        });
+    }
+
+    function checkPasswordMatch() {
+        if (!regPwdInput || !confirmPwdInput || !matchMsg) return;
+        const pwd = regPwdInput.value;
+        const cfm = confirmPwdInput.value;
+        if (cfm.length === 0) { matchMsg.textContent = ''; return; }
+        if (pwd === cfm) {
+            matchMsg.textContent = '✓ Cocok';
+            matchMsg.style.color = '#10B981';
+        } else {
+            matchMsg.textContent = '✗ Tidak cocok';
+            matchMsg.style.color = '#EF4444';
+        }
+    }
+
+    if (confirmPwdInput) {
+        confirmPwdInput.addEventListener('input', checkPasswordMatch);
+    }
+
+    // Form Submit Handling
+    if (regForm) {
+        regForm.addEventListener('submit', (e) => {
+            const pwd = regPwdInput ? regPwdInput.value : '';
+            const cfm = confirmPwdInput ? confirmPwdInput.value : '';
+            if (pwd !== cfm) {
+                e.preventDefault();
+                showGeistToast('error', 'Validasi Gagal', 'Kata sandi dan konfirmasi kata sandi tidak cocok!');
+                if (confirmPwdInput) confirmPwdInput.focus();
+                return false;
+            }
+            if (pwd.length < 8) {
+                e.preventDefault();
+                showGeistToast('error', 'Validasi Gagal', 'Kata sandi minimal harus 8 karakter!');
+                if (regPwdInput) regPwdInput.focus();
+                return false;
+            }
+        });
+    }
+
+    bindPasswordToggles();
+}
+
+// ==========================================================================
+// 5. MODUL 3: MANAJEMEN MEMBER (High-Density Data Table & Floating Bulk Bar)
+// ==========================================================================
+function renderManageMemberSection() {
+    const sec = document.getElementById('manage-section');
+    if (!sec) return;
+
+    const rawMembers = Array.isArray(window.NETQUIZ_MEMBERS) ? window.NETQUIZ_MEMBERS : [];
+
+    sec.innerHTML = `
+        <div class="supabase-panel-card">
+            <!-- Precision Corner Crosshairs -->
+            <span class="corner-crosshair corner-tl">+</span>
+            <span class="corner-crosshair corner-tr">+</span>
+            <span class="corner-crosshair corner-bl">+</span>
+            <span class="corner-crosshair corner-br">+</span>
+
+            <!-- Top Toolbar (Anti-Slop Clean Input with Shortcut Badge) -->
+            <div class="panel-toolbar">
+                <div class="panel-toolbar-left">
+                    <div class="search-input-wrapper">
+                        <input type="text" id="member-search-input" class="panel-search-input" placeholder="Cari nama, email, atau username member...">
+                        <span class="search-shortcut-badge" title="Tekan '/' pada keyboard untuk mencari">/</span>
+                    </div>
+                </div>
+                <div class="panel-toolbar-right">
+                    <div class="select-wrapper">
+                        <select id="filter-role" class="panel-select">
+                            <option value="all">Semua Role</option>
+                            <option value="Administrator">Administrator</option>
+                            <option value="Siswa">Siswa</option>
+                        </select>
+                    </div>
+                    <div class="select-wrapper">
+                        <select id="filter-status" class="panel-select">
+                            <option value="all">Semua Status</option>
+                            <option value="Aktif">Aktif</option>
+                            <option value="Nonaktif">Nonaktif</option>
+                        </select>
+                    </div>
+                    <button type="button" class="btn-panel-outline" id="btn-export-csv" title="Export seluruh data member ke CSV">
+                        <i data-lucide="download" style="width: 14px; height: 14px;"></i>
+                        <span>Export CSV</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Data Table -->
+            <div class="panel-table-container">
+                <table class="supabase-data-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 44px; text-align: center;">
+                                <input type="checkbox" class="panel-checkbox" id="select-all-members" title="Pilih Semua">
+                            </th>
+                            <th>MEMBER</th>
+                            <th style="width: 130px;">ROLE</th>
+                            <th style="width: 110px;">STATUS</th>
+                            <th style="width: 140px;">TANGGAL BERGABUNG</th>
+                            <th style="text-align: right; width: 110px;">AKSI</th>
+                        </tr>
+                    </thead>
+                    <tbody id="member-table-body">
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Bottom Pagination Bar -->
+            <div class="panel-pagination-footer">
+                <div class="pagination-info" id="pagination-info-text">
+                    Menampilkan <span class="font-mono" style="font-weight: 700;">1-${rawMembers.length}</span> dari <span class="font-mono" style="font-weight: 700;">${rawMembers.length}</span> member
+                </div>
+                <div class="pagination-actions">
+                    <button type="button" class="btn-pagination" disabled>Sebelumnya</button>
+                    <button type="button" class="btn-pagination" disabled>Selanjutnya</button>
+                </div>
+            </div>
+        </div>
+    `;
+
+    const tbody = document.getElementById('member-table-body');
+    const searchInput = document.getElementById('member-search-input');
+    const filterRole = document.getElementById('filter-role');
+    const filterStatus = document.getElementById('filter-status');
+    const selectAllCheckbox = document.getElementById('select-all-members');
+    const floatingBulkBar = document.getElementById('floating-bulk-bar');
+    const bulkCountBadge = document.getElementById('bulk-selected-count');
+    const btnBulkDismiss = document.getElementById('btn-bulk-dismiss');
+    const btnBulkExport = document.getElementById('btn-bulk-export');
+
+    function renderRows(list) {
+        if (!tbody) return;
+        if (list.length === 0) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="6">
+                        <div class="panel-empty-state">
+                            <div class="empty-state-icon-box">
+                                <i data-lucide="users" style="width: 24px; height: 24px;"></i>
+                            </div>
+                            <div class="empty-state-title">Tidak Ada Member Ditemukan</div>
+                            <div class="empty-state-text">Tidak ada data member yang cocok dengan kriteria pencarian Anda.</div>
+                        </div>
+                    </td>
+                </tr>
+            `;
+            if (window.lucide) window.lucide.createIcons();
+            return;
+        }
+
+        tbody.innerHTML = list.map(m => {
+            const initials = getInitials(m.username || m.email);
+            const role = m.role || (m.email.includes('admin') ? 'Administrator' : 'Siswa');
+            const dateStr = formatDate(m.created_at);
+            const avatarColorClass = getAvatarBgClass(m.id || 1);
+            const status = m.status || 'Aktif';
+            const statusClass = status === 'Aktif' ? 'status-active' : (status === 'Pending' ? 'status-pending' : 'status-inactive');
+            const toggleStatus = status === 'Aktif' ? 'Nonaktif' : 'Aktif';
+            const toggleIcon = status === 'Aktif' ? 'user-x' : 'user-check';
+            const toggleTitle = status === 'Aktif' ? 'Nonaktifkan Member' : 'Aktifkan Member';
+            const safeUsername = escapeHtml(m.username).replace(/'/g, "\\'");
+            const safeEmail = escapeHtml(m.email).replace(/'/g, "\\'");
+
+            return `
+                <tr>
+                    <td style="text-align: center;">
+                        <input type="checkbox" class="panel-checkbox member-row-checkbox" value="${m.id}" data-username="${safeUsername}" data-email="${safeEmail}" data-status="${status}">
+                    </td>
+                    <td>
+                        <div class="member-user-cell">
+                            <div class="member-avatar ${avatarColorClass} font-mono">${escapeHtml(initials)}</div>
+                            <div class="member-user-info">
+                                <span class="member-name">${escapeHtml(m.username)}</span>
+                                <span class="member-email font-mono">${escapeHtml(m.email)}</span>
+                            </div>
+                        </div>
+                    </td>
+                    <td><span class="role-pill ${role === 'Administrator' ? 'role-admin' : ''}">${escapeHtml(role)}</span></td>
+                    <td><span class="status-badge ${statusClass}">${escapeHtml(status)}</span></td>
+                    <td class="font-mono text-muted">${escapeHtml(dateStr)}</td>
+                    <td style="text-align: right;">
+                        <div class="table-actions-group">
+                            <button type="button" class="btn-icon-action" title="Edit Member" onclick="openEditMemberModal(${m.id}, '${safeUsername}', '${safeEmail}')">
+                                <i data-lucide="pencil"></i>
+                            </button>
+                            <form action="${window.BASE_URL}/admin/users/suspend/${m.id}" method="POST" style="display: inline;">
+                                <input type="hidden" name="csrf_token" value="${window.CSRF_TOKEN || ''}">
+                                <input type="hidden" name="status" value="${toggleStatus}">
+                                <button type="submit" class="btn-icon-action btn-action-toggle" title="${toggleTitle}">
+                                    <i data-lucide="${toggleIcon}"></i>
+                                </button>
+                            </form>
+                            <button type="button" class="btn-icon-action btn-action-danger" title="Hapus Member" onclick="confirmDeleteMember(${m.id}, '${safeUsername}')">
+                                <i data-lucide="trash-2"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `;
+        }).join('');
+
+        if (window.lucide) window.lucide.createIcons();
+
+        // Update pagination info
+        const paginationInfo = document.getElementById('pagination-info-text');
+        if (paginationInfo) {
+            paginationInfo.innerHTML = `Menampilkan <span class="font-mono" style="font-weight: 700;">1-${list.length}</span> dari <span class="font-mono" style="font-weight: 700;">${rawMembers.length}</span> member`;
+        }
+
+        bindRowCheckboxes();
+    }
+
+    renderRows(rawMembers);
+
+    // Filter Logic with Debounce
+    function filterData() {
+        const query = searchInput ? searchInput.value.toLowerCase().trim() : '';
+        const roleVal = filterRole ? filterRole.value : 'all';
+        const statusVal = filterStatus ? filterStatus.value : 'all';
+
+        const filtered = rawMembers.filter(m => {
+            const matchQuery = (m.username && m.username.toLowerCase().includes(query)) || (m.email && m.email.toLowerCase().includes(query));
+            const mRole = m.role || (m.email.includes('admin') ? 'Administrator' : 'Siswa');
+            const matchRole = (roleVal === 'all') || (mRole === roleVal);
+            const mStatus = m.status || 'Aktif';
+            const matchStatus = (statusVal === 'all') || (mStatus === statusVal);
+
+            return matchQuery && matchRole && matchStatus;
+        });
+
+        renderRows(filtered);
+    }
+
+    if (searchInput) searchInput.addEventListener('input', filterData);
+    if (filterRole) filterRole.addEventListener('change', filterData);
+    if (filterStatus) filterStatus.addEventListener('change', filterData);
+
+    // Floating Bulk Action Bar Handlers
+    function bindRowCheckboxes() {
+        const rowCheckboxes = document.querySelectorAll('.member-row-checkbox');
+        rowCheckboxes.forEach(cb => {
+            cb.addEventListener('change', updateBulkState);
+        });
+    }
+
+    function updateBulkState() {
+        const selected = document.querySelectorAll('.member-row-checkbox:checked');
+        if (!floatingBulkBar || !bulkCountBadge) return;
+
+        if (selected.length > 0) {
+            bulkCountBadge.textContent = `${selected.length} Dipilih`;
+            floatingBulkBar.classList.add('active');
+        } else {
+            floatingBulkBar.classList.remove('active');
+            if (selectAllCheckbox) selectAllCheckbox.checked = false;
+        }
+    }
+
+    if (selectAllCheckbox) {
+        selectAllCheckbox.addEventListener('change', function() {
+            const rowCheckboxes = document.querySelectorAll('.member-row-checkbox');
+            rowCheckboxes.forEach(cb => cb.checked = this.checked);
+            updateBulkState();
+        });
+    }
+
+    if (btnBulkDismiss) {
+        btnBulkDismiss.addEventListener('click', () => {
+            const rowCheckboxes = document.querySelectorAll('.member-row-checkbox');
+            rowCheckboxes.forEach(cb => cb.checked = false);
+            if (selectAllCheckbox) selectAllCheckbox.checked = false;
+            if (floatingBulkBar) floatingBulkBar.classList.remove('active');
+        });
+    }
+
+    // Bulk Export to CSV
+    if (btnBulkExport) {
+        btnBulkExport.addEventListener('click', () => {
+            const selected = document.querySelectorAll('.member-row-checkbox:checked');
+            if (selected.length === 0) return;
+
+            let csv = 'ID,Username,Email,Status\n';
+            selected.forEach(cb => {
+                csv += `"${cb.value}","${cb.getAttribute('data-username')}","${cb.getAttribute('data-email')}","${cb.getAttribute('data-status')}"\n`;
+            });
+
+            downloadCsvFile(csv, 'selected_members.csv');
+            showGeistToast('success', 'Export Selesai', `${selected.length} data member terpilih berhasil diexport.`);
+        });
+    }
+
+    // Export All CSV
+    const btnExportAll = document.getElementById('btn-export-csv');
+    if (btnExportAll) {
+        btnExportAll.addEventListener('click', () => {
+            if (rawMembers.length === 0) {
+                showGeistToast('info', 'Data Kosong', 'Tidak ada member untuk diexport.');
+                return;
+            }
+            let csv = 'ID,Username,Email,Role,Status,Tanggal Bergabung\n';
+            rawMembers.forEach(m => {
+                csv += `"${m.id}","${m.username}","${m.email}","${m.role || 'Siswa'}","${m.status || 'Aktif'}","${m.created_at}"\n`;
+            });
+            downloadCsvFile(csv, 'semua_member_netquiz.csv');
+            showGeistToast('success', 'Export CSV Berhasil', `${rawMembers.length} member telah diunduh.`);
+        });
+    }
+
+    function downloadCsvFile(content, fileName) {
+        const blob = new Blob([content], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = fileName;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+    }
+
+    // Delete Member Dialog
+    window.confirmDeleteMember = function(id, username) {
+        showGeistConfirm(
+            'Hapus Member',
+            `Apakah Anda yakin ingin menghapus akun siswa "${username}"? Tindakan ini tidak dapat dibatalkan.`,
+            'Hapus Member',
+            () => {
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = `${window.BASE_URL}/admin/users/delete/${id}`;
+                form.innerHTML = `<input type="hidden" name="csrf_token" value="${window.CSRF_TOKEN || ''}">`;
+                document.body.appendChild(form);
+                form.submit();
+            },
+            true
+        );
+    };
+}
+
+// ==========================================================================
+// 6. MODUL 4: MATERI BELAJAR (Quick Formatting Toolbar & Live Split Preview)
+// ==========================================================================
+function renderMaterialsSection() {
+    const sec = document.getElementById('materials-section');
+    if (!sec) return;
+
+    const materials = Array.isArray(window.NETQUIZ_MATERIALS) ? window.NETQUIZ_MATERIALS : [];
+
+    sec.innerHTML = `
+        <div class="supabase-panel-card">
+            <!-- Precision Corner Crosshairs -->
+            <span class="corner-crosshair corner-tl">+</span>
+            <span class="corner-crosshair corner-tr">+</span>
+            <span class="corner-crosshair corner-bl">+</span>
+            <span class="corner-crosshair corner-br">+</span>
+
+            <!-- Create Material Form (Collapsible) -->
+            <div id="material-form-container" style="display: none; padding: 1.5rem; border-bottom: 1px solid #E5E7EB; background-color: #FAFAFA;">
+                <form action="${window.BASE_URL}/admin/materials/create" method="POST" id="form-create-material">
+                    <input type="hidden" name="csrf_token" value="${window.CSRF_TOKEN || ''}">
+                    
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem;">
+                        <div>
+                            <h3 style="font-family: var(--font-heading); font-size: 1.05rem; font-weight: 800; color: #18181B; margin: 0;">Penulisan Artikel Materi Baru</h3>
+                            <p style="font-size: 0.8rem; color: #52525B; margin-top: 0.2rem;">Gunakan toolbar formatting untuk menyusun artikel RouterOS yang rapi.</p>
+                        </div>
+                        <button type="button" onclick="window.closeMaterialForm()" class="btn-secondary-outline" style="padding: 0.35rem 0.75rem; font-size: 0.8rem;">Tutup</button>
+                    </div>
+
+                    <div class="form-field-group">
+                        <label class="form-field-label">Judul Materi</label>
+                        <input type="text" class="form-field-input" name="title" id="material-input-title" placeholder="Contoh: Konfigurasi VLAN & Trunking pada MikroTik RouterOS" required>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                        <div class="form-field-group">
+                            <label class="form-field-label">Kategori</label>
+                            <select class="panel-select" name="category" style="width: 100%;">
+                                <option value="Routing">Routing</option>
+                                <option value="Firewall & NAT">Firewall & NAT</option>
+                                <option value="Wireless">Wireless</option>
+                                <option value="Network Management">Network Management</option>
+                            </select>
+                        </div>
+                        <div class="form-field-group">
+                            <label class="form-field-label">Tingkat Kesulitan</label>
+                            <select class="panel-select" name="difficulty" style="width: 100%;">
+                                <option value="Mudah">Mudah</option>
+                                <option value="Sedang">Sedang</option>
+                                <option value="Sulit">Sulit</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Editor / Live Preview Switch Tabs -->
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.5rem;">
+                        <div class="editor-mode-switch">
+                            <button type="button" class="editor-mode-btn active" id="btn-mode-editor">Editor Kode</button>
+                            <button type="button" class="editor-mode-btn" id="btn-mode-preview">Pratinjau Siswa</button>
+                        </div>
+                        <span class="reading-time-pill" id="material-reading-time">
+                            <i data-lucide="clock" style="width: 12px; height: 12px;"></i>
+                            <span>~1 menit baca</span>
+                        </span>
+                    </div>
+
+                    <!-- Quick Formatting Toolbar -->
+                    <div id="material-editor-wrapper">
+                        <div class="editor-quick-toolbar">
+                            <button type="button" class="toolbar-btn" onclick="insertHtmlTag('<h2>', '</h2>')" title="Heading 2">H2</button>
+                            <button type="button" class="toolbar-btn" onclick="insertHtmlTag('<h3>', '</h3>')" title="Heading 3">H3</button>
+                            <button type="button" class="toolbar-btn" onclick="insertHtmlTag('<strong>', '</strong>')" title="Bold"><b>B</b></button>
+                            <button type="button" class="toolbar-btn" onclick="insertHtmlTag('<em>', '</em>')" title="Italic"><i>I</i></button>
+                            <button type="button" class="toolbar-btn" onclick="insertHtmlTag('<pre><code>', '</code></pre>')" title="CLI Command Block">&lt;/&gt; CLI</button>
+                            <button type="button" class="toolbar-btn" onclick="insertHtmlTag('<p>', '</p>')" title="Paragraf">&lt;p&gt;</button>
+                            <button type="button" class="toolbar-btn" onclick="formatHtmlContent()" title="Auto Format HTML">Format HTML</button>
+                            <button type="button" class="toolbar-btn" onclick="downloadJsonTemplate()" title="Unduh Template JSON">Template JSON</button>
+                        </div>
+                        <div class="form-field-group" style="margin-bottom: 0;">
+                            <textarea class="form-field-input" name="content" id="material-content-textarea" rows="6" placeholder="Tuliskan isi artikel materi menggunakan tag HTML atau gunakan toolbar di atas..." required style="border-top-left-radius: 0; border-top-right-radius: 0;"></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Live Student Preview Box -->
+                    <div id="material-preview-box" class="material-live-preview-box" style="display: none;">
+                        <p style="color: #52525B; font-style: italic;">Pratinjau kosong. Tulis isi materi terlebih dahulu.</p>
+                    </div>
+
+                    <div style="display: flex; justify-content: flex-end; margin-top: 1.25rem;">
+                        <button type="submit" class="btn-primary-black">
+                            <i data-lucide="send" style="width: 15px; height: 15px;"></i>
+                            <span>Publikasikan Materi</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Toolbar & Search (Anti-Slop Clean Input with Shortcut Badge) -->
+            <div class="panel-toolbar">
+                <div class="panel-toolbar-left">
+                    <div class="search-input-wrapper">
+                        <input type="text" id="material-search-input" class="panel-search-input" placeholder="Cari judul modul atau materi...">
+                        <span class="search-shortcut-badge" title="Tekan '/' pada keyboard untuk mencari">/</span>
+                    </div>
+                </div>
+                <div class="panel-toolbar-right">
+                    <button type="button" class="btn-primary-black" onclick="window.openMaterialForm()" style="font-size: 0.8rem; padding: 0.45rem 0.9rem; display: inline-flex; align-items: center; gap: 0.35rem;">
+                        <i data-lucide="plus" style="width: 14px; height: 14px;"></i>
+                        <span>+ Tulis Artikel Baru</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Table -->
+            <div class="panel-table-container">
+                <table class="supabase-data-table">
+                    <thead>
+                        <tr>
+                            <th>JUDUL MATERI</th>
+                            <th>KATEGORI</th>
+                            <th>KESULITAN</th>
+                            <th style="text-align: right; width: 90px;">AKSI</th>
+                        </tr>
+                    </thead>
+                    <tbody id="materials-table-body">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    `;
+
+    const matTbody = document.getElementById('materials-table-body');
+    const matSearch = document.getElementById('material-search-input');
+
+    function renderMatRows(list) {
+        if (!matTbody) return;
+        if (list.length === 0) {
+            matTbody.innerHTML = `
+                <tr>
+                    <td colspan="4">
+                        <div class="panel-empty-state">
+                            <div class="empty-state-icon-box">
+                                <i data-lucide="book-open" style="width: 24px; height: 24px;"></i>
+                            </div>
+                            <div class="empty-state-title">Belum Ada Materi Belajar</div>
+                            <div class="empty-state-text">Tulis modul materi pembelajaran baru untuk membantu pemahaman siswa.</div>
+                        </div>
+                    </td>
+                </tr>
+            `;
+            if (window.lucide) window.lucide.createIcons();
+            return;
+        }
+
+        matTbody.innerHTML = list.map(m => `
+            <tr>
+                <td style="font-weight: 700; color: #18181B;">${escapeHtml(m.title)}</td>
+                <td><span class="role-pill">${escapeHtml(m.category || 'Routing')}</span></td>
+                <td><span class="status-badge status-active">${escapeHtml(m.difficulty || 'Mudah')}</span></td>
+                <td style="text-align: right;">
+                    <div class="table-actions-group">
+                        <a href="${window.BASE_URL}/learn/${m.id}" target="_blank" class="btn-icon-action" title="Lihat Tampilan Siswa">
+                            <i data-lucide="external-link"></i>
+                        </a>
+                        <button type="button" class="btn-icon-action btn-action-danger" title="Hapus Materi" onclick="confirmDeleteMaterial(${m.id}, '${escapeHtml(m.title).replace(/'/g, "\\'")}')">
+                            <i data-lucide="trash-2"></i>
+                        </button>
+                    </div>
+                </td>
+            </tr>
+        `).join('');
+
+        if (window.lucide) window.lucide.createIcons();
+    }
+
+    renderMatRows(materials);
+
+    if (matSearch) {
+        matSearch.addEventListener('input', (e) => {
+            const query = e.target.value.toLowerCase().trim();
+            const filtered = materials.filter(m => 
+                (m.title && m.title.toLowerCase().includes(query)) ||
+                (m.category && m.category.toLowerCase().includes(query))
+            );
+            renderMatRows(filtered);
+        });
+    }
+
+    // Editor / Live Preview Mode Switch
+    const btnModeEditor = document.getElementById('btn-mode-editor');
+    const btnModePreview = document.getElementById('btn-mode-preview');
+    const editorWrapper = document.getElementById('material-editor-wrapper');
+    const previewBox = document.getElementById('material-preview-box');
+    const contentTextarea = document.getElementById('material-content-textarea');
+    const readingTimePill = document.getElementById('material-reading-time');
+
+    function updateReadingTime() {
+        if (!contentTextarea || !readingTimePill) return;
+        const text = contentTextarea.value.replace(/<[^>]*>/g, ' ').trim();
+        const words = text ? text.split(/\s+/).length : 0;
+        const minutes = Math.max(1, Math.ceil(words / 150));
+        readingTimePill.innerHTML = `<i data-lucide="clock" style="width: 12px; height: 12px;"></i> <span>~${minutes} menit baca (${words} kata)</span>`;
+        if (window.lucide) window.lucide.createIcons();
+    }
+
+    if (contentTextarea) {
+        contentTextarea.addEventListener('input', updateReadingTime);
+    }
+
+    if (btnModeEditor && btnModePreview && editorWrapper && previewBox) {
+        btnModeEditor.addEventListener('click', () => {
+            btnModeEditor.classList.add('active');
+            btnModePreview.classList.remove('active');
+            editorWrapper.style.display = 'block';
+            previewBox.style.display = 'none';
+        });
+
+        btnModePreview.addEventListener('click', () => {
+            btnModePreview.classList.add('active');
+            btnModeEditor.classList.remove('active');
+            editorWrapper.style.display = 'none';
+            previewBox.style.display = 'block';
+
+            const rawContent = contentTextarea ? contentTextarea.value : '';
+            previewBox.innerHTML = rawContent.trim() || '<p style="color: #52525B; font-style: italic;">Pratinjau kosong. Tulis isi materi terlebih dahulu.</p>';
+        });
+    }
+
+    // Toggle Form Handlers
+    const btnClose = document.getElementById('btn-close-material-form');
+    const formContainer = document.getElementById('material-form-container');
+    if (btnClose && formContainer) {
+        btnClose.addEventListener('click', () => {
+            formContainer.style.display = 'none';
+        });
+    }
+
+    window.confirmDeleteMaterial = function(id, title) {
+        showGeistConfirm(
+            'Hapus Materi Belajar',
+            `Apakah Anda yakin ingin menghapus materi "${title}"?`,
+            'Hapus Materi',
+            () => {
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = `${window.BASE_URL}/admin/materials/delete/${id}`;
+                form.innerHTML = `<input type="hidden" name="csrf_token" value="${window.CSRF_TOKEN || ''}">`;
+                document.body.appendChild(form);
+                form.submit();
+            },
+            true
+        );
+    };
+}
+
+// ==========================================================================
+// 7. MODUL 5: LENCANA PRESTASI (Visual Icon Picker & 3-Col Grid)
+// ==========================================================================
+function renderBadgeSection() {
+    const sec = document.getElementById('badge-section');
+    if (!sec) return;
+
+    const badges = Array.isArray(window.NETQUIZ_BADGES) ? window.NETQUIZ_BADGES : [];
+
+    sec.innerHTML = `
+        <!-- Form Badge (Collapsible) -->
+        <div id="badge-form-container" style="display: none; margin-bottom: 1.5rem;" class="supabase-panel-card">
+            <!-- Precision Corner Crosshairs -->
+            <span class="corner-crosshair corner-tl">+</span>
+            <span class="corner-crosshair corner-tr">+</span>
+            <span class="corner-crosshair corner-bl">+</span>
+            <span class="corner-crosshair corner-br">+</span>
+
+            <div style="padding: 1.25rem 1.5rem;">
+                <form action="${window.BASE_URL}/admin/badges/create" method="POST">
+                    <input type="hidden" name="csrf_token" value="${window.CSRF_TOKEN || ''}">
+                    <input type="hidden" name="icon" id="badge-selected-icon" value="award">
+                    
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem;">
+                        <div>
+                            <h4 style="font-family: var(--font-heading); font-size: 1.05rem; font-weight: 800; color: #18181B; margin: 0;">Formulir Lencana Baru</h4>
+                            <p style="font-size: 0.8rem; color: #52525B; margin-top: 0.2rem;">Tentukan nama lencana, ikon visual, dan target metrik pencapaian siswa.</p>
+                        </div>
+                        <button type="button" onclick="window.closeBadgeForm()" class="btn-secondary-outline" style="padding: 0.35rem 0.75rem; font-size: 0.8rem;">Tutup</button>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                        <div class="form-field-group">
+                            <label class="form-field-label">Nama Lencana</label>
+                            <input type="text" class="form-field-input" name="title" placeholder="Contoh: Routing Master MTCNA" required>
+                        </div>
+                        <div class="form-field-group">
+                            <label class="form-field-label">Nilai Target (Kuis Selesai)</label>
+                            <input type="number" class="form-field-input" name="target_value" value="5" min="1" required>
+                        </div>
+                    </div>
+
+                    <!-- Visual Icon Picker Grid -->
+                    <div class="form-field-group">
+                        <label class="form-field-label">Pilih Ikon Visual Lencana</label>
+                        <div class="icon-picker-grid" id="badge-icon-picker">
+                            <button type="button" class="icon-picker-option active" data-icon="award" title="Award"><i data-lucide="award"></i></button>
+                            <button type="button" class="icon-picker-option" data-icon="shield" title="Shield"><i data-lucide="shield"></i></button>
+                            <button type="button" class="icon-picker-option" data-icon="star" title="Star"><i data-lucide="star"></i></button>
+                            <button type="button" class="icon-picker-option" data-icon="zap" title="Zap"><i data-lucide="zap"></i></button>
+                            <button type="button" class="icon-picker-option" data-icon="flame" title="Flame"><i data-lucide="flame"></i></button>
+                            <button type="button" class="icon-picker-option" data-icon="target" title="Target"><i data-lucide="target"></i></button>
+                            <button type="button" class="icon-picker-option" data-icon="book-open" title="Book Open"><i data-lucide="book-open"></i></button>
+                            <button type="button" class="icon-picker-option" data-icon="trophy" title="Trophy"><i data-lucide="trophy"></i></button>
+                            <button type="button" class="icon-picker-option" data-icon="cpu" title="CPU Router"><i data-lucide="cpu"></i></button>
+                            <button type="button" class="icon-picker-option" data-icon="terminal" title="Terminal CLI"><i data-lucide="terminal"></i></button>
+                        </div>
+                    </div>
+
+                    <div class="form-field-group">
+                        <label class="form-field-label">Deskripsi Lencana</label>
+                        <input type="text" class="form-field-input" name="description" placeholder="Deskripsi syarat perolehan..." required>
+                    </div>
+
+                    <div style="display: flex; justify-content: flex-end; margin-top: 1.25rem;">
+                        <button type="submit" class="btn-primary-black">
+                            <i data-lucide="award" style="width: 15px; height: 15px;"></i>
+                            <span>Simpan Lencana</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- 3-Column Grid Layout -->
+        <div class="badges-3col-grid">
+            ${badges.map(b => `
+                <div class="supabase-panel-card" style="padding: 1.25rem 1.25rem; display: flex; flex-direction: column; justify-content: space-between;">
+                    <!-- Precision Corner Crosshairs -->
+                    <span class="corner-crosshair corner-tl">+</span>
+                    <span class="corner-crosshair corner-tr">+</span>
+                    <span class="corner-crosshair corner-bl">+</span>
+                    <span class="corner-crosshair corner-br">+</span>
+
+                    <div>
+                        <!-- Header Kartu -->
+                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.85rem;">
+                            <div style="width: 38px; height: 38px; background-color: #18181B; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #FFF;">
+                                <i data-lucide="${escapeHtml(b.icon || 'award')}" style="width: 20px; height: 20px;"></i>
+                            </div>
+                            <button type="button" class="btn-icon-action btn-action-danger" title="Hapus Lencana" onclick="confirmDeleteBadge(${b.id}, '${escapeHtml(b.title).replace(/'/g, "\\'")}')">
+                                <i data-lucide="trash-2"></i>
+                            </button>
+                        </div>
+                        <!-- Body Kartu -->
+                        <h4 style="font-family: var(--font-heading); font-size: 0.95rem; font-weight: 800; color: #18181B; margin: 0 0 0.3rem 0;">${escapeHtml(b.title)}</h4>
+                        <span class="status-badge status-active" style="margin-bottom: 0.6rem;">Target: ${b.target_value || 1} Kuis</span>
+                        <p style="font-size: 0.825rem; color: #52525B; margin: 0; line-height: 1.4;">${escapeHtml(b.description)}</p>
+                    </div>
+
+                    <!-- Footer Kartu -->
+                    <div style="margin-top: 1.1rem; padding-top: 0.75rem; border-top: 1px solid #E5E7EB;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.4rem;">
+                            <span style="font-size: 0.75rem; color: #52525B;" class="font-mono">Diperoleh oleh ${b.earned_count || 0} Siswa</span>
+                            <span style="font-size: 0.7rem; font-weight: 700; color: #18181B;" class="font-mono">${Math.min(Math.round(((b.earned_count || 0) / (b.target_value || 1)) * 100), 100)}%</span>
+                        </div>
+                        <div class="badge-progress-track">
+                            <div class="badge-progress-fill" style="width: ${Math.min(Math.round(((b.earned_count || 0) / (b.target_value || 1)) * 100), 100)}%;"></div>
+                        </div>
+                    </div>
+                </div>
+            `).join('')}
+
+            <!-- 1 Kartu Draf Kosong Dashed Border Pemicu Alternatif -->
+            <button type="button" class="badge-card-dashed-draft" onclick="window.openBadgeForm()">
+                <i data-lucide="plus-circle" style="width: 28px; height: 28px; margin-bottom: 0.5rem;"></i>
+                <span style="font-family: var(--font-heading); font-size: 0.875rem; font-weight: 700;">+ Buat Lencana Baru</span>
+            </button>
+        </div>
+    `;
+
+    // Icon Picker Click Handlers
+    const iconOptions = document.querySelectorAll('.icon-picker-option');
+    const selectedIconInput = document.getElementById('badge-selected-icon');
+    iconOptions.forEach(opt => {
+        opt.addEventListener('click', function() {
+            iconOptions.forEach(o => o.classList.remove('active'));
+            this.classList.add('active');
+            if (selectedIconInput) {
+                selectedIconInput.value = this.getAttribute('data-icon');
+            }
+        });
+    });
+
+    const btnClose = document.getElementById('btn-close-badge-form');
+    const formContainer = document.getElementById('badge-form-container');
+    if (btnClose && formContainer) {
+        btnClose.addEventListener('click', () => {
+            formContainer.style.display = 'none';
+        });
+    }
+
+    window.confirmDeleteBadge = function(id, title) {
+        showGeistConfirm(
+            'Hapus Lencana',
+            `Apakah Anda yakin ingin menghapus lencana "${title}"?`,
+            'Hapus Lencana',
+            () => {
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = `${window.BASE_URL}/admin/badges/delete/${id}`;
+                form.innerHTML = `<input type="hidden" name="csrf_token" value="${window.CSRF_TOKEN || ''}">`;
+                document.body.appendChild(form);
+                form.submit();
+            },
+            true
+        );
+    };
+}
+
+// ==========================================================================
+// 8. HELPER UTILITIES
+// ==========================================================================
+function getInitials(name) {
+    if (!name) return 'U';
+    const parts = name.trim().split(/\s+/);
+    if (parts.length >= 2) {
+        return (parts[0][0] + parts[1][0]).toUpperCase();
+    }
+    return name.substring(0, 2).toUpperCase();
+}
+
+function getAvatarBgClass(id) {
+    const classes = ['', 'avatar-blue', 'avatar-purple', 'avatar-amber', 'avatar-emerald'];
+    return classes[id % classes.length];
+}
+
+function formatDate(dateString) {
+    if (!dateString) return '12 Mei 2026';
+    try {
+        const d = new Date(dateString);
+        if (isNaN(d.getTime())) return dateString;
+        const months = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+        return `${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
+    } catch (e) {
+        return dateString;
+    }
+}
+
+function escapeHtml(str) {
+    if (!str) return '';
+    return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
 }

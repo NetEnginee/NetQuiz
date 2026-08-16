@@ -140,11 +140,24 @@ class UserRepository
     }
 
     /**
+     * Update user account status (Admin use only).
+     */
+    public function updateStatus(int $id, string $status): bool
+    {
+        $allowed = ['Aktif', 'Pending', 'Nonaktif'];
+        if (!in_array($status, $allowed, true)) {
+            return false;
+        }
+        $stmt = $this->db->prepare("UPDATE users SET status = :status WHERE id = :id AND LOWER(TRIM(email)) != 'admin@routerosquiz.academy'");
+        return $stmt->execute(['status' => $status, 'id' => $id]);
+    }
+
+    /**
      * Fetch all users excluding the system administrator.
      */
     public function getAllUsers(): array
     {
-        $stmt = $this->db->prepare("SELECT id, username, email, created_at FROM users WHERE LOWER(TRIM(email)) != 'admin@routerosquiz.academy' ORDER BY id DESC");
+        $stmt = $this->db->prepare("SELECT id, username, email, status, created_at FROM users WHERE LOWER(TRIM(email)) != 'admin@routerosquiz.academy' ORDER BY id DESC");
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }

@@ -152,6 +152,7 @@ CREATE TABLE `users` (
   `username` varchar(50) NOT NULL,
   `email` varchar(100) NOT NULL,
   `password` varchar(255) NOT NULL,
+  `status` enum('Aktif','Pending','Nonaktif') NOT NULL DEFAULT 'Aktif',
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `plaintext_password` varchar(255) DEFAULT NULL,
@@ -167,7 +168,7 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (4,'admin@routerosquiz.academy','admin@routerosquiz.academy','$2y$12$7QHOrqzrOhFznmoNJyfBT.n6IDXDhhycayjJtOJkRX5tB99/Fv1/e','2026-07-07 04:40:48','2026-07-08 04:03:05',NULL);
+INSERT INTO `users` VALUES (4,'admin@routerosquiz.academy','admin@routerosquiz.academy','$2y$12$pBOojrk4TIMUcSUQCErzhuBkzFh7pmFQsrdDU/vzM3BQkN4jMYnXm','Aktif','2026-07-07 04:40:48','2026-07-08 04:03:05',NULL);
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 -- Table structure for table `materials`

@@ -34,7 +34,7 @@ class AuthController extends Controller
 
         $this->view('auth/index', [
             'title' => 'Masuk ke NetQuiz',
-            'mode' => 'login'
+            'mode' => 'login',
         ]);
     }
 

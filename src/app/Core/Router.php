@@ -85,12 +85,12 @@ class Router
 
                         $controller = new $controllerName();
                         if (method_exists($controller, $actionName)) {
-                            call_user_func_array([$controller, $actionName], $params);
+                            call_user_func_array([$controller, $actionName], array_values($params));
                             return;
                         }
                     }
                 } elseif (is_callable($handler)) {
-                    call_user_func_array($handler, $params);
+                    call_user_func_array($handler, array_values($params));
                     return;
                 }
             }
