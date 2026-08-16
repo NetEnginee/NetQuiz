@@ -13,6 +13,7 @@
         width: 100%;
         box-sizing: border-box;
     }
+
     .activity-left-custom {
         display: flex;
         flex-direction: column;
@@ -21,24 +22,27 @@
         gap: 0.15rem;
         flex: 1;
     }
+
     .activity-title-custom {
         font-weight: 700;
         font-size: 1.05rem;
         color: #0f172a;
         line-height: 1.2;
     }
+
     .activity-cat-custom {
         font-size: 0.88rem;
         color: #7c3aed;
         font-weight: 600;
         font-family: 'Plus Jakarta Sans', sans-serif;
     }
+
     .activity-time-custom {
         font-size: 0.82rem;
         color: #64748b;
         line-height: 1.2;
     }
-    
+
     .desktop-right-layout {
         display: flex;
         align-items: center;
@@ -47,6 +51,7 @@
         align-self: flex-start;
         margin-top: -2px;
     }
+
     .mobile-right-layout {
         display: none;
     }
@@ -62,6 +67,7 @@
         font-weight: 600;
         text-align: center;
     }
+
     .action-btn-custom {
         display: inline-flex;
         align-items: center;
@@ -74,19 +80,23 @@
         cursor: pointer;
         transition: all 0.2s ease;
         text-align: center;
-        box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
     }
+
     @media (max-width: 640px) {
         .activity-item-custom {
             flex-direction: column;
             align-items: flex-start;
         }
+
         .activity-left-custom {
             gap: 0.25rem;
         }
+
         .desktop-right-layout {
             display: none;
         }
+
         .mobile-right-layout {
             display: flex;
             align-items: center;
@@ -187,7 +197,7 @@
 
                         $isFinished = ($activity['status'] === 'finished');
                         $statusText = $isFinished ? 'Selesai' : 'Dijeda';
-                        ?>
+                    ?>
 
                         <div class="activity-item-custom">
                             <!-- Detail Quiz (Judul, Kategori & Waktu) -->

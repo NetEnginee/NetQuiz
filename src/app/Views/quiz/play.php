@@ -1,4 +1,7 @@
-<?php require_once dirname(__DIR__) . '/templates/header.php'; ?>
+<?php
+$durationSeconds = (isset($quiz['duration']) ? (int) $quiz['duration'] : 0) * 60;
+require_once dirname(__DIR__) . '/templates/header.php';
+?>
 
 <!-- Custom Styles for Quiz -->
 <link rel="stylesheet" href="<?= BASE_URL ?>/css/quiz.css?v=<?= time() ?>">

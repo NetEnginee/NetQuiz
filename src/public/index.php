@@ -102,19 +102,39 @@ $router->get('/quiz', [\App\Controllers\QuizController::class, 'index']);
 $router->get('/learn', [\App\Controllers\LearnController::class, 'index']);
 $router->get('/learn/{id}', [\App\Controllers\LearnController::class, 'viewMaterial']);
 $router->get('/admin', [\App\Controllers\AdminController::class, 'index']);
+
+// Admin Quiz routes & aliases
 $router->post('/admin/quiz/create', [\App\Controllers\AdminController::class, 'createQuiz']);
+$router->post('/admin/quizzes', [\App\Controllers\AdminController::class, 'createQuiz']);
 $router->post('/admin/quiz/delete/{id}', [\App\Controllers\AdminController::class, 'deleteQuiz']);
+$router->post('/admin/quizzes/delete/{id}', [\App\Controllers\AdminController::class, 'deleteQuiz']);
+
+// Admin Member / User routes & aliases
 $router->post('/admin/member/create', [\App\Controllers\AdminController::class, 'createMember']);
+$router->post('/admin/users/create', [\App\Controllers\AdminController::class, 'createMember']);
 $router->post('/admin/member/update/{id}', [\App\Controllers\AdminController::class, 'updateMember']);
+$router->post('/admin/users/update/{id}', [\App\Controllers\AdminController::class, 'updateMember']);
 $router->post('/admin/member/delete/{id}', [\App\Controllers\AdminController::class, 'deleteMember']);
-$router->post('/admin/profile/update', [\App\Controllers\AdminController::class, 'updateProfile']);
+$router->post('/admin/users/delete/{id}', [\App\Controllers\AdminController::class, 'deleteMember']);
+$router->post('/admin/member/suspend/{id}', [\App\Controllers\AdminController::class, 'suspendMember']);
+$router->post('/admin/users/suspend/{id}', [\App\Controllers\AdminController::class, 'suspendMember']);
+
+// Admin Badge routes & aliases
 $router->post('/admin/badge/create', [\App\Controllers\AdminController::class, 'createBadge']);
+$router->post('/admin/badges/create', [\App\Controllers\AdminController::class, 'createBadge']);
 $router->post('/admin/badge/delete/{id}', [\App\Controllers\AdminController::class, 'deleteBadge']);
+$router->post('/admin/badges/delete/{id}', [\App\Controllers\AdminController::class, 'deleteBadge']);
 $router->post('/admin/badge/delete-bulk', [\App\Controllers\AdminController::class, 'deleteBadgesBulk']);
+
+// Admin Material routes & aliases
 $router->post('/admin/material/create', [\App\Controllers\AdminController::class, 'createMaterial']);
+$router->post('/admin/materials/create', [\App\Controllers\AdminController::class, 'createMaterial']);
 $router->post('/admin/material/update/{id}', [\App\Controllers\AdminController::class, 'updateMaterial']);
+$router->post('/admin/materials/update/{id}', [\App\Controllers\AdminController::class, 'updateMaterial']);
 $router->get('/admin/material/get/{id}', [\App\Controllers\AdminController::class, 'getMaterialJson']);
 $router->post('/admin/material/delete/{id}', [\App\Controllers\AdminController::class, 'deleteMaterial']);
+$router->post('/admin/materials/delete/{id}', [\App\Controllers\AdminController::class, 'deleteMaterial']);
+
 $router->get('/quiz/play/{id}', [\App\Controllers\QuizController::class, 'play']);
 $router->post('/quiz/pause/{id}', [\App\Controllers\QuizController::class, 'pause']);
 $router->post('/quiz/submit/{id}', [\App\Controllers\QuizController::class, 'submit']);

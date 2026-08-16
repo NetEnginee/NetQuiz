@@ -193,16 +193,29 @@ class AdminController extends Controller
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if (!\App\Core\Security::validateCsrfToken()) {
                 $_SESSION['admin_error'] = 'Sesi tidak valid, silakan muat ulang halaman.';
-                header('Location: ' . BASE_URL . '/admin');
+                header('Location: ' . BASE_URL . '/admin#member-section');
                 exit;
             }
             $username = trim($_POST['username'] ?? '');
             $email = trim($_POST['email'] ?? '');
             $password = $_POST['password'] ?? '';
+            $confirmPassword = $_POST['confirm_password'] ?? '';
 
             if (empty($username) || empty($email) || empty($password)) {
                 $_SESSION['admin_error'] = 'Semua data registrasi wajib diisi.';
-                header('Location: ' . BASE_URL . '/admin');
+                header('Location: ' . BASE_URL . '/admin#member-section');
+                exit;
+            }
+
+            if (!empty($confirmPassword) && $password !== $confirmPassword) {
+                $_SESSION['admin_error'] = 'Kata sandi dan konfirmasi kata sandi tidak cocok.';
+                header('Location: ' . BASE_URL . '/admin#member-section');
+                exit;
+            }
+
+            if (strlen($password) < 8) {
+                $_SESSION['admin_error'] = 'Kata sandi minimal harus 8 karakter.';
+                header('Location: ' . BASE_URL . '/admin#member-section');
                 exit;
             }
 
@@ -212,14 +225,14 @@ class AdminController extends Controller
                 // Check if email already exists
                 if ($userRepo->emailExists($email)) {
                     $_SESSION['admin_error'] = 'Email sudah terdaftar.';
-                    header('Location: ' . BASE_URL . '/admin');
+                    header('Location: ' . BASE_URL . '/admin#member-section');
                     exit;
                 }
 
                 // Check if username already exists
                 if ($userRepo->usernameExists($username)) {
                     $_SESSION['admin_error'] = 'Username sudah digunakan.';
-                    header('Location: ' . BASE_URL . '/admin');
+                    header('Location: ' . BASE_URL . '/admin#member-section');
                     exit;
                 }
 
@@ -230,7 +243,7 @@ class AdminController extends Controller
                 $_SESSION['admin_error'] = 'Gagal mendaftarkan anggota: ' . $e->getMessage();
             }
 
-            header('Location: ' . BASE_URL . '/admin');
+            header('Location: ' . BASE_URL . '/admin#manage-section');
             exit;
         }
     }
@@ -243,7 +256,7 @@ class AdminController extends Controller
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if (!\App\Core\Security::validateCsrfToken()) {
                 $_SESSION['admin_error'] = 'Sesi tidak valid, silakan muat ulang halaman.';
-                header('Location: ' . BASE_URL . '/admin');
+                header('Location: ' . BASE_URL . '/admin#manage-section');
                 exit;
             }
             $username = trim($_POST['username'] ?? '');
@@ -252,7 +265,7 @@ class AdminController extends Controller
 
             if (empty($username) || empty($email)) {
                 $_SESSION['admin_error'] = 'Username dan Email wajib diisi.';
-                header('Location: ' . BASE_URL . '/admin');
+                header('Location: ' . BASE_URL . '/admin#manage-section');
                 exit;
             }
 
@@ -262,7 +275,7 @@ class AdminController extends Controller
                 // Check if email already exists on OTHER users
                 if ($userRepo->emailExists($email, $id)) {
                     $_SESSION['admin_error'] = 'Email sudah digunakan oleh akun lain.';
-                    header('Location: ' . BASE_URL . '/admin');
+                    header('Location: ' . BASE_URL . '/admin#manage-section');
                     exit;
                 }
 
@@ -276,7 +289,7 @@ class AdminController extends Controller
                 $_SESSION['admin_error'] = 'Gagal memperbarui akun anggota: ' . $e->getMessage();
             }
 
-            header('Location: ' . BASE_URL . '/admin');
+            header('Location: ' . BASE_URL . '/admin#manage-section');
             exit;
         }
     }
@@ -286,7 +299,7 @@ class AdminController extends Controller
         $this->checkAdmin();
         if (!\App\Core\Security::validateCsrfToken()) {
             $_SESSION['admin_error'] = 'Sesi tidak valid, silakan muat ulang halaman.';
-            header('Location: ' . BASE_URL . '/admin');
+            header('Location: ' . BASE_URL . '/admin#manage-section');
             exit;
         }
         $id = (int) $id;
@@ -299,61 +312,36 @@ class AdminController extends Controller
             $_SESSION['admin_error'] = 'Gagal menghapus akun anggota: ' . $e->getMessage();
         }
 
-        header('Location: ' . BASE_URL . '/admin');
+        header('Location: ' . BASE_URL . '/admin#manage-section');
         exit;
     }
 
-    public function updateProfile()
+    public function suspendMember($id)
     {
         $this->checkAdmin();
+        if (!\App\Core\Security::validateCsrfToken()) {
+            $_SESSION['admin_error'] = 'Sesi tidak valid, silakan muat ulang halaman.';
+            header('Location: ' . BASE_URL . '/admin#manage-section');
+            exit;
+        }
+        $id = (int) $id;
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            // CSRF validation added for security
-            if (!\App\Core\Security::validateCsrfToken()) {
-                $_SESSION['admin_error'] = 'Sesi tidak valid, silakan muat ulang halaman.';
-                header('Location: ' . BASE_URL . '/admin');
-                exit;
-            }
-
-            $username = trim($_POST['username'] ?? '');
-            $email = trim($_POST['email'] ?? '');
-            $password = $_POST['password'] ?? '';
-            $adminId = (int) $_SESSION['user']['id'];
-
-            if (empty($username) || empty($email)) {
-                $_SESSION['admin_error'] = 'Username dan Email wajib diisi.';
-                header('Location: ' . BASE_URL . '/admin');
-                exit;
-            }
+            $newStatus = trim($_POST['status'] ?? 'Nonaktif');
 
             try {
                 $userRepo = new UserRepository();
-
-                // Check if email already exists on OTHER users
-                if ($userRepo->emailExists($email, $adminId)) {
-                    $_SESSION['admin_error'] = 'Email sudah digunakan oleh akun lain.';
-                    header('Location: ' . BASE_URL . '/admin');
-                    exit;
-                }
-
-                $userRepo->updateProfile($adminId, $username, $email);
-                if (!empty($password)) {
-                    $userRepo->updatePassword($adminId, $password);
-                }
-
-                // Update session info
-                $_SESSION['user']['name'] = $username;
-                $_SESSION['user']['email'] = $email;
-
-                $_SESSION['admin_success'] = 'Profil admin berhasil diperbarui!';
+                $userRepo->updateStatus($id, $newStatus);
+                $_SESSION['admin_success'] = 'Status member berhasil diperbarui menjadi ' . htmlspecialchars($newStatus) . '!';
             } catch (PDOException $e) {
-                $_SESSION['admin_error'] = 'Gagal memperbarui profil: ' . $e->getMessage();
+                $_SESSION['admin_error'] = 'Gagal mengubah status member: ' . $e->getMessage();
             }
-
-            header('Location: ' . BASE_URL . '/admin');
-            exit;
         }
+
+        header('Location: ' . BASE_URL . '/admin#manage-section');
+        exit;
     }
+
 
     public function createBadge()
     {
