@@ -651,17 +651,17 @@ function renderQuizSection() {
     const container = document.getElementById('quiz-builder-container');
     const qTitleInput = document.getElementById('quiz-input-title');
 
-    function openQuizStudio() {
+    window.openQuizStudio = function() {
         if (container) {
             container.style.display = 'block';
             if (qTitleInput) qTitleInput.focus();
             container.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         }
-    }
+    };
 
-    function closeQuizStudio() {
+    window.closeQuizStudio = function() {
         if (container) container.style.display = 'none';
-    }
+    };
 
     if (btnToggle) btnToggle.addEventListener('click', () => {
         if (container.style.display === 'none') {
@@ -1505,13 +1505,19 @@ function renderMaterialsSection() {
     }
 
     // Toggle Form Handlers
-    const btnClose = document.getElementById('btn-close-material-form');
     const formContainer = document.getElementById('material-form-container');
-    if (btnClose && formContainer) {
-        btnClose.addEventListener('click', () => {
-            formContainer.style.display = 'none';
-        });
-    }
+    window.openMaterialForm = function() {
+        if (formContainer) {
+            formContainer.style.display = 'block';
+            const matTitle = document.getElementById('material-input-title');
+            if (matTitle) matTitle.focus();
+            formContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+    };
+
+    window.closeMaterialForm = function() {
+        if (formContainer) formContainer.style.display = 'none';
+    };
 
     window.confirmDeleteMaterial = function(id, title) {
         showGeistConfirm(
@@ -1665,13 +1671,19 @@ function renderBadgeSection() {
         });
     });
 
-    const btnClose = document.getElementById('btn-close-badge-form');
     const formContainer = document.getElementById('badge-form-container');
-    if (btnClose && formContainer) {
-        btnClose.addEventListener('click', () => {
-            formContainer.style.display = 'none';
-        });
-    }
+    window.openBadgeForm = function() {
+        if (formContainer) {
+            formContainer.style.display = 'block';
+            const badgeTitle = formContainer.querySelector('input[name="title"]');
+            if (badgeTitle) badgeTitle.focus();
+            formContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+    };
+
+    window.closeBadgeForm = function() {
+        if (formContainer) formContainer.style.display = 'none';
+    };
 
     window.confirmDeleteBadge = function(id, title) {
         showGeistConfirm(

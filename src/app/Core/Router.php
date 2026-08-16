@@ -1,98 +1,106 @@
 <?php
 declare(strict_types=1);
+
 namespace App\Core;
 
+use ReflectionClass;
+use ReflectionMethod;
+use RuntimeException;
+
+/**
+ * Modern Attribute-aware Router with Dependency Injection Integration.
+ */
 class Router
 {
-    protected $routes = [];
+    private Container $container;
+    private array $routes = [];
 
-    /**
-     * Add a route with URL pattern matching and named parameters.
-     */
-    public function add($method, $path, $handler)
+    public function __construct(?Container $container = null)
     {
-        // Convert paths like /quiz/{id} to regex like ^/quiz/(?P<id>[a-zA-Z0-9_-]+)$
-        $routePattern = preg_replace('/\{([a-zA-Z0-9_-]+)\}/', '(?P<$1>[a-zA-Z0-9_-]+)', $path);
-        $routePattern = '#^' . $routePattern . '$#';
-
-        $this->routes[$method][$routePattern] = $handler;
-    }
-
-    public function get($path, $handler)
-    {
-        $this->add('GET', $path, $handler);
-    }
-
-    public function post($path, $handler)
-    {
-        $this->add('POST', $path, $handler);
+        $this->container = $container ?? Container::getInstance();
     }
 
     /**
-     * Dispatch the current request to the matched controller action or callback.
+     * Register a GET route.
      */
-    public function dispatch($url, $method)
+    public function get(string $path, array|callable $handler): self
     {
-        // Strip query string from URL
-        $url = parse_url($url, PHP_URL_PATH);
-        $url = rtrim($url, '/') ?: '/';
-        $method = strtoupper($method);
+        return $this->addRoute('GET', $path, $handler);
+    }
 
-        if (!isset($this->routes[$method])) {
-            $this->sendNotFound();
-            return;
+    /**
+     * Register a POST route.
+     */
+    public function post(string $path, array|callable $handler): self
+    {
+        return $this->addRoute('POST', $path, $handler);
+    }
+
+    /**
+     * Register a PUT route.
+     */
+    public function put(string $path, array|callable $handler): self
+    {
+        return $this->addRoute('PUT', $path, $handler);
+    }
+
+    /**
+     * Register a DELETE route.
+     */
+    public function delete(string $path, array|callable $handler): self
+    {
+        return $this->addRoute('DELETE', $path, $handler);
+    }
+
+    /**
+     * Internal route registration helper.
+     */
+    private function addRoute(string $method, string $path, array|callable $handler): self
+    {
+        // Normalize path
+        $path = '/' . trim($path, '/');
+        if ($path === '//') {
+            $path = '/';
         }
 
-        foreach ($this->routes[$method] as $pattern => $handler) {
-            if (preg_match($pattern, $url, $matches)) {
-                // Extract named parameters
-                $params = array_filter($matches, function ($key) {
-                    return !is_int($key);
-                }, ARRAY_FILTER_USE_KEY);
+        // Convert route parameters (e.g., {id}) to regex pattern
+        $pattern = preg_replace('/\{([a-zA-Z0-9_]+)\}/', '(?P<$1>[^/]+)', $path);
+        $pattern = '#^' . $pattern . '$#';
 
-                if (is_array($handler)) {
-                    $controllerName = $handler[0];
-                    $actionName = $handler[1];
+        $this->routes[] = [
+            'method' => strtoupper($method),
+            'path' => $path,
+            'pattern' => $pattern,
+            'handler' => $handler
+        ];
 
-                    if (class_exists($controllerName)) {
-                        // 1. Resolve Authorization via Attributes (PHP 8 Feature)
-                        $reflector = new \ReflectionClass($controllerName);
-                        $allowedRoles = [];
+        return $this;
+    }
 
-                        // Read controller-level Authorize attributes
-                        $classAttributes = $reflector->getAttributes(Authorize::class);
-                        foreach ($classAttributes as $attribute) {
-                            $allowedRoles = array_merge($allowedRoles, $attribute->newInstance()->roles);
-                        }
+    /**
+     * Dispatch the current HTTP request to matching route handler.
+     */
+    public function dispatch(?Request $request = null): void
+    {
+        $request = $request ?? $this->container->get(Request::class);
+        $method = $request->getMethod();
+        $path = $request->getPath();
 
-                        // Read action-level Authorize attributes
-                        if ($reflector->hasMethod($actionName)) {
-                            $methodReflector = $reflector->getMethod($actionName);
-                            $methodAttributes = $methodReflector->getAttributes(Authorize::class);
-                            foreach ($methodAttributes as $attribute) {
-                                $allowedRoles = array_merge($allowedRoles, $attribute->newInstance()->roles);
-                            }
-                        }
+        foreach ($this->routes as $route) {
+            if ($route['method'] !== $method) {
+                continue;
+            }
 
-                        // Perform authorization check if roles are specified
-                        if (!empty($allowedRoles)) {
-                            $currentRole = Security::getCurrentRole();
-                            if (!in_array($currentRole, $allowedRoles, true)) {
-                                $this->handleUnauthorized();
-                                return;
-                            }
-                        }
-
-                        $controller = new $controllerName();
-                        if (method_exists($controller, $actionName)) {
-                            call_user_func_array([$controller, $actionName], array_values($params));
-                            return;
-                        }
+            if (preg_match($route['pattern'], $path, $matches)) {
+                $params = [];
+                foreach ($matches as $key => $value) {
+                    if (!is_int($key)) {
+                        $params[$key] = $value;
                     }
-                } elseif (is_callable($handler)) {
-                    call_user_func_array($handler, array_values($params));
-                    return;
                 }
+
+                $this->executeHandler($route['handler'], $params, $request);
+                return;
             }
         }
 
@@ -100,9 +108,61 @@ class Router
     }
 
     /**
+     * Execute route handler with middleware / authorization check and dependency injection.
+     */
+    private function executeHandler(array|callable $handler, array $params, Request $request): void
+    {
+        if (is_array($handler)) {
+            [$controllerClass, $actionMethod] = $handler;
+
+            $reflector = new ReflectionClass($controllerClass);
+            $allowedRoles = [];
+
+            // Read controller-level Authorize attributes
+            $classAttributes = $reflector->getAttributes(Authorize::class);
+            foreach ($classAttributes as $attribute) {
+                $allowedRoles = array_merge($allowedRoles, $attribute->newInstance()->roles);
+            }
+
+            // Read method-level Authorize attributes
+            if ($reflector->hasMethod($actionMethod)) {
+                $methodReflector = $reflector->getMethod($actionMethod);
+                $methodAttributes = $methodReflector->getAttributes(Authorize::class);
+                foreach ($methodAttributes as $attribute) {
+                    $allowedRoles = array_merge($allowedRoles, $attribute->newInstance()->roles);
+                }
+            }
+
+            // Perform role authorization check
+            if (!empty($allowedRoles)) {
+                $currentRole = Security::getCurrentRole();
+                if (!in_array($currentRole, $allowedRoles, true)) {
+                    $this->handleUnauthorized();
+                    return;
+                }
+            }
+
+            // Resolve controller instance via DI container
+            $controller = $this->container->get($controllerClass);
+
+            // Execute action with auto-wired parameters + route params
+            $result = $this->container->call($controller, $actionMethod, $params);
+
+            if ($result instanceof Response) {
+                $result->send();
+            }
+        } elseif (is_callable($handler)) {
+            $result = call_user_func_array($handler, array_values($params));
+            if ($result instanceof Response) {
+                $result->send();
+            }
+        }
+    }
+
+    /**
      * Handle unauthorized access.
      */
-    protected function handleUnauthorized(): void
+    private function handleUnauthorized(): void
     {
         $currentRole = Security::getCurrentRole();
         if ($currentRole === Role::GUEST) {
@@ -112,15 +172,28 @@ class Router
 
         http_response_code(403);
         $title = '403 - Akses Ditolak';
-        require_once APP_ROOT . '/Views/errors/403.php';
+        $viewFile = APP_ROOT . '/Views/errors/403.php';
+        if (file_exists($viewFile)) {
+            require $viewFile;
+        } else {
+            echo "<h1>403 Forbidden</h1>";
+        }
         exit;
     }
 
-    protected function sendNotFound()
+    /**
+     * Handle 404 route not found.
+     */
+    private function sendNotFound(): void
     {
         http_response_code(404);
         $title = '404 - Halaman Tidak Ditemukan';
-        require_once APP_ROOT . '/Views/errors/404.php';
+        $viewFile = APP_ROOT . '/Views/errors/404.php';
+        if (file_exists($viewFile)) {
+            require $viewFile;
+        } else {
+            echo "<h1>404 Not Found</h1>";
+        }
         exit;
     }
 }

@@ -245,8 +245,12 @@
 
         <?php foreach ($quiz['questions'] as $qIndex => $q): ?>
             <?php
-            $userAns = strtoupper($userAnswers[$qIndex] ?? '');
-            $correctAns = strtoupper($q['correct']);
+            $rawAns = $userAnswers[$qIndex] ?? '';
+            if (is_array($rawAns)) {
+                $rawAns = $rawAns['answer'] ?? ($rawAns['user_answer'] ?? '');
+            }
+            $userAns = strtoupper((string)$rawAns);
+            $correctAns = strtoupper((string)($q['correct'] ?? ''));
             ?>
             <div class="question-block <?= $qIndex === 0 ? 'active' : '' ?>">
                 <div style="font-size: 0.9rem; font-weight: 700; color: #7c3aed; margin-bottom: 0.5rem;">Pertanyaan

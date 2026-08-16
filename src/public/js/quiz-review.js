@@ -1,106 +1,131 @@
-// --- NETQUIZ QUIZ REVIEW CONTROLLER (EXTERNAL JS) ---
-document.addEventListener('DOMContentLoaded', () => {
-    if (window.lucide) {
-        lucide.createIcons();
+/**
+ * NetQuiz Quiz Review Module (Clean State Architecture)
+ */
+(function () {
+  "use strict";
+
+  class NetQuizReviewer {
+    constructor(config) {
+      this.explanations = config.explanations || [];
+      this.currentSlide = 0;
+
+      this.initDom();
+      this.bindEvents();
     }
 
-    // Read explanations list from exposed window object
-    const config = window.NetQuizData || {};
-    const questionExplanations = config.explanations || [];
+    initDom() {
+      this.blocks = Array.from(document.querySelectorAll(".question-block"));
+      this.totalSlides = this.blocks.length;
+      this.btnPrev = document.getElementById("btn-prev");
+      this.btnNext = document.getElementById("btn-next");
+      this.pageButtons = Array.from(document.querySelectorAll(".page-number"));
+      this.modal = document.getElementById("explanation-modal");
+      this.textEl = document.getElementById("explanation-text");
 
-    // 1. Slider Navigation Logic
-    const blocks = document.querySelectorAll('.question-block');
-    const btnPrev = document.getElementById('btn-prev');
-    const btnNext = document.getElementById('btn-next');
-    let currentSlide = 0;
-    const totalSlides = blocks.length;
+      if (window.lucide) {
+        window.lucide.createIcons();
+      }
 
-    const updateSlider = () => {
-        blocks.forEach((block, index) => {
-            if (index === currentSlide) {
-                block.classList.add('active');
-            } else {
-                block.classList.remove('active');
-            }
-        });
-
-        if (btnPrev) btnPrev.disabled = currentSlide === 0;
-        if (btnNext) btnNext.disabled = currentSlide === totalSlides - 1;
-
-        document.querySelectorAll('.page-number').forEach((btn, index) => {
-            if (index === currentSlide) {
-                btn.classList.add('active');
-            } else {
-                btn.classList.remove('active');
-            }
-        });
-    };
-
-    updateSlider();
-
-    document.querySelectorAll('.page-number').forEach(btn => {
-        btn.addEventListener('click', () => {
-            const target = parseInt(btn.getAttribute('data-slide'), 10);
-            currentSlide = target;
-            updateSlider();
-        });
-    });
-
-    if (btnNext) {
-        btnNext.addEventListener('click', () => {
-            if (currentSlide < totalSlides - 1) {
-                currentSlide++;
-                updateSlider();
-            }
-        });
+      this.updateSlider();
     }
 
-    if (btnPrev) {
-        btnPrev.addEventListener('click', () => {
-            if (currentSlide > 0) {
-                currentSlide--;
-                updateSlider();
-            }
-        });
-    }
-
-    // 2. Explanation Modal Controllers
-    const modal = document.getElementById('explanation-modal');
-    const textEl = document.getElementById('explanation-text');
-
-    window.showExplanation = (index) => {
-        const text = questionExplanations[index] || 'Tidak ada penjelasan untuk soal ini.';
-        if (!modal || !textEl) return;
-
-        textEl.textContent = text;
-        modal.style.display = 'flex';
-        
-        // Trigger reflow for transition
-        void modal.offsetWidth;
-        modal.style.opacity = '1';
-        modal.firstElementChild.style.transform = 'scale(1)';
-
-        if (window.lucide) {
-            window.lucide.createIcons();
+    updateSlider() {
+      this.blocks.forEach((block, index) => {
+        if (index === this.currentSlide) {
+          block.classList.add("active");
+        } else {
+          block.classList.remove("active");
         }
-    };
+      });
 
-    window.closeExplanation = () => {
-        if (!modal) return;
-        modal.style.opacity = '0';
-        modal.firstElementChild.style.transform = 'scale(0.95)';
-        setTimeout(() => {
-            modal.style.display = 'none';
-        }, 250);
-    };
+      if (this.btnPrev) this.btnPrev.disabled = this.currentSlide === 0;
+      if (this.btnNext)
+        this.btnNext.disabled = this.currentSlide === this.totalSlides - 1;
 
-    document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') window.closeExplanation();
-    });
-
-    if (modal) {
-        modal.addEventListener('click', (e) => {
-            if (e.target === e.currentTarget) window.closeExplanation();
-        });
+      this.pageButtons.forEach((btn, index) => {
+        if (index === this.currentSlide) {
+          btn.classList.add("active");
+        } else {
+          btn.classList.remove("active");
+        }
+      });
     }
-});
+
+    showExplanation(index) {
+      const text =
+        this.explanations[index] || "Tidak ada penjelasan untuk soal ini.";
+      if (!this.modal || !this.textEl) return;
+
+      this.textEl.textContent = text;
+      this.modal.style.display = "flex";
+
+      void this.modal.offsetWidth;
+      this.modal.style.opacity = "1";
+      if (this.modal.firstElementChild) {
+        this.modal.firstElementChild.style.transform = "scale(1)";
+      }
+
+      if (window.lucide) {
+        window.lucide.createIcons();
+      }
+    }
+
+    closeExplanation() {
+      if (!this.modal) return;
+      this.modal.style.opacity = "0";
+      if (this.modal.firstElementChild) {
+        this.modal.firstElementChild.style.transform = "scale(0.95)";
+      }
+      setTimeout(() => {
+        this.modal.style.display = "none";
+      }, 200);
+    }
+
+    bindEvents() {
+      this.pageButtons.forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const target = parseInt(btn.getAttribute("data-slide"), 10);
+          if (!isNaN(target) && target >= 0 && target < this.totalSlides) {
+            this.currentSlide = target;
+            this.updateSlider();
+          }
+        });
+      });
+
+      if (this.btnNext) {
+        this.btnNext.addEventListener("click", () => {
+          if (this.currentSlide < this.totalSlides - 1) {
+            this.currentSlide++;
+            this.updateSlider();
+          }
+        });
+      }
+
+      if (this.btnPrev) {
+        this.btnPrev.addEventListener("click", () => {
+          if (this.currentSlide > 0) {
+            this.currentSlide--;
+            this.updateSlider();
+          }
+        });
+      }
+
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") this.closeExplanation();
+      });
+
+      if (this.modal) {
+        this.modal.addEventListener("click", (e) => {
+          if (e.target === this.modal) this.closeExplanation();
+        });
+      }
+    }
+  }
+
+  document.addEventListener("DOMContentLoaded", () => {
+    const config = window.NetQuizData || {};
+    const reviewer = new NetQuizReviewer(config);
+    window.showExplanation = (idx) => reviewer.showExplanation(idx);
+    window.closeExplanation = () => reviewer.closeExplanation();
+  });
+})();

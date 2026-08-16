@@ -1,414 +1,172 @@
 <?php
 declare(strict_types=1);
+
 namespace App\Controllers;
 
 use App\Core\Controller;
-use App\Core\Database;
 use App\Core\Authorize;
 use App\Core\Role;
-use PDO;
-use PDOException;
+use App\Core\Request;
+use App\Core\Response;
+use App\Core\Security;
+use App\Repositories\QuizRepositoryInterface;
+use App\Repositories\QuestionRepositoryInterface;
+use App\Repositories\AttemptRepositoryInterface;
+use App\Repositories\BadgeRepositoryInterface;
 
-#[Authorize(Role::USER)]
+#[Authorize(Role::USER, Role::ADMIN)]
 class QuizController extends Controller
 {
+    public function __construct(
+        private QuizRepositoryInterface $quizRepo,
+        private QuestionRepositoryInterface $questionRepo,
+        private AttemptRepositoryInterface $attemptRepo,
+        private BadgeRepositoryInterface $badgeRepo,
+        private Request $request
+    ) {}
 
-    private function loadQuizzesFromDb()
+    /**
+     * Display list of quizzes with completion status.
+     */
+    public function index(): Response
     {
-        try {
-            $db = Database::getInstance()->getConnection();
+        $userId = (int)($_SESSION['user']['id'] ?? 0);
+        $activeDifficulty = (string)$this->request->query('difficulty', 'all');
 
-            $stmt = $db->query("SELECT * FROM quizzes ORDER BY id ASC");
-            $quizzesRaw = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $categorized = $this->quizRepo->getCategorizedQuizzesWithUserStatus($userId, $activeDifficulty);
 
-            $quizzes = [];
-            foreach ($quizzesRaw as $q) {
-                $quizId = (int) $q['id'];
-
-                $qStmt = $db->prepare("SELECT * FROM questions WHERE quiz_id = :quiz_id ORDER BY id ASC");
-                $qStmt->execute(['quiz_id' => $quizId]);
-                $questionsRaw = $qStmt->fetchAll(PDO::FETCH_ASSOC);
-
-                $questions = [];
-                foreach ($questionsRaw as $quest) {
-                    $questions[] = [
-                        'question' => $quest['question'],
-                        'image_path' => $quest['image_path'] ?? null,
-                        'options' => [
-                            'A' => $quest['option_a'],
-                            'B' => $quest['option_b'],
-                            'C' => $quest['option_c'],
-                            'D' => $quest['option_d']
-                        ],
-                        'correct' => $quest['correct'],
-                        'explanation' => $quest['explanation'] ?? null
-                    ];
-                }
-
-                $quizzes[$quizId] = [
-                    'id' => $quizId,
-                    'title' => $q['title'],
-                    'description' => $q['description'],
-                    'category' => $q['category'],
-                    'difficulty' => $q['difficulty'] ?? 'Mudah',
-                    'duration' => isset($q['duration']) ? (int) $q['duration'] : 0,
-                    'created_at' => $q['created_at'] ?? null,
-                    'questions' => $questions
-                ];
-            }
-            return $quizzes;
-        } catch (PDOException $e) {
-            return [];
-        }
-    }
-
-    private function getDecryptedId($id)
-    {
-        if (empty($id)) {
-            return null;
-        }
-        if (method_exists(\App\Core\Security::class, 'decryptUrlId')) {
-            $decrypted = \App\Core\Security::decryptUrlId((string)$id);
-            if ($decrypted !== null) {
-                return (int)$decrypted;
-            }
-        }
-        if (is_numeric($id)) {
-            return (int)$id;
-        }
-        return null;
-    }
-
-    public function index()
-    {
-        $this->syncPausedQuizzesFromDb();
-        $quizzes = $this->loadQuizzesFromDb();
-        
-        $activeDifficulty = $_GET['difficulty'] ?? 'all';
-        if ($activeDifficulty !== 'all') {
-            $quizzes = array_filter($quizzes, function($quiz) use ($activeDifficulty) {
-                return strcasecmp($quiz['difficulty'] ?? 'Mudah', $activeDifficulty) === 0;
-            });
-        }
-        
-        $completedQuizzes = [];
-        try {
-            $db = Database::getInstance()->getConnection();
-            try {
-                $stmt = $db->prepare("SELECT quiz_id, score FROM quiz_attempts WHERE user_id = :user_id AND quiz_id IS NOT NULL AND status = 'finished'");
-                $stmt->execute(['user_id' => $_SESSION['user']['id']]);
-                $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
-                foreach ($rows as $row) {
-                    $completedQuizzes[(int)$row['quiz_id']] = (int)($row['score'] ?? 0);
-                }
-            } catch (PDOException $e) {
-                // Fallback if the 'score' column does not exist
-                $stmt = $db->prepare("SELECT quiz_id FROM quiz_attempts WHERE user_id = :user_id AND quiz_id IS NOT NULL AND status = 'finished'");
-                $stmt->execute(['user_id' => $_SESSION['user']['id']]);
-                $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
-                foreach ($rows as $row) {
-                    $completedQuizzes[(int)$row['quiz_id']] = 0;
-                }
-            }
-        } catch (PDOException $e) {}
-
-        // Initialize default categories so they are always listed
-        $categorized = [
-            'Routing' => [],
-            'Firewall & NAT' => [],
-            'Wireless' => [],
-            'Network Management' => []
-        ];
-        foreach ($quizzes as $quiz) {
-            $quizId = (int)$quiz['id'];
-            $quiz['is_completed'] = array_key_exists($quizId, $completedQuizzes);
-            $quiz['score'] = $completedQuizzes[$quizId] ?? 0;
-            if (isset($categorized[$quiz['category']])) {
-                $categorized[$quiz['category']][] = $quiz;
-            }
-        }
-
-        $this->view('quiz/index', [
+        return $this->view('quiz/index', [
             'title' => 'Daftar Quiz | NetQuiz',
             'categorized' => $categorized,
             'activeDifficulty' => $activeDifficulty
         ]);
     }
 
-    public function play($id)
+    /**
+     * Start / Play Quiz.
+     */
+    public function play(string|int $id): Response
     {
-        $this->syncPausedQuizzesFromDb();
-        $id = $this->getDecryptedId($id);
-        if ($id === null) {
-            header('Location: ' . BASE_URL . '/quiz');
-            exit;
-        }
-        $id = (int) $id;
-        $quizzes = $this->loadQuizzesFromDb();
-        if (!isset($quizzes[$id])) {
-            header('Location: ' . BASE_URL . '/quiz');
-            exit;
+        $id = (int)$id;
+        $quiz = $this->quizRepo->getWithQuestions($id);
+        if (!$quiz) {
+            return $this->redirect(BASE_URL . '/quiz');
         }
 
-        try {
-            $db = Database::getInstance()->getConnection();
-            $stmt = $db->prepare("SELECT id FROM quiz_attempts WHERE user_id = :user_id AND quiz_id = :quiz_id AND status = 'finished'");
-            $stmt->execute(['user_id' => $_SESSION['user']['id'], 'quiz_id' => $id]);
-            if ($stmt->fetch()) {
-                $_SESSION['quiz_error'] = 'Anda sudah pernah mengerjakan kuis ini.';
-                header('Location: ' . BASE_URL . '/quiz');
-                exit;
-            }
-        } catch (PDOException $e) {}
+        $userId = (int)($_SESSION['user']['id'] ?? 0);
+        $isAdmin = Security::getCurrentRole() === Role::ADMIN;
 
-        $quiz = $quizzes[$id];
-        $pausedState = $_SESSION['paused_quiz'][$id] ?? null;
-
-        // Extract first question image for LCP Preloading
-        $preloadImage = '';
-        if (!empty($quiz['questions'])) {
-            $firstQuestion = reset($quiz['questions']);
-            if (!empty($firstQuestion['image_path'])) {
-                $preloadImage = BASE_URL . '/' . $firstQuestion['image_path'];
+        // Check if finished (unless admin previewing)
+        if (!$isAdmin) {
+            $finished = $this->attemptRepo->getFinishedAttempt($userId, $id);
+            if ($finished) {
+                $_SESSION['quiz_error'] = 'Anda sudah pernah menyelesaikan kuis ini.';
+                return $this->redirect(BASE_URL . '/quiz');
             }
         }
 
-        $this->view('quiz/play', [
+        // Check for active paused state
+        $pausedState = null;
+        $pausedAttempt = $this->attemptRepo->getPausedAttempt($userId, $id);
+        if ($pausedAttempt) {
+            $decoded = json_decode($pausedAttempt['user_answers'] ?? '{}', true);
+            $pausedState = [
+                'answers' => $decoded['answers'] ?? [],
+                'time_left' => (int)($decoded['time_left'] ?? ($quiz['duration'] * 60))
+            ];
+        }
+
+        return $this->view('quiz/play', [
             'title' => 'Mulai Kuis - ' . $quiz['title'] . ' | NetQuiz',
             'quiz' => $quiz,
-            'pausedState' => $pausedState,
-            'preloadImage' => $preloadImage
+            'pausedState' => $pausedState
         ]);
     }
 
-    public function pause($id)
+    /**
+     * Pause Quiz (Saves state in DB).
+     */
+    public function pause(string|int $id): Response
     {
-        if (!\App\Core\Security::validateCsrfToken()) {
-            $_SESSION['quiz_error'] = 'Sesi tidak valid.';
-            header('Location: ' . BASE_URL . '/quiz');
-            exit;
+        $id = (int)$id;
+        $quiz = $this->quizRepo->getById($id);
+        if (!$quiz) {
+            return $this->redirect(BASE_URL . '/quiz');
         }
 
-        $id = $this->getDecryptedId($id);
-        if ($id === null) {
-            header('Location: ' . BASE_URL . '/quiz');
-            exit;
-        }
-        $id = (int) $id;
-        $answers = $_POST['answers'] ?? [];
-        $timeLeft = (int)($_POST['time_left'] ?? 0);
-        $pausedAt = date('Y-m-d H:i:s');
+        $userId = (int)($_SESSION['user']['id'] ?? 0);
+        $answers = (array)$this->request->post('answers', []);
+        $timeLeft = (int)$this->request->post('time_left', ($quiz['duration'] * 60));
 
-        $_SESSION['paused_quiz'][$id] = [
-            'answers' => $answers,
-            'time_left' => $timeLeft,
-            'paused_at' => $pausedAt
-        ];
+        $this->attemptRepo->savePausedAttempt($userId, $id, $quiz['category'], $answers, $timeLeft);
 
-        // Save paused state to database for cross-relog persistence
-        try {
-            $db = Database::getInstance()->getConnection();
-            $userId = $_SESSION['user']['id'];
-
-            // Check if there is an existing paused attempt
-            $stmt = $db->prepare("SELECT id FROM quiz_attempts WHERE user_id = :user_id AND quiz_id = :quiz_id AND status = 'paused' LIMIT 1");
-            $stmt->execute(['user_id' => $userId, 'quiz_id' => $id]);
-            $existing = $stmt->fetch();
-
-            $payload = json_encode([
-                'answers' => $answers,
-                'time_left' => $timeLeft
-            ]);
-
-            if ($existing) {
-                $upStmt = $db->prepare("UPDATE quiz_attempts SET user_answers = :payload, created_at = :paused_at WHERE id = :id");
-                $upStmt->execute([
-                    'payload' => $payload, 
-                    'paused_at' => $pausedAt,
-                    'id' => $existing['id']
-                ]);
-            } else {
-                $quizzes = $this->loadQuizzesFromDb();
-                $category = $quizzes[$id]['category'] ?? 'General';
-                
-                $inStmt = $db->prepare("INSERT INTO quiz_attempts (user_id, quiz_id, category, score, status, user_answers, created_at) VALUES (:user_id, :quiz_id, :category, 0, 'paused', :payload, :paused_at)");
-                $inStmt->execute([
-                    'user_id' => $userId,
-                    'quiz_id' => $id,
-                    'category' => $category,
-                    'payload' => $payload,
-                    'paused_at' => $pausedAt
-                ]);
-            }
-        } catch (\Exception $e) {
-            error_log("Failed to save paused quiz to database: " . $e->getMessage());
+        $redirect = (string)$this->request->input('redirect', BASE_URL . '/quiz');
+        if (!empty($redirect) && str_starts_with($redirect, BASE_URL)) {
+            return $this->redirect($redirect);
         }
 
-        $redirect = $_GET['redirect'] ?? $_POST['redirect'] ?? '';
-        if (!empty($redirect) && strpos($redirect, BASE_URL) === 0) {
-            header('Location: ' . $redirect);
-        } else {
-            header('Location: ' . BASE_URL . '/quiz');
-        }
-        exit;
+        return $this->redirect(BASE_URL . '/quiz');
     }
 
-    public function submit($id)
+    /**
+     * Submit Quiz and Calculate Score Atomically.
+     */
+    public function submit(string|int $id): Response
     {
-        if (!\App\Core\Security::validateCsrfToken()) {
-            $this->jsonResponse(['success' => false, 'message' => 'Sesi tidak valid.'], 403);
+        if (!Security::validateCsrfToken($this->request->input('csrf_token'))) {
+            return $this->jsonResponse(['success' => false, 'message' => 'Sesi tidak valid.'], 403);
         }
 
-        $id = $this->getDecryptedId($id);
-        if ($id === null) {
-            header('Location: ' . BASE_URL . '/quiz');
-            exit;
-        }
-        $id = (int) $id;
-        $quizzes = $this->loadQuizzesFromDb();
-        if (!isset($quizzes[$id])) {
-            header('Location: ' . BASE_URL . '/quiz');
-            exit;
+        $id = (int)$id;
+        $quiz = $this->quizRepo->getWithQuestions($id);
+        if (!$quiz) {
+            return $this->redirect(BASE_URL . '/quiz');
         }
 
-        $quiz = $quizzes[$id];
-        $answers = $_POST['answers'] ?? [];
+        $userId = (int)($_SESSION['user']['id'] ?? 0);
+        $answers = (array)$this->request->post('answers', []);
 
-        // Clear paused state since it's submitted
-        unset($_SESSION['paused_quiz'][$id]);
-
-        $totalQuestions = count($quiz['questions']);
+        $questions = $quiz['questions'];
+        $totalQuestions = count($questions);
         $correctCount = 0;
 
-        foreach ($quiz['questions'] as $index => $q) {
-            $userAns = $answers[$index] ?? '';
+        foreach ($questions as $index => $q) {
+            $userAns = (string)($answers[$index] ?? '');
             if (strtoupper($userAns) === strtoupper($q['correct'])) {
                 $correctCount++;
             }
         }
 
-        $score = $totalQuestions > 0 ? (int) round(($correctCount / $totalQuestions) * 100) : 0;
+        $score = $totalQuestions > 0 ? (int)round(($correctCount / $totalQuestions) * 100) : 0;
 
-        $attemptId = 0;
-        try {
-            $db = Database::getInstance()->getConnection();
-            $userId = $_SESSION['user']['id'];
-            $category = $quiz['category'];
+        // Record attempt atomically in database
+        $attemptId = $this->attemptRepo->recordFinishedAttempt($userId, $id, $quiz['category'], $score, $answers);
 
-            // Delete paused attempt for this user and quiz
-            $delStmt = $db->prepare("DELETE FROM quiz_attempts WHERE user_id = :user_id AND quiz_id = :quiz_id AND status = 'paused'");
-            $delStmt->execute(['user_id' => $userId, 'quiz_id' => $id]);
-
-            $stmt = $db->prepare("
-                INSERT INTO quiz_attempts (user_id, quiz_id, category, score, status, user_answers) 
-                VALUES (:user_id, :quiz_id, :category, :score, 'finished', :user_answers)
-            ");
-            $stmt->execute([
-                'user_id' => $userId,
-                'quiz_id' => $id,
-                'category' => $category,
-                'score' => $score,
-                'user_answers' => json_encode($answers)
-            ]);
-            $attemptId = $db->lastInsertId();
-        } catch (PDOException $e) {
-            // Log error
-        }
-
-        $encryptedAttemptId = method_exists(\App\Core\Security::class, 'encryptUrlId') ? \App\Core\Security::encryptUrlId($attemptId ?: $id) : ($attemptId ?: $id);
-        $encryptedQuizId = method_exists(\App\Core\Security::class, 'encryptUrlId') ? \App\Core\Security::encryptUrlId($id) : $id;
-
-        header('Location: ' . BASE_URL . '/quiz/result/' . $encryptedAttemptId . '?score=' . $score . '&correct=' . $correctCount . '&total=' . $totalQuestions . '&quiz_id=' . $encryptedQuizId);
-        exit;
+        return $this->redirect(BASE_URL . "/quiz/result/{$attemptId}?score={$score}&correct={$correctCount}&total={$totalQuestions}&quiz_id={$id}");
     }
 
-    public function review($id)
+    /**
+     * View Quiz Submission Result.
+     */
+    public function result(string|int $id): Response
     {
-        $quizId = $this->getDecryptedId($id);
-        if ($quizId === null) {
-            header('Location: ' . BASE_URL . '/quiz');
-            exit;
-        }
-        $quizId = (int) $quizId;
-        $quizzes = $this->loadQuizzesFromDb();
-        if (!isset($quizzes[$quizId])) {
-            header('Location: ' . BASE_URL . '/quiz');
-            exit;
+        $attemptId = (int)$id;
+        $userId = (int)($_SESSION['user']['id'] ?? 0);
+        $isAdmin = Security::getCurrentRole() === Role::ADMIN;
+
+        $attempt = $this->attemptRepo->getAttemptById($attemptId);
+        if (!$attempt || (!$isAdmin && (int)$attempt['user_id'] !== $userId)) {
+            return $this->redirect(BASE_URL . '/quiz');
         }
 
-        $quiz = $quizzes[$quizId];
+        $quizId = (int)($this->request->query('quiz_id') ?? $attempt['quiz_id']);
+        $quiz = $this->quizRepo->getById($quizId);
 
-        $attempt = null;
-        $isAdmin = isset($_SESSION['user']['email']) && strcasecmp(trim($_SESSION['user']['email']), 'admin@routerosquiz.academy') === 0;
-        try {
-            $db = Database::getInstance()->getConnection();
-            $stmt = $db->prepare("SELECT * FROM quiz_attempts WHERE user_id = :user_id AND quiz_id = :quiz_id");
-            $stmt->execute(['user_id' => $_SESSION['user']['id'], 'quiz_id' => $quizId]);
-            $attempt = $stmt->fetch(PDO::FETCH_ASSOC);
-        } catch (PDOException $e) {}
+        $score = (int)($this->request->query('score') ?? $attempt['score']);
+        $correct = (int)$this->request->query('correct', 0);
+        $total = (int)$this->request->query('total', 0);
 
-        if (!$attempt && !$isAdmin) {
-            $_SESSION['quiz_error'] = 'Anda belum mengerjakan kuis ini.';
-            header('Location: ' . BASE_URL . '/quiz');
-            exit;
-        }
-
-        $userAnswers = $attempt ? (json_decode($attempt['user_answers'] ?? '{}', true) ?: []) : [];
-        $score = $attempt ? $attempt['score'] : 0;
-
-        // Extract first question image for LCP Preloading
-        $preloadImage = '';
-        if (!empty($quiz['questions'])) {
-            $firstQuestion = reset($quiz['questions']);
-            if (!empty($firstQuestion['image_path'])) {
-                $preloadImage = BASE_URL . '/' . $firstQuestion['image_path'];
-            }
-        }
-
-        $this->view('quiz/review', [
-            'title' => 'Review Jawaban - ' . $quiz['title'] . ' | NetQuiz',
-            'quiz' => $quiz,
-            'userAnswers' => $userAnswers,
-            'score' => $score,
-            'preloadImage' => $preloadImage
-        ]);
-    }
-
-    public function result($id)
-    {
-        $idDecrypted = $this->getDecryptedId($id);
-        if ($idDecrypted === null) {
-            header('Location: ' . BASE_URL . '/quiz');
-            exit;
-        }
-        $id = (int) $idDecrypted;
-        $score = $_GET['score'] ?? 0;
-        $correct = $_GET['correct'] ?? 0;
-        $total = $_GET['total'] ?? 0;
-        
-        $quizIdRaw = $_GET['quiz_id'] ?? '';
-        $quizIdDecrypted = $this->getDecryptedId($quizIdRaw);
-        $quizId = $quizIdDecrypted !== null ? (int) $quizIdDecrypted : 1;
-
-        // Fetch the attempt and verify ownership
-        try {
-            $db = Database::getInstance()->getConnection();
-            $stmt = $db->prepare("SELECT * FROM quiz_attempts WHERE id = :id LIMIT 1");
-            $stmt->execute(['id' => $id]);
-            $attempt = $stmt->fetch();
-        } catch (PDOException $e) {
-            $attempt = null;
-        }
-
-        if (!$attempt || (int)$attempt['user_id'] !== (int)$_SESSION['user']['id']) {
-            header('Location: ' . BASE_URL . '/quiz');
-            exit;
-        }
-
-        $quizzes = $this->loadQuizzesFromDb();
-        $quiz = $quizzes[(int) $quizId] ?? null;
-
-        $this->view('quiz/result', [
+        return $this->view('quiz/result', [
             'title' => 'Hasil Kuis | NetQuiz',
             'score' => $score,
             'correct' => $correct,
@@ -417,25 +175,34 @@ class QuizController extends Controller
         ]);
     }
 
-    private function syncPausedQuizzesFromDb()
+    /**
+     * Review Quiz Answers with Explanations.
+     */
+    public function review(string|int $id): Response
     {
-        if (isset($_SESSION['user']['id'])) {
-            try {
-                $db = Database::getInstance()->getConnection();
-                $stmt = $db->prepare("SELECT quiz_id, user_answers, created_at FROM quiz_attempts WHERE user_id = :user_id AND status = 'paused'");
-                $stmt->execute(['user_id' => $_SESSION['user']['id']]);
-                $pausedAttempts = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-                $_SESSION['paused_quiz'] = [];
-                foreach ($pausedAttempts as $attempt) {
-                    $payload = json_decode($attempt['user_answers'], true);
-                    $_SESSION['paused_quiz'][(int)$attempt['quiz_id']] = [
-                        'answers' => $payload['answers'] ?? [],
-                        'time_left' => $payload['time_left'] ?? 0,
-                        'paused_at' => $attempt['created_at'] ?? date('Y-m-d H:i:s')
-                    ];
-                }
-            } catch (\Exception $e) {}
+        $quizId = (int)$id;
+        $quiz = $this->quizRepo->getWithQuestions($quizId);
+        if (!$quiz) {
+            return $this->redirect(BASE_URL . '/quiz');
         }
+
+        $userId = (int)($_SESSION['user']['id'] ?? 0);
+        $isAdmin = Security::getCurrentRole() === Role::ADMIN;
+
+        $attempt = $this->attemptRepo->getFinishedAttempt($userId, $quizId);
+        if (!$attempt && !$isAdmin) {
+            $_SESSION['quiz_error'] = 'Anda belum pernah menyelesaikan kuis ini.';
+            return $this->redirect(BASE_URL . '/quiz');
+        }
+
+        $userAnswers = $attempt ? (json_decode($attempt['user_answers'] ?? '{}', true) ?: []) : [];
+        $score = $attempt ? (int)$attempt['score'] : 0;
+
+        return $this->view('quiz/review', [
+            'title' => 'Review Jawaban - ' . $quiz['title'] . ' | NetQuiz',
+            'quiz' => $quiz,
+            'userAnswers' => $userAnswers,
+            'score' => $score
+        ]);
     }
 }

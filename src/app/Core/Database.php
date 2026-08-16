@@ -1,21 +1,41 @@
 <?php
 declare(strict_types=1);
+
 namespace App\Core;
 
 use PDO;
 use PDOException;
+use RuntimeException;
+use Throwable;
 
+/**
+ * Database Connection & Query Management.
+ * Manages PDO instance with strict configuration, prepared query execution, and transactions.
+ */
 class Database
 {
-    private static $instance = null;
-    private $conn;
+    private static ?Database $instance = null;
+    private PDO $connection;
 
-    private function __construct()
+    public function __construct(?array $config = null)
     {
-        // Load configurations
-        $config = require dirname(__DIR__, 2) . '/config/config.php';
+        if ($config === null) {
+            $configFile = dirname(__DIR__, 2) . '/config/config.php';
+            if (file_exists($configFile)) {
+                $config = require $configFile;
+            } else {
+                throw new RuntimeException("Database configuration file not found at [{$configFile}].");
+            }
+        }
 
-        $dsn = "mysql:host=" . $config['db_host'] . ";dbname=" . $config['db_name'] . ";charset=utf8mb4";
+        $host = $config['db_host'] ?? 'localhost';
+        $dbname = $config['db_name'] ?? 'db_mikrotik_quiz';
+        $user = $config['db_user'] ?? 'root';
+        $pass = $config['db_pass'] ?? '';
+        $port = (int)($config['db_port'] ?? 3306);
+        $charset = $config['db_charset'] ?? 'utf8mb4';
+
+        $dsn = "mysql:host={$host};port={$port};dbname={$dbname};charset={$charset}";
         $options = [
             PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
             PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
@@ -24,92 +44,85 @@ class Database
         ];
 
         try {
-            $this->conn = new PDO($dsn, $config['db_user'], $config['db_pass'], $options);
-            $this->ensureTablesExist();
+            $this->connection = new PDO($dsn, $user, $pass, $options);
         } catch (PDOException $e) {
-            // Log database connection error securely
             error_log("Database Connection Error: " . $e->getMessage());
-            http_response_code(500);
-            die("Database Connection Error. Silakan hubungi administrator.");
+            throw new RuntimeException("Koneksi database gagal: " . $e->getMessage(), 500, $e);
         }
     }
 
-    private function ensureTablesExist()
+    /**
+     * Singleton accessor for legacy components.
+     */
+    public static function getInstance(): self
     {
-        // Create badges table if not exists
-        $sql = "CREATE TABLE IF NOT EXISTS badges (
-            id INT AUTO_INCREMENT PRIMARY KEY,
-            title VARCHAR(255) NOT NULL,
-            description TEXT NOT NULL,
-            icon VARCHAR(100) NOT NULL DEFAULT 'award',
-            metric VARCHAR(100) NOT NULL,
-            target_value INT NOT NULL,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;";
-        $this->conn->exec($sql);
-
-        // Create login_attempts table if not exists for brute force protection
-        $sqlAttempts = "CREATE TABLE IF NOT EXISTS login_attempts (
-            id INT AUTO_INCREMENT PRIMARY KEY,
-            ip_address VARCHAR(45) NOT NULL,
-            email VARCHAR(255) NOT NULL,
-            attempted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            KEY idx_ip_time (ip_address, attempted_at),
-            KEY idx_email_time (email, attempted_at)
-        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;";
-        $this->conn->exec($sqlAttempts);
-
-        // Create materials table if not exists
-        $sqlMaterials = "CREATE TABLE IF NOT EXISTS materials (
-            id INT AUTO_INCREMENT PRIMARY KEY,
-            title VARCHAR(255) NOT NULL,
-            content LONGTEXT NOT NULL,
-            category VARCHAR(100) NOT NULL,
-            difficulty VARCHAR(50) NOT NULL DEFAULT 'Mudah',
-            image_path VARCHAR(255) DEFAULT NULL,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;";
-        $this->conn->exec($sqlMaterials);
-
-        try {
-            $this->conn->exec("ALTER TABLE quizzes ADD COLUMN image_path VARCHAR(255) NULL");
-        } catch (PDOException $e) {
-            // Kolom mungkin sudah ada, abaikan
-        }
-
-        try {
-            $this->conn->exec("ALTER TABLE questions ADD COLUMN image_path VARCHAR(255) NULL");
-        } catch (PDOException $e) {
-            // Kolom mungkin sudah ada, abaikan
-        }
-
-        // Check if badges table is empty
-        $stmt = $this->conn->query("SELECT COUNT(*) FROM badges");
-        $count = (int) $stmt->fetchColumn();
-        if ($count === 0) {
-            // Seed default badges
-            $defaultBadges = [
-                ['Keluar dari Zona Nyaman', 'Selesaikan satu kuis.', 'play', 'completed_quizzes', 1],
-            ];
-
-            $stmtInsert = $this->conn->prepare("INSERT INTO badges (title, description, icon, metric, target_value) VALUES (?, ?, ?, ?, ?)");
-            foreach ($defaultBadges as $badge) {
-                $stmtInsert->execute($badge);
-            }
-        }
-    }
-
-    public static function getInstance()
-    {
-        if (self::$instance == null) {
-            self::$instance = new Database();
+        if (self::$instance === null) {
+            self::$instance = new self();
         }
         return self::$instance;
     }
 
-    public function getConnection()
+    /**
+     * Get underlying PDO connection.
+     */
+    public function getConnection(): PDO
     {
-        return $this->conn;
+        return $this->connection;
+    }
+
+    /**
+     * Begin a database transaction.
+     */
+    public function beginTransaction(): bool
+    {
+        return $this->connection->beginTransaction();
+    }
+
+    /**
+     * Commit a database transaction.
+     */
+    public function commit(): bool
+    {
+        return $this->connection->commit();
+    }
+
+    /**
+     * Rollback a database transaction.
+     */
+    public function rollBack(): bool
+    {
+        if ($this->connection->inTransaction()) {
+            return $this->connection->rollBack();
+        }
+        return false;
+    }
+
+    /**
+     * Check if currently in transaction.
+     */
+    public function inTransaction(): bool
+    {
+        return $this->connection->inTransaction();
+    }
+
+    /**
+     * Execute a callback inside an atomic transaction.
+     *
+     * @template T
+     * @param callable(PDO): T $callback
+     * @return T
+     * @throws Throwable
+     */
+    public function transaction(callable $callback): mixed
+    {
+        $this->beginTransaction();
+        try {
+            $result = $callback($this->connection);
+            $this->commit();
+            return $result;
+        } catch (Throwable $e) {
+            $this->rollBack();
+            throw $e;
+        }
     }
 }

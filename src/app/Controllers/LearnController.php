@@ -6,26 +6,25 @@ namespace App\Controllers;
 use App\Core\Controller;
 use App\Core\Authorize;
 use App\Core\Role;
-use App\Repositories\MaterialRepository;
+use App\Core\Request;
+use App\Core\Response;
+use App\Repositories\MaterialRepositoryInterface;
 
 #[Authorize(Role::USER, Role::ADMIN)]
 class LearnController extends Controller
 {
-    private MaterialRepository $materialRepo;
-
-    public function __construct()
-    {
-        $this->materialRepo = new MaterialRepository();
-    }
+    public function __construct(
+        private MaterialRepositoryInterface $materialRepo,
+        private Request $request
+    ) {}
 
     /**
-     * Display list of materials.
+     * Display list of materials grouped by category.
      */
-    public function index()
+    public function index(): Response
     {
         $materials = $this->materialRepo->getAll();
 
-        // Group materials by category for better display
         $groupedMaterials = [];
         foreach ($materials as $material) {
             $category = $material['category'];
@@ -35,36 +34,32 @@ class LearnController extends Controller
             $groupedMaterials[$category][] = $material;
         }
 
-        $this->view('learn/index', [
+        return $this->view('learn/index', [
             'title' => 'Belajar Materi | NetQuiz',
             'groupedMaterials' => $groupedMaterials
         ]);
     }
 
     /**
-     * View specific material details.
+     * View specific material details and related category articles.
      */
-    public function viewMaterial($id)
+    public function viewMaterial(string|int $id): Response
     {
         $id = (int)$id;
         $material = $this->materialRepo->getById($id);
 
         if (!$material) {
-            http_response_code(404);
-            $this->view('errors/404', [
+            return $this->view('errors/404', [
                 'title' => 'Materi Tidak Ditemukan | NetQuiz'
-            ]);
-            return;
+            ])->setStatusCode(404);
         }
 
-        // Get related materials in the same category
         $otherMaterials = $this->materialRepo->getByCategory($material['category']);
-        // Exclude the current material
-        $otherMaterials = array_filter($otherMaterials, function($m) use ($id) {
+        $otherMaterials = array_filter($otherMaterials, function ($m) use ($id) {
             return (int)$m['id'] !== $id;
         });
 
-        $this->view('learn/view', [
+        return $this->view('learn/view', [
             'title' => $material['title'] . ' | NetQuiz',
             'material' => $material,
             'otherMaterials' => $otherMaterials

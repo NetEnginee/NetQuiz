@@ -7,15 +7,26 @@ use PDO;
 use App\Core\Database;
 
 /**
- * UserRepository - Handles database operations for User entity securely.
+ * UserRepository - Secure User Database Access Implementation.
  */
-class UserRepository
+class UserRepository implements UserRepositoryInterface
 {
     private PDO $db;
 
-    public function __construct()
+    public function __construct(?Database $database = null)
     {
-        $this->db = Database::getInstance()->getConnection();
+        $this->db = ($database ?? Database::getInstance())->getConnection();
+    }
+
+    /**
+     * Find user by ID.
+     */
+    public function findById(int $id): ?array
+    {
+        $stmt = $this->db->prepare("SELECT id, username, email, status, created_at FROM users WHERE id = :id LIMIT 1");
+        $stmt->execute(['id' => $id]);
+        $user = $stmt->fetch();
+        return $user ?: null;
     }
 
     /**
@@ -30,18 +41,16 @@ class UserRepository
     }
 
     /**
-     * Find user by ID (excludes password details for security).
+     * Fetch all non-admin registered users.
      */
-    public function findById(int $id): ?array
+    public function getAllUsers(): array
     {
-        $stmt = $this->db->prepare("SELECT id, username, email, created_at FROM users WHERE id = :id LIMIT 1");
-        $stmt->execute(['id' => $id]);
-        $user = $stmt->fetch();
-        return $user ?: null;
+        $stmt = $this->db->query("SELECT id, username, email, status, created_at FROM users WHERE LOWER(TRIM(email)) != 'admin@routerosquiz.academy' ORDER BY id DESC");
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
     /**
-     * Check if email is registered.
+     * Check if email exists.
      */
     public function emailExists(string $email, ?int $excludeId = null): bool
     {
@@ -60,7 +69,7 @@ class UserRepository
     }
 
     /**
-     * Check if username is registered.
+     * Check if username exists.
      */
     public function usernameExists(string $username, ?int $excludeId = null): bool
     {
@@ -79,18 +88,16 @@ class UserRepository
     }
 
     /**
-     * Create a new user. Plaintext password is NEVER stored.
+     * Create new user with Argon2ID/Bcrypt hashed password.
      */
     public function create(string $username, string $email, string $password): int
     {
         $hashedPassword = password_hash($password, PASSWORD_ARGON2ID);
-        
-        // Fallback to BCRYPT if ARGON2ID is not supported in the PHP environment
         if ($hashedPassword === false || $hashedPassword === null) {
             $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
         }
 
-        $stmt = $this->db->prepare("INSERT INTO users (username, email, password) VALUES (:username, :email, :password)");
+        $stmt = $this->db->prepare("INSERT INTO users (username, email, password, status) VALUES (:username, :email, :password, 'Aktif')");
         $stmt->execute([
             'username' => $username,
             'email' => $email,
@@ -107,14 +114,14 @@ class UserRepository
     {
         $stmt = $this->db->prepare("UPDATE users SET username = :username, email = :email WHERE id = :id");
         return $stmt->execute([
+            'id' => $id,
             'username' => $username,
-            'email' => $email,
-            'id' => $id
+            'email' => $email
         ]);
     }
 
     /**
-     * Update user password. Plaintext password is NEVER stored.
+     * Update user password securely.
      */
     public function updatePassword(int $id, string $newPassword): bool
     {
@@ -125,40 +132,29 @@ class UserRepository
 
         $stmt = $this->db->prepare("UPDATE users SET password = :password WHERE id = :id");
         return $stmt->execute([
-            'password' => $hashedPassword,
-            'id' => $id
+            'id' => $id,
+            'password' => $hashedPassword
         ]);
     }
 
     /**
-     * Delete user account (Admin use only).
-     */
-    public function delete(int $id): bool
-    {
-        $stmt = $this->db->prepare("DELETE FROM users WHERE id = :id AND LOWER(TRIM(email)) != 'admin@routerosquiz.academy'");
-        return $stmt->execute(['id' => $id]);
-    }
-
-    /**
-     * Update user account status (Admin use only).
+     * Update user active / suspended status.
      */
     public function updateStatus(int $id, string $status): bool
     {
-        $allowed = ['Aktif', 'Pending', 'Nonaktif'];
-        if (!in_array($status, $allowed, true)) {
-            return false;
-        }
-        $stmt = $this->db->prepare("UPDATE users SET status = :status WHERE id = :id AND LOWER(TRIM(email)) != 'admin@routerosquiz.academy'");
-        return $stmt->execute(['status' => $status, 'id' => $id]);
+        $stmt = $this->db->prepare("UPDATE users SET status = :status WHERE id = :id");
+        return $stmt->execute([
+            'id' => $id,
+            'status' => $status
+        ]);
     }
 
     /**
-     * Fetch all users excluding the system administrator.
+     * Delete user and cascade relations.
      */
-    public function getAllUsers(): array
+    public function delete(int $id): bool
     {
-        $stmt = $this->db->prepare("SELECT id, username, email, status, created_at FROM users WHERE LOWER(TRIM(email)) != 'admin@routerosquiz.academy' ORDER BY id DESC");
-        $stmt->execute();
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $stmt = $this->db->prepare("DELETE FROM users WHERE id = :id");
+        return $stmt->execute(['id' => $id]);
     }
 }
