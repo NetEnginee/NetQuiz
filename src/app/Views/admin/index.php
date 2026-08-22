@@ -1,3 +1,15 @@
+<?php
+$title = $title ?? 'Admin Dashboard';
+$quizzes = $quizzes ?? [];
+$users_list = $users_list ?? [];
+$materials_list = $materials_list ?? [];
+$badges_list = $badges_list ?? [];
+$stats = $stats ?? [
+    'total_quizzes' => count($quizzes),
+    'total_users' => count($users_list),
+    'total_materials' => count($materials_list)
+];
+?>
 <!DOCTYPE html>
 <html lang="id">
 

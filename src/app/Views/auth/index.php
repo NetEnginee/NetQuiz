@@ -1,3 +1,7 @@
+<?php
+$title = $title ?? 'Masuk ke NetQuiz';
+$mode = $mode ?? 'login';
+?>
 <!DOCTYPE html>
 <html lang="id">
 

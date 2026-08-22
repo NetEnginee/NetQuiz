@@ -1,4 +1,13 @@
-<?php require_once dirname(__DIR__) . '/templates/header.php'; ?>
+<?php
+$user = $user ?? [
+    'id' => $_SESSION['user']['id'] ?? 0,
+    'username' => $_SESSION['user']['name'] ?? 'Pengguna',
+    'email' => $_SESSION['user']['email'] ?? '',
+    'created_at' => date('Y-m-d H:i:s')
+];
+require_once dirname(__DIR__) . '/templates/header.php';
+$allBadges = $allBadges ?? [];
+?>
 
 <!-- Custom Styles for Settings Page -->
 <link rel="stylesheet" href="<?= BASE_URL ?>/css/settings.css?v=<?= time() ?>">
@@ -202,7 +211,7 @@
                 foreach ($allBadges as $badge) {
                     if ($badge['unlocked']) {
                         $unlockedCount++;
-                        ?>
+                ?>
                         <div
                             style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 1rem; background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px;">
                             <div>
@@ -214,7 +223,7 @@
                             <span
                                 style="font-size: 0.7rem; font-weight: 700; color: #166534; background-color: #dcfce7; padding: 3px 10px; border-radius: 20px;">Terbuka</span>
                         </div>
-                        <?php
+                    <?php
                     }
                 }
 
@@ -224,7 +233,7 @@
                         style="text-align: center; padding: 2rem 1rem; color: #94a3b8; font-style: italic; font-size: 0.85rem;">
                         Belum ada lencana yang terbuka. Terus kerjakan kuis untuk mendapatkan lencana!
                     </div>
-                    <?php
+                <?php
                 }
                 ?>
             </div>

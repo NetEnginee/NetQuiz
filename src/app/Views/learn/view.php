@@ -1,4 +1,14 @@
-<?php require_once dirname(__DIR__) . '/templates/header.php'; ?>
+<?php
+$material = $material ?? [
+    'id' => 0,
+    'title' => 'Materi',
+    'category' => 'General',
+    'created_at' => date('Y-m-d H:i:s'),
+    'content' => ''
+];
+$otherMaterials = $otherMaterials ?? [];
+require_once dirname(__DIR__) . '/templates/header.php';
+?>
 
 <!-- Custom Styles for Learn Page -->
 <link rel="stylesheet" href="<?= BASE_URL ?>/css/learn.css?v=<?= time() ?>">
@@ -35,7 +45,7 @@
             <div class="material-body">
                 <?= $material['content'] ?>
             </div>
-            
+
             <!-- Action to go back -->
             <div style="margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center;">
                 <a href="<?= BASE_URL ?>/learn" style="text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem; font-size: 0.9rem; font-weight: 600; color: #64748b; font-family: 'Plus Jakarta Sans', sans-serif; transition: color 0.15s;" onmouseover="this.style.color='#7c3aed'" onmouseout="this.style.color='#64748b'">
@@ -48,7 +58,7 @@
         <aside class="material-sidebar">
             <div class="sidebar-card">
                 <h3 class="sidebar-title">Materi Terkait</h3>
-                
+
                 <?php if (empty($otherMaterials)): ?>
                     <p style="font-size: 0.85rem; color: #64748b; margin: 0;">Tidak ada materi lain dalam kategori ini.</p>
                 <?php else: ?>

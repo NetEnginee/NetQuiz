@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Controllers;
@@ -10,7 +11,6 @@ use App\Core\Request;
 use App\Core\Response;
 use App\Core\Security;
 use App\Repositories\QuizRepositoryInterface;
-use App\Repositories\QuestionRepositoryInterface;
 use App\Repositories\AttemptRepositoryInterface;
 use App\Repositories\BadgeRepositoryInterface;
 
@@ -19,7 +19,6 @@ class QuizController extends Controller
 {
     public function __construct(
         private QuizRepositoryInterface $quizRepo,
-        private QuestionRepositoryInterface $questionRepo,
         private AttemptRepositoryInterface $attemptRepo,
         private BadgeRepositoryInterface $badgeRepo,
         private Request $request

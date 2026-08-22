@@ -1,4 +1,11 @@
 <?php
+$quiz = $quiz ?? [
+    'id' => 0,
+    'title' => 'Kuis',
+    'duration' => 0,
+    'questions' => []
+];
+$pausedState = $pausedState ?? null;
 $durationSeconds = (isset($quiz['duration']) ? (int) $quiz['duration'] : 0) * 60;
 require_once dirname(__DIR__) . '/templates/header.php';
 ?>
@@ -378,12 +385,12 @@ require_once dirname(__DIR__) . '/templates/header.php';
 <!-- Expose PHP Variables securely to External JS -->
 <script>
     window.NetQuizData = <?= json_encode([
-        'quizId' => (int)$quiz['id'],
-        'userId' => (int)$_SESSION['user']['id'],
-        'durationSeconds' => $durationSeconds,
-        'timeLeft' => isset($pausedState['time_left']) && $pausedState['time_left'] > 0 ? (int)$pausedState['time_left'] : $durationSeconds,
-        'isResumed' => $pausedState !== null
-    ], JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) ?>;
+                                'quizId' => (int)($quiz['id'] ?? 0),
+                                'userId' => (int)($_SESSION['user']['id'] ?? 0),
+                                'durationSeconds' => $durationSeconds,
+                                'timeLeft' => isset($pausedState['time_left']) && $pausedState['time_left'] > 0 ? (int)$pausedState['time_left'] : $durationSeconds,
+                                'isResumed' => $pausedState !== null
+                            ], JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) ?>;
 </script>
 
 <!-- Load External Quiz Controller Script -->

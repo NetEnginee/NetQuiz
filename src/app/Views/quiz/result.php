@@ -1,4 +1,10 @@
-<?php require_once dirname(__DIR__) . '/templates/header.php'; ?>
+<?php
+$score = isset($score) ? (int) $score : 0;
+$correct = isset($correct) ? (int) $correct : 0;
+$total = isset($total) ? (int) $total : 0;
+$quiz = $quiz ?? null;
+require_once dirname(__DIR__) . '/templates/header.php';
+?>
 
 <!-- Custom Styles for Quiz -->
 <link rel="stylesheet" href="<?= BASE_URL ?>/css/quiz.css?v=<?= time() ?>">
@@ -47,9 +53,9 @@
                 Kembali ke Quiz
             </a>
             <?php if ($quiz): ?>
-                <?php 
-                $reviewUrl = method_exists('\App\Core\Security', 'encryptUrlId') 
-                    ? BASE_URL . '/quiz/review/' . \App\Core\Security::encryptUrlId($quiz['id']) 
+                <?php
+                $reviewUrl = method_exists('\App\Core\Security', 'encryptUrlId')
+                    ? BASE_URL . '/quiz/review/' . \App\Core\Security::encryptUrlId($quiz['id'])
                     : BASE_URL . '/quiz/review/' . $quiz['id'];
                 ?>
                 <a href="<?= $reviewUrl ?>" class="btn-primary" style="text-decoration: none;">
