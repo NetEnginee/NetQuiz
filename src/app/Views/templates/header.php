@@ -103,115 +103,23 @@ function isStudentNavActive(string $path, string $currentPath): bool {
         .student-nav-controls {
             display: flex;
             align-items: center;
-            position: relative;
+            gap: 0.65rem;
         }
 
-        /* Minimalist Circular Avatar Trigger */
-        .nav-avatar-btn {
-            width: 34px;
-            height: 34px;
+        .student-avatar-box {
+            width: 32px;
+            height: 32px;
             border-radius: 50%;
             background-color: #18181B;
             color: #FFFFFF;
             font-family: var(--font-heading);
-            font-size: 0.85rem;
+            font-size: 0.825rem;
             font-weight: 800;
             display: flex;
             align-items: center;
             justify-content: center;
             border: 2px solid #E5E7EB;
-            cursor: pointer;
-            transition: all 0.15s ease;
-            outline: none;
-            padding: 0;
-        }
-
-        .nav-avatar-btn:hover,
-        .nav-avatar-btn:focus-visible {
-            border-color: #18181B;
-            transform: scale(1.03);
-        }
-
-        /* Geist Avatar Popover Dropdown */
-        .avatar-popover-menu {
-            display: none;
-            position: absolute;
-            top: calc(100% + 8px);
-            right: 0;
-            width: 230px;
-            background: #FFFFFF;
-            border: 1px solid #E5E7EB;
-            border-radius: 8px;
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
-            padding: 0.4rem;
-            z-index: 1100;
-            flex-direction: column;
-            animation: fadeIn 0.12s ease-out;
-        }
-
-        .avatar-popover-menu.open {
-            display: flex;
-        }
-
-        .popover-header {
-            padding: 0.6rem 0.75rem;
-            display: flex;
-            flex-direction: column;
-            gap: 0.15rem;
-        }
-
-        .popover-user-name {
-            font-size: 0.875rem;
-            font-weight: 700;
-            color: #18181B;
-            font-family: var(--font-heading);
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-
-        .popover-user-email {
-            font-size: 0.75rem;
-            color: #71717A;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-
-        .popover-divider {
-            height: 1px;
-            background-color: #E5E7EB;
-            margin: 0.3rem 0;
-        }
-
-        .popover-item {
-            display: flex;
-            align-items: center;
-            gap: 0.6rem;
-            padding: 0.5rem 0.75rem;
-            font-size: 0.825rem;
-            font-weight: 500;
-            color: #18181B;
-            text-decoration: none;
-            border-radius: 6px;
-            transition: background-color 0.15s ease;
-        }
-
-        .popover-item:hover {
-            background-color: #F4F4F5;
-        }
-
-        .popover-item.danger {
-            color: #DC2626;
-        }
-
-        .popover-item.danger:hover {
-            background-color: #FEF2F2;
-        }
-
-        .popover-mobile-nav {
-            display: none;
-            flex-direction: column;
+            flex-shrink: 0;
         }
 
         .student-main-content {
@@ -229,11 +137,24 @@ function isStudentNavActive(string $path, string $currentPath): bool {
             width: 100%;
         }
 
-        @media (max-width: 768px) {
+        /* Floating Bottom Navigation for Mobile & Tablet */
+        .student-floating-bottom-nav {
+            display: none;
+            position: fixed;
+            bottom: max(16px, env(safe-area-inset-bottom, 16px));
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1000;
+            width: auto;
+            max-width: calc(100vw - 24px);
+            pointer-events: none;
+        }
+
+        @media (max-width: 1024px) {
             .student-nav-links {
                 display: none;
             }
-            .popover-mobile-nav {
+            .student-floating-bottom-nav {
                 display: flex;
             }
             .student-shell-container {
@@ -241,6 +162,7 @@ function isStudentNavActive(string $path, string $currentPath): bool {
             }
             .student-main-content {
                 padding-top: calc(var(--top-nav-height, 56px) + 1.25rem);
+                padding-bottom: 6.5rem;
             }
         }
     </style>
@@ -268,7 +190,7 @@ function isStudentNavActive(string $path, string $currentPath): bool {
                 </a>
             </div>
 
-            <!-- Center: Pure Text Navigation Links -->
+            <!-- Center: Pure Text Navigation Links (Desktop) -->
             <nav class="student-nav-links" aria-label="Menu Siswa">
                 <a href="<?= BASE_URL ?>/" class="student-nav-link <?= isStudentNavActive('/', $currentPath) ? 'active' : '' ?>">
                     Dashboard
@@ -284,99 +206,78 @@ function isStudentNavActive(string $path, string $currentPath): bool {
                 </a>
             </nav>
 
-            <!-- Right: Single Monochrome Avatar Popover -->
+            <!-- Right: Admin Panel, Avatar Badge, & Keluar Button -->
             <div class="student-nav-controls">
                 <?php if (isset($_SESSION['user'])): ?>
-                    <button type="button" class="nav-avatar-btn" id="btn-nav-avatar" aria-label="Menu Akun" aria-expanded="false" onclick="toggleNavAvatarPopover(event)">
+                    <?php if ($isAdmin): ?>
+                        <a href="<?= BASE_URL ?>/admin" class="btn-geist-nav-secondary nav-text-desktop" title="Admin Panel">
+                            <i data-lucide="shield" style="width: 14px; height: 14px;"></i>
+                            <span>Admin Panel</span>
+                        </a>
+                    <?php endif; ?>
+
+                    <div class="student-avatar-box" title="<?= htmlspecialchars($userName) ?>">
                         <?= $userInitial ?>
-                    </button>
-
-                    <!-- Avatar Popover Dropdown -->
-                    <div class="avatar-popover-menu" id="nav-avatar-popover" role="menu">
-                        <!-- User Info Header -->
-                        <div class="popover-header">
-                            <span class="popover-user-name"><?= htmlspecialchars($userName) ?></span>
-                            <span class="popover-user-email"><?= htmlspecialchars($userEmail) ?></span>
-                        </div>
-
-                        <!-- Mobile-only Navigation Links -->
-                        <div class="popover-mobile-nav">
-                            <div class="popover-divider"></div>
-                            <a href="<?= BASE_URL ?>/" class="popover-item" role="menuitem">
-                                <i data-lucide="layout-dashboard" style="width: 14px; height: 14px;"></i>
-                                <span>Dashboard</span>
-                            </a>
-                            <a href="<?= BASE_URL ?>/quiz" class="popover-item" role="menuitem">
-                                <i data-lucide="file-question" style="width: 14px; height: 14px;"></i>
-                                <span>Kuis</span>
-                            </a>
-                            <a href="<?= BASE_URL ?>/learn" class="popover-item" role="menuitem">
-                                <i data-lucide="book-open" style="width: 14px; height: 14px;"></i>
-                                <span>Materi</span>
-                            </a>
-                            <a href="<?= BASE_URL ?>/leaderboard" class="popover-item" role="menuitem">
-                                <i data-lucide="trophy" style="width: 14px; height: 14px;"></i>
-                                <span>Leaderboard</span>
-                            </a>
-                        </div>
-
-                        <div class="popover-divider"></div>
-
-                        <!-- Menu Actions -->
-                        <?php if ($isAdmin): ?>
-                            <a href="<?= BASE_URL ?>/admin" class="popover-item" role="menuitem">
-                                <i data-lucide="shield" style="width: 14px; height: 14px;"></i>
-                                <span>Admin Panel</span>
-                            </a>
-                        <?php endif; ?>
-
-                        <a href="<?= BASE_URL ?>/settings" class="popover-item" role="menuitem">
-                            <i data-lucide="settings" style="width: 14px; height: 14px;"></i>
-                            <span>Pengaturan Akun</span>
-                        </a>
-
-                        <div class="popover-divider"></div>
-
-                        <a href="<?= BASE_URL ?>/logout" class="popover-item danger" role="menuitem">
-                            <i data-lucide="log-out" style="width: 14px; height: 14px;"></i>
-                            <span>Keluar</span>
-                        </a>
                     </div>
+
+                    <div class="nav-context-divider" aria-hidden="true"></div>
+
+                    <a href="<?= BASE_URL ?>/logout" class="btn-geist-nav-danger" title="Keluar dari akun">
+                        <i data-lucide="log-out" style="width: 14px; height: 14px;"></i>
+                        <span class="nav-text-desktop">Keluar</span>
+                    </a>
                 <?php else: ?>
-                    <a href="<?= BASE_URL ?>/login" class="btn-primary-black" style="font-size: 0.8rem; padding: 0.4rem 0.85rem;">
-                        Masuk
+                    <a href="<?= BASE_URL ?>/login" class="btn-primary-black" style="font-size: 0.825rem; padding: 0.4rem 0.85rem;">
+                        <i data-lucide="log-in" style="width: 14px; height: 14px;"></i>
+                        <span>Masuk</span>
                     </a>
                 <?php endif; ?>
             </div>
         </div>
     </header>
 
-    <script>
-        function toggleNavAvatarPopover(event) {
-            event.stopPropagation();
-            const popover = document.getElementById('nav-avatar-popover');
-            const btn = document.getElementById('btn-nav-avatar');
-            if (popover && btn) {
-                const isOpen = popover.classList.contains('open');
-                popover.classList.toggle('open', !isOpen);
-                btn.setAttribute('aria-expanded', !isOpen ? 'true' : 'false');
-                if (window.lucide) window.lucide.createIcons();
-            }
-        }
+    <!-- 2. FLOATING BOTTOM NAVIGATION DOCK (MOBILE & TABLET EXCLUSIVE) -->
+    <nav class="student-floating-bottom-nav" aria-label="Navigasi Bawah">
+        <div class="floating-nav-container">
+            <!-- 1. Dashboard -->
+            <a href="<?= BASE_URL ?>/" class="floating-bottom-btn <?= isStudentNavActive('/', $currentPath) ? 'active' : '' ?>" title="Dashboard">
+                <span class="floating-btn-icon-wrapper">
+                    <i data-lucide="layout-dashboard" class="floating-btn-icon"></i>
+                </span>
+            </a>
 
-        // Close popover when clicking anywhere outside
-        document.addEventListener('click', function(e) {
-            const popover = document.getElementById('nav-avatar-popover');
-            const btn = document.getElementById('btn-nav-avatar');
-            if (popover && popover.classList.contains('open')) {
-                if (!popover.contains(e.target) && (!btn || !btn.contains(e.target))) {
-                    popover.classList.remove('open');
-                    if (btn) btn.setAttribute('aria-expanded', 'false');
-                }
-            }
-        });
-    </script>
+            <!-- 2. Kuis -->
+            <a href="<?= BASE_URL ?>/quiz" class="floating-bottom-btn <?= isStudentNavActive('/quiz', $currentPath) ? 'active' : '' ?>" title="Katalog Kuis">
+                <span class="floating-btn-icon-wrapper">
+                    <i data-lucide="file-question" class="floating-btn-icon"></i>
+                </span>
+            </a>
 
-    <!-- 2. MAIN APPLICATION CONTENT SHELL -->
+            <!-- 3. Materi Belajar -->
+            <a href="<?= BASE_URL ?>/learn" class="floating-bottom-btn <?= isStudentNavActive('/learn', $currentPath) ? 'active' : '' ?>" title="Materi Belajar">
+                <span class="floating-btn-icon-wrapper">
+                    <i data-lucide="book-open" class="floating-btn-icon"></i>
+                </span>
+            </a>
+
+            <!-- 4. Leaderboard -->
+            <a href="<?= BASE_URL ?>/leaderboard" class="floating-bottom-btn <?= isStudentNavActive('/leaderboard', $currentPath) ? 'active' : '' ?>" title="Leaderboard">
+                <span class="floating-btn-icon-wrapper">
+                    <i data-lucide="trophy" class="floating-btn-icon"></i>
+                </span>
+            </a>
+
+            <?php if ($isAdmin): ?>
+                <!-- 5. Admin Panel -->
+                <a href="<?= BASE_URL ?>/admin" class="floating-bottom-btn" title="Admin Panel">
+                    <span class="floating-btn-icon-wrapper">
+                        <i data-lucide="shield" class="floating-btn-icon"></i>
+                    </span>
+                </a>
+            <?php endif; ?>
+        </div>
+    </nav>
+
+    <!-- 3. MAIN APPLICATION CONTENT SHELL -->
     <main class="student-main-content">
         <div class="student-shell-container">
