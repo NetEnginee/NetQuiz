@@ -24,14 +24,7 @@ require_once dirname(__DIR__) . '/templates/header.php';
         ['label' => 'Siswa', 'url' => BASE_URL . '/'],
         ['label' => 'Dashboard']
     ]) ?>
-    <div style="display: flex; align-items: center; gap: 0.5rem;">
-        <a href="<?= BASE_URL ?>/quiz" class="btn-primary-black" style="font-size: 0.825rem; padding: 0.4rem 0.85rem;">
-            <span>Mulai Kuis</span>
-        </a>
-        <a href="<?= BASE_URL ?>/learn" class="btn-secondary-outline" style="font-size: 0.825rem; padding: 0.4rem 0.85rem;">
-            <span>Baca Materi</span>
-        </a>
-    </div>
+
 </div>
 
 <!-- 4 STAT BOXES (PURE TYPOGRAPHY, ZERO DECORATIVE ICONS) -->
