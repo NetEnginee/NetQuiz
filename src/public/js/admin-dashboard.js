@@ -151,13 +151,8 @@ document.addEventListener("DOMContentLoaded", () => {
         },
         "materials-section": {
           title: "Materi Belajar",
-          desc: "Kelola modul artikel materi pembelajaran MikroTik RouterOS.",
-          actionHtml: `<button type="button" class="btn-primary-black" id="btn-hdr-write-material" onclick="if(window.openMaterialForm) window.openMaterialForm();"><i data-lucide="plus" style="width: 15px; height: 15px;"></i> <span>+ Tulis Artikel Materi</span></button>`,
-        },
-        "badge-section": {
-          title: "Lencana",
-          desc: "Manajemen lencana prestasi dan metrik syarat kelulusan siswa.",
-          actionHtml: `<button type="button" class="btn-primary-black" id="btn-hdr-create-badge" onclick="if(window.openBadgeForm) window.openBadgeForm();"><i data-lucide="plus" style="width: 15px; height: 15px;"></i> <span>+ Buat Lencana Baru</span></button>`,
+          desc: "Kelola artikel materi pembelajaran MikroTik RouterOS.",
+          actionHtml: "",
         },
       };
 
