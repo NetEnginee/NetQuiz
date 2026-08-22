@@ -141,6 +141,7 @@ document.addEventListener("DOMContentLoaded", () => {
         },
         "member-section": {
           title: "Daftarkan Member",
+          desc: "Kelola registrasi dan penambahan anggota baru di platform NetQuiz.",
           desc: "Tambahkan anggota baru ke dalam sistem NetQuiz.",
           actionHtml: "",
         },

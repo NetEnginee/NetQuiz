@@ -1102,7 +1102,7 @@ function renderMemberSection() {
 
 // ==========================================================================
 // 5. MODUL 3: MANAJEMEN MEMBER (High-Density Data Table & Floating Bulk Bar)
-// ==========================================================================
+// ==============================================================================
 function renderManageMemberSection() {
   const sec = document.getElementById("manage-section");
   if (!sec) return;
