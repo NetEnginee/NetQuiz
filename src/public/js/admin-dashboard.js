@@ -161,9 +161,14 @@ document.addEventListener("DOMContentLoaded", () => {
         },
       };
 
+      const breadcrumbTitle = document.getElementById("breadcrumb-active-title");
+
       if (headerTitle && headerDesc && headerMeta[targetId]) {
         headerTitle.innerText = headerMeta[targetId].title;
         headerDesc.innerText = headerMeta[targetId].desc;
+        if (breadcrumbTitle) {
+          breadcrumbTitle.innerText = headerMeta[targetId].title;
+        }
         if (actionContainer) {
           actionContainer.innerHTML = headerMeta[targetId].actionHtml || "";
           if (window.lucide) window.lucide.createIcons();

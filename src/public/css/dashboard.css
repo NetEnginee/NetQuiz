@@ -593,6 +593,59 @@ body {
   margin: 0;
 }
 
+/* Breadcrumb Navigation */
+.admin-breadcrumb-nav {
+  margin-bottom: 0.5rem;
+}
+
+.admin-breadcrumb-list {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  font-family: var(--font-heading);
+  font-size: 0.775rem;
+  color: #71717a;
+}
+
+.breadcrumb-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.breadcrumb-link {
+  color: #71717a;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  transition: color var(--transition-fast);
+}
+
+.breadcrumb-link:hover {
+  color: #18181b;
+}
+
+.breadcrumb-icon {
+  width: 13px;
+  height: 13px;
+  stroke-width: 2;
+}
+
+.breadcrumb-separator {
+  color: #d1d5db;
+  font-size: 0.75rem;
+  user-select: none;
+}
+
+.breadcrumb-item.active {
+  color: #18181b;
+  font-weight: 600;
+}
+
 /* Page Header Structure Outside Main Panel */
 .admin-page-header {
   display: flex;

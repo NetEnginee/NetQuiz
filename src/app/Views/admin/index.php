@@ -141,9 +141,21 @@ $stats = $stats ?? [
         <!-- 3. UNIFIED CANVAS SHELL CONTAINER (MAX 1152px / max-w-6xl RATA KIRI) -->
         <main class="admin-main-canvas" id="admin-workspace">
             <div id="admin-canvas-shell" class="canvas-shell-container max-w-6xl">
-                <!-- Dynamic Page Header Bar (Title Left + Page Primary Action Button Right) -->
+                <!-- Dynamic Page Header Bar (Breadcrumb + Title Left + Action Right) -->
                 <div id="admin-page-header" class="admin-page-header">
                     <div class="page-header-text-group">
+                        <nav class="admin-breadcrumb-nav" aria-label="Breadcrumb">
+                            <ol class="admin-breadcrumb-list">
+                                <li class="breadcrumb-item">
+                                    <a href="<?= BASE_URL ?>/admin#quiz-section" class="breadcrumb-link">
+                                        <i data-lucide="layout-dashboard" class="breadcrumb-icon"></i>
+                                        <span>Dashboard</span>
+                                    </a>
+                                </li>
+                                <li class="breadcrumb-separator" aria-hidden="true">/</li>
+                                <li class="breadcrumb-item active" aria-current="page" id="breadcrumb-active-title">Buat Kuis</li>
+                            </ol>
+                        </nav>
                         <h1 id="page-header-title" class="admin-page-title">Buat Kuis</h1>
                         <p id="page-header-desc" class="admin-page-desc">Kelola dan buat kuis serta pertanyaan ujian MikroTik.</p>
                     </div>
