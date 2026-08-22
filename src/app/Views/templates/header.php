@@ -230,23 +230,30 @@ function renderBreadcrumb(array $items): string
             gap: 0.75rem;
         }
 
-        /* 3D Voxel Keycap Avatar Box with Emerald Status Indicator */
+        /* 3D Voxel Keycap Avatar Box (Electric Emerald Theme) */
         .student-avatar-box {
             position: relative;
             width: 33px;
             height: 33px;
-            background: linear-gradient(180deg, #27272A 0%, #18181B 100%);
-            color: #FFFFFF;
+            background: linear-gradient(180deg, #18181B 0%, #09090B 100%);
+            color: #4ADE80;
             font-size: 0.85rem;
             font-weight: 800;
             display: flex;
             align-items: center;
             justify-content: center;
             border-radius: 6px;
-            border: 1.5px solid #000000;
-            box-shadow: 0 2.5px 0 #000000, 0 4px 6px rgba(0, 0, 0, 0.12);
+            border: 1.5px solid #22C55E;
+            box-shadow: 0 2.5px 0 #15803D, 0 4px 10px rgba(34, 197, 94, 0.22);
             flex-shrink: 0;
             user-select: none;
+            cursor: default;
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+        }
+
+        .student-avatar-box:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 3.5px 0 #15803D, 0 6px 14px rgba(34, 197, 94, 0.35);
         }
 
         .student-avatar-box::after {
@@ -257,21 +264,24 @@ function renderBreadcrumb(array $items): string
             width: 7px;
             height: 7px;
             background-color: #22C55E;
-            box-shadow: 0 0 6px #22C55E;
+            box-shadow: 0 0 8px #22C55E, 0 0 12px rgba(34, 197, 94, 0.6);
             border-radius: 2px;
             border: 1px solid #18181B;
         }
 
-        /* 3D Tactile Buttons */
+        /* 3D Tactile Buttons (Electric Emerald Accented) */
         .btn-geist-nav-secondary {
             border-radius: 6px !important;
             border: 1.5px solid #18181B !important;
             box-shadow: 0 2.5px 0 #18181B !important;
+            transition: color 0.15s ease, background-color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
         }
 
         .btn-geist-nav-secondary:hover {
-            background-color: #F4F4F5;
-            color: #18181B;
+            color: #15803D !important;
+            background-color: #F0FDF4 !important;
+            border-color: #22C55E !important;
+            box-shadow: 0 2.5px 0 #15803D, 0 4px 12px rgba(34, 197, 94, 0.25) !important;
         }
 
         .btn-geist-nav-secondary:active {
@@ -283,6 +293,14 @@ function renderBreadcrumb(array $items): string
             border-radius: 6px !important;
             border: 1.5px solid #18181B !important;
             box-shadow: 0 2.5px 0 #18181B !important;
+            transition: color 0.15s ease, background-color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+        }
+
+        .btn-geist-nav-danger:hover {
+            color: #15803D !important;
+            background-color: #F0FDF4 !important;
+            border-color: #22C55E !important;
+            box-shadow: 0 2.5px 0 #15803D, 0 4px 12px rgba(34, 197, 94, 0.25) !important;
         }
 
         .btn-geist-nav-danger:active {
