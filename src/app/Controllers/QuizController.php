@@ -53,16 +53,6 @@ class QuizController extends Controller
         }
 
         $userId = (int)($_SESSION['user']['id'] ?? 0);
-        $isAdmin = Security::getCurrentRole() === Role::ADMIN;
-
-        // Check if finished (unless admin previewing)
-        if (!$isAdmin) {
-            $finished = $this->attemptRepo->getFinishedAttempt($userId, $id);
-            if ($finished) {
-                $_SESSION['quiz_error'] = 'Anda sudah pernah menyelesaikan kuis ini.';
-                return $this->redirect(BASE_URL . '/quiz');
-            }
-        }
 
         // Check for active paused state
         $pausedState = null;
@@ -125,13 +115,13 @@ class QuizController extends Controller
         $userId = (int)($_SESSION['user']['id'] ?? 0);
         $answers = (array)$this->request->post('answers', []);
 
-        $questions = $quiz['questions'];
+        $questions = $quiz['questions'] ?? [];
         $totalQuestions = count($questions);
         $correctCount = 0;
 
         foreach ($questions as $index => $q) {
             $userAns = (string)($answers[$index] ?? '');
-            if (strtoupper($userAns) === strtoupper($q['correct'])) {
+            if ($userAns !== '' && strtoupper($userAns) === strtoupper($q['correct'])) {
                 $correctCount++;
             }
         }
@@ -141,7 +131,7 @@ class QuizController extends Controller
         // Record attempt atomically in database
         $attemptId = $this->attemptRepo->recordFinishedAttempt($userId, $id, $quiz['category'], $score, $answers);
 
-        return $this->redirect(BASE_URL . "/quiz/result/{$attemptId}?score={$score}&correct={$correctCount}&total={$totalQuestions}&quiz_id={$id}");
+        return $this->redirect(BASE_URL . "/quiz/result/{$attemptId}");
     }
 
     /**
@@ -158,19 +148,33 @@ class QuizController extends Controller
             return $this->redirect(BASE_URL . '/quiz');
         }
 
-        $quizId = (int)($this->request->query('quiz_id') ?? $attempt['quiz_id']);
-        $quiz = $this->quizRepo->getById($quizId);
+        $quizId = (int)$attempt['quiz_id'];
+        $quiz = $this->quizRepo->getWithQuestions($quizId);
+        if (!$quiz) {
+            return $this->redirect(BASE_URL . '/quiz');
+        }
 
-        $score = (int)($this->request->query('score') ?? $attempt['score']);
-        $correct = (int)$this->request->query('correct', 0);
-        $total = (int)$this->request->query('total', 0);
+        $userAnswers = json_decode($attempt['user_answers'] ?? '[]', true) ?: [];
+        $questions = $quiz['questions'] ?? [];
+        $total = count($questions);
+        $correct = 0;
+
+        foreach ($questions as $index => $q) {
+            $uAns = (string)($userAnswers[$index] ?? '');
+            if ($uAns !== '' && strtoupper($uAns) === strtoupper($q['correct'])) {
+                $correct++;
+            }
+        }
+
+        $score = (int)$attempt['score'];
 
         return $this->view('quiz/result', [
             'title' => 'Hasil Kuis | NetQuiz',
             'score' => $score,
             'correct' => $correct,
             'total' => $total,
-            'quiz' => $quiz
+            'quiz' => $quiz,
+            'attempt' => $attempt
         ]);
     }
 
@@ -194,14 +198,15 @@ class QuizController extends Controller
             return $this->redirect(BASE_URL . '/quiz');
         }
 
-        $userAnswers = $attempt ? (json_decode($attempt['user_answers'] ?? '{}', true) ?: []) : [];
+        $userAnswers = $attempt ? (json_decode($attempt['user_answers'] ?? '[]', true) ?: []) : [];
         $score = $attempt ? (int)$attempt['score'] : 0;
 
         return $this->view('quiz/review', [
             'title' => 'Review Jawaban - ' . $quiz['title'] . ' | NetQuiz',
             'quiz' => $quiz,
             'userAnswers' => $userAnswers,
-            'score' => $score
+            'score' => $score,
+            'attempt' => $attempt
         ]);
     }
 }
