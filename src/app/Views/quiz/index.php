@@ -64,7 +64,7 @@ require_once dirname(__DIR__) . '/templates/header.php';
                     </div>
 
                     <!-- Quizzes Grid -->
-                    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.25rem;">
+                    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 290px), 1fr)); gap: 1.25rem;">
                         <?php foreach ($quizzes as $q): ?>
                             <?php
                             $isFinished = !empty($q['is_completed']) || !empty($q['completed']);
