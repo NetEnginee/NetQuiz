@@ -468,17 +468,11 @@ function renderQuizSection() {
 
                 <!-- Toolbar & Search -->
                 <div class="panel-toolbar">
-                    <div class="panel-toolbar-left">
-                        <div class="search-input-wrapper">
+                    <div class="panel-toolbar-left" style="width: 100%;">
+                        <div class="search-input-wrapper" style="max-width: 360px;">
                             <input type="text" id="quiz-search-input" class="panel-search-input" placeholder="Cari judul atau kategori kuis...">
                             <span class="search-shortcut-badge" title="Tekan '/' untuk mencari">/</span>
                         </div>
-                    </div>
-                    <div class="panel-toolbar-right">
-                        <button type="button" class="btn-primary-black" onclick="window.switchQuizView('create')" style="font-size: 0.8rem; padding: 0.45rem 0.9rem; display: inline-flex; align-items: center; gap: 0.35rem;">
-                            <i data-lucide="plus" style="width: 14px; height: 14px;"></i>
-                            <span>Buat Kuis Baru</span>
-                        </button>
                     </div>
                 </div>
 
