@@ -161,7 +161,9 @@ document.addEventListener("DOMContentLoaded", () => {
         },
       };
 
-      const breadcrumbTitle = document.getElementById("breadcrumb-active-title");
+      const breadcrumbTitle = document.getElementById(
+        "breadcrumb-active-title",
+      );
 
       if (headerTitle && headerDesc && headerMeta[targetId]) {
         headerTitle.innerText = headerMeta[targetId].title;
