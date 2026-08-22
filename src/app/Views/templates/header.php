@@ -5,6 +5,7 @@ $userEmail = $_SESSION['user']['email'] ?? '';
 $userInitial = strtoupper(substr(htmlspecialchars($userName), 0, 1));
 $currentUri = $_SERVER['REQUEST_URI'] ?? '/';
 $currentPath = parse_url($currentUri, PHP_URL_PATH) ?? '/';
+$isQuizPlay = (bool)preg_match('#^/quiz/[0-9]+/play#', $currentPath) || str_contains($currentPath, '/play');
 
 // Active tab helper
 function isStudentNavActive(string $path, string $currentPath): bool
@@ -290,7 +291,7 @@ function renderBreadcrumb(array $items): string
     </style>
 </head>
 
-<body>
+<body class="<?= $isQuizPlay ? 'quiz-play-mode' : '' ?>">
     <!-- CAD Blueprint Canvas Ornaments -->
     <div class="bg-ornament-grid" aria-hidden="true"></div>
     <div class="bg-ornament-major-grid" aria-hidden="true"></div>

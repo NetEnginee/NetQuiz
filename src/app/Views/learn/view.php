@@ -47,37 +47,44 @@ require_once dirname(__DIR__) . '/templates/header.php';
         </h1>
 
         <!-- Article Content Styled for Clean High Readability -->
-        <div class="material-content-body" style="font-size: 0.95rem; line-height: 1.7; color: #27272A;">
+        <div class="material-content-body" style="font-size: 1rem; line-height: 1.75; color: #18181B; text-rendering: optimizeLegibility; -webkit-font-smoothing: antialiased;">
             <style>
                 .material-content-body h2 {
-                    font-size: 1.25rem;
+                    font-size: 1.35rem;
                     font-weight: 800;
-                    color: #18181B;
-                    margin: 1.75rem 0 0.65rem 0;
+                    color: #09090B;
+                    margin: 2rem 0 0.75rem 0;
+                    letter-spacing: -0.02em;
+                    line-height: 1.3;
                 }
 
                 .material-content-body h3 {
-                    font-size: 1.1rem;
+                    font-size: 1.15rem;
                     font-weight: 700;
-                    color: #18181B;
-                    margin: 1.5rem 0 0.5rem 0;
+                    color: #09090B;
+                    margin: 1.75rem 0 0.5rem 0;
+                    letter-spacing: -0.015em;
                 }
 
                 .material-content-body p {
-                    margin-bottom: 1.15rem;
-                    color: #3F3F46;
+                    margin-bottom: 1.25rem;
+                    color: #27272A;
+                    font-size: 0.975rem;
+                    line-height: 1.75;
                 }
 
                 .material-content-body pre {
-                    background: #18181B;
+                    background: #09090B;
                     color: #38BDF8;
-                    padding: 1rem 1.25rem;
+                    padding: 1.15rem 1.35rem;
                     border-radius: 8px;
                     font-family: var(--font-mono);
-                    font-size: 0.85rem;
+                    font-size: 0.875rem;
+                    line-height: 1.6;
                     overflow-x: auto;
-                    margin: 1.25rem 0;
+                    margin: 1.5rem 0;
                     border: 1px solid #27272A;
+                    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
                 }
 
                 .material-content-body code {
@@ -85,29 +92,33 @@ require_once dirname(__DIR__) . '/templates/header.php';
                     font-size: 0.875em;
                 }
 
-                .material-content-body p code {
+                .material-content-body p code,
+                .material-content-body li code {
                     background: #F4F4F5;
-                    color: #18181B;
+                    color: #09090B;
                     padding: 2px 6px;
                     border-radius: 4px;
-                    border: 1px solid #E5E7EB;
+                    border: 1px solid #E4E4E7;
+                    font-weight: 600;
                 }
 
                 .material-content-body ul,
                 .material-content-body ol {
                     margin: 0.75rem 0 1.25rem 1.5rem;
-                    color: #3F3F46;
+                    color: #27272A;
+                    font-size: 0.975rem;
+                    line-height: 1.7;
                 }
 
                 .material-content-body li {
-                    margin-bottom: 0.4rem;
+                    margin-bottom: 0.45rem;
                 }
             </style>
             <?= $material['content'] ?>
         </div>
 
         <div style="margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid #E5E7EB; display: flex; align-items: center; justify-content: space-between;">
-            <a href="<?= BASE_URL ?>/learn" class="btn-secondary-outline" style="font-size: 0.85rem; padding: 0.45rem 0.85rem;">
+            <a href="<?= BASE_URL ?>/learn" class="btn-secondary-outline" style="font-size: 0.85rem; padding: 0.45rem 0.85rem; text-decoration: none;">
                 <i data-lucide="arrow-left" style="width: 14px; height: 14px;"></i>
                 <span>Kembali ke Katalog Materi</span>
             </a>

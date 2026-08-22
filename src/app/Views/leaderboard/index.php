@@ -36,42 +36,6 @@ require_once dirname(__DIR__) . '/templates/header.php';
     </a>
 </div>
 
-<!-- CURRENT USER POSITION CARD -->
-<?php if ($currentUserStats): ?>
-    <div class="supabase-panel-card" style="padding: 1.25rem 1.5rem; margin-bottom: 1.5rem; background-color: #18181B; color: #FFFFFF;">
-        <span class="corner-crosshair corner-tl">+</span>
-        <span class="corner-crosshair corner-tr">+</span>
-        <span class="corner-crosshair corner-bl">+</span>
-        <span class="corner-crosshair corner-br">+</span>
-
-        <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;">
-            <div style="display: flex; align-items: center; gap: 1rem;">
-                <div style="width: 44px; height: 44px; border-radius: 8px; background-color: #27272A; border: 1px solid #3F3F46; display: flex; align-items: center; justify-content: center; font-size: 1.25rem; font-weight: 800; font-family: var(--font-mono); color: #38BDF8;">
-                    #<?= $currentUserRank > 0 ? (int)$currentUserRank : '-' ?>
-                </div>
-                <div>
-                    <span style="font-size: 0.75rem; color: #A1A1AA; text-transform: uppercase; letter-spacing: 0.05em; display: block; font-weight: 600;">Posisi Peringkat Anda</span>
-                    <h3 style="font-family: var(--font-heading); font-size: 1.05rem; font-weight: 800; color: #FFFFFF; margin: 0;">
-                        <?= htmlspecialchars($_SESSION['user']['name'] ?? 'Anda') ?>
-                    </h3>
-                </div>
-            </div>
-
-            <div style="display: flex; align-items: center; gap: 1.5rem;" class="font-mono">
-                <div>
-                    <span style="font-size: 0.75rem; color: #A1A1AA; display: block;">Kuis Selesai</span>
-                    <span style="font-size: 1.1rem; font-weight: 800; color: #FFFFFF;"><?= (int)($currentUserStats['completed_quizzes'] ?? 0) ?></span>
-                </div>
-                <div style="width: 1px; height: 28px; background-color: #3F3F46;"></div>
-                <div>
-                    <span style="font-size: 0.75rem; color: #A1A1AA; display: block;">Total Skor</span>
-                    <span style="font-size: 1.1rem; font-weight: 800; color: #38BDF8;"><?= number_format((int)($currentUserStats['total_score'] ?? 0)) ?> Pts</span>
-                </div>
-            </div>
-        </div>
-    </div>
-<?php endif; ?>
-
 <!-- TOP 10 RANKINGS TABLE CARD -->
 <div class="supabase-panel-card" style="padding: 0; overflow: hidden;">
     <span class="corner-crosshair corner-tl">+</span>
@@ -110,11 +74,11 @@ require_once dirname(__DIR__) . '/templates/header.php';
                         <tr style="border-bottom: 1px solid #E5E7EB; background-color: <?= $isCurrent ? '#F4F4F5' : '#FFFFFF' ?>;">
                             <td style="padding: 1rem 1.5rem;">
                                 <?php if ($rankNum === 1): ?>
-                                    <span style="display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 6px; background-color: #FEF08A; color: #854D0E; font-weight: 800; font-family: var(--font-mono); font-size: 0.8rem;">🥇 1</span>
+                                    <span style="display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 6px; background-color: #FEF08A; color: #854D0E; font-weight: 800; font-family: var(--font-mono); font-size: 0.8rem;">1</span>
                                 <?php elseif ($rankNum === 2): ?>
-                                    <span style="display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 6px; background-color: #E2E8F0; color: #334155; font-weight: 800; font-family: var(--font-mono); font-size: 0.8rem;">🥈 2</span>
+                                    <span style="display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 6px; background-color: #E2E8F0; color: #334155; font-weight: 800; font-family: var(--font-mono); font-size: 0.8rem;">2</span>
                                 <?php elseif ($rankNum === 3): ?>
-                                    <span style="display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 6px; background-color: #FFEDD5; color: #9A3412; font-weight: 800; font-family: var(--font-mono); font-size: 0.8rem;">🥉 3</span>
+                                    <span style="display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 6px; background-color: #FFEDD5; color: #9A3412; font-weight: 800; font-family: var(--font-mono); font-size: 0.8rem;">3</span>
                                 <?php else: ?>
                                     <span class="font-mono" style="font-size: 0.85rem; font-weight: 700; color: #71717A; padding-left: 0.4rem;">#<?= $rankNum ?></span>
                                 <?php endif; ?>
