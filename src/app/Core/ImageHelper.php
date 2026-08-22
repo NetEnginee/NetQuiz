@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Core;
@@ -26,6 +27,7 @@ class ImageHelper
      * @param int $quality WebP compression quality (1-100)
      * @return string|false Relative file path on success, false on failure
      */
+
     public static function uploadAndConvertToWebP(array $file, string $targetDir, int $quality = 80): string|false
     {
         if (!isset($file['error']) || $file['error'] !== UPLOAD_ERR_OK) {

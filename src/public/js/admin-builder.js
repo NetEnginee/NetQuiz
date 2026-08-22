@@ -8,24 +8,24 @@
 // ==========================================================================
 
 /** Global non-blocking floating toast notification */
-window.showGeistToast = function(type, title, message, duration = 3500) {
-    const toaster = document.getElementById('geist-toaster');
-    if (!toaster) return;
+window.showGeistToast = function (type, title, message, duration = 3500) {
+  const toaster = document.getElementById("geist-toaster");
+  if (!toaster) return;
 
-    const toast = document.createElement('div');
-    toast.className = `geist-toast toast-${type}`;
-    
-    let iconName = 'check-circle';
-    if (type === 'error') iconName = 'alert-circle';
-    else if (type === 'info') iconName = 'info';
+  const toast = document.createElement("div");
+  toast.className = `geist-toast toast-${type}`;
 
-    toast.innerHTML = `
+  let iconName = "check-circle";
+  if (type === "error") iconName = "alert-circle";
+  else if (type === "info") iconName = "info";
+
+  toast.innerHTML = `
         <div class="toast-icon-wrapper">
             <i data-lucide="${iconName}" style="width: 15px; height: 15px;"></i>
         </div>
         <div class="toast-body">
             <div class="toast-title">${escapeHtml(title)}</div>
-            ${message ? `<div class="toast-message">${escapeHtml(message)}</div>` : ''}
+            ${message ? `<div class="toast-message">${escapeHtml(message)}</div>` : ""}
         </div>
         <button type="button" class="toast-close-btn" title="Tutup">
             <i data-lucide="x" style="width: 14px; height: 14px;"></i>
@@ -33,292 +33,325 @@ window.showGeistToast = function(type, title, message, duration = 3500) {
         <div class="toast-progress-bar" style="animation-duration: ${duration}ms;"></div>
     `;
 
-    toaster.appendChild(toast);
-    if (window.lucide) window.lucide.createIcons();
+  toaster.appendChild(toast);
+  if (window.lucide) window.lucide.createIcons();
 
-    let dismissTimeout;
-    const dismiss = () => {
-        if (toast.classList.contains('hiding')) return;
-        toast.classList.add('hiding');
-        setTimeout(() => toast.remove(), 220);
-    };
+  let dismissTimeout;
+  const dismiss = () => {
+    if (toast.classList.contains("hiding")) return;
+    toast.classList.add("hiding");
+    setTimeout(() => toast.remove(), 220);
+  };
 
-    dismissTimeout = setTimeout(dismiss, duration);
+  dismissTimeout = setTimeout(dismiss, duration);
 
-    const closeBtn = toast.querySelector('.toast-close-btn');
-    if (closeBtn) {
-        closeBtn.addEventListener('click', () => {
-            clearTimeout(dismissTimeout);
-            dismiss();
-        });
-    }
+  const closeBtn = toast.querySelector(".toast-close-btn");
+  if (closeBtn) {
+    closeBtn.addEventListener("click", () => {
+      clearTimeout(dismissTimeout);
+      dismiss();
+    });
+  }
 };
 
 /** Global custom confirmation modal dialog with focus trap & scroll lock */
-window.showGeistConfirm = function(title, message, confirmText, onConfirm, isDanger = true) {
-    const overlay = document.getElementById('geist-confirm-overlay');
-    const titleEl = document.getElementById('confirm-modal-title');
-    const msgEl = document.getElementById('confirm-modal-message');
-    const cancelBtn = document.getElementById('btn-confirm-cancel');
-    const submitBtn = document.getElementById('btn-confirm-submit');
-    const iconContainer = document.getElementById('confirm-icon-container');
+window.showGeistConfirm = function (
+  title,
+  message,
+  confirmText,
+  onConfirm,
+  isDanger = true,
+) {
+  const overlay = document.getElementById("geist-confirm-overlay");
+  const titleEl = document.getElementById("confirm-modal-title");
+  const msgEl = document.getElementById("confirm-modal-message");
+  const cancelBtn = document.getElementById("btn-confirm-cancel");
+  const submitBtn = document.getElementById("btn-confirm-submit");
+  const iconContainer = document.getElementById("confirm-icon-container");
 
-    if (!overlay || !submitBtn) {
-        if (confirm(message)) onConfirm();
-        return;
+  if (!overlay || !submitBtn) {
+    if (confirm(message)) onConfirm();
+    return;
+  }
+
+  if (titleEl) titleEl.textContent = title;
+  if (msgEl) msgEl.textContent = message;
+  if (submitBtn) {
+    submitBtn.textContent = confirmText || "Lanjutkan";
+    submitBtn.className = isDanger ? "btn-confirm-danger" : "btn-primary-black";
+  }
+  if (iconContainer) {
+    iconContainer.className = isDanger
+      ? "confirm-icon-box confirm-icon-danger"
+      : "confirm-icon-box confirm-icon-info";
+  }
+
+  // Lock body scroll
+  document.body.style.overflow = "hidden";
+  overlay.classList.add("active");
+
+  if (cancelBtn) cancelBtn.focus();
+
+  const handleConfirm = () => {
+    cleanup();
+    if (typeof onConfirm === "function") onConfirm();
+  };
+
+  const handleCancel = () => {
+    cleanup();
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === "Escape") {
+      cleanup();
+    } else if (e.key === "Tab") {
+      // Focus trap between Cancel and Submit
+      const focusables = [cancelBtn, submitBtn];
+      const first = focusables[0];
+      const last = focusables[1];
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
     }
+  };
 
-    if (titleEl) titleEl.textContent = title;
-    if (msgEl) msgEl.textContent = message;
-    if (submitBtn) {
-        submitBtn.textContent = confirmText || 'Lanjutkan';
-        submitBtn.className = isDanger ? 'btn-confirm-danger' : 'btn-primary-black';
-    }
-    if (iconContainer) {
-        iconContainer.className = isDanger ? 'confirm-icon-box confirm-icon-danger' : 'confirm-icon-box confirm-icon-info';
-    }
+  function cleanup() {
+    overlay.classList.remove("active");
+    document.body.style.overflow = "";
+    submitBtn.removeEventListener("click", handleConfirm);
+    cancelBtn.removeEventListener("click", handleCancel);
+    document.removeEventListener("keydown", handleKeyDown);
+  }
 
-    // Lock body scroll
-    document.body.style.overflow = 'hidden';
-    overlay.classList.add('active');
-
-    if (cancelBtn) cancelBtn.focus();
-
-    const handleConfirm = () => {
-        cleanup();
-        if (typeof onConfirm === 'function') onConfirm();
-    };
-
-    const handleCancel = () => {
-        cleanup();
-    };
-
-    const handleKeyDown = (e) => {
-        if (e.key === 'Escape') {
-            cleanup();
-        } else if (e.key === 'Tab') {
-            // Focus trap between Cancel and Submit
-            const focusables = [cancelBtn, submitBtn];
-            const first = focusables[0];
-            const last = focusables[1];
-            if (e.shiftKey && document.activeElement === first) {
-                e.preventDefault();
-                last.focus();
-            } else if (!e.shiftKey && document.activeElement === last) {
-                e.preventDefault();
-                first.focus();
-            }
-        }
-    };
-
-    function cleanup() {
-        overlay.classList.remove('active');
-        document.body.style.overflow = '';
-        submitBtn.removeEventListener('click', handleConfirm);
-        cancelBtn.removeEventListener('click', handleCancel);
-        document.removeEventListener('keydown', handleKeyDown);
-    }
-
-    submitBtn.addEventListener('click', handleConfirm);
-    cancelBtn.addEventListener('click', handleCancel);
-    document.addEventListener('keydown', handleKeyDown);
+  submitBtn.addEventListener("click", handleConfirm);
+  cancelBtn.addEventListener("click", handleCancel);
+  document.addEventListener("keydown", handleKeyDown);
 };
 
-/** Update sidebar live counter badges */
-window.updateSidebarCounters = function() {
-    const quizzesCount = Array.isArray(window.NETQUIZ_QUIZZES) ? window.NETQUIZ_QUIZZES.length : 0;
-    const membersCount = Array.isArray(window.NETQUIZ_MEMBERS) ? window.NETQUIZ_MEMBERS.length : 0;
-    const materialsCount = Array.isArray(window.NETQUIZ_MATERIALS) ? window.NETQUIZ_MATERIALS.length : 0;
-    const badgesCount = Array.isArray(window.NETQUIZ_BADGES) ? window.NETQUIZ_BADGES.length : 0;
+/** Update sidebar & floating nav live counter badges */
+window.updateSidebarCounters = function () {
+  const quizzesCount = Array.isArray(window.NETQUIZ_QUIZZES)
+    ? window.NETQUIZ_QUIZZES.length
+    : 0;
+  const membersCount = Array.isArray(window.NETQUIZ_MEMBERS)
+    ? window.NETQUIZ_MEMBERS.length
+    : 0;
+  const materialsCount = Array.isArray(window.NETQUIZ_MATERIALS)
+    ? window.NETQUIZ_MATERIALS.length
+    : 0;
+  const badgesCount = Array.isArray(window.NETQUIZ_BADGES)
+    ? window.NETQUIZ_BADGES.length
+    : 0;
 
-    const elQ = document.getElementById('sidebar-count-quizzes');
-    const elM = document.getElementById('sidebar-count-members');
-    const elMat = document.getElementById('sidebar-count-materials');
-    const elB = document.getElementById('sidebar-count-badges');
+  const elQ = document.querySelectorAll(
+    "#sidebar-count-quizzes, #floating-count-quizzes",
+  );
+  const elM = document.querySelectorAll(
+    "#sidebar-count-members, #floating-count-members",
+  );
+  const elMat = document.querySelectorAll(
+    "#sidebar-count-materials, #floating-count-materials",
+  );
+  const elB = document.querySelectorAll(
+    "#sidebar-count-badges, #floating-count-badges",
+  );
 
-    if (elQ) elQ.textContent = quizzesCount;
-    if (elM) elM.textContent = membersCount;
-    if (elMat) elMat.textContent = materialsCount;
-    if (elB) elB.textContent = badgesCount;
+  elQ.forEach((el) => (el.textContent = quizzesCount));
+  elM.forEach((el) => (el.textContent = membersCount));
+  elMat.forEach((el) => (el.textContent = materialsCount));
+  elB.forEach((el) => (el.textContent = badgesCount));
 };
 
 /** Helper to bind show/hide password eye buttons */
-window.bindPasswordToggles = function() {
-    const toggleBtns = document.querySelectorAll('.btn-toggle-password');
-    toggleBtns.forEach(btn => {
-        if (btn.getAttribute('data-bound')) return;
-        btn.setAttribute('data-bound', 'true');
+window.bindPasswordToggles = function () {
+  const toggleBtns = document.querySelectorAll(".btn-toggle-password");
+  toggleBtns.forEach((btn) => {
+    if (btn.getAttribute("data-bound")) return;
+    btn.setAttribute("data-bound", "true");
 
-        btn.addEventListener('click', function() {
-            const targetId = this.getAttribute('data-target');
-            const input = document.getElementById(targetId);
-            if (!input) return;
+    btn.addEventListener("click", function () {
+      const targetId = this.getAttribute("data-target");
+      const input = document.getElementById(targetId);
+      if (!input) return;
 
-            if (input.type === 'password') {
-                input.type = 'text';
-                this.innerHTML = '<i data-lucide="eye-off" style="width: 15px; height: 15px;"></i>';
-                this.title = 'Sembunyikan Kata Sandi';
-            } else {
-                input.type = 'password';
-                this.innerHTML = '<i data-lucide="eye" style="width: 15px; height: 15px;"></i>';
-                this.title = 'Lihat Kata Sandi';
-            }
-            if (window.lucide) window.lucide.createIcons();
-        });
+      if (input.type === "password") {
+        input.type = "text";
+        this.innerHTML =
+          '<i data-lucide="eye-off" style="width: 15px; height: 15px;"></i>';
+        this.title = "Sembunyikan Kata Sandi";
+      } else {
+        input.type = "password";
+        this.innerHTML =
+          '<i data-lucide="eye" style="width: 15px; height: 15px;"></i>';
+        this.title = "Lihat Kata Sandi";
+      }
+      if (window.lucide) window.lucide.createIcons();
     });
+  });
 };
 
 //** Global Helper to Open and Close Quiz Studio */
-window.openQuizStudio = function() {
-    const container = document.getElementById('quiz-builder-container');
-    if (container) {
-        container.style.display = 'block';
-        const titleInput = document.getElementById('quiz-input-title');
-        if (titleInput) titleInput.focus();
-        container.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
+window.openQuizStudio = function () {
+  const container = document.getElementById("quiz-builder-container");
+  if (container) {
+    container.style.display = "block";
+    const titleInput = document.getElementById("quiz-input-title");
+    if (titleInput) titleInput.focus();
+    container.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
 };
 
-window.closeQuizStudio = function() {
-    const container = document.getElementById('quiz-builder-container');
-    if (container) {
-        container.style.display = 'none';
-    }
+window.closeQuizStudio = function () {
+  const container = document.getElementById("quiz-builder-container");
+  if (container) {
+    container.style.display = "none";
+  }
 };
 
 /** Global Helper to Open and Close Material Form */
-window.openMaterialForm = function() {
-    const container = document.getElementById('material-form-container');
-    if (container) {
-        container.style.display = 'block';
-        const titleInput = document.getElementById('material-input-title');
-        if (titleInput) titleInput.focus();
-        container.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
+window.openMaterialForm = function () {
+  const container = document.getElementById("material-form-container");
+  if (container) {
+    container.style.display = "block";
+    const titleInput = document.getElementById("material-input-title");
+    if (titleInput) titleInput.focus();
+    container.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
 };
 
-window.closeMaterialForm = function() {
-    const container = document.getElementById('material-form-container');
-    if (container) {
-        container.style.display = 'none';
-    }
+window.closeMaterialForm = function () {
+  const container = document.getElementById("material-form-container");
+  if (container) {
+    container.style.display = "none";
+  }
 };
 
 /** Global Helper to Open and Close Badge Form */
-window.openBadgeForm = function() {
-    const container = document.getElementById('badge-form-container');
-    if (container) {
-        container.style.display = 'block';
-        const titleInput = container.querySelector('input[name="title"]');
-        if (titleInput) titleInput.focus();
-        container.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
+window.openBadgeForm = function () {
+  const container = document.getElementById("badge-form-container");
+  if (container) {
+    container.style.display = "block";
+    const titleInput = container.querySelector('input[name="title"]');
+    if (titleInput) titleInput.focus();
+    container.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
 };
 
-window.closeBadgeForm = function() {
-    const container = document.getElementById('badge-form-container');
-    if (container) {
-        container.style.display = 'none';
-    }
+window.closeBadgeForm = function () {
+  const container = document.getElementById("badge-form-container");
+  if (container) {
+    container.style.display = "none";
+  }
 };
 
 /** Global Helper to Open and Close Edit Member Modal */
-window.openEditMemberModal = function(id, username, email) {
-    const modal = document.getElementById('edit-member-modal');
-    const form = document.getElementById('edit-member-form');
-    if (!modal || !form) return;
-    
-    form.action = `${window.BASE_URL}/admin/users/update/${id}`;
-    const unInput = document.getElementById('edit-member-username');
-    const emInput = document.getElementById('edit-member-email');
-    const pwInput = document.getElementById('edit-member-password');
-    if (unInput) unInput.value = username || '';
-    if (emInput) emInput.value = email || '';
-    if (pwInput) pwInput.value = '';
-    
-    modal.classList.add('active');
-    modal.setAttribute('aria-hidden', 'false');
-    document.body.style.overflow = 'hidden';
-    
-    if (unInput) setTimeout(() => unInput.focus(), 50);
-    if (window.bindPasswordToggles) window.bindPasswordToggles();
-    if (window.lucide) window.lucide.createIcons();
+window.openEditMemberModal = function (id, username, email) {
+  const modal = document.getElementById("edit-member-modal");
+  const form = document.getElementById("edit-member-form");
+  if (!modal || !form) return;
+
+  form.action = `${window.BASE_URL}/admin/users/update/${id}`;
+  const unInput = document.getElementById("edit-member-username");
+  const emInput = document.getElementById("edit-member-email");
+  const pwInput = document.getElementById("edit-member-password");
+  if (unInput) unInput.value = username || "";
+  if (emInput) emInput.value = email || "";
+  if (pwInput) pwInput.value = "";
+
+  modal.classList.add("active");
+  modal.setAttribute("aria-hidden", "false");
+  document.body.style.overflow = "hidden";
+
+  if (unInput) setTimeout(() => unInput.focus(), 50);
+  if (window.bindPasswordToggles) window.bindPasswordToggles();
+  if (window.lucide) window.lucide.createIcons();
 };
 
-window.closeEditMemberModal = function() {
-    const modal = document.getElementById('edit-member-modal');
-    if (!modal) return;
-    modal.classList.remove('active');
-    modal.setAttribute('aria-hidden', 'true');
-    document.body.style.overflow = '';
+window.closeEditMemberModal = function () {
+  const modal = document.getElementById("edit-member-modal");
+  if (!modal) return;
+  modal.classList.remove("active");
+  modal.setAttribute("aria-hidden", "true");
+  document.body.style.overflow = "";
 };
 
 // Global backdrop click & escape key listener for edit modal
-document.addEventListener('DOMContentLoaded', () => {
-    const editModal = document.getElementById('edit-member-modal');
-    if (editModal) {
-        editModal.addEventListener('click', (e) => {
-            if (e.target === editModal) closeEditMemberModal();
-        });
-    }
-    window.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') {
-            const activeModal = document.querySelector('.admin-modal-overlay.active');
-            if (activeModal && activeModal.id === 'edit-member-modal') {
-                closeEditMemberModal();
-            }
-        }
+document.addEventListener("DOMContentLoaded", () => {
+  const editModal = document.getElementById("edit-member-modal");
+  if (editModal) {
+    editModal.addEventListener("click", (e) => {
+      if (e.target === editModal) closeEditMemberModal();
     });
+  }
+  window.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") {
+      const activeModal = document.querySelector(".admin-modal-overlay.active");
+      if (activeModal && activeModal.id === "edit-member-modal") {
+        closeEditMemberModal();
+      }
+    }
+  });
 });
 
 // ==========================================================================
 // 2. DOCUMENT INITIALIZATION
 // ==========================================================================
-document.addEventListener('DOMContentLoaded', () => {
-    // Render all 5 workspace module sections
-    renderQuizSection();
-    renderMemberSection();
-    renderManageMemberSection();
-    renderMaterialsSection();
-    renderBadgeSection();
+document.addEventListener("DOMContentLoaded", () => {
+  // Render all 5 workspace module sections
+  renderQuizSection();
+  renderMemberSection();
+  renderManageMemberSection();
+  renderMaterialsSection();
+  renderBadgeSection();
 
-    // Update Sidebar counters
-    updateSidebarCounters();
+  // Update Sidebar counters
+  updateSidebarCounters();
 
-    // Bind eye icons
-    bindPasswordToggles();
+  // Bind eye icons
+  bindPasswordToggles();
 
-    // Global keyboard shortcut '/' for search
-    document.addEventListener('keydown', (e) => {
-        if (e.key === '/' && !['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName)) {
-            e.preventDefault();
-            const activeSection = document.querySelector('.admin-section-content.active');
-            if (activeSection) {
-                const searchInput = activeSection.querySelector('.panel-search-input');
-                if (searchInput) {
-                    searchInput.focus();
-                    searchInput.select();
-                }
-            }
+  // Global keyboard shortcut '/' for search
+  document.addEventListener("keydown", (e) => {
+    if (
+      e.key === "/" &&
+      !["INPUT", "TEXTAREA"].includes(document.activeElement.tagName)
+    ) {
+      e.preventDefault();
+      const activeSection = document.querySelector(
+        ".admin-section-content.active",
+      );
+      if (activeSection) {
+        const searchInput = activeSection.querySelector(".panel-search-input");
+        if (searchInput) {
+          searchInput.focus();
+          searchInput.select();
         }
-    });
-
-    // Re-initialize Lucide Icons
-    if (window.lucide) {
-        window.lucide.createIcons();
+      }
     }
+  });
+
+  // Re-initialize Lucide Icons
+  if (window.lucide) {
+    window.lucide.createIcons();
+  }
 });
 
 // ==========================================================================
 // 3. MODUL 1: BUAT KUIS (Quizzes High-Density Table & Live Question Studio)
 // ==========================================================================
 function renderQuizSection() {
-    const sec = document.getElementById('quiz-section');
-    if (!sec) return;
+  const sec = document.getElementById("quiz-section");
+  if (!sec) return;
 
-    const rawQuizzes = Array.isArray(window.NETQUIZ_QUIZZES) ? window.NETQUIZ_QUIZZES : [];
+  const rawQuizzes = Array.isArray(window.NETQUIZ_QUIZZES)
+    ? window.NETQUIZ_QUIZZES
+    : [];
 
-    sec.innerHTML = `
+  sec.innerHTML = `
         <div class="supabase-panel-card" style="margin-bottom: 2rem;">
             <!-- Precision Corner Crosshairs -->
             <span class="corner-crosshair corner-tl">+</span>
@@ -329,7 +362,7 @@ function renderQuizSection() {
             <!-- Quiz Studio Form (Collapsible) -->
             <div id="quiz-builder-container" style="display: none; padding: 1.5rem; border-bottom: 1px solid #E5E7EB; background-color: #FAFAFA;">
                 <form id="form-create-quiz" action="${window.BASE_URL}/admin/quizzes" method="POST">
-                    <input type="hidden" name="csrf_token" value="${window.CSRF_TOKEN || ''}">
+                    <input type="hidden" name="csrf_token" value="${window.CSRF_TOKEN || ""}">
                     
                     <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.25rem; padding-bottom: 0.75rem; border-bottom: 1px solid #E5E7EB;">
                         <div>
@@ -449,18 +482,20 @@ function renderQuizSection() {
         </div>
     `;
 
-    const qTbody = document.getElementById('quiz-table-body');
-    const qSearch = document.getElementById('quiz-search-input');
-    const repeaterStack = document.getElementById('quiz-questions-repeater-stack');
-    const counterEl = document.getElementById('quiz-question-counter');
+  const qTbody = document.getElementById("quiz-table-body");
+  const qSearch = document.getElementById("quiz-search-input");
+  const repeaterStack = document.getElementById(
+    "quiz-questions-repeater-stack",
+  );
+  const counterEl = document.getElementById("quiz-question-counter");
 
-    let questionCount = 0;
+  let questionCount = 0;
 
-    function createQuestionBlock(index) {
-        const card = document.createElement('div');
-        card.className = 'quiz-question-card';
-        card.setAttribute('data-index', index);
-        card.innerHTML = `
+  function createQuestionBlock(index) {
+    const card = document.createElement("div");
+    card.className = "quiz-question-card";
+    card.setAttribute("data-index", index);
+    card.innerHTML = `
             <div class="q-card-top-bar">
                 <span class="q-number-pill">SOAL #${index + 1}</span>
                 <button type="button" class="btn-remove-question" title="Hapus butir soal ini" onclick="removeQuestionBlock(${index})">
@@ -509,92 +544,96 @@ function renderQuizSection() {
                 </div>
             </div>
         `;
-        return card;
+    return card;
+  }
+
+  function syncQuestionBlocks() {
+    if (!repeaterStack) return;
+    const cards = repeaterStack.querySelectorAll(".quiz-question-card");
+    questionCount = cards.length;
+    if (counterEl) counterEl.textContent = questionCount;
+
+    cards.forEach((card, idx) => {
+      card.setAttribute("data-index", idx);
+      const pill = card.querySelector(".q-number-pill");
+      if (pill) pill.textContent = `SOAL #${idx + 1}`;
+
+      // Update input names
+      const qText = card.querySelector('textarea[name*="[question]"]');
+      if (qText) qText.name = `questions[${idx}][question]`;
+
+      const optA = card.querySelector('input[name*="[option_a]"]');
+      if (optA) optA.name = `questions[${idx}][option_a]`;
+
+      const optB = card.querySelector('input[name*="[option_b]"]');
+      if (optB) optB.name = `questions[${idx}][option_b]`;
+
+      const optC = card.querySelector('input[name*="[option_c]"]');
+      if (optC) optC.name = `questions[${idx}][option_c]`;
+
+      const optD = card.querySelector('input[name*="[option_d]"]');
+      if (optD) optD.name = `questions[${idx}][option_d]`;
+
+      const correct = card.querySelector('select[name*="[correct]"]');
+      if (correct) correct.name = `questions[${idx}][correct]`;
+
+      const exp = card.querySelector('input[name*="[explanation]"]');
+      if (exp) exp.name = `questions[${idx}][explanation]`;
+
+      // Disable delete if only 1 question remains
+      const delBtn = card.querySelector(".btn-remove-question");
+      if (delBtn) {
+        delBtn.disabled = cards.length <= 1;
+        delBtn.setAttribute("onclick", `removeQuestionBlock(${idx})`);
+      }
+    });
+
+    if (window.lucide) window.lucide.createIcons();
+  }
+
+  window.addQuestionBlock = function () {
+    if (!repeaterStack) return;
+    const newCard = createQuestionBlock(questionCount);
+    repeaterStack.appendChild(newCard);
+    syncQuestionBlocks();
+    const firstInput = newCard.querySelector("textarea");
+    if (firstInput) firstInput.focus();
+  };
+
+  window.removeQuestionBlock = function (idx) {
+    if (!repeaterStack) return;
+    const cards = repeaterStack.querySelectorAll(".quiz-question-card");
+    if (cards.length <= 1) {
+      if (window.showGeistToast) {
+        window.showGeistToast(
+          "info",
+          "Minimal 1 Soal",
+          "Kuis wajib memiliki setidaknya 1 butir pertanyaan.",
+        );
+      }
+      return;
     }
-
-    function syncQuestionBlocks() {
-        if (!repeaterStack) return;
-        const cards = repeaterStack.querySelectorAll('.quiz-question-card');
-        questionCount = cards.length;
-        if (counterEl) counterEl.textContent = questionCount;
-
-        cards.forEach((card, idx) => {
-            card.setAttribute('data-index', idx);
-            const pill = card.querySelector('.q-number-pill');
-            if (pill) pill.textContent = `SOAL #${idx + 1}`;
-
-            // Update input names
-            const qText = card.querySelector('textarea[name*="[question]"]');
-            if (qText) qText.name = `questions[${idx}][question]`;
-
-            const optA = card.querySelector('input[name*="[option_a]"]');
-            if (optA) optA.name = `questions[${idx}][option_a]`;
-
-            const optB = card.querySelector('input[name*="[option_b]"]');
-            if (optB) optB.name = `questions[${idx}][option_b]`;
-
-            const optC = card.querySelector('input[name*="[option_c]"]');
-            if (optC) optC.name = `questions[${idx}][option_c]`;
-
-            const optD = card.querySelector('input[name*="[option_d]"]');
-            if (optD) optD.name = `questions[${idx}][option_d]`;
-
-            const correct = card.querySelector('select[name*="[correct]"]');
-            if (correct) correct.name = `questions[${idx}][correct]`;
-
-            const exp = card.querySelector('input[name*="[explanation]"]');
-            if (exp) exp.name = `questions[${idx}][explanation]`;
-
-            // Disable delete if only 1 question remains
-            const delBtn = card.querySelector('.btn-remove-question');
-            if (delBtn) {
-                delBtn.disabled = cards.length <= 1;
-                delBtn.setAttribute('onclick', `removeQuestionBlock(${idx})`);
-            }
-        });
-
-        if (window.lucide) window.lucide.createIcons();
+    if (cards[idx]) {
+      cards[idx].remove();
+      syncQuestionBlocks();
     }
+  };
 
-    window.addQuestionBlock = function() {
-        if (!repeaterStack) return;
-        const newCard = createQuestionBlock(questionCount);
-        repeaterStack.appendChild(newCard);
-        syncQuestionBlocks();
-        const firstInput = newCard.querySelector('textarea');
-        if (firstInput) firstInput.focus();
-    };
+  // Initialize with 1 default question
+  if (repeaterStack && repeaterStack.children.length === 0) {
+    repeaterStack.appendChild(createQuestionBlock(0));
+    syncQuestionBlocks();
+  }
 
-    window.removeQuestionBlock = function(idx) {
-        if (!repeaterStack) return;
-        const cards = repeaterStack.querySelectorAll('.quiz-question-card');
-        if (cards.length <= 1) {
-            if (window.showGeistToast) {
-                window.showGeistToast('info', 'Minimal 1 Soal', 'Kuis wajib memiliki setidaknya 1 butir pertanyaan.');
-            }
-            return;
-        }
-        if (cards[idx]) {
-            cards[idx].remove();
-            syncQuestionBlocks();
-        }
-    };
+  const btnAddQ = document.getElementById("btn-add-quiz-question");
+  const btnAddQ2 = document.getElementById("btn-add-another-question");
+  if (btnAddQ) btnAddQ.addEventListener("click", window.addQuestionBlock);
+  if (btnAddQ2) btnAddQ2.addEventListener("click", window.addQuestionBlock);
 
-    // Initialize with 1 default question
-    if (repeaterStack && repeaterStack.children.length === 0) {
-        repeaterStack.appendChild(createQuestionBlock(0));
-        syncQuestionBlocks();
-    }
-
-    const btnAddQ = document.getElementById('btn-add-quiz-question');
-    const btnAddQ2 = document.getElementById('btn-add-another-question');
-    if (btnAddQ) btnAddQ.addEventListener('click', window.addQuestionBlock);
-    if (btnAddQ2) btnAddQ2.addEventListener('click', window.addQuestionBlock);
-
-    function renderQuizRows(list) {
-        if (!qTbody) return;
-        if (list.length === 0) {
-            qTbody.innerHTML = `
+  function renderQuizRows(list) {
+    if (!qTbody) return;
+    if (list.length === 0) {
+      qTbody.innerHTML = `
                 <tr>
                     <td colspan="5">
                         <div class="panel-empty-state">
@@ -607,15 +646,17 @@ function renderQuizSection() {
                     </td>
                 </tr>
             `;
-            if (window.lucide) window.lucide.createIcons();
-            return;
-        }
+      if (window.lucide) window.lucide.createIcons();
+      return;
+    }
 
-        qTbody.innerHTML = list.map(q => `
+    qTbody.innerHTML = list
+      .map(
+        (q) => `
             <tr>
                 <td style="font-weight: 700; color: #18181B;">${escapeHtml(q.title)}</td>
-                <td><span class="role-pill">${escapeHtml(q.category || 'Routing')}</span></td>
-                <td><span class="status-badge status-active">${escapeHtml(q.difficulty || 'Mudah')}</span></td>
+                <td><span class="role-pill">${escapeHtml(q.category || "Routing")}</span></td>
+                <td><span class="status-badge status-active">${escapeHtml(q.difficulty || "Mudah")}</span></td>
                 <td class="font-mono text-muted">${q.duration || 15} Menit</td>
                 <td style="text-align: right;">
                     <div class="table-actions-group">
@@ -625,84 +666,90 @@ function renderQuizSection() {
                     </div>
                 </td>
             </tr>
-        `).join('');
+        `,
+      )
+      .join("");
 
-        if (window.lucide) window.lucide.createIcons();
+    if (window.lucide) window.lucide.createIcons();
+  }
+
+  renderQuizRows(rawQuizzes);
+
+  // Live Quiz Search Filter
+  if (qSearch) {
+    qSearch.addEventListener("input", (e) => {
+      const query = e.target.value.toLowerCase().trim();
+      const filtered = rawQuizzes.filter(
+        (q) =>
+          (q.title && q.title.toLowerCase().includes(query)) ||
+          (q.category && q.category.toLowerCase().includes(query)),
+      );
+      renderQuizRows(filtered);
+    });
+  }
+
+  // Toggle Form Handlers
+  const btnToggle = document.getElementById("btn-toggle-quiz-builder");
+  const btnClose = document.getElementById("btn-close-quiz-builder");
+  const btnCancel = document.getElementById("btn-cancel-quiz-form");
+  const container = document.getElementById("quiz-builder-container");
+  const qTitleInput = document.getElementById("quiz-input-title");
+
+  window.openQuizStudio = function () {
+    if (container) {
+      container.style.display = "block";
+      if (qTitleInput) qTitleInput.focus();
+      container.scrollIntoView({ behavior: "smooth", block: "nearest" });
     }
+  };
 
-    renderQuizRows(rawQuizzes);
+  window.closeQuizStudio = function () {
+    if (container) container.style.display = "none";
+  };
 
-    // Live Quiz Search Filter
-    if (qSearch) {
-        qSearch.addEventListener('input', (e) => {
-            const query = e.target.value.toLowerCase().trim();
-            const filtered = rawQuizzes.filter(q => 
-                (q.title && q.title.toLowerCase().includes(query)) ||
-                (q.category && q.category.toLowerCase().includes(query))
-            );
-            renderQuizRows(filtered);
-        });
-    }
-
-    // Toggle Form Handlers
-    const btnToggle = document.getElementById('btn-toggle-quiz-builder');
-    const btnClose = document.getElementById('btn-close-quiz-builder');
-    const btnCancel = document.getElementById('btn-cancel-quiz-form');
-    const container = document.getElementById('quiz-builder-container');
-    const qTitleInput = document.getElementById('quiz-input-title');
-
-    window.openQuizStudio = function() {
-        if (container) {
-            container.style.display = 'block';
-            if (qTitleInput) qTitleInput.focus();
-            container.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-        }
-    };
-
-    window.closeQuizStudio = function() {
-        if (container) container.style.display = 'none';
-    };
-
-    if (btnToggle) btnToggle.addEventListener('click', () => {
-        if (container.style.display === 'none') {
-            openQuizStudio();
-        } else {
-            closeQuizStudio();
-        }
+  if (btnToggle)
+    btnToggle.addEventListener("click", () => {
+      if (container.style.display === "none") {
+        openQuizStudio();
+      } else {
+        closeQuizStudio();
+      }
     });
 
-    if (btnClose) btnClose.addEventListener('click', closeQuizStudio);
-    if (btnCancel) btnCancel.addEventListener('click', closeQuizStudio);
+  if (btnClose) btnClose.addEventListener("click", closeQuizStudio);
+  if (btnCancel) btnCancel.addEventListener("click", closeQuizStudio);
 
-    window.confirmDeleteQuiz = function(id, title) {
-        showGeistConfirm(
-            'Hapus Kuis',
-            `Apakah Anda yakin ingin menghapus kuis "${title}"? Seluruh data pertanyaan di dalamnya akan ikut terhapus.`,
-            'Hapus Kuis',
-            () => {
-                const form = document.createElement('form');
-                form.method = 'POST';
-                form.action = `${window.BASE_URL}/admin/quizzes/delete/${id}`;
-                form.innerHTML = `<input type="hidden" name="csrf_token" value="${window.CSRF_TOKEN || ''}">`;
-                document.body.appendChild(form);
-                form.submit();
-            },
-            true
-        );
-    };
+  window.confirmDeleteQuiz = function (id, title) {
+    showGeistConfirm(
+      "Hapus Kuis",
+      `Apakah Anda yakin ingin menghapus kuis "${title}"? Seluruh data pertanyaan di dalamnya akan ikut terhapus.`,
+      "Hapus Kuis",
+      () => {
+        const form = document.createElement("form");
+        form.method = "POST";
+        form.action = `${window.BASE_URL}/admin/quizzes/delete/${id}`;
+        form.innerHTML = `<input type="hidden" name="csrf_token" value="${window.CSRF_TOKEN || ""}">`;
+        document.body.appendChild(form);
+        form.submit();
+      },
+      true,
+    );
+  };
 }
 
 // ==========================================================================
 // 4. MODUL 2: DAFTARKAN MEMBER (High-Precision Form & Recent Feed)
 // ==========================================================================
 function renderMemberSection() {
-    const sec = document.getElementById('member-section');
-    if (!sec) return;
+  const sec = document.getElementById("member-section");
+  if (!sec) return;
 
-    const rawMembers = Array.isArray(window.NETQUIZ_MEMBERS) ? window.NETQUIZ_MEMBERS : [];
-    const recentMembers = rawMembers.slice(0, 5);
+  const rawMembers = Array.isArray(window.NETQUIZ_MEMBERS)
+    ? window.NETQUIZ_MEMBERS
+    : [];
+  const recentMembers = rawMembers.slice(0, 5);
 
-    sec.innerHTML = `
+  sec.innerHTML = `
         <div class="member-provision-stack">
             <!-- 1. Formulir Pendaftaran Siswa Card -->
             <div class="supabase-panel-card">
@@ -713,7 +760,7 @@ function renderMemberSection() {
                 <span class="corner-crosshair corner-br">+</span>
 
                 <form action="${window.BASE_URL}/admin/users/create" method="POST" id="register-member-form">
-                    <input type="hidden" name="csrf_token" value="${window.CSRF_TOKEN || ''}">
+                    <input type="hidden" name="csrf_token" value="${window.CSRF_TOKEN || ""}">
                     
                     <div class="provision-form-grid">
                         <!-- Field 1: Username -->
@@ -816,21 +863,40 @@ function renderMemberSection() {
                             </tr>
                         </thead>
                         <tbody id="recent-members-tbody">
-                            ${recentMembers.length === 0 ? `
+                            ${
+                              recentMembers.length === 0
+                                ? `
                                 <tr>
                                     <td colspan="5" style="text-align: center; color: #71717A; padding: 2rem;">Belum ada member terdaftar.</td>
                                 </tr>
-                            ` : recentMembers.map(m => {
-                                const initials = getInitials(m.username || m.email);
-                                const role = m.role || (m.email.includes('admin') ? 'Administrator' : 'Siswa');
-                                const dateStr = formatDate(m.created_at);
-                                const avatarColorClass = getAvatarBgClass(m.id || 1);
-                                const status = m.status || 'Aktif';
-                                const statusClass = status === 'Aktif' ? 'status-active' : 'status-inactive';
-                                const safeUsername = escapeHtml(m.username).replace(/'/g, "\\'");
-                                const safeEmail = escapeHtml(m.email).replace(/'/g, "\\'");
+                            `
+                                : recentMembers
+                                    .map((m) => {
+                                      const initials = getInitials(
+                                        m.username || m.email,
+                                      );
+                                      const role =
+                                        m.role ||
+                                        (m.email.includes("admin")
+                                          ? "Administrator"
+                                          : "Siswa");
+                                      const dateStr = formatDate(m.created_at);
+                                      const avatarColorClass = getAvatarBgClass(
+                                        m.id || 1,
+                                      );
+                                      const status = m.status || "Aktif";
+                                      const statusClass =
+                                        status === "Aktif"
+                                          ? "status-active"
+                                          : "status-inactive";
+                                      const safeUsername = escapeHtml(
+                                        m.username,
+                                      ).replace(/'/g, "\\'");
+                                      const safeEmail = escapeHtml(
+                                        m.email,
+                                      ).replace(/'/g, "\\'");
 
-                                return `
+                                      return `
                                     <tr>
                                         <td>
                                             <div class="member-user-cell">
@@ -841,7 +907,7 @@ function renderMemberSection() {
                                                 </div>
                                             </div>
                                         </td>
-                                        <td><span class="role-pill ${role === 'Administrator' ? 'role-admin' : ''}">${escapeHtml(role)}</span></td>
+                                        <td><span class="role-pill ${role === "Administrator" ? "role-admin" : ""}">${escapeHtml(role)}</span></td>
                                         <td><span class="status-badge ${statusClass}">${escapeHtml(status)}</span></td>
                                         <td class="font-mono text-muted">${escapeHtml(dateStr)}</td>
                                         <td style="text-align: right;">
@@ -856,7 +922,9 @@ function renderMemberSection() {
                                         </td>
                                     </tr>
                                 `;
-                            }).join('')}
+                                    })
+                                    .join("")
+                            }
                         </tbody>
                     </table>
                 </div>
@@ -864,128 +932,146 @@ function renderMemberSection() {
         </div>
     `;
 
-    const regPwdInput = document.getElementById('reg-password');
-    const confirmPwdInput = document.getElementById('reg-confirm-password');
-    const strengthFill = document.getElementById('password-strength-fill');
-    const strengthText = document.getElementById('password-strength-text');
-    const matchMsg = document.getElementById('password-match-msg');
-    const btnGenPw = document.getElementById('btn-generate-pw');
-    const regForm = document.getElementById('register-member-form');
+  const regPwdInput = document.getElementById("reg-password");
+  const confirmPwdInput = document.getElementById("reg-confirm-password");
+  const strengthFill = document.getElementById("password-strength-fill");
+  const strengthText = document.getElementById("password-strength-text");
+  const matchMsg = document.getElementById("password-match-msg");
+  const btnGenPw = document.getElementById("btn-generate-pw");
+  const regForm = document.getElementById("register-member-form");
 
-    // 1-Click Password Generator
-    if (btnGenPw && regPwdInput && confirmPwdInput) {
-        btnGenPw.addEventListener('click', () => {
-            const chars = 'abcdefghjkmnpqrstuvwxyzABCDEFGHJKMNPQRSTUVWXYZ23456789!@#$%&*';
-            let generated = '';
-            for (let i = 0; i < 12; i++) {
-                generated += chars.charAt(Math.floor(Math.random() * chars.length));
-            }
-            regPwdInput.type = 'text';
-            confirmPwdInput.type = 'text';
-            regPwdInput.value = generated;
-            confirmPwdInput.value = generated;
+  // 1-Click Password Generator
+  if (btnGenPw && regPwdInput && confirmPwdInput) {
+    btnGenPw.addEventListener("click", () => {
+      const chars =
+        "abcdefghjkmnpqrstuvwxyzABCDEFGHJKMNPQRSTUVWXYZ23456789!@#$%&*";
+      let generated = "";
+      for (let i = 0; i < 12; i++) {
+        generated += chars.charAt(Math.floor(Math.random() * chars.length));
+      }
+      regPwdInput.type = "text";
+      confirmPwdInput.type = "text";
+      regPwdInput.value = generated;
+      confirmPwdInput.value = generated;
 
-            // Trigger strength calculation
-            regPwdInput.dispatchEvent(new Event('input'));
-            checkPasswordMatch();
+      // Trigger strength calculation
+      regPwdInput.dispatchEvent(new Event("input"));
+      checkPasswordMatch();
 
-            // Copy to clipboard
-            if (navigator.clipboard) {
-                navigator.clipboard.writeText(generated).catch(() => {});
-            }
+      // Copy to clipboard
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(generated).catch(() => {});
+      }
 
-            showGeistToast('info', 'Password Dibuat', `Password acak tersalin ke clipboard.`);
-        });
+      showGeistToast(
+        "info",
+        "Password Dibuat",
+        `Password acak tersalin ke clipboard.`,
+      );
+    });
+  }
+
+  // Password Strength Indicator
+  if (regPwdInput && strengthFill && strengthText) {
+    regPwdInput.addEventListener("input", function () {
+      const val = this.value;
+      let score = 0;
+      if (val.length >= 1) score++;
+      if (val.length >= 8) score++;
+      if (/[a-z]/.test(val) && /[A-Z]/.test(val)) score++;
+      if (/[0-9]/.test(val)) score++;
+      if (/[^a-zA-Z0-9]/.test(val)) score++;
+
+      if (val.length === 0) {
+        strengthFill.style.width = "0%";
+        strengthFill.style.backgroundColor = "#E5E7EB";
+        strengthText.textContent = "";
+      } else if (score <= 2) {
+        strengthFill.style.width = "33%";
+        strengthFill.style.backgroundColor = "#EF4444";
+        strengthText.textContent = "Lemah";
+        strengthText.style.color = "#EF4444";
+      } else if (score <= 3) {
+        strengthFill.style.width = "66%";
+        strengthFill.style.backgroundColor = "#F59E0B";
+        strengthText.textContent = "Sedang";
+        strengthText.style.color = "#F59E0B";
+      } else {
+        strengthFill.style.width = "100%";
+        strengthFill.style.backgroundColor = "#10B981";
+        strengthText.textContent = "Kuat";
+        strengthText.style.color = "#10B981";
+      }
+      if (confirmPwdInput && confirmPwdInput.value.length > 0) {
+        checkPasswordMatch();
+      }
+    });
+  }
+
+  function checkPasswordMatch() {
+    if (!regPwdInput || !confirmPwdInput || !matchMsg) return;
+    const pwd = regPwdInput.value;
+    const cfm = confirmPwdInput.value;
+    if (cfm.length === 0) {
+      matchMsg.textContent = "";
+      return;
     }
-
-    // Password Strength Indicator
-    if (regPwdInput && strengthFill && strengthText) {
-        regPwdInput.addEventListener('input', function() {
-            const val = this.value;
-            let score = 0;
-            if (val.length >= 1) score++;
-            if (val.length >= 8) score++;
-            if (/[a-z]/.test(val) && /[A-Z]/.test(val)) score++;
-            if (/[0-9]/.test(val)) score++;
-            if (/[^a-zA-Z0-9]/.test(val)) score++;
-
-            if (val.length === 0) {
-                strengthFill.style.width = '0%';
-                strengthFill.style.backgroundColor = '#E5E7EB';
-                strengthText.textContent = '';
-            } else if (score <= 2) {
-                strengthFill.style.width = '33%';
-                strengthFill.style.backgroundColor = '#EF4444';
-                strengthText.textContent = 'Lemah';
-                strengthText.style.color = '#EF4444';
-            } else if (score <= 3) {
-                strengthFill.style.width = '66%';
-                strengthFill.style.backgroundColor = '#F59E0B';
-                strengthText.textContent = 'Sedang';
-                strengthText.style.color = '#F59E0B';
-            } else {
-                strengthFill.style.width = '100%';
-                strengthFill.style.backgroundColor = '#10B981';
-                strengthText.textContent = 'Kuat';
-                strengthText.style.color = '#10B981';
-            }
-            if (confirmPwdInput && confirmPwdInput.value.length > 0) {
-                checkPasswordMatch();
-            }
-        });
+    if (pwd === cfm) {
+      matchMsg.textContent = "✓ Cocok";
+      matchMsg.style.color = "#10B981";
+    } else {
+      matchMsg.textContent = "✗ Tidak cocok";
+      matchMsg.style.color = "#EF4444";
     }
+  }
 
-    function checkPasswordMatch() {
-        if (!regPwdInput || !confirmPwdInput || !matchMsg) return;
-        const pwd = regPwdInput.value;
-        const cfm = confirmPwdInput.value;
-        if (cfm.length === 0) { matchMsg.textContent = ''; return; }
-        if (pwd === cfm) {
-            matchMsg.textContent = '✓ Cocok';
-            matchMsg.style.color = '#10B981';
-        } else {
-            matchMsg.textContent = '✗ Tidak cocok';
-            matchMsg.style.color = '#EF4444';
-        }
-    }
+  if (confirmPwdInput) {
+    confirmPwdInput.addEventListener("input", checkPasswordMatch);
+  }
 
-    if (confirmPwdInput) {
-        confirmPwdInput.addEventListener('input', checkPasswordMatch);
-    }
+  // Form Submit Handling
+  if (regForm) {
+    regForm.addEventListener("submit", (e) => {
+      const pwd = regPwdInput ? regPwdInput.value : "";
+      const cfm = confirmPwdInput ? confirmPwdInput.value : "";
+      if (pwd !== cfm) {
+        e.preventDefault();
+        showGeistToast(
+          "error",
+          "Validasi Gagal",
+          "Kata sandi dan konfirmasi kata sandi tidak cocok!",
+        );
+        if (confirmPwdInput) confirmPwdInput.focus();
+        return false;
+      }
+      if (pwd.length < 8) {
+        e.preventDefault();
+        showGeistToast(
+          "error",
+          "Validasi Gagal",
+          "Kata sandi minimal harus 8 karakter!",
+        );
+        if (regPwdInput) regPwdInput.focus();
+        return false;
+      }
+    });
+  }
 
-    // Form Submit Handling
-    if (regForm) {
-        regForm.addEventListener('submit', (e) => {
-            const pwd = regPwdInput ? regPwdInput.value : '';
-            const cfm = confirmPwdInput ? confirmPwdInput.value : '';
-            if (pwd !== cfm) {
-                e.preventDefault();
-                showGeistToast('error', 'Validasi Gagal', 'Kata sandi dan konfirmasi kata sandi tidak cocok!');
-                if (confirmPwdInput) confirmPwdInput.focus();
-                return false;
-            }
-            if (pwd.length < 8) {
-                e.preventDefault();
-                showGeistToast('error', 'Validasi Gagal', 'Kata sandi minimal harus 8 karakter!');
-                if (regPwdInput) regPwdInput.focus();
-                return false;
-            }
-        });
-    }
-
-    bindPasswordToggles();
+  bindPasswordToggles();
 }
 
 // ==========================================================================
 // 5. MODUL 3: MANAJEMEN MEMBER (High-Density Data Table & Floating Bulk Bar)
 // ==========================================================================
 function renderManageMemberSection() {
-    const sec = document.getElementById('manage-section');
-    if (!sec) return;
+  const sec = document.getElementById("manage-section");
+  if (!sec) return;
 
-    const rawMembers = Array.isArray(window.NETQUIZ_MEMBERS) ? window.NETQUIZ_MEMBERS : [];
+  const rawMembers = Array.isArray(window.NETQUIZ_MEMBERS)
+    ? window.NETQUIZ_MEMBERS
+    : [];
 
-    sec.innerHTML = `
+  sec.innerHTML = `
         <div class="supabase-panel-card">
             <!-- Precision Corner Crosshairs -->
             <span class="corner-crosshair corner-tl">+</span>
@@ -1056,20 +1142,20 @@ function renderManageMemberSection() {
         </div>
     `;
 
-    const tbody = document.getElementById('member-table-body');
-    const searchInput = document.getElementById('member-search-input');
-    const filterRole = document.getElementById('filter-role');
-    const filterStatus = document.getElementById('filter-status');
-    const selectAllCheckbox = document.getElementById('select-all-members');
-    const floatingBulkBar = document.getElementById('floating-bulk-bar');
-    const bulkCountBadge = document.getElementById('bulk-selected-count');
-    const btnBulkDismiss = document.getElementById('btn-bulk-dismiss');
-    const btnBulkExport = document.getElementById('btn-bulk-export');
+  const tbody = document.getElementById("member-table-body");
+  const searchInput = document.getElementById("member-search-input");
+  const filterRole = document.getElementById("filter-role");
+  const filterStatus = document.getElementById("filter-status");
+  const selectAllCheckbox = document.getElementById("select-all-members");
+  const floatingBulkBar = document.getElementById("floating-bulk-bar");
+  const bulkCountBadge = document.getElementById("bulk-selected-count");
+  const btnBulkDismiss = document.getElementById("btn-bulk-dismiss");
+  const btnBulkExport = document.getElementById("btn-bulk-export");
 
-    function renderRows(list) {
-        if (!tbody) return;
-        if (list.length === 0) {
-            tbody.innerHTML = `
+  function renderRows(list) {
+    if (!tbody) return;
+    if (list.length === 0) {
+      tbody.innerHTML = `
                 <tr>
                     <td colspan="6">
                         <div class="panel-empty-state">
@@ -1082,24 +1168,32 @@ function renderManageMemberSection() {
                     </td>
                 </tr>
             `;
-            if (window.lucide) window.lucide.createIcons();
-            return;
-        }
+      if (window.lucide) window.lucide.createIcons();
+      return;
+    }
 
-        tbody.innerHTML = list.map(m => {
-            const initials = getInitials(m.username || m.email);
-            const role = m.role || (m.email.includes('admin') ? 'Administrator' : 'Siswa');
-            const dateStr = formatDate(m.created_at);
-            const avatarColorClass = getAvatarBgClass(m.id || 1);
-            const status = m.status || 'Aktif';
-            const statusClass = status === 'Aktif' ? 'status-active' : (status === 'Pending' ? 'status-pending' : 'status-inactive');
-            const toggleStatus = status === 'Aktif' ? 'Nonaktif' : 'Aktif';
-            const toggleIcon = status === 'Aktif' ? 'user-x' : 'user-check';
-            const toggleTitle = status === 'Aktif' ? 'Nonaktifkan Member' : 'Aktifkan Member';
-            const safeUsername = escapeHtml(m.username).replace(/'/g, "\\'");
-            const safeEmail = escapeHtml(m.email).replace(/'/g, "\\'");
+    tbody.innerHTML = list
+      .map((m) => {
+        const initials = getInitials(m.username || m.email);
+        const role =
+          m.role || (m.email.includes("admin") ? "Administrator" : "Siswa");
+        const dateStr = formatDate(m.created_at);
+        const avatarColorClass = getAvatarBgClass(m.id || 1);
+        const status = m.status || "Aktif";
+        const statusClass =
+          status === "Aktif"
+            ? "status-active"
+            : status === "Pending"
+              ? "status-pending"
+              : "status-inactive";
+        const toggleStatus = status === "Aktif" ? "Nonaktif" : "Aktif";
+        const toggleIcon = status === "Aktif" ? "user-x" : "user-check";
+        const toggleTitle =
+          status === "Aktif" ? "Nonaktifkan Member" : "Aktifkan Member";
+        const safeUsername = escapeHtml(m.username).replace(/'/g, "\\'");
+        const safeEmail = escapeHtml(m.email).replace(/'/g, "\\'");
 
-            return `
+        return `
                 <tr>
                     <td style="text-align: center;">
                         <input type="checkbox" class="panel-checkbox member-row-checkbox" value="${m.id}" data-username="${safeUsername}" data-email="${safeEmail}" data-status="${status}">
@@ -1113,7 +1207,7 @@ function renderManageMemberSection() {
                             </div>
                         </div>
                     </td>
-                    <td><span class="role-pill ${role === 'Administrator' ? 'role-admin' : ''}">${escapeHtml(role)}</span></td>
+                    <td><span class="role-pill ${role === "Administrator" ? "role-admin" : ""}">${escapeHtml(role)}</span></td>
                     <td><span class="status-badge ${statusClass}">${escapeHtml(status)}</span></td>
                     <td class="font-mono text-muted">${escapeHtml(dateStr)}</td>
                     <td style="text-align: right;">
@@ -1122,7 +1216,7 @@ function renderManageMemberSection() {
                                 <i data-lucide="pencil"></i>
                             </button>
                             <form action="${window.BASE_URL}/admin/users/suspend/${m.id}" method="POST" style="display: inline;">
-                                <input type="hidden" name="csrf_token" value="${window.CSRF_TOKEN || ''}">
+                                <input type="hidden" name="csrf_token" value="${window.CSRF_TOKEN || ""}">
                                 <input type="hidden" name="status" value="${toggleStatus}">
                                 <button type="submit" class="btn-icon-action btn-action-toggle" title="${toggleTitle}">
                                     <i data-lucide="${toggleIcon}"></i>
@@ -1135,156 +1229,176 @@ function renderManageMemberSection() {
                     </td>
                 </tr>
             `;
-        }).join('');
+      })
+      .join("");
 
-        if (window.lucide) window.lucide.createIcons();
+    if (window.lucide) window.lucide.createIcons();
 
-        // Update pagination info
-        const paginationInfo = document.getElementById('pagination-info-text');
-        if (paginationInfo) {
-            paginationInfo.innerHTML = `Menampilkan <span class="font-mono" style="font-weight: 700;">1-${list.length}</span> dari <span class="font-mono" style="font-weight: 700;">${rawMembers.length}</span> member`;
-        }
-
-        bindRowCheckboxes();
+    // Update pagination info
+    const paginationInfo = document.getElementById("pagination-info-text");
+    if (paginationInfo) {
+      paginationInfo.innerHTML = `Menampilkan <span class="font-mono" style="font-weight: 700;">1-${list.length}</span> dari <span class="font-mono" style="font-weight: 700;">${rawMembers.length}</span> member`;
     }
 
-    renderRows(rawMembers);
+    bindRowCheckboxes();
+  }
 
-    // Filter Logic with Debounce
-    function filterData() {
-        const query = searchInput ? searchInput.value.toLowerCase().trim() : '';
-        const roleVal = filterRole ? filterRole.value : 'all';
-        const statusVal = filterStatus ? filterStatus.value : 'all';
+  renderRows(rawMembers);
 
-        const filtered = rawMembers.filter(m => {
-            const matchQuery = (m.username && m.username.toLowerCase().includes(query)) || (m.email && m.email.toLowerCase().includes(query));
-            const mRole = m.role || (m.email.includes('admin') ? 'Administrator' : 'Siswa');
-            const matchRole = (roleVal === 'all') || (mRole === roleVal);
-            const mStatus = m.status || 'Aktif';
-            const matchStatus = (statusVal === 'all') || (mStatus === statusVal);
+  // Filter Logic with Debounce
+  function filterData() {
+    const query = searchInput ? searchInput.value.toLowerCase().trim() : "";
+    const roleVal = filterRole ? filterRole.value : "all";
+    const statusVal = filterStatus ? filterStatus.value : "all";
 
-            return matchQuery && matchRole && matchStatus;
-        });
+    const filtered = rawMembers.filter((m) => {
+      const matchQuery =
+        (m.username && m.username.toLowerCase().includes(query)) ||
+        (m.email && m.email.toLowerCase().includes(query));
+      const mRole =
+        m.role || (m.email.includes("admin") ? "Administrator" : "Siswa");
+      const matchRole = roleVal === "all" || mRole === roleVal;
+      const mStatus = m.status || "Aktif";
+      const matchStatus = statusVal === "all" || mStatus === statusVal;
 
-        renderRows(filtered);
+      return matchQuery && matchRole && matchStatus;
+    });
+
+    renderRows(filtered);
+  }
+
+  if (searchInput) searchInput.addEventListener("input", filterData);
+  if (filterRole) filterRole.addEventListener("change", filterData);
+  if (filterStatus) filterStatus.addEventListener("change", filterData);
+
+  // Floating Bulk Action Bar Handlers
+  function bindRowCheckboxes() {
+    const rowCheckboxes = document.querySelectorAll(".member-row-checkbox");
+    rowCheckboxes.forEach((cb) => {
+      cb.addEventListener("change", updateBulkState);
+    });
+  }
+
+  function updateBulkState() {
+    const selected = document.querySelectorAll(".member-row-checkbox:checked");
+    if (!floatingBulkBar || !bulkCountBadge) return;
+
+    if (selected.length > 0) {
+      bulkCountBadge.textContent = `${selected.length} Dipilih`;
+      floatingBulkBar.classList.add("active");
+    } else {
+      floatingBulkBar.classList.remove("active");
+      if (selectAllCheckbox) selectAllCheckbox.checked = false;
     }
+  }
 
-    if (searchInput) searchInput.addEventListener('input', filterData);
-    if (filterRole) filterRole.addEventListener('change', filterData);
-    if (filterStatus) filterStatus.addEventListener('change', filterData);
+  if (selectAllCheckbox) {
+    selectAllCheckbox.addEventListener("change", function () {
+      const rowCheckboxes = document.querySelectorAll(".member-row-checkbox");
+      rowCheckboxes.forEach((cb) => (cb.checked = this.checked));
+      updateBulkState();
+    });
+  }
 
-    // Floating Bulk Action Bar Handlers
-    function bindRowCheckboxes() {
-        const rowCheckboxes = document.querySelectorAll('.member-row-checkbox');
-        rowCheckboxes.forEach(cb => {
-            cb.addEventListener('change', updateBulkState);
-        });
-    }
+  if (btnBulkDismiss) {
+    btnBulkDismiss.addEventListener("click", () => {
+      const rowCheckboxes = document.querySelectorAll(".member-row-checkbox");
+      rowCheckboxes.forEach((cb) => (cb.checked = false));
+      if (selectAllCheckbox) selectAllCheckbox.checked = false;
+      if (floatingBulkBar) floatingBulkBar.classList.remove("active");
+    });
+  }
 
-    function updateBulkState() {
-        const selected = document.querySelectorAll('.member-row-checkbox:checked');
-        if (!floatingBulkBar || !bulkCountBadge) return;
+  // Bulk Export to CSV
+  if (btnBulkExport) {
+    btnBulkExport.addEventListener("click", () => {
+      const selected = document.querySelectorAll(
+        ".member-row-checkbox:checked",
+      );
+      if (selected.length === 0) return;
 
-        if (selected.length > 0) {
-            bulkCountBadge.textContent = `${selected.length} Dipilih`;
-            floatingBulkBar.classList.add('active');
-        } else {
-            floatingBulkBar.classList.remove('active');
-            if (selectAllCheckbox) selectAllCheckbox.checked = false;
-        }
-    }
+      let csv = "ID,Username,Email,Status\n";
+      selected.forEach((cb) => {
+        csv += `"${cb.value}","${cb.getAttribute("data-username")}","${cb.getAttribute("data-email")}","${cb.getAttribute("data-status")}"\n`;
+      });
 
-    if (selectAllCheckbox) {
-        selectAllCheckbox.addEventListener('change', function() {
-            const rowCheckboxes = document.querySelectorAll('.member-row-checkbox');
-            rowCheckboxes.forEach(cb => cb.checked = this.checked);
-            updateBulkState();
-        });
-    }
+      downloadCsvFile(csv, "selected_members.csv");
+      showGeistToast(
+        "success",
+        "Export Selesai",
+        `${selected.length} data member terpilih berhasil diexport.`,
+      );
+    });
+  }
 
-    if (btnBulkDismiss) {
-        btnBulkDismiss.addEventListener('click', () => {
-            const rowCheckboxes = document.querySelectorAll('.member-row-checkbox');
-            rowCheckboxes.forEach(cb => cb.checked = false);
-            if (selectAllCheckbox) selectAllCheckbox.checked = false;
-            if (floatingBulkBar) floatingBulkBar.classList.remove('active');
-        });
-    }
-
-    // Bulk Export to CSV
-    if (btnBulkExport) {
-        btnBulkExport.addEventListener('click', () => {
-            const selected = document.querySelectorAll('.member-row-checkbox:checked');
-            if (selected.length === 0) return;
-
-            let csv = 'ID,Username,Email,Status\n';
-            selected.forEach(cb => {
-                csv += `"${cb.value}","${cb.getAttribute('data-username')}","${cb.getAttribute('data-email')}","${cb.getAttribute('data-status')}"\n`;
-            });
-
-            downloadCsvFile(csv, 'selected_members.csv');
-            showGeistToast('success', 'Export Selesai', `${selected.length} data member terpilih berhasil diexport.`);
-        });
-    }
-
-    // Export All CSV
-    const btnExportAll = document.getElementById('btn-export-csv');
-    if (btnExportAll) {
-        btnExportAll.addEventListener('click', () => {
-            if (rawMembers.length === 0) {
-                showGeistToast('info', 'Data Kosong', 'Tidak ada member untuk diexport.');
-                return;
-            }
-            let csv = 'ID,Username,Email,Role,Status,Tanggal Bergabung\n';
-            rawMembers.forEach(m => {
-                csv += `"${m.id}","${m.username}","${m.email}","${m.role || 'Siswa'}","${m.status || 'Aktif'}","${m.created_at}"\n`;
-            });
-            downloadCsvFile(csv, 'semua_member_netquiz.csv');
-            showGeistToast('success', 'Export CSV Berhasil', `${rawMembers.length} member telah diunduh.`);
-        });
-    }
-
-    function downloadCsvFile(content, fileName) {
-        const blob = new Blob([content], { type: 'text/csv;charset=utf-8;' });
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = fileName;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        URL.revokeObjectURL(url);
-    }
-
-    // Delete Member Dialog
-    window.confirmDeleteMember = function(id, username) {
-        showGeistConfirm(
-            'Hapus Member',
-            `Apakah Anda yakin ingin menghapus akun siswa "${username}"? Tindakan ini tidak dapat dibatalkan.`,
-            'Hapus Member',
-            () => {
-                const form = document.createElement('form');
-                form.method = 'POST';
-                form.action = `${window.BASE_URL}/admin/users/delete/${id}`;
-                form.innerHTML = `<input type="hidden" name="csrf_token" value="${window.CSRF_TOKEN || ''}">`;
-                document.body.appendChild(form);
-                form.submit();
-            },
-            true
+  // Export All CSV
+  const btnExportAll = document.getElementById("btn-export-csv");
+  if (btnExportAll) {
+    btnExportAll.addEventListener("click", () => {
+      if (rawMembers.length === 0) {
+        showGeistToast(
+          "info",
+          "Data Kosong",
+          "Tidak ada member untuk diexport.",
         );
-    };
+        return;
+      }
+      let csv = "ID,Username,Email,Role,Status,Tanggal Bergabung\n";
+      rawMembers.forEach((m) => {
+        csv += `"${m.id}","${m.username}","${m.email}","${m.role || "Siswa"}","${m.status || "Aktif"}","${m.created_at}"\n`;
+      });
+      downloadCsvFile(csv, "semua_member_netquiz.csv");
+      showGeistToast(
+        "success",
+        "Export CSV Berhasil",
+        `${rawMembers.length} member telah diunduh.`,
+      );
+    });
+  }
+
+  function downloadCsvFile(content, fileName) {
+    const blob = new Blob([content], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = fileName;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  }
+
+  // Delete Member Dialog
+  window.confirmDeleteMember = function (id, username) {
+    showGeistConfirm(
+      "Hapus Member",
+      `Apakah Anda yakin ingin menghapus akun siswa "${username}"? Tindakan ini tidak dapat dibatalkan.`,
+      "Hapus Member",
+      () => {
+        const form = document.createElement("form");
+        form.method = "POST";
+        form.action = `${window.BASE_URL}/admin/users/delete/${id}`;
+        form.innerHTML = `<input type="hidden" name="csrf_token" value="${window.CSRF_TOKEN || ""}">`;
+        document.body.appendChild(form);
+        form.submit();
+      },
+      true,
+    );
+  };
 }
 
 // ==========================================================================
 // 6. MODUL 4: MATERI BELAJAR (Quick Formatting Toolbar & Live Split Preview)
 // ==========================================================================
 function renderMaterialsSection() {
-    const sec = document.getElementById('materials-section');
-    if (!sec) return;
+  const sec = document.getElementById("materials-section");
+  if (!sec) return;
 
-    const materials = Array.isArray(window.NETQUIZ_MATERIALS) ? window.NETQUIZ_MATERIALS : [];
+  const materials = Array.isArray(window.NETQUIZ_MATERIALS)
+    ? window.NETQUIZ_MATERIALS
+    : [];
 
-    sec.innerHTML = `
+  sec.innerHTML = `
         <div class="supabase-panel-card">
             <!-- Precision Corner Crosshairs -->
             <span class="corner-crosshair corner-tl">+</span>
@@ -1295,7 +1409,7 @@ function renderMaterialsSection() {
             <!-- Create Material Form (Collapsible) -->
             <div id="material-form-container" style="display: none; padding: 1.5rem; border-bottom: 1px solid #E5E7EB; background-color: #FAFAFA;">
                 <form action="${window.BASE_URL}/admin/materials/create" method="POST" id="form-create-material">
-                    <input type="hidden" name="csrf_token" value="${window.CSRF_TOKEN || ''}">
+                    <input type="hidden" name="csrf_token" value="${window.CSRF_TOKEN || ""}">
                     
                     <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem;">
                         <div>
@@ -1407,13 +1521,13 @@ function renderMaterialsSection() {
         </div>
     `;
 
-    const matTbody = document.getElementById('materials-table-body');
-    const matSearch = document.getElementById('material-search-input');
+  const matTbody = document.getElementById("materials-table-body");
+  const matSearch = document.getElementById("material-search-input");
 
-    function renderMatRows(list) {
-        if (!matTbody) return;
-        if (list.length === 0) {
-            matTbody.innerHTML = `
+  function renderMatRows(list) {
+    if (!matTbody) return;
+    if (list.length === 0) {
+      matTbody.innerHTML = `
                 <tr>
                     <td colspan="4">
                         <div class="panel-empty-state">
@@ -1426,15 +1540,17 @@ function renderMaterialsSection() {
                     </td>
                 </tr>
             `;
-            if (window.lucide) window.lucide.createIcons();
-            return;
-        }
+      if (window.lucide) window.lucide.createIcons();
+      return;
+    }
 
-        matTbody.innerHTML = list.map(m => `
+    matTbody.innerHTML = list
+      .map(
+        (m) => `
             <tr>
                 <td style="font-weight: 700; color: #18181B;">${escapeHtml(m.title)}</td>
-                <td><span class="role-pill">${escapeHtml(m.category || 'Routing')}</span></td>
-                <td><span class="status-badge status-active">${escapeHtml(m.difficulty || 'Mudah')}</span></td>
+                <td><span class="role-pill">${escapeHtml(m.category || "Routing")}</span></td>
+                <td><span class="status-badge status-active">${escapeHtml(m.difficulty || "Mudah")}</span></td>
                 <td style="text-align: right;">
                     <div class="table-actions-group">
                         <a href="${window.BASE_URL}/learn/${m.id}" target="_blank" class="btn-icon-action" title="Lihat Tampilan Siswa">
@@ -1446,107 +1562,114 @@ function renderMaterialsSection() {
                     </div>
                 </td>
             </tr>
-        `).join('');
+        `,
+      )
+      .join("");
 
-        if (window.lucide) window.lucide.createIcons();
+    if (window.lucide) window.lucide.createIcons();
+  }
+
+  renderMatRows(materials);
+
+  if (matSearch) {
+    matSearch.addEventListener("input", (e) => {
+      const query = e.target.value.toLowerCase().trim();
+      const filtered = materials.filter(
+        (m) =>
+          (m.title && m.title.toLowerCase().includes(query)) ||
+          (m.category && m.category.toLowerCase().includes(query)),
+      );
+      renderMatRows(filtered);
+    });
+  }
+
+  // Editor / Live Preview Mode Switch
+  const btnModeEditor = document.getElementById("btn-mode-editor");
+  const btnModePreview = document.getElementById("btn-mode-preview");
+  const editorWrapper = document.getElementById("material-editor-wrapper");
+  const previewBox = document.getElementById("material-preview-box");
+  const contentTextarea = document.getElementById("material-content-textarea");
+  const readingTimePill = document.getElementById("material-reading-time");
+
+  function updateReadingTime() {
+    if (!contentTextarea || !readingTimePill) return;
+    const text = contentTextarea.value.replace(/<[^>]*>/g, " ").trim();
+    const words = text ? text.split(/\s+/).length : 0;
+    const minutes = Math.max(1, Math.ceil(words / 150));
+    readingTimePill.innerHTML = `<i data-lucide="clock" style="width: 12px; height: 12px;"></i> <span>~${minutes} menit baca (${words} kata)</span>`;
+    if (window.lucide) window.lucide.createIcons();
+  }
+
+  if (contentTextarea) {
+    contentTextarea.addEventListener("input", updateReadingTime);
+  }
+
+  if (btnModeEditor && btnModePreview && editorWrapper && previewBox) {
+    btnModeEditor.addEventListener("click", () => {
+      btnModeEditor.classList.add("active");
+      btnModePreview.classList.remove("active");
+      editorWrapper.style.display = "block";
+      previewBox.style.display = "none";
+    });
+
+    btnModePreview.addEventListener("click", () => {
+      btnModePreview.classList.add("active");
+      btnModeEditor.classList.remove("active");
+      editorWrapper.style.display = "none";
+      previewBox.style.display = "block";
+
+      const rawContent = contentTextarea ? contentTextarea.value : "";
+      previewBox.innerHTML =
+        rawContent.trim() ||
+        '<p style="color: #52525B; font-style: italic;">Pratinjau kosong. Tulis isi materi terlebih dahulu.</p>';
+    });
+  }
+
+  // Toggle Form Handlers
+  const formContainer = document.getElementById("material-form-container");
+  window.openMaterialForm = function () {
+    if (formContainer) {
+      formContainer.style.display = "block";
+      const matTitle = document.getElementById("material-input-title");
+      if (matTitle) matTitle.focus();
+      formContainer.scrollIntoView({ behavior: "smooth", block: "nearest" });
     }
+  };
 
-    renderMatRows(materials);
+  window.closeMaterialForm = function () {
+    if (formContainer) formContainer.style.display = "none";
+  };
 
-    if (matSearch) {
-        matSearch.addEventListener('input', (e) => {
-            const query = e.target.value.toLowerCase().trim();
-            const filtered = materials.filter(m => 
-                (m.title && m.title.toLowerCase().includes(query)) ||
-                (m.category && m.category.toLowerCase().includes(query))
-            );
-            renderMatRows(filtered);
-        });
-    }
-
-    // Editor / Live Preview Mode Switch
-    const btnModeEditor = document.getElementById('btn-mode-editor');
-    const btnModePreview = document.getElementById('btn-mode-preview');
-    const editorWrapper = document.getElementById('material-editor-wrapper');
-    const previewBox = document.getElementById('material-preview-box');
-    const contentTextarea = document.getElementById('material-content-textarea');
-    const readingTimePill = document.getElementById('material-reading-time');
-
-    function updateReadingTime() {
-        if (!contentTextarea || !readingTimePill) return;
-        const text = contentTextarea.value.replace(/<[^>]*>/g, ' ').trim();
-        const words = text ? text.split(/\s+/).length : 0;
-        const minutes = Math.max(1, Math.ceil(words / 150));
-        readingTimePill.innerHTML = `<i data-lucide="clock" style="width: 12px; height: 12px;"></i> <span>~${minutes} menit baca (${words} kata)</span>`;
-        if (window.lucide) window.lucide.createIcons();
-    }
-
-    if (contentTextarea) {
-        contentTextarea.addEventListener('input', updateReadingTime);
-    }
-
-    if (btnModeEditor && btnModePreview && editorWrapper && previewBox) {
-        btnModeEditor.addEventListener('click', () => {
-            btnModeEditor.classList.add('active');
-            btnModePreview.classList.remove('active');
-            editorWrapper.style.display = 'block';
-            previewBox.style.display = 'none';
-        });
-
-        btnModePreview.addEventListener('click', () => {
-            btnModePreview.classList.add('active');
-            btnModeEditor.classList.remove('active');
-            editorWrapper.style.display = 'none';
-            previewBox.style.display = 'block';
-
-            const rawContent = contentTextarea ? contentTextarea.value : '';
-            previewBox.innerHTML = rawContent.trim() || '<p style="color: #52525B; font-style: italic;">Pratinjau kosong. Tulis isi materi terlebih dahulu.</p>';
-        });
-    }
-
-    // Toggle Form Handlers
-    const formContainer = document.getElementById('material-form-container');
-    window.openMaterialForm = function() {
-        if (formContainer) {
-            formContainer.style.display = 'block';
-            const matTitle = document.getElementById('material-input-title');
-            if (matTitle) matTitle.focus();
-            formContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-        }
-    };
-
-    window.closeMaterialForm = function() {
-        if (formContainer) formContainer.style.display = 'none';
-    };
-
-    window.confirmDeleteMaterial = function(id, title) {
-        showGeistConfirm(
-            'Hapus Materi Belajar',
-            `Apakah Anda yakin ingin menghapus materi "${title}"?`,
-            'Hapus Materi',
-            () => {
-                const form = document.createElement('form');
-                form.method = 'POST';
-                form.action = `${window.BASE_URL}/admin/materials/delete/${id}`;
-                form.innerHTML = `<input type="hidden" name="csrf_token" value="${window.CSRF_TOKEN || ''}">`;
-                document.body.appendChild(form);
-                form.submit();
-            },
-            true
-        );
-    };
+  window.confirmDeleteMaterial = function (id, title) {
+    showGeistConfirm(
+      "Hapus Materi Belajar",
+      `Apakah Anda yakin ingin menghapus materi "${title}"?`,
+      "Hapus Materi",
+      () => {
+        const form = document.createElement("form");
+        form.method = "POST";
+        form.action = `${window.BASE_URL}/admin/materials/delete/${id}`;
+        form.innerHTML = `<input type="hidden" name="csrf_token" value="${window.CSRF_TOKEN || ""}">`;
+        document.body.appendChild(form);
+        form.submit();
+      },
+      true,
+    );
+  };
 }
 
 // ==========================================================================
 // 7. MODUL 5: LENCANA PRESTASI (Visual Icon Picker & 3-Col Grid)
 // ==========================================================================
 function renderBadgeSection() {
-    const sec = document.getElementById('badge-section');
-    if (!sec) return;
+  const sec = document.getElementById("badge-section");
+  if (!sec) return;
 
-    const badges = Array.isArray(window.NETQUIZ_BADGES) ? window.NETQUIZ_BADGES : [];
+  const badges = Array.isArray(window.NETQUIZ_BADGES)
+    ? window.NETQUIZ_BADGES
+    : [];
 
-    sec.innerHTML = `
+  sec.innerHTML = `
         <!-- Form Badge (Collapsible) -->
         <div id="badge-form-container" style="display: none; margin-bottom: 1.5rem;" class="supabase-panel-card">
             <!-- Precision Corner Crosshairs -->
@@ -1557,7 +1680,7 @@ function renderBadgeSection() {
 
             <div style="padding: 1.25rem 1.5rem;">
                 <form action="${window.BASE_URL}/admin/badges/create" method="POST">
-                    <input type="hidden" name="csrf_token" value="${window.CSRF_TOKEN || ''}">
+                    <input type="hidden" name="csrf_token" value="${window.CSRF_TOKEN || ""}">
                     <input type="hidden" name="icon" id="badge-selected-icon" value="award">
                     
                     <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem;">
@@ -1613,7 +1736,9 @@ function renderBadgeSection() {
 
         <!-- 3-Column Grid Layout -->
         <div class="badges-3col-grid">
-            ${badges.map(b => `
+            ${badges
+              .map(
+                (b) => `
                 <div class="supabase-panel-card" style="padding: 1.25rem 1.25rem; display: flex; flex-direction: column; justify-content: space-between;">
                     <!-- Precision Corner Crosshairs -->
                     <span class="corner-crosshair corner-tl">+</span>
@@ -1625,7 +1750,7 @@ function renderBadgeSection() {
                         <!-- Header Kartu -->
                         <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.85rem;">
                             <div style="width: 38px; height: 38px; background-color: #18181B; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #FFF;">
-                                <i data-lucide="${escapeHtml(b.icon || 'award')}" style="width: 20px; height: 20px;"></i>
+                                <i data-lucide="${escapeHtml(b.icon || "award")}" style="width: 20px; height: 20px;"></i>
                             </div>
                             <button type="button" class="btn-icon-action btn-action-danger" title="Hapus Lencana" onclick="confirmDeleteBadge(${b.id}, '${escapeHtml(b.title).replace(/'/g, "\\'")}')">
                                 <i data-lucide="trash-2"></i>
@@ -1648,7 +1773,9 @@ function renderBadgeSection() {
                         </div>
                     </div>
                 </div>
-            `).join('')}
+            `,
+              )
+              .join("")}
 
             <!-- 1 Kartu Draf Kosong Dashed Border Pemicu Alternatif -->
             <button type="button" class="badge-card-dashed-draft" onclick="window.openBadgeForm()">
@@ -1658,86 +1785,105 @@ function renderBadgeSection() {
         </div>
     `;
 
-    // Icon Picker Click Handlers
-    const iconOptions = document.querySelectorAll('.icon-picker-option');
-    const selectedIconInput = document.getElementById('badge-selected-icon');
-    iconOptions.forEach(opt => {
-        opt.addEventListener('click', function() {
-            iconOptions.forEach(o => o.classList.remove('active'));
-            this.classList.add('active');
-            if (selectedIconInput) {
-                selectedIconInput.value = this.getAttribute('data-icon');
-            }
-        });
+  // Icon Picker Click Handlers
+  const iconOptions = document.querySelectorAll(".icon-picker-option");
+  const selectedIconInput = document.getElementById("badge-selected-icon");
+  iconOptions.forEach((opt) => {
+    opt.addEventListener("click", function () {
+      iconOptions.forEach((o) => o.classList.remove("active"));
+      this.classList.add("active");
+      if (selectedIconInput) {
+        selectedIconInput.value = this.getAttribute("data-icon");
+      }
     });
+  });
 
-    const formContainer = document.getElementById('badge-form-container');
-    window.openBadgeForm = function() {
-        if (formContainer) {
-            formContainer.style.display = 'block';
-            const badgeTitle = formContainer.querySelector('input[name="title"]');
-            if (badgeTitle) badgeTitle.focus();
-            formContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-        }
-    };
+  const formContainer = document.getElementById("badge-form-container");
+  window.openBadgeForm = function () {
+    if (formContainer) {
+      formContainer.style.display = "block";
+      const badgeTitle = formContainer.querySelector('input[name="title"]');
+      if (badgeTitle) badgeTitle.focus();
+      formContainer.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    }
+  };
 
-    window.closeBadgeForm = function() {
-        if (formContainer) formContainer.style.display = 'none';
-    };
+  window.closeBadgeForm = function () {
+    if (formContainer) formContainer.style.display = "none";
+  };
 
-    window.confirmDeleteBadge = function(id, title) {
-        showGeistConfirm(
-            'Hapus Lencana',
-            `Apakah Anda yakin ingin menghapus lencana "${title}"?`,
-            'Hapus Lencana',
-            () => {
-                const form = document.createElement('form');
-                form.method = 'POST';
-                form.action = `${window.BASE_URL}/admin/badges/delete/${id}`;
-                form.innerHTML = `<input type="hidden" name="csrf_token" value="${window.CSRF_TOKEN || ''}">`;
-                document.body.appendChild(form);
-                form.submit();
-            },
-            true
-        );
-    };
+  window.confirmDeleteBadge = function (id, title) {
+    showGeistConfirm(
+      "Hapus Lencana",
+      `Apakah Anda yakin ingin menghapus lencana "${title}"?`,
+      "Hapus Lencana",
+      () => {
+        const form = document.createElement("form");
+        form.method = "POST";
+        form.action = `${window.BASE_URL}/admin/badges/delete/${id}`;
+        form.innerHTML = `<input type="hidden" name="csrf_token" value="${window.CSRF_TOKEN || ""}">`;
+        document.body.appendChild(form);
+        form.submit();
+      },
+      true,
+    );
+  };
 }
 
 // ==========================================================================
 // 8. HELPER UTILITIES
 // ==========================================================================
 function getInitials(name) {
-    if (!name) return 'U';
-    const parts = name.trim().split(/\s+/);
-    if (parts.length >= 2) {
-        return (parts[0][0] + parts[1][0]).toUpperCase();
-    }
-    return name.substring(0, 2).toUpperCase();
+  if (!name) return "U";
+  const parts = name.trim().split(/\s+/);
+  if (parts.length >= 2) {
+    return (parts[0][0] + parts[1][0]).toUpperCase();
+  }
+  return name.substring(0, 2).toUpperCase();
 }
 
 function getAvatarBgClass(id) {
-    const classes = ['', 'avatar-blue', 'avatar-purple', 'avatar-amber', 'avatar-emerald'];
-    return classes[id % classes.length];
+  const classes = [
+    "",
+    "avatar-blue",
+    "avatar-purple",
+    "avatar-amber",
+    "avatar-emerald",
+  ];
+  return classes[id % classes.length];
 }
 
 function formatDate(dateString) {
-    if (!dateString) return '12 Mei 2026';
-    try {
-        const d = new Date(dateString);
-        if (isNaN(d.getTime())) return dateString;
-        const months = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
-        return `${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
-    } catch (e) {
-        return dateString;
-    }
+  if (!dateString) return "12 Mei 2026";
+  try {
+    const d = new Date(dateString);
+    if (isNaN(d.getTime())) return dateString;
+    const months = [
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "Mei",
+      "Jun",
+      "Jul",
+      "Agu",
+      "Sep",
+      "Okt",
+      "Nov",
+      "Des",
+    ];
+    return `${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
+  } catch (e) {
+    return dateString;
+  }
 }
 
 function escapeHtml(str) {
-    if (!str) return '';
-    return String(str)
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#039;');
+  if (!str) return "";
+  return String(str)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
 }

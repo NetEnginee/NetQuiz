@@ -50,18 +50,10 @@ $stats = $stats ?? [
     <div class="viewport-framing-line left-line" aria-hidden="true"></div>
     <div class="viewport-framing-line right-line" aria-hidden="true"></div>
 
-    <!-- Backdrop Overlay for Mobile Off-Canvas Drawer -->
-    <div id="sidebar-mobile-overlay" class="sidebar-mobile-overlay" aria-hidden="true"></div>
-
     <!-- 1. TOP NAVBAR (STRICT RULE 1 PRESERVED) -->
     <header class="admin-top-nav">
         <div class="admin-nav-container">
             <div class="nav-brand-group">
-                <!-- Mobile Hamburger Toggle Button (☰) -->
-                <button type="button" class="mobile-toggle-btn" id="sidebar-toggle-btn" title="Buka Sidebar Navigasi">
-                    <i data-lucide="menu" style="width: 18px; height: 18px;"></i>
-                </button>
-
                 <a href="<?= BASE_URL ?>/admin" class="nav-brand-title" aria-label="NetQuiz Admin Dashboard">
                     <div class="nav-brand-mark">
                         <i data-lucide="terminal" class="nav-brand-icon"></i>
@@ -260,8 +252,53 @@ $stats = $stats ?? [
         </div>
     </div>
 
-    <!-- 7. GEIST FLOATING TOASTER -->
-    <div id="geist-toaster" class="geist-toaster" aria-live="polite"></div>
+    <!-- 8. FLOATING BOTTOM BUTTON NAVIGATION DOCK (MOBILE & TABLET EXCLUSIVE) -->
+    <nav id="admin-floating-bottom-nav" class="admin-floating-bottom-nav" role="tablist" aria-label="Navigasi Cepat Panel Admin">
+        <div class="floating-nav-container">
+            <!-- 1. Buat Kuis Baru (Active Default / CTA Hero) -->
+            <button type="button" class="floating-bottom-btn active" data-target="quiz-section" role="tab" aria-selected="true" aria-controls="quiz-section" id="floating-btn-quiz-section" title="Buat Kuis Baru" aria-label="Buat Kuis Baru">
+                <span class="floating-btn-icon-wrapper">
+                    <i data-lucide="plus" class="floating-btn-icon"></i>
+                </span>
+                <span class="floating-btn-label">Buat Kuis</span>
+            </button>
+
+            <!-- 2. Daftarkan Member -->
+            <button type="button" class="floating-bottom-btn" data-target="member-section" role="tab" aria-selected="false" aria-controls="member-section" id="floating-btn-member-section" title="Daftarkan Member" aria-label="Daftarkan Member">
+                <span class="floating-btn-icon-wrapper">
+                    <i data-lucide="user-plus" class="floating-btn-icon"></i>
+                </span>
+                <span class="floating-btn-label">Daftar</span>
+            </button>
+
+            <!-- 3. Manajemen Member -->
+            <button type="button" class="floating-bottom-btn" data-target="manage-section" role="tab" aria-selected="false" aria-controls="manage-section" id="floating-btn-manage-section" title="Manajemen Member" aria-label="Manajemen Member">
+                <span class="floating-btn-icon-wrapper">
+                    <i data-lucide="users" class="floating-btn-icon"></i>
+                    <span class="floating-counter-badge" id="floating-count-members">0</span>
+                </span>
+                <span class="floating-btn-label">Member</span>
+            </button>
+
+            <!-- 4. Materi Belajar -->
+            <button type="button" class="floating-bottom-btn" data-target="materials-section" role="tab" aria-selected="false" aria-controls="materials-section" id="floating-btn-materials-section" title="Materi Belajar" aria-label="Materi Belajar">
+                <span class="floating-btn-icon-wrapper">
+                    <i data-lucide="book-open" class="floating-btn-icon"></i>
+                    <span class="floating-counter-badge" id="floating-count-materials">0</span>
+                </span>
+                <span class="floating-btn-label">Materi</span>
+            </button>
+
+            <!-- 5. Lencana -->
+            <button type="button" class="floating-bottom-btn" data-target="badge-section" role="tab" aria-selected="false" aria-controls="badge-section" id="floating-btn-badge-section" title="Lencana Prestasi" aria-label="Lencana">
+                <span class="floating-btn-icon-wrapper">
+                    <i data-lucide="award" class="floating-btn-icon"></i>
+                    <span class="floating-counter-badge" id="floating-count-badges">0</span>
+                </span>
+                <span class="floating-btn-label">Lencana</span>
+            </button>
+        </div>
+    </nav>
 
     <!-- Scripts (Microtime Cache Invalidation) -->
     <script src="<?= BASE_URL ?>/js/admin-dashboard.js?v=<?= microtime(true) ?>"></script>
@@ -271,39 +308,6 @@ $stats = $stats ?? [
             if (window.lucide) {
                 window.lucide.createIcons();
             }
-
-            // Mobile Drawer Toggle Handlers (Open, Close X, Overlay Click)
-            const toggleBtn = document.getElementById("sidebar-toggle-btn");
-            const closeBtn = document.getElementById("sidebar-close-btn");
-            const sidebar = document.getElementById("admin-vertical-sidebar");
-            const overlay = document.getElementById("sidebar-mobile-overlay");
-
-            function openSidebar() {
-                if (sidebar && overlay) {
-                    sidebar.classList.add("mobile-open");
-                    overlay.classList.add("active");
-                    document.body.style.overflow = "hidden";
-                }
-            }
-
-            function closeSidebar() {
-                if (sidebar && overlay) {
-                    sidebar.classList.remove("mobile-open");
-                    overlay.classList.remove("active");
-                    document.body.style.overflow = "";
-                }
-            }
-
-            if (toggleBtn) toggleBtn.addEventListener("click", openSidebar);
-            if (closeBtn) closeBtn.addEventListener("click", closeSidebar);
-            if (overlay) overlay.addEventListener("click", closeSidebar);
-
-            // Auto close drawer when tab clicked on mobile
-            document.querySelectorAll('.sidebar-menu-btn, .sidebar-cta-btn').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    if (window.innerWidth < 1024) closeSidebar();
-                });
-            });
         });
     </script>
 </body>
