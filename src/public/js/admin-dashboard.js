@@ -91,19 +91,19 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const config = window.NetQuizConfig || { baseUrl: "" };
 
-  // --- TAB SWITCHER LOGIC (Left Vertical Sidebar - design/Layout.md) ---
+  // --- TAB SWITCHER LOGIC (Left Vertical Sidebar & Floating Bottom Dock) ---
   const tabButtons = document.querySelectorAll(
-    ".sidebar-cta-btn, .sidebar-menu-btn",
+    ".sidebar-cta-btn, .sidebar-menu-btn, .floating-bottom-btn",
   );
   const sections = document.querySelectorAll(".admin-section-content");
 
   function activateTab(targetId) {
-    const targetBtn = document.querySelector(
-      `.sidebar-cta-btn[data-target="${targetId}"], .sidebar-menu-btn[data-target="${targetId}"]`,
+    const matchingBtns = document.querySelectorAll(
+      `.sidebar-cta-btn[data-target="${targetId}"], .sidebar-menu-btn[data-target="${targetId}"], .floating-bottom-btn[data-target="${targetId}"]`,
     );
     const targetSec = document.getElementById(targetId);
 
-    if (targetBtn && targetSec) {
+    if (matchingBtns.length > 0 && targetSec) {
       // Reset all tab buttons & ARIA attributes
       tabButtons.forEach((b) => {
         b.classList.remove("active");
@@ -112,10 +112,12 @@ document.addEventListener("DOMContentLoaded", () => {
       });
       sections.forEach((s) => s.classList.remove("active"));
 
-      // Activate chosen tab button & section
-      targetBtn.classList.add("active");
-      targetBtn.setAttribute("aria-selected", "true");
-      targetBtn.setAttribute("tabindex", "0");
+      // Activate chosen tab button(s) & section
+      matchingBtns.forEach((b) => {
+        b.classList.add("active");
+        b.setAttribute("aria-selected", "true");
+        b.setAttribute("tabindex", "0");
+      });
       targetSec.classList.add("active");
 
       // Update Dynamic Page Header Title, Desc, and Right Action Button (Strict Rules 2 & 3 in design/Layout.md)
@@ -219,7 +221,11 @@ document.addEventListener("DOMContentLoaded", () => {
     btn.addEventListener("click", () => {
       const targetId = btn.getAttribute("data-target");
       activateTab(targetId);
-      if (targetId === "quiz-section" && btn.classList.contains("sidebar-cta-btn")) {
+      if (
+        targetId === "quiz-section" &&
+        (btn.classList.contains("sidebar-cta-btn") ||
+          btn.classList.contains("floating-bottom-btn"))
+      ) {
         if (window.openQuizStudio) window.openQuizStudio();
       }
     });
@@ -245,18 +251,23 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Initialize active tab from URL hash
   function initTabFromHash() {
+    if ("scrollRestoration" in history) {
+      history.scrollRestoration = "manual";
+    }
     const currentHash = window.location.hash.substring(1);
     if (
       currentHash &&
       document.getElementById(currentHash) &&
       document.querySelector(
-        `.sidebar-cta-btn[data-target="${currentHash}"], .sidebar-menu-btn[data-target="${currentHash}"]`,
+        `.sidebar-cta-btn[data-target="${currentHash}"], .sidebar-menu-btn[data-target="${currentHash}"], .floating-bottom-btn[data-target="${currentHash}"]`,
       )
     ) {
       activateTab(currentHash);
     } else {
       activateTab("quiz-section");
     }
+    window.scrollTo(0, 0);
+    setTimeout(() => window.scrollTo(0, 0), 10);
   }
 
   // Run on load and on hash change
