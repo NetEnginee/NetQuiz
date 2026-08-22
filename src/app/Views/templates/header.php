@@ -172,7 +172,7 @@ function renderBreadcrumb(array $items): string
             display: inline-flex;
             align-items: center;
             gap: 0.45rem;
-            padding: 0.35rem 0.85rem;
+            padding: 0.38rem 0.85rem;
             font-size: 0.85rem;
             font-weight: 600;
             color: #52525B;
@@ -180,7 +180,7 @@ function renderBreadcrumb(array $items): string
             border-radius: 6px;
             border: 1.5px solid transparent;
             box-shadow: none;
-            transition: none !important;
+            transition: color 0.15s ease, background-color 0.15s ease, border-color 0.15s ease;
             transform: none !important;
         }
 
@@ -191,38 +191,112 @@ function renderBreadcrumb(array $items): string
             display: inline-block;
             vertical-align: middle;
             user-select: none;
+            transition: color 0.15s ease, text-shadow 0.15s ease;
         }
 
-        .student-nav-link:hover {
-            color: #000000;
-            background-color: #FAFAFA;
-            border-color: #18181B;
-            box-shadow: 0 2px 0 #18181B;
-            transform: none !important;
+        /* 1. Dashboard Tab (Emerald Green) */
+        .student-nav-link.nav-tab-dashboard:hover {
+            color: #15803D;
+            background-color: #F0FDF4;
+            border-color: #86EFAC;
+            box-shadow: 0 2px 0 #22C55E;
         }
 
-        .student-nav-link:hover .pixel-nav-dot {
-            color: #71717A;
+        .student-nav-link.nav-tab-dashboard:hover .pixel-nav-dot {
+            color: #22C55E;
         }
 
-        .student-nav-link:active {
-            background-color: #F4F4F5;
-            color: #000000;
-            border-color: #18181B;
-            box-shadow: none;
-            transform: translateY(2px) !important;
-        }
-
-        .student-nav-link.active {
+        .student-nav-link.nav-tab-dashboard.active {
             color: #FFFFFF;
             background-color: #18181B;
-            border-color: #000000;
-            box-shadow: 0 2.5px 0 #000000;
+            border-color: #22C55E;
+            box-shadow: 0 3px 0 #15803D, 0 4px 12px rgba(34, 197, 94, 0.25);
             font-weight: 700;
         }
 
-        .student-nav-link.active .pixel-nav-dot {
+        .student-nav-link.nav-tab-dashboard.active .pixel-nav-dot {
             color: #22C55E;
+            text-shadow: 0 0 8px #22C55E, 0 0 14px rgba(34, 197, 94, 0.7);
+        }
+
+        /* 2. Kuis Tab (Cyber Sky Cyan) */
+        .student-nav-link.nav-tab-quiz:hover {
+            color: #0369A1;
+            background-color: #F0F9FF;
+            border-color: #7DD3FC;
+            box-shadow: 0 2px 0 #38BDF8;
+        }
+
+        .student-nav-link.nav-tab-quiz:hover .pixel-nav-dot {
+            color: #38BDF8;
+        }
+
+        .student-nav-link.nav-tab-quiz.active {
+            color: #FFFFFF;
+            background-color: #18181B;
+            border-color: #38BDF8;
+            box-shadow: 0 3px 0 #0284C7, 0 4px 12px rgba(56, 189, 248, 0.25);
+            font-weight: 700;
+        }
+
+        .student-nav-link.nav-tab-quiz.active .pixel-nav-dot {
+            color: #38BDF8;
+            text-shadow: 0 0 8px #38BDF8, 0 0 14px rgba(56, 189, 248, 0.7);
+        }
+
+        /* 3. Materi Tab (Warm Amber Orange) */
+        .student-nav-link.nav-tab-learn:hover {
+            color: #B45309;
+            background-color: #FFFBEB;
+            border-color: #FDE68A;
+            box-shadow: 0 2px 0 #F59E0B;
+        }
+
+        .student-nav-link.nav-tab-learn:hover .pixel-nav-dot {
+            color: #F59E0B;
+        }
+
+        .student-nav-link.nav-tab-learn.active {
+            color: #FFFFFF;
+            background-color: #18181B;
+            border-color: #F59E0B;
+            box-shadow: 0 3px 0 #D97706, 0 4px 12px rgba(245, 158, 11, 0.25);
+            font-weight: 700;
+        }
+
+        .student-nav-link.nav-tab-learn.active .pixel-nav-dot {
+            color: #F59E0B;
+            text-shadow: 0 0 8px #F59E0B, 0 0 14px rgba(245, 158, 11, 0.7);
+        }
+
+        /* 4. Leaderboard Tab (Royal Purple) */
+        .student-nav-link.nav-tab-leaderboard:hover {
+            color: #7E22CE;
+            background-color: #FAF5FF;
+            border-color: #D8B4FE;
+            box-shadow: 0 2px 0 #A855F7;
+        }
+
+        .student-nav-link.nav-tab-leaderboard:hover .pixel-nav-dot {
+            color: #A855F7;
+        }
+
+        .student-nav-link.nav-tab-leaderboard.active {
+            color: #FFFFFF;
+            background-color: #18181B;
+            border-color: #A855F7;
+            box-shadow: 0 3px 0 #7E22CE, 0 4px 12px rgba(168, 85, 247, 0.25);
+            font-weight: 700;
+        }
+
+        .student-nav-link.nav-tab-leaderboard.active .pixel-nav-dot {
+            color: #A855F7;
+            text-shadow: 0 0 8px #A855F7, 0 0 14px rgba(168, 85, 247, 0.7);
+        }
+
+        .student-nav-link:active {
+            box-shadow: none !important;
+            transform: translateY(2px) !important;
         }
 
         .student-nav-controls {
@@ -231,8 +305,9 @@ function renderBreadcrumb(array $items): string
             gap: 0.75rem;
         }
 
-        /* 3D Voxel Keycap Avatar Box */
+        /* 3D Voxel Keycap Avatar Box with Emerald Status Indicator */
         .student-avatar-box {
+            position: relative;
             width: 33px;
             height: 33px;
             background: linear-gradient(180deg, #27272A 0%, #18181B 100%);
@@ -249,11 +324,29 @@ function renderBreadcrumb(array $items): string
             user-select: none;
         }
 
+        .student-avatar-box::after {
+            content: '';
+            position: absolute;
+            top: -2px;
+            right: -2px;
+            width: 7px;
+            height: 7px;
+            background-color: #22C55E;
+            box-shadow: 0 0 6px #22C55E;
+            border-radius: 2px;
+            border: 1px solid #18181B;
+        }
+
         /* 3D Tactile Buttons */
         .btn-geist-nav-secondary {
             border-radius: 6px !important;
             border: 1.5px solid #18181B !important;
             box-shadow: 0 2.5px 0 #18181B !important;
+        }
+
+        .btn-geist-nav-secondary:hover {
+            background-color: #F4F4F5;
+            color: #18181B;
         }
 
         .btn-geist-nav-secondary:active {
@@ -270,6 +363,39 @@ function renderBreadcrumb(array $items): string
         .btn-geist-nav-danger:active {
             box-shadow: none !important;
             transform: translateY(2.5px) !important;
+        }
+
+        /* Mobile Floating Bottom Dock Button Active Colors */
+        .floating-bottom-btn {
+            transition: all 0.15s ease;
+        }
+
+        .floating-bottom-btn.btn-dashboard.active {
+            background-color: #18181B !important;
+            color: #22C55E !important;
+            border-color: #22C55E !important;
+            box-shadow: 0 3px 0 #15803D, 0 4px 10px rgba(34, 197, 94, 0.3) !important;
+        }
+
+        .floating-bottom-btn.btn-quiz.active {
+            background-color: #18181B !important;
+            color: #38BDF8 !important;
+            border-color: #38BDF8 !important;
+            box-shadow: 0 3px 0 #0284C7, 0 4px 10px rgba(56, 189, 248, 0.3) !important;
+        }
+
+        .floating-bottom-btn.btn-learn.active {
+            background-color: #18181B !important;
+            color: #F59E0B !important;
+            border-color: #F59E0B !important;
+            box-shadow: 0 3px 0 #D97706, 0 4px 10px rgba(245, 158, 11, 0.3) !important;
+        }
+
+        .floating-bottom-btn.btn-leaderboard.active {
+            background-color: #18181B !important;
+            color: #A855F7 !important;
+            border-color: #A855F7 !important;
+            box-shadow: 0 3px 0 #7E22CE, 0 4px 10px rgba(168, 85, 247, 0.3) !important;
         }
 
         .student-main-content {
@@ -387,12 +513,162 @@ function renderBreadcrumb(array $items): string
 </head>
 
 <body class="<?= $isQuizPlay ? 'quiz-play-mode' : '' ?>">
-    <!-- CAD Blueprint Canvas Ornaments -->
+    <!-- 8-Bit Pixel Cyber-Grid & Cute Floating Background Ornaments -->
     <div class="bg-ornament-grid" aria-hidden="true"></div>
     <div class="bg-ornament-major-grid" aria-hidden="true"></div>
     <div class="bg-ornament-ambient" aria-hidden="true"></div>
     <div class="viewport-framing-line left-line" aria-hidden="true"></div>
     <div class="viewport-framing-line right-line" aria-hidden="true"></div>
+
+    <!-- Cute 8-Bit Floating Decors Layer (Enhanced Fun & Variety) -->
+    <div class="pixel-bg-decor-layer" aria-hidden="true">
+        <!-- 1. Pixel Clouds (4 Total) -->
+        <svg class="pixel-bg-item pixel-cloud-left-1" viewBox="0 0 32 16" width="64" height="32" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="8" y="2" width="12" height="4" fill="#D4D4D8" />
+            <rect x="4" y="6" width="24" height="4" fill="#D4D4D8" />
+            <rect x="2" y="10" width="28" height="4" fill="#A1A1AA" />
+            <rect x="6" y="4" width="4" height="2" fill="#FFFFFF" />
+        </svg>
+
+        <svg class="pixel-bg-item pixel-cloud-right-1" viewBox="0 0 36 18" width="72" height="36" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="10" y="2" width="14" height="4" fill="#D4D4D8" />
+            <rect x="4" y="6" width="26" height="4" fill="#D4D4D8" />
+            <rect x="2" y="10" width="32" height="4" fill="#A1A1AA" />
+            <rect x="8" y="4" width="6" height="2" fill="#FFFFFF" />
+        </svg>
+
+        <svg class="pixel-bg-item pixel-cloud-left-2" viewBox="0 0 28 14" width="56" height="28" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="8" y="2" width="10" height="3" fill="#D4D4D8" />
+            <rect x="4" y="5" width="20" height="4" fill="#D4D4D8" />
+            <rect x="2" y="9" width="24" height="3" fill="#A1A1AA" />
+        </svg>
+
+        <svg class="pixel-bg-item pixel-cloud-right-2" viewBox="0 0 30 15" width="60" height="30" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="8" y="2" width="12" height="3" fill="#D4D4D8" />
+            <rect x="3" y="5" width="22" height="4" fill="#D4D4D8" />
+            <rect x="1" y="9" width="26" height="4" fill="#A1A1AA" />
+        </svg>
+
+        <!-- 2. 8-Bit Pixel Game Hearts ♥ (2 Total) -->
+        <svg class="pixel-bg-item pixel-heart-1" viewBox="0 0 10 9" width="20" height="18" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="2" y="0" width="2" height="1" fill="#F43F5E" />
+            <rect x="6" y="0" width="2" height="1" fill="#F43F5E" />
+            <rect x="1" y="1" width="4" height="2" fill="#F43F5E" />
+            <rect x="5" y="1" width="4" height="2" fill="#F43F5E" />
+            <rect x="2" y="1" width="1" height="1" fill="#FFE4E6" />
+            <rect x="1" y="3" width="8" height="2" fill="#F43F5E" />
+            <rect x="2" y="5" width="6" height="2" fill="#F43F5E" />
+            <rect x="3" y="7" width="4" height="1" fill="#F43F5E" />
+            <rect x="4" y="8" width="2" height="1" fill="#F43F5E" />
+        </svg>
+
+        <svg class="pixel-bg-item pixel-heart-2" viewBox="0 0 10 9" width="18" height="16" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="2" y="0" width="2" height="1" fill="#FB7185" />
+            <rect x="6" y="0" width="2" height="1" fill="#FB7185" />
+            <rect x="1" y="1" width="4" height="2" fill="#FB7185" />
+            <rect x="5" y="1" width="4" height="2" fill="#FB7185" />
+            <rect x="2" y="1" width="1" height="1" fill="#FFF1F2" />
+            <rect x="1" y="3" width="8" height="2" fill="#FB7185" />
+            <rect x="2" y="5" width="6" height="2" fill="#FB7185" />
+            <rect x="3" y="7" width="4" height="1" fill="#FB7185" />
+            <rect x="4" y="8" width="2" height="1" fill="#FB7185" />
+        </svg>
+
+        <!-- 3. 8-Bit Pixel Lightning Bolts ⚡ (2 Total) -->
+        <svg class="pixel-bg-item pixel-lightning-1" viewBox="0 0 8 12" width="16" height="24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <polygon points="5,0 1,6 4,6 3,12 7,5 4,5" fill="#F59E0B" stroke="#D97706" stroke-width="0.5" />
+        </svg>
+
+        <svg class="pixel-bg-item pixel-lightning-2" viewBox="0 0 8 12" width="14" height="21" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <polygon points="5,0 1,6 4,6 3,12 7,5 4,5" fill="#FBBF24" stroke="#D97706" stroke-width="0.5" />
+        </svg>
+
+        <!-- 4. 8-Bit Pixel WiFi Waves 📶 (2 Total) -->
+        <svg class="pixel-bg-item pixel-wifi-1" viewBox="0 0 12 10" width="22" height="18" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="1" y="1" width="10" height="2" fill="#38BDF8" />
+            <rect x="3" y="4" width="6" height="2" fill="#38BDF8" />
+            <rect x="5" y="7" width="2" height="2" fill="#22C55E" />
+        </svg>
+
+        <svg class="pixel-bg-item pixel-wifi-2" viewBox="0 0 12 10" width="20" height="16" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="1" y="1" width="10" height="2" fill="#38BDF8" />
+            <rect x="3" y="4" width="6" height="2" fill="#38BDF8" />
+            <rect x="5" y="7" width="2" height="2" fill="#22C55E" />
+        </svg>
+
+        <!-- 5. 8-Bit Pixel Diamonds / Gems 💎 (2 Total) -->
+        <svg class="pixel-bg-item pixel-gem-1" viewBox="0 0 12 10" width="20" height="16" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <polygon points="3,1 9,1 11,4 6,9 1,4" fill="#38BDF8" stroke="#0284C7" stroke-width="0.6" />
+            <polygon points="4,2 8,2 9,4 6,7 3,4" fill="#BAE6FD" />
+        </svg>
+
+        <svg class="pixel-bg-item pixel-gem-2" viewBox="0 0 12 10" width="18" height="15" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <polygon points="3,1 9,1 11,4 6,9 1,4" fill="#34D399" stroke="#059669" stroke-width="0.6" />
+            <polygon points="4,2 8,2 9,4 6,7 3,4" fill="#A7F3D0" />
+        </svg>
+
+        <!-- 6. Twinkling Pixel Stars ✦ (6 Total) -->
+        <svg class="pixel-bg-item pixel-star-1" viewBox="0 0 9 9" width="18" height="18" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="4" y="0" width="1" height="9" fill="#38BDF8" />
+            <rect x="0" y="4" width="9" height="1" fill="#38BDF8" />
+            <rect x="3" y="3" width="3" height="3" fill="#0284C7" />
+        </svg>
+
+        <svg class="pixel-bg-item pixel-star-2" viewBox="0 0 9 9" width="16" height="16" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="4" y="0" width="1" height="9" fill="#F59E0B" />
+            <rect x="0" y="4" width="9" height="1" fill="#F59E0B" />
+            <rect x="3" y="3" width="3" height="3" fill="#D97706" />
+        </svg>
+
+        <svg class="pixel-bg-item pixel-star-3" viewBox="0 0 9 9" width="16" height="16" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="4" y="0" width="1" height="9" fill="#22C55E" />
+            <rect x="0" y="4" width="9" height="1" fill="#22C55E" />
+            <rect x="3" y="3" width="3" height="3" fill="#15803D" />
+        </svg>
+
+        <svg class="pixel-bg-item pixel-star-4" viewBox="0 0 9 9" width="14" height="14" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="4" y="0" width="1" height="9" fill="#A1A1AA" />
+            <rect x="0" y="4" width="9" height="1" fill="#A1A1AA" />
+            <rect x="3" y="3" width="3" height="3" fill="#71717A" />
+        </svg>
+
+        <svg class="pixel-bg-item pixel-star-5" viewBox="0 0 9 9" width="16" height="16" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="4" y="0" width="1" height="9" fill="#A855F7" />
+            <rect x="0" y="4" width="9" height="1" fill="#A855F7" />
+            <rect x="3" y="3" width="3" height="3" fill="#7E22CE" />
+        </svg>
+
+        <svg class="pixel-bg-item pixel-star-6" viewBox="0 0 9 9" width="15" height="15" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="4" y="0" width="1" height="9" fill="#38BDF8" />
+            <rect x="0" y="4" width="9" height="1" fill="#38BDF8" />
+            <rect x="3" y="3" width="3" height="3" fill="#0284C7" />
+        </svg>
+
+        <!-- 7. 3D Voxel Data Packet Cubes (4 Total) -->
+        <svg class="pixel-bg-item pixel-cube-1" viewBox="0 0 16 16" width="22" height="22" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <polygon points="8,1 15,5 8,9 1,5" fill="#D4D4D8" />
+            <polygon points="1,5 8,9 8,15 1,11" fill="#A1A1AA" />
+            <polygon points="8,9 15,5 15,11 8,15" fill="#71717A" />
+        </svg>
+
+        <svg class="pixel-bg-item pixel-cube-2" viewBox="0 0 16 16" width="20" height="20" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <polygon points="8,1 15,5 8,9 1,5" fill="#D4D4D8" />
+            <polygon points="1,5 8,9 8,15 1,11" fill="#A1A1AA" />
+            <polygon points="8,9 15,5 15,11 8,15" fill="#71717A" />
+        </svg>
+
+        <svg class="pixel-bg-item pixel-cube-3" viewBox="0 0 16 16" width="22" height="22" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <polygon points="8,1 15,5 8,9 1,5" fill="#D4D4D8" />
+            <polygon points="1,5 8,9 8,15 1,11" fill="#A1A1AA" />
+            <polygon points="8,9 15,5 15,11 8,15" fill="#71717A" />
+        </svg>
+
+        <svg class="pixel-bg-item pixel-cube-4" viewBox="0 0 16 16" width="18" height="18" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <polygon points="8,1 15,5 8,9 1,5" fill="#D4D4D8" />
+            <polygon points="1,5 8,9 8,15 1,11" fill="#A1A1AA" />
+            <polygon points="8,9 15,5 15,11 8,15" fill="#71717A" />
+        </svg>
+    </div>
 
     <!-- 1. MINIMALIST TOP NAVBAR -->
     <header class="student-top-nav" aria-label="Navigasi Utama">
@@ -443,19 +719,19 @@ function renderBreadcrumb(array $items): string
 
             <!-- Center: Pure Text Navigation Links with Cute Pixel Dot Indicators (Desktop) -->
             <nav class="student-nav-links" aria-label="Menu Siswa">
-                <a href="<?= BASE_URL ?>/" class="student-nav-link <?= isStudentNavActive('/', $currentPath) ? 'active' : '' ?>">
+                <a href="<?= BASE_URL ?>/" class="student-nav-link nav-tab-dashboard <?= isStudentNavActive('/', $currentPath) ? 'active' : '' ?>">
                     <span class="pixel-nav-dot" aria-hidden="true">■</span>
                     <span>Dashboard</span>
                 </a>
-                <a href="<?= BASE_URL ?>/quiz" class="student-nav-link <?= isStudentNavActive('/quiz', $currentPath) ? 'active' : '' ?>">
+                <a href="<?= BASE_URL ?>/quiz" class="student-nav-link nav-tab-quiz <?= isStudentNavActive('/quiz', $currentPath) ? 'active' : '' ?>">
                     <span class="pixel-nav-dot" aria-hidden="true">■</span>
                     <span>Kuis</span>
                 </a>
-                <a href="<?= BASE_URL ?>/learn" class="student-nav-link <?= isStudentNavActive('/learn', $currentPath) ? 'active' : '' ?>">
+                <a href="<?= BASE_URL ?>/learn" class="student-nav-link nav-tab-learn <?= isStudentNavActive('/learn', $currentPath) ? 'active' : '' ?>">
                     <span class="pixel-nav-dot" aria-hidden="true">■</span>
                     <span>Materi</span>
                 </a>
-                <a href="<?= BASE_URL ?>/leaderboard" class="student-nav-link <?= isStudentNavActive('/leaderboard', $currentPath) ? 'active' : '' ?>">
+                <a href="<?= BASE_URL ?>/leaderboard" class="student-nav-link nav-tab-leaderboard <?= isStudentNavActive('/leaderboard', $currentPath) ? 'active' : '' ?>">
                     <span class="pixel-nav-dot" aria-hidden="true">■</span>
                     <span>Leaderboard</span>
                 </a>
@@ -494,29 +770,29 @@ function renderBreadcrumb(array $items): string
     <!-- 2. FLOATING BOTTOM NAVIGATION DOCK (MOBILE & TABLET EXCLUSIVE) -->
     <nav class="student-floating-bottom-nav" aria-label="Navigasi Bawah">
         <div class="floating-nav-container">
-            <!-- 1. Dashboard -->
-            <a href="<?= BASE_URL ?>/" class="floating-bottom-btn <?= isStudentNavActive('/', $currentPath) ? 'active' : '' ?>" title="Dashboard">
+            <!-- 1. Dashboard (Emerald) -->
+            <a href="<?= BASE_URL ?>/" class="floating-bottom-btn btn-dashboard <?= isStudentNavActive('/', $currentPath) ? 'active' : '' ?>" title="Dashboard">
                 <span class="floating-btn-icon-wrapper">
                     <i data-lucide="layout-dashboard" class="floating-btn-icon"></i>
                 </span>
             </a>
 
-            <!-- 2. Kuis -->
-            <a href="<?= BASE_URL ?>/quiz" class="floating-bottom-btn <?= isStudentNavActive('/quiz', $currentPath) ? 'active' : '' ?>" title="Katalog Kuis">
+            <!-- 2. Kuis (Cyan) -->
+            <a href="<?= BASE_URL ?>/quiz" class="floating-bottom-btn btn-quiz <?= isStudentNavActive('/quiz', $currentPath) ? 'active' : '' ?>" title="Katalog Kuis">
                 <span class="floating-btn-icon-wrapper">
                     <i data-lucide="file-question" class="floating-btn-icon"></i>
                 </span>
             </a>
 
-            <!-- 3. Materi Belajar -->
-            <a href="<?= BASE_URL ?>/learn" class="floating-bottom-btn <?= isStudentNavActive('/learn', $currentPath) ? 'active' : '' ?>" title="Materi Belajar">
+            <!-- 3. Materi Belajar (Amber) -->
+            <a href="<?= BASE_URL ?>/learn" class="floating-bottom-btn btn-learn <?= isStudentNavActive('/learn', $currentPath) ? 'active' : '' ?>" title="Materi Belajar">
                 <span class="floating-btn-icon-wrapper">
                     <i data-lucide="book-open" class="floating-btn-icon"></i>
                 </span>
             </a>
 
-            <!-- 4. Leaderboard -->
-            <a href="<?= BASE_URL ?>/leaderboard" class="floating-bottom-btn <?= isStudentNavActive('/leaderboard', $currentPath) ? 'active' : '' ?>" title="Leaderboard">
+            <!-- 4. Leaderboard (Purple) -->
+            <a href="<?= BASE_URL ?>/leaderboard" class="floating-bottom-btn btn-leaderboard <?= isStudentNavActive('/leaderboard', $currentPath) ? 'active' : '' ?>" title="Leaderboard">
                 <span class="floating-btn-icon-wrapper">
                     <i data-lucide="trophy" class="floating-btn-icon"></i>
                 </span>
