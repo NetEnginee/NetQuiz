@@ -985,7 +985,7 @@ function renderMemberSection() {
   if (!sec) return;
 
   sec.innerHTML = `
-        <div class="supabase-panel-card" style="max-width: 800px; margin: 0 auto 2rem 0;">
+        <div class="supabase-panel-card" style="margin-bottom: 2rem;">
             <!-- Precision Corner Crosshairs -->
             <span class="corner-crosshair corner-tl">+</span>
             <span class="corner-crosshair corner-tr">+</span>
@@ -1428,7 +1428,7 @@ function renderManageMemberSection() {
 }
 
 // ==========================================================================
-// 6. MODUL 4: MATERI BELAJAR (Quick Formatting Toolbar & Live Split Preview)
+// 6. MODUL 4: MATERI BELAJAR (Segmented Studio & Live Preview Table)
 // ==========================================================================
 function renderMaterialsSection() {
   const sec = document.getElementById("materials-section");
@@ -1439,35 +1439,49 @@ function renderMaterialsSection() {
     : [];
 
   sec.innerHTML = `
-        <div class="supabase-panel-card">
-            <!-- Precision Corner Crosshairs -->
-            <span class="corner-crosshair corner-tl">+</span>
-            <span class="corner-crosshair corner-tr">+</span>
-            <span class="corner-crosshair corner-bl">+</span>
-            <span class="corner-crosshair corner-br">+</span>
+        <!-- Top Segmented Switcher -->
+        <div class="quiz-segmented-switcher-bar" style="margin-bottom: 1.5rem;">
+            <div class="quiz-segmented-control">
+                <button type="button" id="tab-btn-material-create" class="quiz-segment-tab active" onclick="window.switchMaterialView('create')">
+                    <i data-lucide="plus-circle" style="width: 14px; height: 14px;"></i>
+                    <span>Tulis Materi Baru</span>
+                </button>
+                <button type="button" id="tab-btn-material-list" class="quiz-segment-tab" onclick="window.switchMaterialView('list')">
+                    <i data-lucide="book-open" style="width: 14px; height: 14px;"></i>
+                    <span>Daftar Materi (<span id="material-list-counter">${materials.length}</span>)</span>
+                </button>
+            </div>
+        </div>
 
-            <!-- Create Material Form (Collapsible) -->
-            <div id="material-form-container" style="display: none; padding: 1.5rem; border-bottom: 1px solid #E5E7EB; background-color: #FAFAFA;">
-                <form action="${window.BASE_URL}/admin/materials/create" method="POST" id="form-create-material">
+        <!-- VIEW 1: STUDIO FORM -->
+        <div id="material-view-create" class="material-subview-panel">
+            <div class="supabase-panel-card" style="margin-bottom: 2rem;">
+                <!-- Precision Corner Crosshairs -->
+                <span class="corner-crosshair corner-tl">+</span>
+                <span class="corner-crosshair corner-tr">+</span>
+                <span class="corner-crosshair corner-bl">+</span>
+                <span class="corner-crosshair corner-br">+</span>
+
+                <form action="${window.BASE_URL}/admin/materials/create" method="POST" id="form-create-material" style="padding: 1.75rem;">
                     <input type="hidden" name="csrf_token" value="${window.CSRF_TOKEN || ""}">
                     
-                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem;">
-                        <div>
-                            <h3 style="font-family: var(--font-heading); font-size: 1.05rem; font-weight: 800; color: #18181B; margin: 0;">Penulisan Artikel Materi Baru</h3>
-                            <p style="font-size: 0.8rem; color: #52525B; margin-top: 0.2rem;">Gunakan toolbar formatting untuk menyusun artikel RouterOS yang rapi.</p>
-                        </div>
-                        <button type="button" onclick="window.closeMaterialForm()" class="btn-secondary-outline" style="padding: 0.35rem 0.75rem; font-size: 0.8rem;">Tutup</button>
+                    <!-- Section Header -->
+                    <div style="margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid #E5E7EB;">
+                        <h3 style="font-family: var(--font-heading); font-size: 1.15rem; font-weight: 800; color: #18181B; margin: 0;">Tulis Artikel Materi Baru</h3>
+                        <p style="font-size: 0.825rem; color: #71717A; margin-top: 0.25rem;">Susun modul materi pembelajaran dan panduan konfigurasi MikroTik RouterOS.</p>
                     </div>
 
-                    <div class="form-field-group">
+                    <!-- Field: Judul -->
+                    <div class="form-field-group" style="margin-bottom: 1.25rem;">
                         <label class="form-field-label">Judul Materi</label>
-                        <input type="text" class="form-field-input" name="title" id="material-input-title" placeholder="Contoh: Konfigurasi VLAN & Trunking pada MikroTik RouterOS" required>
+                        <input type="text" class="form-field-input" name="title" id="material-input-title" placeholder="Contoh: Konfigurasi VLAN & Trunking pada MikroTik RouterOS" required autocomplete="off">
                     </div>
 
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                    <!-- Grid 2-kolom: Kategori & Kesulitan -->
+                    <div class="form-grid-2col" style="margin-bottom: 1.25rem;">
                         <div class="form-field-group">
                             <label class="form-field-label">Kategori</label>
-                            <select class="panel-select" name="category" style="width: 100%;">
+                            <select class="panel-select" name="category" id="material-input-category" style="width: 100%;">
                                 <option value="Routing">Routing</option>
                                 <option value="Firewall & NAT">Firewall & NAT</option>
                                 <option value="Wireless">Wireless</option>
@@ -1476,7 +1490,7 @@ function renderMaterialsSection() {
                         </div>
                         <div class="form-field-group">
                             <label class="form-field-label">Tingkat Kesulitan</label>
-                            <select class="panel-select" name="difficulty" style="width: 100%;">
+                            <select class="panel-select" name="difficulty" id="material-input-difficulty" style="width: 100%;">
                                 <option value="Mudah">Mudah</option>
                                 <option value="Sedang">Sedang</option>
                                 <option value="Sulit">Sulit</option>
@@ -1484,79 +1498,94 @@ function renderMaterialsSection() {
                         </div>
                     </div>
 
-                    <!-- Editor / Live Preview Switch Tabs -->
-                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.5rem;">
-                        <div class="editor-mode-switch">
-                            <button type="button" class="editor-mode-btn active" id="btn-mode-editor">Editor Kode</button>
-                            <button type="button" class="editor-mode-btn" id="btn-mode-preview">Pratinjau Siswa</button>
+                    <!-- Editor Section Header & Mode Switcher -->
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.6rem; flex-wrap: wrap; gap: 0.5rem;">
+                        <div class="quiz-segmented-control" style="padding: 2px;">
+                            <button type="button" class="quiz-segment-tab active" id="btn-mode-editor" style="padding: 4px 10px; font-size: 0.775rem;">
+                                <i data-lucide="edit-3" style="width: 13px; height: 13px;"></i>
+                                <span>Tulis</span>
+                            </button>
+                            <button type="button" class="quiz-segment-tab" id="btn-mode-preview" style="padding: 4px 10px; font-size: 0.775rem;">
+                                <i data-lucide="eye" style="width: 13px; height: 13px;"></i>
+                                <span>Pratinjau</span>
+                            </button>
                         </div>
-                        <span class="reading-time-pill" id="material-reading-time">
+                        <span class="reading-time-pill" id="material-reading-time" style="font-size: 0.75rem; color: #71717A; display: inline-flex; align-items: center; gap: 4px;">
                             <i data-lucide="clock" style="width: 12px; height: 12px;"></i>
                             <span>~1 menit baca</span>
                         </span>
                     </div>
 
-                    <!-- Quick Formatting Toolbar -->
+                    <!-- Editor Box -->
                     <div id="material-editor-wrapper">
-                        <div class="editor-quick-toolbar">
+                        <div class="editor-quick-toolbar" style="display: flex; align-items: center; gap: 4px; padding: 6px 8px; background-color: #F4F4F5; border: 1px solid #E5E7EB; border-bottom: none; border-top-left-radius: 8px; border-top-right-radius: 8px; flex-wrap: wrap;">
                             <button type="button" class="toolbar-btn" onclick="insertHtmlTag('<h2>', '</h2>')" title="Heading 2">H2</button>
                             <button type="button" class="toolbar-btn" onclick="insertHtmlTag('<h3>', '</h3>')" title="Heading 3">H3</button>
                             <button type="button" class="toolbar-btn" onclick="insertHtmlTag('<strong>', '</strong>')" title="Bold"><b>B</b></button>
                             <button type="button" class="toolbar-btn" onclick="insertHtmlTag('<em>', '</em>')" title="Italic"><i>I</i></button>
-                            <button type="button" class="toolbar-btn" onclick="insertHtmlTag('<pre><code>', '</code></pre>')" title="CLI Command Block">&lt;/&gt; CLI</button>
-                            <button type="button" class="toolbar-btn" onclick="insertHtmlTag('<p>', '</p>')" title="Paragraf">&lt;p&gt;</button>
-                            <button type="button" class="toolbar-btn" onclick="formatHtmlContent()" title="Auto Format HTML">Format HTML</button>
-                            <button type="button" class="toolbar-btn" onclick="downloadJsonTemplate()" title="Unduh Template JSON">Template JSON</button>
+                            <button type="button" class="toolbar-btn" onclick="insertHtmlTag('<pre><code>', '</code></pre>')" title="Blok Perintah CLI RouterOS">&lt;/&gt; CLI</button>
+                            <button type="button" class="toolbar-btn" onclick="insertHtmlTag('<ul>\n  <li>', '</li>\n</ul>')" title="Daftar List">• List</button>
+                            <button type="button" class="toolbar-btn" onclick="downloadJsonTemplate()" title="Unduh Template JSON" style="margin-left: auto; font-size: 0.75rem; display: inline-flex; align-items: center; gap: 4px;">
+                                <i data-lucide="download" style="width: 12px; height: 12px;"></i>
+                                <span>Template JSON</span>
+                            </button>
                         </div>
                         <div class="form-field-group" style="margin-bottom: 0;">
-                            <textarea class="form-field-input" name="content" id="material-content-textarea" rows="6" placeholder="Tuliskan isi artikel materi menggunakan tag HTML atau gunakan toolbar di atas..." required style="border-top-left-radius: 0; border-top-right-radius: 0;"></textarea>
+                            <textarea class="form-field-input" name="content" id="material-content-textarea" rows="8" placeholder="Tuliskan isi artikel materi panduan konfigurasi atau gunakan toolbar di atas..." required style="border-top-left-radius: 0; border-top-right-radius: 0; min-height: 200px; font-family: var(--font-body); font-size: 0.875rem; line-height: 1.6;"></textarea>
                         </div>
                     </div>
 
                     <!-- Live Student Preview Box -->
-                    <div id="material-preview-box" class="material-live-preview-box" style="display: none;">
-                        <p style="color: #52525B; font-style: italic;">Pratinjau kosong. Tulis isi materi terlebih dahulu.</p>
+                    <div id="material-preview-box" class="material-live-preview-box" style="display: none; padding: 1.25rem; border: 1px solid #E5E7EB; border-radius: 8px; background-color: #FAFAFA; min-height: 200px;">
+                        <p style="color: #71717A; font-style: italic;">Pratinjau kosong. Tulis isi materi terlebih dahulu.</p>
                     </div>
 
-                    <div style="display: flex; justify-content: flex-end; margin-top: 1.25rem;">
-                        <button type="submit" class="btn-primary-black">
-                            <i data-lucide="send" style="width: 15px; height: 15px;"></i>
-                            <span>Publikasikan Materi</span>
+                    <!-- Footer Action Bar -->
+                    <div style="display: flex; align-items: center; justify-content: flex-end; gap: 0.75rem; padding-top: 1.25rem; margin-top: 1.5rem; border-top: 1px solid #E5E7EB;">
+                        <button type="button" onclick="window.switchMaterialView('list')" class="btn-secondary-outline" style="padding: 0.5rem 1rem;">Batal</button>
+                        <button type="submit" class="btn-primary-black" style="padding: 0.5rem 1.25rem; display: inline-flex; align-items: center; gap: 0.4rem;">
+                            <i data-lucide="check" style="width: 15px; height: 15px;"></i>
+                            <span>Simpan Materi</span>
                         </button>
                     </div>
                 </form>
             </div>
+        </div>
 
-            <!-- Toolbar & Search (Anti-Slop Clean Input with Shortcut Badge) -->
-            <div class="panel-toolbar">
-                <div class="panel-toolbar-left">
-                    <div class="search-input-wrapper">
-                        <input type="text" id="material-search-input" class="panel-search-input" placeholder="Cari judul modul atau materi...">
-                        <span class="search-shortcut-badge" title="Tekan '/' pada keyboard untuk mencari">/</span>
+        <!-- VIEW 2: MATERI DATA TABLE -->
+        <div id="material-view-list" class="material-subview-panel" style="display: none;">
+            <div class="supabase-panel-card">
+                <!-- Precision Corner Crosshairs -->
+                <span class="corner-crosshair corner-tl">+</span>
+                <span class="corner-crosshair corner-tr">+</span>
+                <span class="corner-crosshair corner-bl">+</span>
+                <span class="corner-crosshair corner-br">+</span>
+
+                <!-- Search Toolbar -->
+                <div class="panel-toolbar">
+                    <div class="panel-toolbar-left" style="width: 100%;">
+                        <div class="search-input-wrapper" style="max-width: 360px;">
+                            <input type="text" id="material-search-input" class="panel-search-input" placeholder="Cari judul modul atau materi...">
+                            <span class="search-shortcut-badge" title="Tekan '/' pada keyboard untuk mencari">/</span>
+                        </div>
                     </div>
                 </div>
-                <div class="panel-toolbar-right">
-                    <button type="button" class="btn-primary-black" onclick="window.openMaterialForm()" style="font-size: 0.8rem; padding: 0.45rem 0.9rem; display: inline-flex; align-items: center; gap: 0.35rem;">
-                        <i data-lucide="plus" style="width: 14px; height: 14px;"></i>
-                        <span>+ Tulis Artikel Baru</span>
-                    </button>
-                </div>
-            </div>
 
-            <!-- Table -->
-            <div class="panel-table-container">
-                <table class="supabase-data-table">
-                    <thead>
-                        <tr>
-                            <th>JUDUL MATERI</th>
-                            <th>KATEGORI</th>
-                            <th>KESULITAN</th>
-                            <th style="text-align: right; width: 90px;">AKSI</th>
-                        </tr>
-                    </thead>
-                    <tbody id="materials-table-body">
-                    </tbody>
-                </table>
+                <!-- Table Container -->
+                <div class="panel-table-container">
+                    <table class="supabase-data-table">
+                        <thead>
+                            <tr>
+                                <th>JUDUL MATERI</th>
+                                <th>KATEGORI</th>
+                                <th>KESULITAN</th>
+                                <th style="text-align: right; width: 90px;">AKSI</th>
+                            </tr>
+                        </thead>
+                        <tbody id="materials-table-body">
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     `;
@@ -1623,6 +1652,37 @@ function renderMaterialsSection() {
     });
   }
 
+  // Switch between Creation Studio View and Materials Table View
+  window.switchMaterialView = function (view) {
+    const viewCreate = document.getElementById("material-view-create");
+    const viewList = document.getElementById("material-view-list");
+    const tabCreate = document.getElementById("tab-btn-material-create");
+    const tabList = document.getElementById("tab-btn-material-list");
+
+    if (view === "create") {
+      if (viewCreate) viewCreate.style.display = "block";
+      if (viewList) viewList.style.display = "none";
+      if (tabCreate) tabCreate.classList.add("active");
+      if (tabList) tabList.classList.remove("active");
+      const titleInput = document.getElementById("material-input-title");
+      if (titleInput) titleInput.focus();
+    } else {
+      if (viewCreate) viewCreate.style.display = "none";
+      if (viewList) viewList.style.display = "block";
+      if (tabCreate) tabCreate.classList.remove("active");
+      if (tabList) tabList.classList.add("active");
+    }
+    if (window.lucide) window.lucide.createIcons();
+  };
+
+  window.openMaterialForm = function () {
+    window.switchMaterialView("create");
+  };
+
+  window.closeMaterialForm = function () {
+    window.switchMaterialView("list");
+  };
+
   // Editor / Live Preview Mode Switch
   const btnModeEditor = document.getElementById("btn-mode-editor");
   const btnModePreview = document.getElementById("btn-mode-preview");
@@ -1661,24 +1721,9 @@ function renderMaterialsSection() {
       const rawContent = contentTextarea ? contentTextarea.value : "";
       previewBox.innerHTML =
         rawContent.trim() ||
-        '<p style="color: #52525B; font-style: italic;">Pratinjau kosong. Tulis isi materi terlebih dahulu.</p>';
+        '<p style="color: #71717A; font-style: italic;">Pratinjau kosong. Tulis isi materi terlebih dahulu.</p>';
     });
   }
-
-  // Toggle Form Handlers
-  const formContainer = document.getElementById("material-form-container");
-  window.openMaterialForm = function () {
-    if (formContainer) {
-      formContainer.style.display = "block";
-      const matTitle = document.getElementById("material-input-title");
-      if (matTitle) matTitle.focus();
-      formContainer.scrollIntoView({ behavior: "smooth", block: "nearest" });
-    }
-  };
-
-  window.closeMaterialForm = function () {
-    if (formContainer) formContainer.style.display = "none";
-  };
 
   window.confirmDeleteMaterial = function (id, title) {
     showGeistConfirm(
@@ -1696,6 +1741,8 @@ function renderMaterialsSection() {
       true,
     );
   };
+
+  if (window.lucide) window.lucide.createIcons();
 }
 
 // ==========================================================================
