@@ -1,4 +1,31 @@
-<?php require_once dirname(__DIR__) . '/templates/header.php'; ?>
+<?php
+$categorized = $categorized ?? [];
+$activeDifficulty = $activeDifficulty ?? 'all';
+
+if (!function_exists('getQuizTimeAgo')) {
+    function getQuizTimeAgo(int $diff): string
+    {
+        $intervals = [
+            31536000 => 'tahun',
+            2592000 => 'bulan',
+            604800 => 'minggu',
+            86400 => 'hari',
+            3600 => 'jam',
+            60 => 'menit'
+        ];
+        foreach ($intervals as $secs => $label) {
+            $div = $diff / $secs;
+            if ($div >= 1) {
+                $num = (int) round($div);
+                return $num . ' ' . $label . ' yang lalu';
+            }
+        }
+        return 'Baru saja';
+    }
+}
+
+require_once dirname(__DIR__) . '/templates/header.php';
+?>
 
 <!-- Custom Styles for Quiz -->
 <link rel="stylesheet" href="<?= BASE_URL ?>/css/quiz.css?v=<?= time() ?>">
@@ -119,13 +146,13 @@
     <div class="categories-filter-wrapper">
         <div class="categories-filter-pills">
             <a href="<?= BASE_URL ?>/quiz?difficulty=all"
-                class="category-pill <?= $activeDifficulty === 'all' ? 'active' : '' ?>">Semua</a>
+                class="category-pill <?= ($activeDifficulty === 'all') ? 'active' : '' ?>">Semua</a>
             <a href="<?= BASE_URL ?>/quiz?difficulty=Mudah"
-                class="category-pill <?= $activeDifficulty === 'Mudah' ? 'active' : '' ?>">Mudah</a>
+                class="category-pill <?= ($activeDifficulty === 'Mudah') ? 'active' : '' ?>">Mudah</a>
             <a href="<?= BASE_URL ?>/quiz?difficulty=Sedang"
-                class="category-pill <?= $activeDifficulty === 'Sedang' ? 'active' : '' ?>">Sedang</a>
+                class="category-pill <?= ($activeDifficulty === 'Sedang') ? 'active' : '' ?>">Sedang</a>
             <a href="<?= BASE_URL ?>/quiz?difficulty=Sulit"
-                class="category-pill <?= $activeDifficulty === 'Sulit' ? 'active' : '' ?>">Sulit</a>
+                class="category-pill <?= ($activeDifficulty === 'Sulit') ? 'active' : '' ?>">Sulit</a>
         </div>
     </div>
 
@@ -142,10 +169,10 @@
         <section class="category-section">
             <h2 class="category-title-header">
                 <i data-lucide="folder"></i>
-                <?= htmlspecialchars($categoryName) ?>
+                <?= htmlspecialchars((string) $categoryName) ?>
             </h2>
 
-            <?php if (empty($quizList)): ?>
+            <?php if (empty($quizList) || !is_array($quizList)): ?>
                 <div class="empty-state-box"
                     style="background-color: #ffffff; border: 1px dashed #cbd5e1; border-radius: 12px; padding: 2rem 1.5rem; text-align: center; color: #94a3b8; font-family: 'Plus Jakarta Sans', sans-serif;">
                     <p class="empty-text" style="font-style: italic; margin: 0; font-size: 0.85rem;">Kuis belum tersedia untuk
@@ -154,45 +181,33 @@
             <?php else: ?>
                 <div class="quiz-grid">
                     <?php foreach ($quizList as $quiz): ?>
+                        <?php
+                        $quizId = isset($quiz['id']) ? (int) $quiz['id'] : 0;
+                        $quizTitle = $quiz['title'] ?? 'Kuis MikroTik';
+                        $quizDesc = $quiz['description'] ?? '';
+                        $quizDifficulty = $quiz['difficulty'] ?? 'Mudah';
+                        $quizDuration = isset($quiz['duration']) ? (int) $quiz['duration'] : 0;
+                        $isCompleted = !empty($quiz['is_completed']);
+                        $quizScore = isset($quiz['score']) ? (int) $quiz['score'] : 0;
+
+                        $isNew = false;
+                        $timeAgoText = '';
+                        if (!empty($quiz['created_at'])) {
+                            $createdAt = strtotime((string) $quiz['created_at']);
+                            if ($createdAt !== false) {
+                                $timeDiff = time() - $createdAt;
+                                $isNew = $timeDiff < (1 * 24 * 60 * 60); // 1 hari terakhir
+                                if (!$isNew) {
+                                    $timeAgoText = getQuizTimeAgo($timeDiff);
+                                }
+                            }
+                        }
+                        ?>
                         <div class="quiz-card">
                             <div class="quiz-info">
-                                <?php
-                                $isNew = false;
-                                $timeAgoText = '';
-                                if (!empty($quiz['created_at'])) {
-                                    $createdAt = strtotime($quiz['created_at']);
-                                    $diff = time() - $createdAt;
-                                    $isNew = $diff < (1 * 24 * 60 * 60); // 1 hari terakhir
-                    
-                                    if (!$isNew) {
-                                        if (!function_exists('getQuizTimeAgo')) {
-                                            function getQuizTimeAgo($diff)
-                                            {
-                                                $intervals = [
-                                                    31536000 => 'tahun',
-                                                    2592000 => 'bulan',
-                                                    604800 => 'minggu',
-                                                    86400 => 'hari',
-                                                    3600 => 'jam',
-                                                    60 => 'menit'
-                                                ];
-                                                foreach ($intervals as $secs => $label) {
-                                                    $div = $diff / $secs;
-                                                    if ($div >= 1) {
-                                                        $num = round($div);
-                                                        return $num . ' ' . $label . ' yang lalu';
-                                                    }
-                                                }
-                                                return 'Baru saja';
-                                            }
-                                        }
-                                        $timeAgoText = getQuizTimeAgo($diff);
-                                    }
-                                }
-                                ?>
                                 <div
                                     style="display: flex; align-items: flex-start; justify-content: space-between; gap: 0.5rem; width: 100%; margin-bottom: 0.5rem;">
-                                    <h3 class="quiz-title" style="flex: 1;"><?= htmlspecialchars($quiz['title']) ?></h3>
+                                    <h3 class="quiz-title" style="flex: 1;"><?= htmlspecialchars($quizTitle) ?></h3>
                                     <?php if ($isNew): ?>
                                         <span class="badge-new"
                                             style="background-color: #f0fdf4; border: 1px solid #bbf7d0; color: #16a34a; font-size: 0.65rem; font-weight: 800; padding: 0.15rem 0.5rem; border-radius: 6px; text-transform: uppercase; letter-spacing: 0.5px; flex-shrink: 0; font-family: 'Plus Jakarta Sans', sans-serif;">Baru</span>
@@ -203,15 +218,14 @@
                                 </div>
 
                                 <?php
-                                $diff = $quiz['difficulty'] ?? 'Mudah';
                                 $diffColor = '#10b981'; // Green
                                 $diffBg = '#ecfdf5';
                                 $diffBorder = '#a7f3d0';
-                                if ($diff === 'Sedang') {
+                                if ($quizDifficulty === 'Sedang') {
                                     $diffColor = '#d97706'; // Amber
                                     $diffBg = '#fffbeb';
                                     $diffBorder = '#fde68a';
-                                } elseif ($diff === 'Sulit') {
+                                } elseif ($quizDifficulty === 'Sulit') {
                                     $diffColor = '#dc2626'; // Red
                                     $diffBg = '#fef2f2';
                                     $diffBorder = '#fecaca';
@@ -221,34 +235,33 @@
                                     style="display: flex; gap: 0.35rem; align-items: center; margin-bottom: 0.75rem; flex-wrap: wrap;">
                                     <span
                                         style="background-color: <?= $diffBg ?>; border: 1px solid <?= $diffBorder ?>; color: <?= $diffColor ?>; font-size: 0.68rem; font-weight: 700; padding: 0.15rem 0.5rem; border-radius: 6px; font-family: 'Plus Jakarta Sans', sans-serif;">
-                                        <?= htmlspecialchars($diff) ?>
+                                        <?= htmlspecialchars($quizDifficulty) ?>
                                     </span>
-                                    <?php if (isset($quiz['duration']) && $quiz['duration'] > 0): ?>
+                                    <?php if ($quizDuration > 0): ?>
                                         <span
                                             style="background-color: #f1f5f9; border: 1px solid #e2e8f0; color: #475569; font-size: 0.68rem; font-weight: 700; padding: 0.15rem 0.5rem; border-radius: 6px; font-family: 'Plus Jakarta Sans', sans-serif; display: inline-flex; align-items: center; gap: 0.25rem;">
                                             <i data-lucide="clock" style="width: 0.75rem; height: 0.75rem;"></i>
-                                            <?= $quiz['duration'] ?> Menit
+                                            <?= $quizDuration ?> Menit
                                         </span>
                                     <?php endif; ?>
                                 </div>
 
-                                <p class="quiz-desc"><?= htmlspecialchars($quiz['description']) ?></p>
+                                <p class="quiz-desc"><?= htmlspecialchars($quizDesc) ?></p>
                             </div>
-                            <?php if (!empty($quiz['is_completed'])): ?>
+                            <?php if ($isCompleted): ?>
                                 <div
                                     style="display: flex; flex-direction: column; gap: 0.75rem; margin-top: auto; padding-top: 1rem; border-top: 1px solid #f1f5f9;">
                                     <div style="display: flex; justify-content: space-between; align-items: center;">
                                         <span
                                             style="font-size: 0.8rem; font-weight: 800; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px;">Skor
                                             Akhir</span>
-                                        <?php $quizScore = $quiz['score'] ?? 0; ?>
                                         <span
                                             style="font-size: 1.5rem; font-weight: 800; color: <?= $quizScore >= 80 ? '#10b981' : ($quizScore >= 60 ? '#f59e0b' : '#ef4444') ?>; font-variant-numeric: tabular-nums;"><?= $quizScore ?></span>
                                     </div>
                                     <?php
                                     $reviewUrl = method_exists('\App\Core\Security', 'encryptUrlId')
-                                        ? BASE_URL . '/quiz/review/' . \App\Core\Security::encryptUrlId($quiz['id'])
-                                        : BASE_URL . '/quiz/review/' . $quiz['id'];
+                                        ? BASE_URL . '/quiz/review/' . \App\Core\Security::encryptUrlId($quizId)
+                                        : BASE_URL . '/quiz/review/' . $quizId;
                                     ?>
                                     <a href="<?= $reviewUrl ?>" class="btn-quiz-review"
                                         style="width: 100%; justify-content: center; box-sizing: border-box;">
@@ -258,10 +271,10 @@
                                 </div>
                             <?php else: ?>
                                 <?php
-                                $isPaused = isset($_SESSION['paused_quiz'][$quiz['id']]);
+                                $isPaused = ($quizId > 0 && isset($_SESSION['paused_quiz'][$quizId]));
                                 $playUrl = method_exists('\App\Core\Security', 'encryptUrlId')
-                                    ? BASE_URL . '/quiz/play/' . \App\Core\Security::encryptUrlId($quiz['id'])
-                                    : BASE_URL . '/quiz/play/' . $quiz['id'];
+                                    ? BASE_URL . '/quiz/play/' . \App\Core\Security::encryptUrlId($quizId)
+                                    : BASE_URL . '/quiz/play/' . $quizId;
                                 ?>
                                 <a href="<?= $playUrl ?>" class="btn-quiz-action" <?= $isPaused ? 'style="background: #fef3c7; border: 1px solid #fde68a; color: #d97706; box-shadow: 0 4px 15px rgba(217, 119, 6, 0.1);"' : '' ?>>
                                     <i data-lucide="<?= $isPaused ? 'play' : 'play-circle' ?>" style="width: 1rem; height: 1rem;"></i>

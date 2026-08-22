@@ -1,4 +1,18 @@
-<?php require_once dirname(__DIR__) . '/templates/header.php'; ?>
+<?php
+$stats = $stats ?? [
+    'completed_quizzes' => 0,
+    'completion_rate' => 0,
+    'total_score' => 0,
+    'average_score' => 0,
+    'categories' => ['Routing' => 0, 'Firewall & NAT' => 0, 'Wireless' => 0, 'Network Management' => 0],
+    'category_scores' => ['Routing' => 0, 'Firewall & NAT' => 0, 'Wireless' => 0, 'Network Management' => 0],
+    'recent_activities' => [],
+    'unlocked_badges' => [],
+    'locked_achievements' => [],
+    'next_badge' => null
+];
+require_once dirname(__DIR__) . '/templates/header.php';
+?>
 
 <!-- Custom Styles for Dashboard -->
 <link rel="stylesheet" href="<?= BASE_URL ?>/css/dashboard.css?v=<?= time() ?>">

@@ -1,4 +1,15 @@
-<?php require_once dirname(__DIR__) . '/templates/header.php'; ?>
+<?php
+$stats = $stats ?? [
+    'completed_quizzes' => 0,
+    'completion_rate' => 0,
+    'total_score' => 0,
+    'average_score' => 0,
+    'categories' => ['Routing' => 0, 'Firewall & NAT' => 0, 'Wireless' => 0, 'Network Management' => 0],
+    'category_scores' => ['Routing' => 0, 'Firewall & NAT' => 0, 'Wireless' => 0, 'Network Management' => 0],
+    'recent_activities' => []
+];
+require_once __DIR__ . '/templates/header.php';
+?>
 
 <!-- Custom Styles for Dashboard -->
 <link rel="stylesheet" href="<?= BASE_URL ?>/css/dashboard.css?v=<?= time() ?>">
@@ -92,7 +103,7 @@
 
                         $isFinished = ($activity['status'] === 'finished');
                         $statusText = $isFinished ? 'Selesai' : 'Dijeda';
-                        ?>
+                    ?>
 
                         <div class="activity-item"
                             style="display: flex; flex-direction: column; align-items: flex-start; padding: 0.75rem 1rem; border-bottom: 1px solid #f1f5f9; width: 100%; box-sizing: border-box;">
@@ -149,4 +160,4 @@
     </div>
 </div>
 
-<?php require_once dirname(__DIR__) . '/templates/footer.php'; ?>
+<?php require_once __DIR__ . '/templates/footer.php'; ?>

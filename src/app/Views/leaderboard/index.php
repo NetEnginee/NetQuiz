@@ -1,4 +1,10 @@
-<?php require_once dirname(__DIR__) . '/templates/header.php'; ?>
+<?php
+$activeCategory = $activeCategory ?? 'all';
+$currentUserStats = $currentUserStats ?? null;
+$currentUserRank = $currentUserRank ?? 0;
+$leaderboard = $leaderboard ?? [];
+require_once dirname(__DIR__) . '/templates/header.php';
+?>
 
 <!-- Custom Styles for Leaderboard -->
 <link rel="stylesheet" href="<?= BASE_URL ?>/css/leaderboard.css?v=<?= time() ?>">
@@ -65,7 +71,7 @@
             foreach ($leaderboard as $user):
                 $isCurrentUser = ($user['id'] == $_SESSION['user']['id']);
                 $initial = strtoupper(substr(htmlspecialchars($user['username']), 0, 1));
-                ?>
+            ?>
                 <div class="ranking-item <?= $isCurrentUser ? 'ranking-item-current' : '' ?>">
                     <div class="ranking-left">
                         <div class="ranking-badge rank-<?= $rankNum ?>">
@@ -86,7 +92,7 @@
                         </div>
                     </div>
                 </div>
-                <?php
+            <?php
                 $rankNum++;
             endforeach;
             ?>

@@ -1,4 +1,7 @@
-<?php require_once dirname(__DIR__) . '/templates/header.php'; ?>
+<?php
+$groupedMaterials = $groupedMaterials ?? [];
+require_once dirname(__DIR__) . '/templates/header.php';
+?>
 
 <!-- Custom Styles for Learn Page -->
 <link rel="stylesheet" href="<?= BASE_URL ?>/css/learn.css?v=<?= time() ?>">
@@ -38,7 +41,7 @@
                     <?php foreach ($items as $material):
                         // Clean excerpt from HTML
                         $excerpt = strip_tags($material['content'] ?? '');
-                        ?>
+                    ?>
                         <a href="<?= BASE_URL ?>/learn/<?= $material['id'] ?>" class="material-card">
                             <div>
                                 <h3 class="material-title"><?= htmlspecialchars($material['title']) ?></h3>

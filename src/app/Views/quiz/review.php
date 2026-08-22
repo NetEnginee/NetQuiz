@@ -1,4 +1,13 @@
-<?php require_once dirname(__DIR__) . '/templates/header.php'; ?>
+<?php
+$quiz = $quiz ?? [
+    'id' => 0,
+    'title' => 'Kuis',
+    'questions' => []
+];
+$userAnswers = $userAnswers ?? [];
+$score = isset($score) ? (int) $score : 0;
+require_once dirname(__DIR__) . '/templates/header.php';
+?>
 
 <!-- Custom Styles for Quiz -->
 <link rel="stylesheet" href="<?= BASE_URL ?>/css/quiz.css?v=<?= time() ?>">
@@ -333,10 +342,10 @@
 <!-- Expose PHP Variables securely to External JS -->
 <script>
     window.NetQuizData = <?= json_encode([
-        'explanations' => array_map(function ($q) {
-            return $q['explanation'] ?? '';
-        }, $quiz['questions'])
-    ], JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) ?>;
+                                'explanations' => array_map(function ($q) {
+                                    return $q['explanation'] ?? '';
+                                }, is_array($quiz['questions'] ?? null) ? $quiz['questions'] : [])
+                            ], JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) ?>;
 </script>
 
 <!-- Load External Quiz Review Script -->

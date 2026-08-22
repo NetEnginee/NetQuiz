@@ -8,7 +8,7 @@ $isAdmin = isset($_SESSION['user']['email']) && (strcasecmp(trim($_SESSION['user
 if (isset($_SESSION['user'])) {
     try {
         $db = \App\Core\Database::getInstance()->getConnection();
-        $userId = $_SESSION['user']['id'];
+        $userId = $_SESSION['user']['id'] ?? 0;
 
         // 1. Completed quizzes
         $stmt = $db->prepare("SELECT COUNT(*) as count FROM quiz_attempts WHERE user_id = :uid AND status = 'finished'");
@@ -541,7 +541,7 @@ if (isset($_SESSION['user'])) {
                                         loader.classList.remove('fade-out');
                                     }
                                 }
-                            } catch (err) { }
+                            } catch (err) {}
                         }
                     }
                 });
@@ -749,7 +749,7 @@ if (isset($_SESSION['user'])) {
                                 <div class="header-avatar-circle"
                                     style="width: 2rem; height: 2rem; border-radius: 50%; background: linear-gradient(135deg, #7c3aed 0%, #4f46e5 100%); color: #ffffff; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.85rem; font-family: 'Plus Jakarta Sans', sans-serif; overflow: hidden; position: relative;">
                                     <span
-                                        class="header-avatar-initials"><?= strtoupper(substr(htmlspecialchars($_SESSION['user']['name']), 0, 1)) ?></span>
+                                        class="header-avatar-initials"><?= strtoupper(substr(htmlspecialchars($_SESSION['user']['name'] ?? 'U'), 0, 1)) ?></span>
                                     <img class="header-avatar-img hidden" alt="Avatar"
                                         style="width: 100%; height: 100%; object-fit: cover;">
                                 </div>
@@ -767,10 +767,10 @@ if (isset($_SESSION['user'])) {
                                     style="padding: 0.75rem 1rem; display: flex; flex-direction: column; gap: 0.15rem; text-align: left;">
                                     <span
                                         style="font-size: 0.875rem; font-weight: 700; color: #0f172a; font-family: 'Plus Jakarta Sans', sans-serif;">
-                                        <?= htmlspecialchars($_SESSION['user']['name']) ?>
+                                        <?= htmlspecialchars($_SESSION['user']['name'] ?? 'User') ?>
                                     </span>
                                     <span style="font-size: 0.75rem; color: #64748b; word-break: break-all;">
-                                        <?= htmlspecialchars($_SESSION['user']['email']) ?>
+                                        <?= htmlspecialchars($_SESSION['user']['email'] ?? '') ?>
                                     </span>
                                 </div>
 
@@ -793,7 +793,7 @@ if (isset($_SESSION['user'])) {
                             onmouseover="this.style.color='#6d28d9'" onmouseout="this.style.color='#7c3aed'">Masuk</a>
                     <?php endif; ?>
 
-                </div>
+                        </div>
             </div>
             <!-- Mobile Dropdown Menu -->
             <div id="mobile-menu">
