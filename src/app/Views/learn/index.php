@@ -5,11 +5,10 @@ require_once dirname(__DIR__) . '/templates/header.php';
 
 <!-- Breadcrumb & Header -->
 <div style="margin-bottom: 2rem;">
-    <nav class="admin-breadcrumb-nav" aria-label="Breadcrumb" style="margin-bottom: 0.5rem;">
-        <span class="breadcrumb-item">Siswa</span>
-        <span class="breadcrumb-separator">/</span>
-        <span class="breadcrumb-active">Materi Belajar</span>
-    </nav>
+    <?= renderBreadcrumb([
+        ['label' => 'Siswa', 'url' => BASE_URL . '/'],
+        ['label' => 'Materi Belajar']
+    ]) ?>
 </div>
 
 <?php if (empty($groupedMaterials)): ?>
