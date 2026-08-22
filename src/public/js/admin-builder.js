@@ -1818,7 +1818,7 @@ function renderMaterialsSection() {
 }
 
 // ==========================================================================
-// 7. MODUL 5: LENCANA PRESTASI (Visual Icon Picker & 3-Col Grid)
+// 7. MODUL 5: LENCANA PRESTASI (Segmented Studio & Minimalist Cards Grid)
 // ==========================================================================
 function renderBadgeSection() {
   const sec = document.getElementById("badge-section");
@@ -1829,40 +1829,53 @@ function renderBadgeSection() {
     : [];
 
   sec.innerHTML = `
-        <!-- Form Badge (Collapsible) -->
-        <div id="badge-form-container" style="display: none; margin-bottom: 1.5rem;" class="supabase-panel-card">
-            <!-- Precision Corner Crosshairs -->
-            <span class="corner-crosshair corner-tl">+</span>
-            <span class="corner-crosshair corner-tr">+</span>
-            <span class="corner-crosshair corner-bl">+</span>
-            <span class="corner-crosshair corner-br">+</span>
+        <!-- Top Segmented Switcher -->
+        <div class="quiz-segmented-switcher-bar" style="margin-bottom: 1.5rem;">
+            <div class="quiz-segmented-control">
+                <button type="button" id="tab-btn-badge-create" class="quiz-segment-tab active" onclick="window.switchBadgeView('create')">
+                    <i data-lucide="plus-circle" style="width: 14px; height: 14px;"></i>
+                    <span>Buat Lencana Baru</span>
+                </button>
+                <button type="button" id="tab-btn-badge-list" class="quiz-segment-tab" onclick="window.switchBadgeView('list')">
+                    <i data-lucide="award" style="width: 14px; height: 14px;"></i>
+                    <span>Daftar Lencana (<span id="badge-list-counter">${badges.length}</span>)</span>
+                </button>
+            </div>
+        </div>
 
-            <div style="padding: 1.25rem 1.5rem;">
-                <form action="${window.BASE_URL}/admin/badges/create" method="POST">
+        <!-- VIEW 1: STUDIO FORM -->
+        <div id="badge-view-create" class="badge-subview-panel">
+            <div class="supabase-panel-card" style="margin-bottom: 2rem;">
+                <!-- Precision Corner Crosshairs -->
+                <span class="corner-crosshair corner-tl">+</span>
+                <span class="corner-crosshair corner-tr">+</span>
+                <span class="corner-crosshair corner-bl">+</span>
+                <span class="corner-crosshair corner-br">+</span>
+
+                <form action="${window.BASE_URL}/admin/badges/create" method="POST" id="form-create-badge" style="padding: 1.75rem;">
                     <input type="hidden" name="csrf_token" value="${window.CSRF_TOKEN || ""}">
                     <input type="hidden" name="icon" id="badge-selected-icon" value="award">
                     
-                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem;">
-                        <div>
-                            <h4 style="font-family: var(--font-heading); font-size: 1.05rem; font-weight: 800; color: #18181B; margin: 0;">Formulir Lencana Baru</h4>
-                            <p style="font-size: 0.8rem; color: #52525B; margin-top: 0.2rem;">Tentukan nama lencana, ikon visual, dan target metrik pencapaian siswa.</p>
-                        </div>
-                        <button type="button" onclick="window.closeBadgeForm()" class="btn-secondary-outline" style="padding: 0.35rem 0.75rem; font-size: 0.8rem;">Tutup</button>
+                    <!-- Section Header -->
+                    <div style="margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid #E5E7EB;">
+                        <h3 style="font-family: var(--font-heading); font-size: 1.15rem; font-weight: 800; color: #18181B; margin: 0;">Buat Lencana Prestasi Baru</h3>
+                        <p style="font-size: 0.825rem; color: #71717A; margin-top: 0.25rem;">Tentukan nama lencana, target kuis selesai, dan ikon visual penghargaan siswa.</p>
                     </div>
 
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                    <!-- Grid 2-kolom: Nama Lencana & Target Kuis -->
+                    <div class="form-grid-2col" style="margin-bottom: 1.25rem;">
                         <div class="form-field-group">
                             <label class="form-field-label">Nama Lencana</label>
-                            <input type="text" class="form-field-input" name="title" placeholder="Contoh: Routing Master MTCNA" required>
+                            <input type="text" class="form-field-input" name="title" id="badge-input-title" placeholder="Contoh: Routing Master MTCNA" required autocomplete="off">
                         </div>
                         <div class="form-field-group">
-                            <label class="form-field-label">Nilai Target (Kuis Selesai)</label>
-                            <input type="number" class="form-field-input" name="target_value" value="5" min="1" required>
+                            <label class="form-field-label">Target Kuis Selesai</label>
+                            <input type="number" class="form-field-input" name="target_value" id="badge-input-target" value="5" min="1" required>
                         </div>
                     </div>
 
                     <!-- Visual Icon Picker Grid -->
-                    <div class="form-field-group">
+                    <div class="form-field-group" style="margin-bottom: 1.25rem;">
                         <label class="form-field-label">Pilih Ikon Visual Lencana</label>
                         <div class="icon-picker-grid" id="badge-icon-picker">
                             <button type="button" class="icon-picker-option active" data-icon="award" title="Award"><i data-lucide="award"></i></button>
@@ -1878,14 +1891,17 @@ function renderBadgeSection() {
                         </div>
                     </div>
 
-                    <div class="form-field-group">
+                    <!-- Deskripsi Lencana -->
+                    <div class="form-field-group" style="margin-bottom: 0;">
                         <label class="form-field-label">Deskripsi Lencana</label>
-                        <input type="text" class="form-field-input" name="description" placeholder="Deskripsi syarat perolehan..." required>
+                        <input type="text" class="form-field-input" name="description" id="badge-input-desc" placeholder="Contoh: Diberikan kepada siswa yang telah menyelesaikan 5 ujian kategori Routing." required autocomplete="off">
                     </div>
 
-                    <div style="display: flex; justify-content: flex-end; margin-top: 1.25rem;">
-                        <button type="submit" class="btn-primary-black">
-                            <i data-lucide="award" style="width: 15px; height: 15px;"></i>
+                    <!-- Footer Action Bar -->
+                    <div style="display: flex; align-items: center; justify-content: flex-end; gap: 0.75rem; padding-top: 1.25rem; margin-top: 1.5rem; border-top: 1px solid #E5E7EB;">
+                        <button type="button" onclick="window.switchBadgeView('list')" class="btn-secondary-outline" style="padding: 0.5rem 1rem;">Batal</button>
+                        <button type="submit" class="btn-primary-black" style="padding: 0.5rem 1.25rem; display: inline-flex; align-items: center; gap: 0.4rem;">
+                            <i data-lucide="check" style="width: 15px; height: 15px;"></i>
                             <span>Simpan Lencana</span>
                         </button>
                     </div>
@@ -1893,54 +1909,64 @@ function renderBadgeSection() {
             </div>
         </div>
 
-        <!-- 3-Column Grid Layout -->
-        <div class="badges-3col-grid">
-            ${badges
-              .map(
-                (b) => `
-                <div class="supabase-panel-card" style="padding: 1.25rem 1.25rem; display: flex; flex-direction: column; justify-content: space-between;">
-                    <!-- Precision Corner Crosshairs -->
+        <!-- VIEW 2: BADGES LIST GRID -->
+        <div id="badge-view-list" class="badge-subview-panel" style="display: none;">
+            ${
+              badges.length === 0
+                ? `
+                <div class="supabase-panel-card" style="padding: 3.5rem 1.5rem; text-align: center;">
                     <span class="corner-crosshair corner-tl">+</span>
                     <span class="corner-crosshair corner-tr">+</span>
                     <span class="corner-crosshair corner-bl">+</span>
                     <span class="corner-crosshair corner-br">+</span>
-
-                    <div>
-                        <!-- Header Kartu -->
-                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.85rem;">
-                            <div style="width: 38px; height: 38px; background-color: #18181B; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #FFF;">
-                                <i data-lucide="${escapeHtml(b.icon || "award")}" style="width: 20px; height: 20px;"></i>
-                            </div>
-                            <button type="button" class="btn-icon-action btn-action-danger" title="Hapus Lencana" onclick="confirmDeleteBadge(${b.id}, '${escapeHtml(b.title).replace(/'/g, "\\'")}')">
-                                <i data-lucide="trash-2"></i>
-                            </button>
+                    <div class="panel-empty-state">
+                        <div class="empty-state-icon-box">
+                            <i data-lucide="award" style="width: 28px; height: 28px;"></i>
                         </div>
-                        <!-- Body Kartu -->
-                        <h4 style="font-family: var(--font-heading); font-size: 0.95rem; font-weight: 800; color: #18181B; margin: 0 0 0.3rem 0;">${escapeHtml(b.title)}</h4>
-                        <span class="status-badge status-active" style="margin-bottom: 0.6rem;">Target: ${b.target_value || 1} Kuis</span>
-                        <p style="font-size: 0.825rem; color: #52525B; margin: 0; line-height: 1.4;">${escapeHtml(b.description)}</p>
-                    </div>
-
-                    <!-- Footer Kartu -->
-                    <div style="margin-top: 1.1rem; padding-top: 0.75rem; border-top: 1px solid #E5E7EB;">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.4rem;">
-                            <span style="font-size: 0.75rem; color: #52525B;" class="font-mono">Diperoleh oleh ${b.earned_count || 0} Siswa</span>
-                            <span style="font-size: 0.7rem; font-weight: 700; color: #18181B;" class="font-mono">${Math.min(Math.round(((b.earned_count || 0) / (b.target_value || 1)) * 100), 100)}%</span>
-                        </div>
-                        <div class="badge-progress-track">
-                            <div class="badge-progress-fill" style="width: ${Math.min(Math.round(((b.earned_count || 0) / (b.target_value || 1)) * 100), 100)}%;"></div>
-                        </div>
+                        <div class="empty-state-title">Belum Ada Lencana Prestasi</div>
+                        <div class="empty-state-text">Buat lencana baru untuk memotivasi pencapaian belajar siswa.</div>
                     </div>
                 </div>
-            `,
-              )
-              .join("")}
+            `
+                : `
+                <div class="badges-3col-grid">
+                    ${badges
+                      .map(
+                        (b) => `
+                        <div class="supabase-panel-card" style="padding: 1.25rem; display: flex; flex-direction: column; justify-content: space-between;">
+                            <span class="corner-crosshair corner-tl">+</span>
+                            <span class="corner-crosshair corner-tr">+</span>
+                            <span class="corner-crosshair corner-bl">+</span>
+                            <span class="corner-crosshair corner-br">+</span>
 
-            <!-- 1 Kartu Draf Kosong Dashed Border Pemicu Alternatif -->
-            <button type="button" class="badge-card-dashed-draft" onclick="window.openBadgeForm()">
-                <i data-lucide="plus-circle" style="width: 28px; height: 28px; margin-bottom: 0.5rem;"></i>
-                <span style="font-family: var(--font-heading); font-size: 0.875rem; font-weight: 700;">+ Buat Lencana Baru</span>
-            </button>
+                            <div>
+                                <!-- Header Kartu -->
+                                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.85rem;">
+                                    <div style="width: 38px; height: 38px; background-color: #18181B; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #FFF;">
+                                        <i data-lucide="${escapeHtml(b.icon || "award")}" style="width: 18px; height: 18px;"></i>
+                                    </div>
+                                    <button type="button" class="btn-icon-action btn-action-danger" title="Hapus Lencana" onclick="confirmDeleteBadge(${b.id}, '${escapeHtml(b.title).replace(/'/g, "\\'")}')">
+                                        <i data-lucide="trash-2"></i>
+                                    </button>
+                                </div>
+                                <!-- Body Kartu -->
+                                <h4 style="font-family: var(--font-heading); font-size: 0.95rem; font-weight: 800; color: #18181B; margin: 0 0 0.35rem 0;">${escapeHtml(b.title)}</h4>
+                                <span class="status-badge status-active" style="margin-bottom: 0.6rem;">Target: ${b.target_value || 1} Kuis Selesai</span>
+                                <p style="font-size: 0.825rem; color: #52525B; margin: 0; line-height: 1.45;">${escapeHtml(b.description || "")}</p>
+                            </div>
+
+                            <!-- Footer Kartu Ringkas -->
+                            <div style="margin-top: 1rem; padding-top: 0.65rem; border-top: 1px solid #E5E7EB; display: flex; align-items: center; justify-content: space-between;">
+                                <span style="font-size: 0.75rem; color: #71717A;" class="font-mono">Diperoleh oleh ${b.earned_count || 0} Siswa</span>
+                                <span class="status-badge" style="background-color: #F4F4F5; color: #71717A; font-size: 0.7rem;">Aktif</span>
+                            </div>
+                        </div>
+                    `,
+                      )
+                      .join("")}
+                </div>
+            `
+            }
         </div>
     `;
 
@@ -1957,18 +1983,35 @@ function renderBadgeSection() {
     });
   });
 
-  const formContainer = document.getElementById("badge-form-container");
-  window.openBadgeForm = function () {
-    if (formContainer) {
-      formContainer.style.display = "block";
-      const badgeTitle = formContainer.querySelector('input[name="title"]');
-      if (badgeTitle) badgeTitle.focus();
-      formContainer.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  // Switch between Creation Studio View and Badges Grid View
+  window.switchBadgeView = function (view) {
+    const viewCreate = document.getElementById("badge-view-create");
+    const viewList = document.getElementById("badge-view-list");
+    const tabCreate = document.getElementById("tab-btn-badge-create");
+    const tabList = document.getElementById("tab-btn-badge-list");
+
+    if (view === "create") {
+      if (viewCreate) viewCreate.style.display = "block";
+      if (viewList) viewList.style.display = "none";
+      if (tabCreate) tabCreate.classList.add("active");
+      if (tabList) tabList.classList.remove("active");
+      const titleInput = document.getElementById("badge-input-title");
+      if (titleInput) titleInput.focus();
+    } else {
+      if (viewCreate) viewCreate.style.display = "none";
+      if (viewList) viewList.style.display = "block";
+      if (tabCreate) tabCreate.classList.remove("active");
+      if (tabList) tabList.classList.add("active");
     }
+    if (window.lucide) window.lucide.createIcons();
+  };
+
+  window.openBadgeForm = function () {
+    window.switchBadgeView("create");
   };
 
   window.closeBadgeForm = function () {
-    if (formContainer) formContainer.style.display = "none";
+    window.switchBadgeView("list");
   };
 
   window.confirmDeleteBadge = function (id, title) {
@@ -1987,6 +2030,8 @@ function renderBadgeSection() {
       true,
     );
   };
+
+  if (window.lucide) window.lucide.createIcons();
 }
 
 // ==========================================================================

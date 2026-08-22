@@ -139,6 +139,11 @@ document.addEventListener("DOMContentLoaded", () => {
           desc: "Buat kuis baru dan kelola daftar pertanyaan ujian.",
           actionHtml: `<button type="button" class="btn-primary-black" id="btn-header-open-quiz-studio" onclick="if(window.openQuizStudio) window.openQuizStudio();"><i data-lucide="plus" style="width: 15px; height: 15px;"></i> <span>Buat Kuis Baru</span></button>`,
         },
+        "badge-section": {
+          title: "Lencana",
+          desc: "Manajemen lencana prestasi dan target pencapaian kuis siswa.",
+          actionHtml: "",
+        },
         "member-section": {
           title: "Daftarkan Member",
           desc: "Tambahkan anggota baru ke dalam sistem NetQuiz.",
