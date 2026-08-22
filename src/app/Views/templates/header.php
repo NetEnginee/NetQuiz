@@ -78,6 +78,13 @@ function renderBreadcrumb(array $items): string
     <script src="https://unpkg.com/lucide@latest" defer></script>
 
     <style>
+        html,
+        body {
+            background-color: #FAFAFA !important;
+            background: #FAFAFA !important;
+            color: #18181B;
+        }
+
         /* Minimalist Geist Top Navbar */
         .student-top-nav {
             position: fixed;

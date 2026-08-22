@@ -173,7 +173,9 @@ document.addEventListener("DOMContentLoaded", () => {
         }
         if (actionContainer) {
           actionContainer.innerHTML = headerMeta[targetId].actionHtml || "";
-          if (window.lucide) window.lucide.createIcons();
+          if (window.lucide) {
+            window.lucide.createIcons({ root: actionContainer });
+          }
         }
       }
 
