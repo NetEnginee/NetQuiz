@@ -141,7 +141,6 @@ document.addEventListener("DOMContentLoaded", () => {
         },
         "member-section": {
           title: "Daftarkan Member",
-          desc: "Kelola registrasi dan penambahan anggota baru di platform NetQuiz.",
           desc: "Tambahkan anggota baru ke dalam sistem NetQuiz.",
           actionHtml: "",
         },
@@ -166,9 +165,9 @@ document.addEventListener("DOMContentLoaded", () => {
         "breadcrumb-active-title",
       );
 
-      if (headerTitle && headerDesc && headerMeta[targetId]) {
-        headerTitle.innerText = headerMeta[targetId].title;
-        headerDesc.innerText = headerMeta[targetId].desc;
+      if (headerMeta[targetId]) {
+        if (headerTitle) headerTitle.innerText = headerMeta[targetId].title;
+        if (headerDesc) headerDesc.innerText = headerMeta[targetId].desc;
         if (breadcrumbTitle) {
           breadcrumbTitle.innerText = headerMeta[targetId].title;
         }
