@@ -117,14 +117,10 @@ require_once dirname(__DIR__) . '/templates/header.php';
             <?= $material['content'] ?>
         </div>
 
-        <div style="margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid #E5E7EB; display: flex; align-items: center; justify-content: space-between;">
+        <div style="margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid #E5E7EB; display: flex; align-items: center">
             <a href="<?= BASE_URL ?>/learn" class="btn-secondary-outline" style="font-size: 0.85rem; padding: 0.45rem 0.85rem; text-decoration: none;">
                 <i data-lucide="arrow-left" style="width: 14px; height: 14px;"></i>
-                <span>Kembali ke Katalog Materi</span>
-            </a>
-            <a href="<?= BASE_URL ?>/quiz" class="btn-primary-black" style="font-size: 0.85rem; padding: 0.45rem 1rem;">
-                <i data-lucide="play" style="width: 14px; height: 14px;"></i>
-                <span>Uji Pemahaman di Kuis</span>
+                <span>Kembali ke Materi</span>
             </a>
         </div>
     </article>

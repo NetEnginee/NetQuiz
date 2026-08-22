@@ -96,7 +96,7 @@ require_once dirname(__DIR__) . '/templates/header.php';
                                     <?php endif; ?>
                                 </div>
                             </td>
-                            <td style="padding: 1rem 1.5rem; text-align: right;" class="font-mono" style="font-size: 0.85rem; color: #52525B;">
+                            <td style="padding: 1rem 1.5rem; text-align: right; font-size: 0.85rem; color: #52525B;" class="font-mono">
                                 <?= (int)($user['completed_quizzes'] ?? 0) ?>
                             </td>
                             <td style="padding: 1rem 1.5rem; text-align: right;" class="font-mono">

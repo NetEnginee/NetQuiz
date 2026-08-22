@@ -51,17 +51,21 @@ require_once dirname(__DIR__) . '/templates/header.php';
         gap: 1.5rem;
         align-items: start;
     }
+
     @media (max-width: 900px) {
         .quiz-exam-layout {
             grid-template-columns: 1fr;
         }
+
         .mobile-timer-bar {
             display: inline-flex !important;
         }
+
         .desktop-timer-card {
             display: none !important;
         }
     }
+
     .palette-btn {
         width: 38px;
         height: 38px;
@@ -78,33 +82,39 @@ require_once dirname(__DIR__) . '/templates/header.php';
         align-items: center;
         justify-content: center;
     }
+
     .palette-btn:hover {
         background-color: #FAFAFA;
         border-color: #000000;
         color: #000000;
         transform: none !important;
     }
+
     .palette-btn:active {
         background-color: #F4F4F5;
         border-color: #000000;
         color: #000000;
         transform: none !important;
     }
+
     .palette-btn.current {
         outline: 2px solid #000000;
         outline-offset: 2px;
     }
+
     .palette-btn.answered {
         background-color: #000000 !important;
         border-color: #000000 !important;
         color: #FFFFFF !important;
     }
+
     .palette-btn.answered:hover {
         background-color: #FAFAFA !important;
         color: #000000 !important;
         border-color: #000000 !important;
         transform: none !important;
     }
+
     .palette-btn.answered:active {
         background-color: #F4F4F5 !important;
         color: #000000 !important;
@@ -235,7 +245,7 @@ require_once dirname(__DIR__) . '/templates/header.php';
             <div id="quiz-timer-desktop" style="padding: 0.75rem; background-color: #18181B; color: #FFFFFF; border-radius: 8px; text-align: center; font-family: var(--font-mono); font-size: 1.75rem; font-weight: 800; letter-spacing: 0.05em; margin-bottom: 0.75rem;">
                 <span class="timer-display-text">--:--</span>
             </div>
-            
+
             <p style="font-size: 0.75rem; color: #71717A; margin: 0; text-align: center;">
                 Ujian akan otomatis terkumpul saat timer menyentuh 00:00.
             </p>
@@ -376,7 +386,7 @@ require_once dirname(__DIR__) . '/templates/header.php';
         const block = radio.closest('.question-block');
         if (!block) return;
         const qIndex = parseInt(block.getAttribute('data-index'), 10);
-        
+
         // Reset labels on current question block
         const labels = block.querySelectorAll('.quiz-option-label');
         labels.forEach(l => {
@@ -414,6 +424,6 @@ require_once dirname(__DIR__) . '/templates/header.php';
         }
     };
 </script>
-<script src="<?= BASE_URL ?>/js/quiz-play.js?v=<?= time() ?>"></script>
+<script src="<?= function_exists('assetUrl') ? assetUrl('/js/quiz-play.js') : (BASE_URL . '/js/quiz-play.js') ?>"></script>
 
 <?php require_once dirname(__DIR__) . '/templates/footer.php'; ?>

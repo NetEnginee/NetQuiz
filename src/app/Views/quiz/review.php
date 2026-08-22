@@ -323,6 +323,6 @@ require_once dirname(__DIR__) . '/templates/header.php';
 </div>
 
 <!-- Reviewer JS Module -->
-<script src="<?= BASE_URL ?>/js/quiz-review.js?v=<?= time() ?>"></script>
+<script src="<?= function_exists('assetUrl') ? assetUrl('/js/quiz-review.js') : (BASE_URL . '/js/quiz-review.js') ?>"></script>
 
 <?php require_once dirname(__DIR__) . '/templates/footer.php'; ?>

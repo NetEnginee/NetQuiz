@@ -12,7 +12,7 @@
 
 .leaderboard-container {
   width: 100%;
-  animation: fadeIn 0.3s ease-out forwards;
+  animation: none !important;
 }
 
 .leaderboard-header {

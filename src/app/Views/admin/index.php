@@ -27,8 +27,11 @@ $stats = $stats ?? [
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
 
-    <!-- Custom Dashboard Stylesheet (Microtime Cache Invalidation) -->
-    <link rel="stylesheet" href="<?= BASE_URL ?>/css/dashboard.css?v=<?= microtime(true) ?>">
+    <!-- Top Slim Loading Engine -->
+    <script src="<?= function_exists('assetUrl') ? assetUrl('/js/page-loader.js') : (BASE_URL . '/js/page-loader.js') ?>"></script>
+
+    <!-- Custom Dashboard Stylesheet -->
+    <link rel="stylesheet" href="<?= function_exists('assetUrl') ? assetUrl('/css/dashboard.css') : (BASE_URL . '/css/dashboard.css') ?>">
 
     <!-- Global App State & Database Real Datasets -->
     <script>
@@ -305,9 +308,9 @@ $stats = $stats ?? [
         </div>
     </nav>
 
-    <!-- Scripts (Microtime Cache Invalidation) -->
-    <script src="<?= BASE_URL ?>/js/admin-dashboard.js?v=<?= microtime(true) ?>"></script>
-    <script src="<?= BASE_URL ?>/js/admin-builder.js?v=<?= microtime(true) ?>"></script>
+    <!-- Scripts -->
+    <script src="<?= function_exists('assetUrl') ? assetUrl('/js/admin-dashboard.js') : (BASE_URL . '/js/admin-dashboard.js') ?>"></script>
+    <script src="<?= function_exists('assetUrl') ? assetUrl('/js/admin-builder.js') : (BASE_URL . '/js/admin-builder.js') ?>"></script>
     <script>
         document.addEventListener("DOMContentLoaded", function() {
             if (window.lucide) {

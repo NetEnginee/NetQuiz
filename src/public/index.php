@@ -65,6 +65,17 @@ define('APP_NAME', $config['app_name']);
 define('APP_ROOT', dirname(__DIR__) . '/app');
 define('PUBLIC_ROOT', __DIR__);
 
+/**
+ * Generate asset URL with stable file modification timestamp (0ms cache hit, no flickering)
+ */
+function assetUrl(string $path): string
+{
+    $cleanPath = '/' . ltrim($path, '/');
+    $filePath = PUBLIC_ROOT . $cleanPath;
+    $v = file_exists($filePath) ? (string)filemtime($filePath) : '1.0';
+    return BASE_URL . $cleanPath . '?v=' . $v;
+}
+
 // 5. Centralized Error & Exception Handler
 use App\Core\ErrorHandler;
 

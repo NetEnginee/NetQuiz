@@ -22,8 +22,11 @@ $mode = $mode ?? 'login';
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest" defer></script>
 
+    <!-- Top Slim Loading Engine -->
+    <script src="<?= function_exists('assetUrl') ? assetUrl('/js/page-loader.js') : (BASE_URL . '/js/page-loader.js') ?>"></script>
+
     <!-- Custom Auth Stylesheet -->
-    <link rel="stylesheet" href="<?= BASE_URL ?>/css/auth.css?v=<?= time() ?>">
+    <link rel="stylesheet" href="<?= function_exists('assetUrl') ? assetUrl('/css/auth.css') : (BASE_URL . '/css/auth.css') ?>">
 
     <!-- Global App State -->
     <script>
@@ -130,7 +133,7 @@ $mode = $mode ?? 'login';
     </main>
 
     <!-- Client Interactivity Script -->
-    <script src="<?= BASE_URL ?>/js/auth.js?v=<?= time() ?>" defer></script>
+    <script src="<?= function_exists('assetUrl') ? assetUrl('/js/auth.js') : (BASE_URL . '/js/auth.js') ?>" defer></script>
 </body>
 
 </html>

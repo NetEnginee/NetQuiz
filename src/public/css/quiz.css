@@ -43,7 +43,7 @@ body::-webkit-scrollbar {
   width: 100%;
   max-width: 1000px; /* Samakan dengan .container di header.php */
   margin: 0 auto; /* Center the container */
-  animation: fadeIn 0.3s ease-out forwards;
+  animation: none !important;
 }
 
 /* Category Sections */
