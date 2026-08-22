@@ -85,22 +85,34 @@
             display: inline-flex;
             align-items: center;
             gap: 0.5rem;
-            background-color: #18181B;
+            background-color: #000000;
             color: #ffffff;
             font-family: 'Plus Jakarta Sans', sans-serif;
-            font-size: 0.9rem;
-            font-weight: 600;
-            padding: 0.75rem 1.5rem;
-            border-radius: 8px;
+            font-size: 0.875rem;
+            font-weight: 700;
+            padding: 0.75rem 1.75rem;
+            border-radius: 6px;
             text-decoration: none;
-            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-            border: 1px solid #18181B;
+            border: 1px solid #000000;
+            cursor: pointer;
+            box-shadow: none;
+            transition: none !important;
+            transform: none !important;
         }
 
         .btn-home:hover {
-            background-color: #27272A;
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px -5px rgba(24, 24, 27, 0.2);
+            background-color: #FAFAFA;
+            color: #000000;
+            border-color: #000000;
+            box-shadow: none;
+            transform: none !important;
+        }
+
+        .btn-home:active {
+            background-color: #F4F4F5;
+            color: #000000;
+            border-color: #000000;
+            transform: none !important;
         }
 
         .icon-box {

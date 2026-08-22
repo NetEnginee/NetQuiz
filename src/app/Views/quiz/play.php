@@ -66,28 +66,50 @@ require_once dirname(__DIR__) . '/templates/header.php';
         width: 38px;
         height: 38px;
         border-radius: 6px;
-        border: 1px solid #E5E7EB;
+        border: 1px solid #E4E4E7;
         background-color: #FFFFFF;
         color: #18181B;
         font-weight: 700;
         font-size: 0.825rem;
         cursor: pointer;
-        transition: all 0.15s ease;
+        transition: none !important;
+        transform: none !important;
         display: flex;
         align-items: center;
         justify-content: center;
     }
     .palette-btn:hover {
-        border-color: #18181B;
+        background-color: #FAFAFA;
+        border-color: #000000;
+        color: #000000;
+        transform: none !important;
+    }
+    .palette-btn:active {
+        background-color: #F4F4F5;
+        border-color: #000000;
+        color: #000000;
+        transform: none !important;
     }
     .palette-btn.current {
-        outline: 2px solid #18181B;
+        outline: 2px solid #000000;
         outline-offset: 2px;
     }
     .palette-btn.answered {
-        background-color: #18181B !important;
-        border-color: #18181B !important;
+        background-color: #000000 !important;
+        border-color: #000000 !important;
         color: #FFFFFF !important;
+    }
+    .palette-btn.answered:hover {
+        background-color: #FAFAFA !important;
+        color: #000000 !important;
+        border-color: #000000 !important;
+        transform: none !important;
+    }
+    .palette-btn.answered:active {
+        background-color: #F4F4F5 !important;
+        color: #000000 !important;
+        border-color: #000000 !important;
+        transform: none !important;
     }
 </style>
 

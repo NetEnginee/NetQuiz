@@ -487,9 +487,9 @@ body.quiz-play-mode .bg-frame-line {
 }
 
 .btn-geist-nav-secondary {
-  background-color: var(--color-surface);
-  color: var(--color-text-primary);
-  border: 1px solid var(--color-border);
+  background-color: #ffffff;
+  color: #18181b;
+  border: 1px solid #e4e4e7;
   border-radius: var(--radius-input);
   font-family: var(--font-heading);
   font-size: 0.825rem;
@@ -502,16 +502,24 @@ body.quiz-play-mode .bg-frame-line {
   justify-content: center;
   gap: 0.4rem;
   text-decoration: none;
-  transition:
-    background-color var(--transition-fast),
-    border-color var(--transition-fast),
-    color var(--transition-fast);
+  box-shadow: none;
+  transition: none !important;
+  transform: none !important;
 }
 
 .btn-geist-nav-secondary:hover {
-  background-color: var(--color-bg);
-  border-color: var(--color-border-hover);
+  background-color: var(--color-bg, #fafafa);
+  border-color: #000000;
   color: #000000;
+  box-shadow: none;
+  transform: none !important;
+}
+
+.btn-geist-nav-secondary:active {
+  background-color: #f4f4f5;
+  border-color: #000000;
+  color: #000000;
+  transform: none !important;
 }
 
 .btn-geist-nav-danger {
@@ -530,19 +538,24 @@ body.quiz-play-mode .bg-frame-line {
   justify-content: center;
   gap: 0.4rem;
   text-decoration: none;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
-  transition:
-    background-color var(--transition-fast),
-    border-color var(--transition-fast),
-    color var(--transition-fast),
-    transform var(--transition-fast);
+  box-shadow: none;
+  transition: none !important;
+  transform: none !important;
 }
 
 .btn-geist-nav-danger:hover {
-  background-color: var(--color-bg);
+  background-color: var(--color-bg, #fafafa);
   color: #000000;
-  border-color: var(--color-border-hover);
+  border-color: #000000;
   box-shadow: none;
+  transform: none !important;
+}
+
+.btn-geist-nav-danger:active {
+  background-color: #f4f4f5;
+  color: #000000;
+  border-color: #000000;
+  transform: none !important;
 }
 
 /* ==========================================================================
@@ -604,19 +617,29 @@ body.quiz-play-mode .bg-frame-line {
   justify-content: center;
   color: #18181b;
   cursor: pointer;
-  transition: background-color var(--transition-fast);
+  transition: none !important;
+  transform: none !important;
 }
 
 .sidebar-close-btn:hover {
+  background-color: var(--color-bg, #fafafa);
+  border-color: #000000;
+  color: #000000;
+  transform: none !important;
+}
+
+.sidebar-close-btn:active {
   background-color: #f4f4f5;
+  border-color: #000000;
+  transform: none !important;
 }
 
 /* Permanent Canonical Sidebar Top Button (+ Buat Kuis Baru) */
 .sidebar-cta-btn {
   width: 100%;
-  background-color: #18181b;
+  background-color: #000000;
   color: #ffffff;
-  border: 1px solid #18181b;
+  border: 1px solid #000000;
   border-radius: 6px;
   font-family: var(--font-heading);
   font-size: 0.875rem;
@@ -628,15 +651,24 @@ body.quiz-play-mode .bg-frame-line {
   justify-content: center;
   gap: 0.5rem;
   text-decoration: none;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
-  transition:
-    background-color var(--transition-fast),
-    transform var(--transition-fast);
+  box-shadow: none;
+  transition: none !important;
+  transform: none !important;
 }
 
 .sidebar-cta-btn:hover {
-  background-color: #000000;
-  transform: translateY(-1px);
+  background-color: var(--color-bg, #fafafa);
+  color: #000000;
+  border-color: #000000;
+  box-shadow: none;
+  transform: none !important;
+}
+
+.sidebar-cta-btn:active {
+  background-color: #f4f4f5;
+  color: #000000;
+  border-color: #000000;
+  transform: none !important;
 }
 
 .sidebar-separator {
@@ -835,9 +867,9 @@ body.quiz-play-mode .bg-frame-line {
 }
 
 .btn-primary-black {
-  background-color: #18181b;
+  background-color: #000000;
   color: #ffffff;
-  border: 1px solid #18181b;
+  border: 1px solid #000000;
   border-radius: 6px;
   font-family: var(--font-heading);
   font-size: 0.85rem;
@@ -846,17 +878,27 @@ body.quiz-play-mode .bg-frame-line {
   cursor: pointer;
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 0.5rem;
   text-decoration: none;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
-  transition:
-    background-color var(--transition-fast),
-    transform var(--transition-fast);
+  box-shadow: none;
+  transition: none !important;
+  transform: none !important;
 }
 
 .btn-primary-black:hover {
-  background-color: #000000;
-  transform: translateY(-1px);
+  background-color: var(--color-bg, #fafafa);
+  color: #000000;
+  border-color: #000000;
+  box-shadow: none;
+  transform: none !important;
+}
+
+.btn-primary-black:active {
+  background-color: #f4f4f5;
+  color: #000000;
+  border-color: #000000;
+  transform: none !important;
 }
 
 /* ==========================================================================
@@ -964,22 +1006,37 @@ body.quiz-play-mode .bg-frame-line {
 
 .btn-secondary-outline {
   background-color: #ffffff;
-  border: 1px solid #e5e7eb;
+  border: 1px solid #e4e4e7;
   border-radius: 6px;
   padding: 0.55rem 1.1rem;
   font-family: var(--font-heading);
   font-size: 0.85rem;
   font-weight: 600;
-  color: #374151;
+  color: #18181b;
   cursor: pointer;
-  transition:
-    background-color var(--transition-fast),
-    border-color var(--transition-fast);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  text-decoration: none;
+  box-shadow: none;
+  transition: none !important;
+  transform: none !important;
 }
 
 .btn-secondary-outline:hover {
-  background-color: #f9fafb;
-  border-color: #999999;
+  background-color: var(--color-bg, #fafafa);
+  border-color: #000000;
+  color: #000000;
+  box-shadow: none;
+  transform: none !important;
+}
+
+.btn-secondary-outline:active {
+  background-color: #f4f4f5;
+  border-color: #000000;
+  color: #000000;
+  transform: none !important;
 }
 
 /* High Density Table Toolbar & Rows */
@@ -1139,27 +1196,36 @@ body.quiz-play-mode .bg-frame-line {
 
 .btn-panel-outline {
   background-color: #ffffff;
-  border: 1px solid #e5e7eb;
+  border: 1px solid #e4e4e7;
   border-radius: 6px;
   padding: 0.45rem 0.85rem;
   font-family: var(--font-heading);
   font-size: 0.825rem;
   font-weight: 600;
-  color: #374151;
+  color: #18181b;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
-  transition:
-    background-color var(--transition-fast),
-    border-color var(--transition-fast),
-    color var(--transition-fast);
+  text-decoration: none;
+  box-shadow: none;
+  transition: none !important;
+  transform: none !important;
 }
 
 .btn-panel-outline:hover {
-  background-color: #f9fafb;
-  border-color: #999999;
-  color: #18181b;
+  background-color: var(--color-bg, #fafafa);
+  border-color: #000000;
+  color: #000000;
+  box-shadow: none;
+  transform: none !important;
+}
+
+.btn-panel-outline:active {
+  background-color: #f4f4f5;
+  border-color: #000000;
+  color: #000000;
+  transform: none !important;
 }
 
 .panel-table-container {
@@ -1309,20 +1375,19 @@ body.quiz-play-mode .bg-frame-line {
 }
 
 .btn-icon-action {
-  background: none;
-  border: 1px solid #e5e7eb;
+  background-color: #ffffff;
+  border: 1px solid #e4e4e7;
   border-radius: 6px;
   width: 28px;
   height: 28px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  color: #6b7280;
+  color: #18181b;
   cursor: pointer;
-  transition:
-    background-color 0.15s,
-    color 0.15s,
-    border-color 0.15s;
+  box-shadow: none;
+  transition: none !important;
+  transform: none !important;
 }
 
 .btn-icon-action svg {
@@ -1331,15 +1396,33 @@ body.quiz-play-mode .bg-frame-line {
 }
 
 .btn-icon-action:hover {
+  background-color: var(--color-bg, #fafafa);
+  color: #000000;
+  border-color: #000000;
+  box-shadow: none;
+  transform: none !important;
+}
+
+.btn-icon-action:active {
   background-color: #f4f4f5;
-  color: #18181b;
-  border-color: #999999;
+  color: #000000;
+  border-color: #000000;
+  transform: none !important;
 }
 
 .btn-action-danger:hover {
-  background-color: #fef2f2;
-  color: #dc2626;
-  border-color: #fca5a5;
+  background-color: var(--color-bg, #fafafa);
+  color: #000000;
+  border-color: #000000;
+  box-shadow: none;
+  transform: none !important;
+}
+
+.btn-action-danger:active {
+  background-color: #f4f4f5;
+  color: #000000;
+  border-color: #000000;
+  transform: none !important;
 }
 
 .panel-pagination-footer {
@@ -1366,28 +1449,40 @@ body.quiz-play-mode .bg-frame-line {
 
 .btn-pagination {
   background-color: #ffffff;
-  border: 1px solid #e5e7eb;
+  border: 1px solid #e4e4e7;
   border-radius: 6px;
   padding: 0.35rem 0.75rem;
   font-family: var(--font-heading);
   font-size: 0.8rem;
   font-weight: 600;
-  color: #374151;
+  color: #18181b;
   cursor: pointer;
-  transition:
-    background-color 0.15s,
-    border-color 0.15s;
+  box-shadow: none;
+  transition: none !important;
+  transform: none !important;
 }
 
 .btn-pagination:hover:not(:disabled) {
-  background-color: #f9fafb;
-  border-color: #999999;
-  color: #18181b;
+  background-color: var(--color-bg, #fafafa);
+  border-color: #000000;
+  color: #000000;
+  box-shadow: none;
+  transform: none !important;
+}
+
+.btn-pagination:active:not(:disabled) {
+  background-color: #f4f4f5;
+  border-color: #000000;
+  color: #000000;
+  transform: none !important;
 }
 
 .btn-pagination:disabled {
-  opacity: 0.5;
+  opacity: 0.4;
   cursor: not-allowed;
+  background-color: #f4f4f5;
+  border-color: #e4e4e7;
+  color: #a1a1aa;
 }
 
 /* 3-Column Achievement Badge Grid */
@@ -2070,30 +2165,57 @@ body.quiz-play-mode .bg-frame-line {
   font-size: 0.85rem;
   font-weight: 700;
   cursor: pointer;
-  transition: all var(--transition-fast);
+  box-shadow: none;
+  transition: none !important;
+  transform: none !important;
 }
 
 .btn-confirm-cancel {
   background-color: #ffffff;
-  border: 1px solid #e5e7eb;
-  color: #374151;
+  border: 1px solid #e4e4e7;
+  color: #18181b;
+  box-shadow: none;
+  transition: none !important;
+  transform: none !important;
 }
 
 .btn-confirm-cancel:hover {
-  background-color: #f9fafb;
-  border-color: #999999;
+  background-color: var(--color-bg, #fafafa);
+  border-color: #000000;
+  color: #000000;
+  box-shadow: none;
+  transform: none !important;
+}
+
+.btn-confirm-cancel:active {
+  background-color: #f4f4f5;
+  border-color: #000000;
+  color: #000000;
+  transform: none !important;
 }
 
 .btn-confirm-danger {
-  background-color: #dc2626;
-  border: 1px solid #dc2626;
+  background-color: #000000;
+  border: 1px solid #000000;
   color: #ffffff;
-  box-shadow: 0 2px 6px rgba(220, 38, 38, 0.2);
+  box-shadow: none;
+  transition: none !important;
+  transform: none !important;
 }
 
 .btn-confirm-danger:hover {
-  background-color: #b91c1c;
-  border-color: #b91c1c;
+  background-color: var(--color-bg, #fafafa);
+  color: #000000;
+  border-color: #000000;
+  box-shadow: none;
+  transform: none !important;
+}
+
+.btn-confirm-danger:active {
+  background-color: #f4f4f5;
+  color: #000000;
+  border-color: #000000;
+  transform: none !important;
 }
 
 /* 5.3 Sidebar Live Counter Badges */
@@ -2116,7 +2238,7 @@ body.quiz-play-mode .bg-frame-line {
   border: 1px solid #e5e7eb;
   padding: 1px 7px;
   border-radius: 9999px;
-  transition: all var(--transition-fast);
+  transition: none !important;
 }
 
 .sidebar-menu-btn.active .sidebar-counter-badge,
@@ -2173,8 +2295,8 @@ body.quiz-play-mode .bg-frame-line {
 }
 
 .btn-bulk-action {
-  background-color: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  background-color: #000000;
+  border: 1px solid rgba(255, 255, 255, 0.25);
   color: #ffffff;
   font-family: var(--font-heading);
   font-size: 0.8rem;
@@ -2185,11 +2307,22 @@ body.quiz-play-mode .bg-frame-line {
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
-  transition: background-color var(--transition-fast);
+  box-shadow: none;
+  transition: none !important;
+  transform: none !important;
 }
 
 .btn-bulk-action:hover {
-  background-color: rgba(255, 255, 255, 0.2);
+  background-color: #ffffff;
+  color: #000000;
+  border-color: #ffffff;
+  transform: none !important;
+}
+
+.btn-bulk-action:active {
+  background-color: #f4f4f5;
+  color: #000000;
+  transform: none !important;
 }
 
 .btn-bulk-dismiss {
@@ -2201,10 +2334,13 @@ body.quiz-play-mode .bg-frame-line {
   align-items: center;
   justify-content: center;
   padding: 4px;
+  transition: none !important;
+  transform: none !important;
 }
 
 .btn-bulk-dismiss:hover {
   color: #ffffff;
+  transform: none !important;
 }
 
 /* 5.5 Member 1-Click Password Generator & Copy Tools */
@@ -2216,8 +2352,8 @@ body.quiz-play-mode .bg-frame-line {
 }
 
 .btn-generate-password {
-  background: none;
-  border: 1px solid #e5e7eb;
+  background-color: #ffffff;
+  border: 1px solid #e4e4e7;
   border-radius: 4px;
   padding: 2px 8px;
   font-family: var(--font-heading);
@@ -2228,12 +2364,23 @@ body.quiz-play-mode .bg-frame-line {
   display: inline-flex;
   align-items: center;
   gap: 0.3rem;
-  transition: all var(--transition-fast);
+  box-shadow: none;
+  transition: none !important;
+  transform: none !important;
 }
 
 .btn-generate-password:hover {
+  background-color: var(--color-bg, #fafafa);
+  color: #000000;
+  border-color: #000000;
+  transform: none !important;
+}
+
+.btn-generate-password:active {
   background-color: #f4f4f5;
   border-color: #000000;
+  color: #000000;
+  transform: none !important;
 }
 
 /* 5.6 Material Editor Quick Toolbar & Split Preview */
@@ -2426,9 +2573,9 @@ body.quiz-play-mode .bg-frame-line {
 }
 
 .btn-remove-question {
-  background: none;
-  border: 1px solid #fecaca;
-  color: #dc2626;
+  background-color: #ffffff;
+  border: 1px solid #e4e4e7;
+  color: #18181b;
   border-radius: 4px;
   padding: 3px 8px;
   font-size: 0.75rem;
@@ -2438,19 +2585,31 @@ body.quiz-play-mode .bg-frame-line {
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
-  transition: all var(--transition-fast);
+  box-shadow: none;
+  transition: none !important;
+  transform: none !important;
 }
 
 .btn-remove-question:hover:not(:disabled) {
-  background-color: #fee2e2;
-  border-color: #ef4444;
+  background-color: var(--color-bg, #fafafa);
+  border-color: #000000;
+  color: #000000;
+  box-shadow: none;
+  transform: none !important;
+}
+
+.btn-remove-question:active:not(:disabled) {
+  background-color: #f4f4f5;
+  border-color: #000000;
+  color: #000000;
+  transform: none !important;
 }
 
 .btn-remove-question:disabled {
   opacity: 0.4;
   cursor: not-allowed;
-  border-color: #e5e7eb;
-  color: #9ca3af;
+  border-color: #e4e4e7;
+  color: #a1a1aa;
 }
 
 /* Quiz Segmented View Switcher & Form Grid */
@@ -2472,7 +2631,7 @@ body.quiz-play-mode .bg-frame-line {
 
 .quiz-segment-tab {
   background: transparent;
-  border: none;
+  border: 1px solid transparent;
   border-radius: 6px;
   padding: 6px 14px;
   font-family: var(--font-heading);
@@ -2483,19 +2642,39 @@ body.quiz-play-mode .bg-frame-line {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  transition: all var(--transition-fast);
+  transition: none !important;
+  transform: none !important;
   outline: none;
 }
 
 .quiz-segment-tab:hover:not(.active) {
-  color: #18181b;
+  color: #000000;
+  background-color: #e4e4e7;
+  border-color: #d4d4d8;
+  transform: none !important;
 }
 
 .quiz-segment-tab.active {
-  background-color: #ffffff;
-  color: #18181b;
+  background-color: #000000;
+  color: #ffffff;
+  border-color: #000000;
   font-weight: 700;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  box-shadow: none;
+  transform: none !important;
+}
+
+.quiz-segment-tab.active:hover {
+  background-color: var(--color-bg, #fafafa);
+  color: #000000;
+  border-color: #000000;
+  transform: none !important;
+}
+
+.quiz-segment-tab:active {
+  background-color: #f4f4f5;
+  color: #000000;
+  border-color: #000000;
+  transform: none !important;
 }
 
 .form-grid-2col {
@@ -2704,11 +2883,14 @@ body.quiz-play-mode .bg-frame-line {
   padding: 0;
   text-decoration: underline;
   text-underline-offset: 3px;
-  transition: opacity var(--transition-fast);
+  transition: none !important;
+  transform: none !important;
 }
 
 .btn-inline-generate:hover {
-  opacity: 0.7;
+  color: #000000;
+  opacity: 0.8;
+  transform: none !important;
 }
 
 .provision-footer {
@@ -2746,4 +2928,71 @@ body.quiz-play-mode .bg-frame-line {
   display: flex;
   align-items: center;
   gap: 0.5rem;
+}
+
+/* ==========================================================================
+   GLOBAL INSTANT BUTTON OVERRIDES (ZERO ANIMATION & INVERSE HOVER STANDARD)
+   ========================================================================== */
+button,
+input[type="button"],
+input[type="submit"],
+input[type="reset"],
+.btn-primary-black,
+.btn-secondary-outline,
+.btn-panel-outline,
+.btn-geist-nav-secondary,
+.btn-geist-nav-danger,
+.sidebar-cta-btn,
+.btn-confirm-cancel,
+.btn-confirm-danger,
+.btn-bulk-action,
+.btn-pagination,
+.btn-icon-action,
+.submit-button,
+.material-btn,
+.floating-bottom-btn {
+  transition: none !important;
+  animation: none !important;
+}
+
+button:hover,
+input[type="button"]:hover,
+input[type="submit"]:hover,
+input[type="reset"]:hover,
+.btn-primary-black:hover,
+.btn-secondary-outline:hover,
+.btn-panel-outline:hover,
+.btn-geist-nav-secondary:hover,
+.btn-geist-nav-danger:hover,
+.sidebar-cta-btn:hover,
+.btn-confirm-cancel:hover,
+.btn-confirm-danger:hover,
+.btn-bulk-action:hover,
+.btn-pagination:hover,
+.btn-icon-action:hover,
+.submit-button:hover,
+.material-btn:hover,
+.floating-bottom-btn:hover {
+  transform: none !important;
+}
+
+button:active,
+input[type="button"]:active,
+input[type="submit"]:active,
+input[type="reset"]:active,
+.btn-primary-black:active,
+.btn-secondary-outline:active,
+.btn-panel-outline:active,
+.btn-geist-nav-secondary:active,
+.btn-geist-nav-danger:active,
+.sidebar-cta-btn:active,
+.btn-confirm-cancel:active,
+.btn-confirm-danger:active,
+.btn-bulk-action:active,
+.btn-pagination:active,
+.btn-icon-action:active,
+.submit-button:active,
+.material-btn:active,
+.floating-bottom-btn:active {
+  transform: none !important;
 }
