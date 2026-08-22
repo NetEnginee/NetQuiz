@@ -268,8 +268,8 @@ require_once dirname(__DIR__) . '/templates/header.php';
                 </div>
             <?php else: ?>
                 <div style="padding: 1.25rem; text-align: center; background-color: #FAFAFA; border: 1px solid #E5E7EB; border-radius: 8px;">
-                    <p style="font-size: 0.85rem; font-weight: 700; color: #18181B; margin: 0 0 0.2rem 0;">Semua Lencana Terbuka!</p>
-                    <p style="font-size: 0.775rem; color: #71717A; margin: 0;">Anda telah menguasai seluruh pencapaian kuis MikroTik.</p>
+                    <p style="font-size: 0.85rem; font-weight: 700; color: #18181B; margin: 0 0 0.2rem 0;">Tidak Lencana Terbuka!</p>
+                    <p style="font-size: 0.775rem; color: #71717A; margin: 0;">Kerjakan dan Selesaikan minimal 1 Kuis.</p>
                 </div>
             <?php endif; ?>
         </div>

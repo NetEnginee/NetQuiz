@@ -1,6 +1,10 @@
 <?php
 $categorized = $categorized ?? [];
 $activeDifficulty = $activeDifficulty ?? 'all';
+$totalQuizzesCount = 0;
+foreach ($categorized as $quizzesList) {
+    $totalQuizzesCount += count($quizzesList);
+}
 
 require_once dirname(__DIR__) . '/templates/header.php';
 ?>
@@ -33,7 +37,7 @@ require_once dirname(__DIR__) . '/templates/header.php';
 </div>
 
 <!-- Categorized Quizzes Sections -->
-<?php if (empty($categorized)): ?>
+<?php if ($totalQuizzesCount === 0): ?>
     <div class="supabase-panel-card" style="padding: 3rem 1.5rem; text-align: center;">
         <span class="corner-crosshair corner-tl">+</span>
         <span class="corner-crosshair corner-tr">+</span>
@@ -42,7 +46,7 @@ require_once dirname(__DIR__) . '/templates/header.php';
         <div style="width: 44px; height: 44px; border-radius: 50%; background-color: #F4F4F5; margin: 0 auto 0.75rem; display: flex; align-items: center; justify-content: center; color: #71717A;">
             <i data-lucide="file-question" style="width: 22px; height: 22px;"></i>
         </div>
-        <h3 style="font-size: 1rem; font-weight: 800; color: #18181B; margin: 0 0 0.25rem 0;">Tidak Ada Kuis Tersedia</h3>
+        <h3 style="font-family: var(--font-heading); font-size: 1rem; font-weight: 800; color: #18181B; margin: 0 0 0.25rem 0;">Tidak Ada Kuis Tersedia</h3>
         <p style="font-size: 0.85rem; color: #71717A; margin: 0;">Belum ada kuis yang sesuai dengan filter tingkat kesulitan yang dipilih.</p>
     </div>
 <?php else: ?>
@@ -63,8 +67,8 @@ require_once dirname(__DIR__) . '/templates/header.php';
                     <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.25rem;">
                         <?php foreach ($quizzes as $q): ?>
                             <?php
-                            $isFinished = !empty($q['completed']);
-                            $isPaused = !empty($q['paused']);
+                            $isFinished = !empty($q['is_completed']) || !empty($q['completed']);
+                            $isPaused = !empty($q['is_paused']) || !empty($q['paused']);
                             $userScore = $q['score'] ?? null;
                             ?>
                             <div class="supabase-panel-card" style="padding: 1.25rem; display: flex; flex-direction: column; justify-content: space-between;">
@@ -88,6 +92,10 @@ require_once dirname(__DIR__) . '/templates/header.php';
                                             <span class="status-badge" style="background-color: #FEF3C7; color: #92400E; font-size: 0.7rem;">
                                                 <i data-lucide="pause" style="width: 10px; height: 10px; margin-right: 2px;"></i>
                                                 Dijeda
+                                            </span>
+                                        <?php else: ?>
+                                            <span class="status-badge" style="background-color: #F4F4F5; color: #71717A; font-size: 0.7rem;">
+                                                Belum Dikerjakan
                                             </span>
                                         <?php endif; ?>
                                     </div>
@@ -117,10 +125,16 @@ require_once dirname(__DIR__) . '/templates/header.php';
 
                                     <div>
                                         <?php if ($isFinished): ?>
-                                            <a href="<?= BASE_URL ?>/quiz/review/<?= (int)$q['id'] ?>" class="btn-secondary-outline" style="font-size: 0.775rem; padding: 0.35rem 0.75rem;">
-                                                <i data-lucide="eye" style="width: 12px; height: 12px;"></i>
-                                                <span>Review</span>
-                                            </a>
+                                            <div style="display: flex; align-items: center; gap: 0.4rem;">
+                                                <a href="<?= BASE_URL ?>/quiz/review/<?= (int)$q['id'] ?>" class="btn-secondary-outline" style="font-size: 0.775rem; padding: 0.35rem 0.65rem;" title="Review Pembahasan">
+                                                    <i data-lucide="file-text" style="width: 12px; height: 12px;"></i>
+                                                    <span>Review</span>
+                                                </a>
+                                                <a href="<?= BASE_URL ?>/quiz/play/<?= (int)$q['id'] ?>" class="btn-primary-black" style="font-size: 0.775rem; padding: 0.35rem 0.65rem;" title="Ulangi Kuis">
+                                                    <i data-lucide="rotate-ccw" style="width: 12px; height: 12px;"></i>
+                                                    <span>Ulangi</span>
+                                                </a>
+                                            </div>
                                         <?php elseif ($isPaused): ?>
                                             <a href="<?= BASE_URL ?>/quiz/play/<?= (int)$q['id'] ?>" class="btn-primary-black" style="font-size: 0.775rem; padding: 0.35rem 0.75rem;">
                                                 <i data-lucide="play" style="width: 12px; height: 12px;"></i>

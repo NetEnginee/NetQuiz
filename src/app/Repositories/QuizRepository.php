@@ -220,13 +220,41 @@ class QuizRepository implements QuizRepositoryInterface
             });
         }
 
-        // Fetch user completed scores
-        $completedQuizzes = [];
+        // Fetch question counts per quiz
+        $questionCounts = [];
         try {
-            $stmt = $this->db->prepare("SELECT quiz_id, score FROM quiz_attempts WHERE user_id = :user_id AND quiz_id IS NOT NULL AND status = 'finished'");
+            $stmtCount = $this->db->query("SELECT quiz_id, COUNT(*) as total FROM questions GROUP BY quiz_id");
+            foreach ($stmtCount->fetchAll(PDO::FETCH_ASSOC) as $row) {
+                $questionCounts[(int)$row['quiz_id']] = (int)$row['total'];
+            }
+        } catch (PDOException $e) {
+            // Fallback
+        }
+
+        // Fetch user attempts (both finished and paused)
+        $userAttempts = [];
+        try {
+            $stmt = $this->db->prepare("
+                SELECT quiz_id, score, status, user_answers 
+                FROM quiz_attempts 
+                WHERE user_id = :user_id AND quiz_id IS NOT NULL 
+                ORDER BY id ASC
+            ");
             $stmt->execute(['user_id' => $userId]);
             foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $row) {
-                $completedQuizzes[(int)$row['quiz_id']] = (int)($row['score'] ?? 0);
+                $qId = (int)$row['quiz_id'];
+                $status = $row['status'];
+                $score = isset($row['score']) ? (int)$row['score'] : null;
+                $timeLeft = null;
+                if ($status === 'paused' && !empty($row['user_answers'])) {
+                    $decoded = json_decode($row['user_answers'], true);
+                    $timeLeft = isset($decoded['time_left']) ? (int)$decoded['time_left'] : null;
+                }
+                $userAttempts[$qId] = [
+                    'status' => $status,
+                    'score' => $score,
+                    'time_left' => $timeLeft
+                ];
             }
         } catch (PDOException $e) {
             // Fallback
@@ -241,8 +269,20 @@ class QuizRepository implements QuizRepositoryInterface
 
         foreach ($quizzes as $quiz) {
             $quizId = (int)$quiz['id'];
-            $quiz['is_completed'] = array_key_exists($quizId, $completedQuizzes);
-            $quiz['score'] = $completedQuizzes[$quizId] ?? 0;
+            $attempt = $userAttempts[$quizId] ?? null;
+            $status = $attempt['status'] ?? 'not_started';
+
+            $isFinished = ($status === 'finished');
+            $isPaused = ($status === 'paused');
+
+            $quiz['question_count'] = $questionCounts[$quizId] ?? 0;
+            $quiz['status'] = $status;
+            $quiz['is_completed'] = $isFinished;
+            $quiz['completed'] = $isFinished;
+            $quiz['is_paused'] = $isPaused;
+            $quiz['paused'] = $isPaused;
+            $quiz['score'] = $attempt['score'] ?? null;
+            $quiz['time_left'] = $attempt['time_left'] ?? null;
 
             $cat = $quiz['category'];
             if (!isset($categorized[$cat])) {
