@@ -377,12 +377,7 @@ function renderQuizSection() {
                 <form id="form-create-quiz" action="${window.BASE_URL}/admin/quizzes" method="POST" style="padding: 1.75rem;">
                     <input type="hidden" name="csrf_token" value="${window.CSRF_TOKEN || ""}">
 
-                    <!-- Section Header -->
-                    <div style="margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid #E5E7EB;">
-                        <h3 style="font-family: var(--font-heading); font-size: 1.15rem; font-weight: 800; color: #18181B; margin: 0;">Buat Kuis Baru</h3>
-                        <p style="font-size: 0.825rem; color: #71717A; margin-top: 0.25rem;">Isi informasi kuis dan susun pertanyaan pilihan ganda.</p>
-                    </div>
-
+                    
                     <!-- 1. Metadata Kuis -->
                     <div class="form-grid-2col" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
                         <div class="form-field-group">
@@ -422,17 +417,32 @@ function renderQuizSection() {
 
                     <!-- 2. Question Repeater -->
                     <div style="padding-top: 1.5rem; border-top: 1px dashed #E5E7EB;">
-                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.25rem;">
+                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 0.75rem;">
                             <div>
                                 <h4 style="font-family: var(--font-heading); font-size: 1rem; font-weight: 800; color: #18181B; margin: 0;">
                                     Daftar Soal (<span id="quiz-question-counter">1</span>)
                                 </h4>
                                 <p style="font-size: 0.775rem; color: #71717A; margin-top: 0.2rem;">Klik tanda radio pada pilihan untuk menentukan kunci jawaban yang benar.</p>
                             </div>
-                            <button type="button" id="btn-add-quiz-question" class="btn-secondary-outline" style="font-size: 0.8rem; padding: 0.4rem 0.85rem; display: inline-flex; align-items: center; gap: 0.35rem;">
-                                <i data-lucide="plus" style="width: 14px; height: 14px;"></i>
-                                <span>Tambah Soal</span>
-                            </button>
+                            <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+                                <!-- Hidden File Input for JSON Upload -->
+                                <input type="file" id="import-quiz-json-input" accept=".json,application/json" style="display: none;">
+                                
+                                <button type="button" class="btn-secondary-outline" onclick="window.downloadQuizJsonTemplate()" title="Unduh format template kuis JSON" style="font-size: 0.8rem; padding: 0.4rem 0.75rem; display: inline-flex; align-items: center; gap: 0.35rem;">
+                                    <i data-lucide="download" style="width: 13px; height: 13px;"></i>
+                                    <span>Template JSON</span>
+                                </button>
+
+                                <button type="button" class="btn-secondary-outline" onclick="document.getElementById('import-quiz-json-input').click()" title="Unggah kuis dari file format JSON" style="font-size: 0.8rem; padding: 0.4rem 0.85rem; display: inline-flex; align-items: center; gap: 0.35rem;">
+                                    <i data-lucide="upload" style="width: 13px; height: 13px;"></i>
+                                    <span>Upload JSON</span>
+                                </button>
+
+                                <button type="button" id="btn-add-quiz-question" class="btn-secondary-outline" style="font-size: 0.8rem; padding: 0.4rem 0.85rem; display: inline-flex; align-items: center; gap: 0.35rem;">
+                                    <i data-lucide="plus" style="width: 14px; height: 14px;"></i>
+                                    <span>Tambah Soal</span>
+                                </button>
+                            </div>
                         </div>
 
                         <!-- Question Repeater Stack -->
@@ -683,6 +693,180 @@ function renderQuizSection() {
   const btnAddQ2 = document.getElementById("btn-add-another-question");
   if (btnAddQ) btnAddQ.addEventListener("click", window.addQuestionBlock);
   if (btnAddQ2) btnAddQ2.addEventListener("click", window.addQuestionBlock);
+
+  // --- JSON QUIZ TEMPLATE DOWNLOAD & IMPORT LOGIC ---
+  window.downloadQuizJsonTemplate = function () {
+    const template = {
+      title: "Contoh Kuis MikroTik OSPF Routing",
+      category: "Routing",
+      duration: 15,
+      difficulty: "Mudah",
+      description: "Ujian pemahaman dasar routing OSPF dan gateway.",
+      questions: [
+        {
+          question: "Protokol routing manakah yang menggunakan algoritma link-state?",
+          option_a: "RIP",
+          option_b: "OSPF",
+          option_c: "BGP",
+          option_d: "Static Route",
+          correct: "B",
+          explanation: "OSPF (Open Shortest Path First) menggunakan algoritma link-state (Dijkstra).",
+        },
+        {
+          question: "Berapakah nilai default administrative distance untuk OSPF pada RouterOS?",
+          option_a: "110",
+          option_b: "120",
+          option_c: "90",
+          option_d: "200",
+          correct: "A",
+          explanation: "Nilai default administrative distance untuk OSPF pada RouterOS adalah 110.",
+        },
+      ],
+    };
+
+    const blob = new Blob([JSON.stringify(template, null, 2)], {
+      type: "application/json",
+    });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "template_kuis.json";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
+  const jsonUploadInput = document.getElementById("import-quiz-json-input");
+  if (jsonUploadInput) {
+    jsonUploadInput.addEventListener("change", function (e) {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function (evt) {
+        try {
+          const parsed = JSON.parse(evt.target.result);
+          let questionsArray = [];
+
+          if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) {
+            // Populate Quiz Metadata if provided
+            if (parsed.title) {
+              const el = document.getElementById("quiz-input-title");
+              if (el) el.value = parsed.title;
+            }
+            if (parsed.category) {
+              const el = document.getElementById("quiz-input-category");
+              if (el) el.value = parsed.category;
+            }
+            if (parsed.duration) {
+              const el = document.getElementById("quiz-input-duration");
+              if (el) el.value = parsed.duration;
+            }
+            if (parsed.difficulty) {
+              const el = document.getElementById("quiz-input-difficulty");
+              if (el) el.value = parsed.difficulty;
+            }
+            if (parsed.description) {
+              const el = document.getElementById("quiz-input-desc");
+              if (el) el.value = parsed.description;
+            }
+            if (Array.isArray(parsed.questions)) {
+              questionsArray = parsed.questions;
+            }
+          } else if (Array.isArray(parsed)) {
+            questionsArray = parsed;
+          } else {
+            throw new Error(
+              "Format JSON harus berupa objek kuis atau array daftar pertanyaan.",
+            );
+          }
+
+          if (questionsArray.length === 0) {
+            throw new Error("File JSON tidak memiliki butir pertanyaan yang valid.");
+          }
+
+          // Clear repeater and populate new questions
+          if (repeaterStack) {
+            repeaterStack.innerHTML = "";
+            questionsArray.forEach((item, idx) => {
+              const qText = item.question || item.pertanyaan || "";
+              const optA = item.option_a || item.pilihan_a || item.a || "";
+              const optB = item.option_b || item.pilihan_b || item.b || "";
+              const optC = item.option_c || item.pilihan_c || item.c || "";
+              const optD = item.option_d || item.pilihan_d || item.d || "";
+              let correct = (
+                item.correct ||
+                item.kunci ||
+                item.jawaban ||
+                "A"
+              )
+                .toUpperCase()
+                .trim();
+              if (!["A", "B", "C", "D"].includes(correct)) correct = "A";
+              const exp =
+                item.explanation || item.pembahasan || item.penjelasan || "";
+
+              const block = createQuestionBlock(idx);
+              const qInput = block.querySelector('textarea[name*="[question]"]');
+              const aInput = block.querySelector('input[name*="[option_a]"]');
+              const bInput = block.querySelector('input[name*="[option_b]"]');
+              const cInput = block.querySelector('input[name*="[option_c]"]');
+              const dInput = block.querySelector('input[name*="[option_d]"]');
+              const expInput = block.querySelector(
+                'input[name*="[explanation]"]',
+              );
+              const radio = block.querySelector(
+                `input[type="radio"][value="${correct}"]`,
+              );
+
+              if (qInput) qInput.value = qText;
+              if (aInput) aInput.value = optA;
+              if (bInput) bInput.value = optB;
+              if (cInput) cInput.value = optC;
+              if (dInput) dInput.value = optD;
+              if (radio) radio.checked = true;
+              if (exp && expInput) {
+                expInput.value = exp;
+                const extraContent = block.querySelector(".q-extra-content");
+                const extraLabel = block.querySelector('[id^="q-extra-label-"]');
+                if (extraContent) extraContent.style.display = "block";
+                if (extraLabel) extraLabel.textContent = "- Sembunyikan Pembahasan";
+              }
+
+              repeaterStack.appendChild(block);
+            });
+            syncQuestionBlocks();
+          }
+
+          if (window.showGeistToast) {
+            window.showGeistToast(
+              "success",
+              "Import JSON Berhasil",
+              `Berhasil memuat ${questionsArray.length} butir soal.`,
+            );
+          } else {
+            alert(
+              `Berhasil memuat ${questionsArray.length} butir soal dari file JSON.`,
+            );
+          }
+        } catch (err) {
+          if (window.showGeistToast) {
+            window.showGeistToast(
+              "error",
+              "Gagal Membaca File JSON",
+              err.message,
+            );
+          } else {
+            alert("Gagal membaca file JSON: " + err.message);
+          }
+        } finally {
+          jsonUploadInput.value = "";
+        }
+      };
+      reader.readAsText(file);
+    });
+  }
 
   // Switch between Creation Studio View and Quizzes Table View
   window.switchQuizView = function (view) {
