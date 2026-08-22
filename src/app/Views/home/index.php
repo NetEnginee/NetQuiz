@@ -29,21 +29,11 @@ require_once dirname(__DIR__) . '/templates/header.php';
     <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;">
         <div>
             <h1 style="font-family: var(--font-heading); font-size: 1.5rem; font-weight: 800; color: #18181B; margin: 0 0 0.25rem 0; letter-spacing: -0.02em;">
-                Selamat Datang, <?= htmlspecialchars($userName) ?> 👋
+                Selamat Datang, <?= htmlspecialchars($userName) ?>
             </h1>
             <p style="font-size: 0.875rem; color: #71717A; margin: 0;">
-                Pantau progres evaluasi pemahaman konfigurasi MikroTik RouterOS Anda.
+                Lihat ringkasan aktivitas kuis, pencapaian, dan materi pembelajaran terbaru Anda disini.
             </p>
-        </div>
-        <div style="display: flex; align-items: center; gap: 0.5rem;">
-            <a href="<?= BASE_URL ?>/quiz" class="btn-primary-black" style="font-size: 0.85rem; padding: 0.5rem 1rem;">
-                <i data-lucide="play" style="width: 14px; height: 14px;"></i>
-                <span>Mulai Kuis</span>
-            </a>
-            <a href="<?= BASE_URL ?>/learn" class="btn-secondary-outline" style="font-size: 0.85rem; padding: 0.5rem 1rem;">
-                <i data-lucide="book-open" style="width: 14px; height: 14px;"></i>
-                <span>Baca Materi</span>
-            </a>
         </div>
     </div>
 </div>
@@ -155,10 +145,6 @@ require_once dirname(__DIR__) . '/templates/header.php';
                     <p style="font-size: 0.875rem; color: #52525B; margin-bottom: 1rem; font-weight: 500;">
                         Belum ada aktivitas kuis. Uji kemampuan MikroTik Anda sekarang!
                     </p>
-                    <a href="<?= BASE_URL ?>/quiz" class="btn-primary-black" style="font-size: 0.825rem; padding: 0.45rem 1rem;">
-                        <i data-lucide="play" style="width: 13px; height: 13px;"></i>
-                        <span>Mulai Kuis Pertama</span>
-                    </a>
                 </div>
             <?php else: ?>
                 <div style="display: flex; flex-direction: column; gap: 0.75rem;">
@@ -222,7 +208,7 @@ require_once dirname(__DIR__) . '/templates/header.php';
                     <?php foreach (array_slice($materials, 0, 4) as $mat): ?>
                         <a href="<?= BASE_URL ?>/learn/<?= (int)$mat['id'] ?>" style="display: block; padding: 0.85rem; background-color: #FAFAFA; border: 1px solid #E5E7EB; border-radius: 6px; text-decoration: none; transition: all 0.15s ease;" onmouseover="this.style.borderColor='#18181B';" onmouseout="this.style.borderColor='#E5E7EB';">
                             <span class="status-badge" style="background-color: #F4F4F5; font-size: 0.7rem; margin-bottom: 0.4rem;"><?= htmlspecialchars($mat['category'] ?? 'Umum') ?></span>
-                            <h4 style="font-size: 0.875rem; font-weight: 700; color: #18181B; margin: 0 0 0.3rem 0; line-height: 1.35; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;>
+                            <h4 style="font-size: 0.875rem; font-weight: 700; color: #18181B; margin: 0 0 0.3rem 0; line-height: 1.35; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;>    
                                 <?= htmlspecialchars($mat['title']) ?>
                             </h4>
                             <div style=" display: flex; align-items: center; justify-content: space-between; font-size: 0.75rem; color: #71717A;">
