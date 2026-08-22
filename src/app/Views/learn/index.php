@@ -37,7 +37,7 @@ require_once dirname(__DIR__) . '/templates/header.php';
                 </div>
 
                 <!-- Materials Grid -->
-                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.25rem;">
+                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 290px), 1fr)); gap: 1.25rem;">
                     <?php foreach ($items as $material): ?>
                         <?php
                         $cleanText = strip_tags($material['content'] ?? '');
