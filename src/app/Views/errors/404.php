@@ -98,27 +98,33 @@
             display: inline-flex;
             align-items: center;
             gap: 0.5rem;
-            background-color: var(--primary);
+            background-color: #000000;
             color: #ffffff;
             text-decoration: none;
-            padding: 0.85rem 2rem;
-            border-radius: 16px;
-            font-weight: 600;
-            font-size: 0.9rem;
-            box-shadow: 0 10px 25px -5px rgba(124, 58, 237, 0.25);
-            transition: all 0.2s ease;
-            border: none;
+            padding: 0.75rem 1.75rem;
+            border-radius: 6px;
+            font-weight: 700;
+            font-size: 0.875rem;
+            border: 1px solid #000000;
             cursor: pointer;
+            box-shadow: none;
+            transition: none !important;
+            transform: none !important;
         }
 
         .btn-home:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 12px 30px -5px rgba(124, 58, 237, 0.35);
-            background-color: #6d28d9;
+            background-color: #FAFAFA;
+            color: #000000;
+            border-color: #000000;
+            box-shadow: none;
+            transform: none !important;
         }
 
         .btn-home:active {
-            transform: translateY(0);
+            background-color: #F4F4F5;
+            color: #000000;
+            border-color: #000000;
+            transform: none !important;
         }
     </style>
 </head>

@@ -130,17 +130,29 @@ function renderBreadcrumb(array $items): string
             color: #52525B;
             text-decoration: none;
             border-radius: 6px;
-            transition: all 0.15s ease;
+            border: 1px solid transparent;
+            transition: none !important;
+            transform: none !important;
         }
 
         .student-nav-link:hover {
-            color: #18181B;
+            color: #000000;
+            background-color: var(--color-bg, #FAFAFA);
+            border-color: #000000;
+            transform: none !important;
+        }
+
+        .student-nav-link:active {
             background-color: #F4F4F5;
+            color: #000000;
+            border-color: #000000;
+            transform: none !important;
         }
 
         .student-nav-link.active {
-            color: #18181B;
+            color: #000000;
             background-color: #F4F4F5;
+            border-color: #E4E4E7;
             font-weight: 700;
         }
 
