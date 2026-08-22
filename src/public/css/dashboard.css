@@ -2249,38 +2249,173 @@ body {
   color: #9ca3af;
 }
 
-.q-options-grid-2x2 {
+/* Quiz Segmented View Switcher & Form Grid */
+.quiz-segmented-switcher-bar {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.quiz-segmented-control {
+  display: inline-flex;
+  align-items: center;
+  background-color: #f4f4f5;
+  padding: 4px;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  gap: 2px;
+}
+
+.quiz-segment-tab {
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  padding: 6px 14px;
+  font-family: var(--font-heading);
+  font-size: 0.825rem;
+  font-weight: 600;
+  color: #52525b;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all var(--transition-fast);
+  outline: none;
+}
+
+.quiz-segment-tab:hover:not(.active) {
+  color: #18181b;
+}
+
+.quiz-segment-tab.active {
+  background-color: #ffffff;
+  color: #18181b;
+  font-weight: 700;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.form-grid-2col {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 0.75rem;
-  margin-top: 0.75rem;
-  margin-bottom: 0.75rem;
+  gap: 1rem;
 }
 
 @media (max-width: 640px) {
-  .q-options-grid-2x2 {
-    grid-template-columns: 1fr;
+  .form-grid-2col {
+    grid-template-columns: 1fr !important;
+  }
+  .quiz-segmented-switcher-bar {
+    width: 100%;
+  }
+  .quiz-segmented-control {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+  .quiz-segment-tab {
+    justify-content: center;
+    padding: 8px 10px;
+    font-size: 0.775rem;
   }
 }
 
-.q-meta-grid-2col {
-  display: grid;
-  grid-template-columns: 180px 1fr;
-  gap: 0.75rem;
+/* Modern Option Stack with Integrated Radio */
+.q-options-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
   margin-top: 0.75rem;
+  margin-bottom: 0.85rem;
 }
 
-@media (max-width: 640px) {
-  .q-meta-grid-2col {
-    grid-template-columns: 1fr;
-  }
+.q-option-row {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
 }
 
-.live-q-opt-pill.is-correct {
+.q-correct-radio-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  cursor: pointer;
+  user-select: none;
+}
+
+.q-correct-radio {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 18px;
+  height: 18px;
+  border: 1.5px solid #d1d5db;
+  border-radius: 50%;
+  outline: none;
+  margin: 0;
+  cursor: pointer;
+  position: relative;
+  transition: all var(--transition-fast);
+  background-color: #ffffff;
+}
+
+.q-correct-radio:hover {
+  border-color: #18181b;
+}
+
+.q-correct-radio:checked {
+  border-color: #10b981;
+  background-color: #10b981;
+  box-shadow: inset 0 0 0 3px #ffffff;
+}
+
+.q-option-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  background-color: #f4f4f5;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #52525b;
+  transition: all var(--transition-fast);
+}
+
+.q-option-row:has(.q-correct-radio:checked) .q-option-badge {
   background-color: #ecfdf5;
   border-color: #a7f3d0;
   color: #065f46;
-  font-weight: 700;
+}
+
+.q-option-input {
+  flex: 1;
+}
+
+/* Optional Explanation Box */
+.q-extra-toggle-box {
+  margin-top: 0.5rem;
+}
+
+.btn-toggle-optional {
+  background: none;
+  border: none;
+  padding: 0;
+  font-family: var(--font-body);
+  font-size: 0.775rem;
+  font-weight: 500;
+  color: #71717a;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  transition: color var(--transition-fast);
+}
+
+.btn-toggle-optional:hover {
+  color: #18181b;
+  text-decoration: underline;
 }
 
 /* 5.9 Clean Minimalist Empty States */
