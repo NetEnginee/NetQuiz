@@ -194,104 +194,29 @@ function renderBreadcrumb(array $items): string
             transition: color 0.15s ease, text-shadow 0.15s ease;
         }
 
-        /* 1. Dashboard Tab (Emerald Green) */
-        .student-nav-link.nav-tab-dashboard:hover {
+        /* Unified Electric Emerald Green Navigation Links */
+        .student-nav-link:hover {
             color: #15803D;
             background-color: #F0FDF4;
             border-color: #86EFAC;
             box-shadow: 0 2px 0 #22C55E;
         }
 
-        .student-nav-link.nav-tab-dashboard:hover .pixel-nav-dot {
+        .student-nav-link:hover .pixel-nav-dot {
             color: #22C55E;
         }
 
-        .student-nav-link.nav-tab-dashboard.active {
+        .student-nav-link.active {
             color: #FFFFFF;
             background-color: #18181B;
             border-color: #22C55E;
-            box-shadow: 0 3px 0 #15803D, 0 4px 12px rgba(34, 197, 94, 0.25);
+            box-shadow: 0 3px 0 #15803D, 0 4px 12px rgba(34, 197, 94, 0.28);
             font-weight: 700;
         }
 
-        .student-nav-link.nav-tab-dashboard.active .pixel-nav-dot {
+        .student-nav-link.active .pixel-nav-dot {
             color: #22C55E;
             text-shadow: 0 0 8px #22C55E, 0 0 14px rgba(34, 197, 94, 0.7);
-        }
-
-        /* 2. Kuis Tab (Cyber Sky Cyan) */
-        .student-nav-link.nav-tab-quiz:hover {
-            color: #0369A1;
-            background-color: #F0F9FF;
-            border-color: #7DD3FC;
-            box-shadow: 0 2px 0 #38BDF8;
-        }
-
-        .student-nav-link.nav-tab-quiz:hover .pixel-nav-dot {
-            color: #38BDF8;
-        }
-
-        .student-nav-link.nav-tab-quiz.active {
-            color: #FFFFFF;
-            background-color: #18181B;
-            border-color: #38BDF8;
-            box-shadow: 0 3px 0 #0284C7, 0 4px 12px rgba(56, 189, 248, 0.25);
-            font-weight: 700;
-        }
-
-        .student-nav-link.nav-tab-quiz.active .pixel-nav-dot {
-            color: #38BDF8;
-            text-shadow: 0 0 8px #38BDF8, 0 0 14px rgba(56, 189, 248, 0.7);
-        }
-
-        /* 3. Materi Tab (Warm Amber Orange) */
-        .student-nav-link.nav-tab-learn:hover {
-            color: #B45309;
-            background-color: #FFFBEB;
-            border-color: #FDE68A;
-            box-shadow: 0 2px 0 #F59E0B;
-        }
-
-        .student-nav-link.nav-tab-learn:hover .pixel-nav-dot {
-            color: #F59E0B;
-        }
-
-        .student-nav-link.nav-tab-learn.active {
-            color: #FFFFFF;
-            background-color: #18181B;
-            border-color: #F59E0B;
-            box-shadow: 0 3px 0 #D97706, 0 4px 12px rgba(245, 158, 11, 0.25);
-            font-weight: 700;
-        }
-
-        .student-nav-link.nav-tab-learn.active .pixel-nav-dot {
-            color: #F59E0B;
-            text-shadow: 0 0 8px #F59E0B, 0 0 14px rgba(245, 158, 11, 0.7);
-        }
-
-        /* 4. Leaderboard Tab (Royal Purple) */
-        .student-nav-link.nav-tab-leaderboard:hover {
-            color: #7E22CE;
-            background-color: #FAF5FF;
-            border-color: #D8B4FE;
-            box-shadow: 0 2px 0 #A855F7;
-        }
-
-        .student-nav-link.nav-tab-leaderboard:hover .pixel-nav-dot {
-            color: #A855F7;
-        }
-
-        .student-nav-link.nav-tab-leaderboard.active {
-            color: #FFFFFF;
-            background-color: #18181B;
-            border-color: #A855F7;
-            box-shadow: 0 3px 0 #7E22CE, 0 4px 12px rgba(168, 85, 247, 0.25);
-            font-weight: 700;
-        }
-
-        .student-nav-link.nav-tab-leaderboard.active .pixel-nav-dot {
-            color: #A855F7;
-            text-shadow: 0 0 8px #A855F7, 0 0 14px rgba(168, 85, 247, 0.7);
         }
 
         .student-nav-link:active {
@@ -365,37 +290,16 @@ function renderBreadcrumb(array $items): string
             transform: translateY(2.5px) !important;
         }
 
-        /* Mobile Floating Bottom Dock Button Active Colors */
+        /* Mobile Floating Bottom Dock Button (Unified Electric Emerald Green) */
         .floating-bottom-btn {
             transition: all 0.15s ease;
         }
 
-        .floating-bottom-btn.btn-dashboard.active {
+        .floating-bottom-btn.active {
             background-color: #18181B !important;
             color: #22C55E !important;
             border-color: #22C55E !important;
             box-shadow: 0 3px 0 #15803D, 0 4px 10px rgba(34, 197, 94, 0.3) !important;
-        }
-
-        .floating-bottom-btn.btn-quiz.active {
-            background-color: #18181B !important;
-            color: #38BDF8 !important;
-            border-color: #38BDF8 !important;
-            box-shadow: 0 3px 0 #0284C7, 0 4px 10px rgba(56, 189, 248, 0.3) !important;
-        }
-
-        .floating-bottom-btn.btn-learn.active {
-            background-color: #18181B !important;
-            color: #F59E0B !important;
-            border-color: #F59E0B !important;
-            box-shadow: 0 3px 0 #D97706, 0 4px 10px rgba(245, 158, 11, 0.3) !important;
-        }
-
-        .floating-bottom-btn.btn-leaderboard.active {
-            background-color: #18181B !important;
-            color: #A855F7 !important;
-            border-color: #A855F7 !important;
-            box-shadow: 0 3px 0 #7E22CE, 0 4px 10px rgba(168, 85, 247, 0.3) !important;
         }
 
         .student-main-content {
@@ -719,19 +623,19 @@ function renderBreadcrumb(array $items): string
 
             <!-- Center: Pure Text Navigation Links with Cute Pixel Dot Indicators (Desktop) -->
             <nav class="student-nav-links" aria-label="Menu Siswa">
-                <a href="<?= BASE_URL ?>/" class="student-nav-link nav-tab-dashboard <?= isStudentNavActive('/', $currentPath) ? 'active' : '' ?>">
+                <a href="<?= BASE_URL ?>/" class="student-nav-link <?= isStudentNavActive('/', $currentPath) ? 'active' : '' ?>">
                     <span class="pixel-nav-dot" aria-hidden="true">■</span>
                     <span>Dashboard</span>
                 </a>
-                <a href="<?= BASE_URL ?>/quiz" class="student-nav-link nav-tab-quiz <?= isStudentNavActive('/quiz', $currentPath) ? 'active' : '' ?>">
+                <a href="<?= BASE_URL ?>/quiz" class="student-nav-link <?= isStudentNavActive('/quiz', $currentPath) ? 'active' : '' ?>">
                     <span class="pixel-nav-dot" aria-hidden="true">■</span>
                     <span>Kuis</span>
                 </a>
-                <a href="<?= BASE_URL ?>/learn" class="student-nav-link nav-tab-learn <?= isStudentNavActive('/learn', $currentPath) ? 'active' : '' ?>">
+                <a href="<?= BASE_URL ?>/learn" class="student-nav-link <?= isStudentNavActive('/learn', $currentPath) ? 'active' : '' ?>">
                     <span class="pixel-nav-dot" aria-hidden="true">■</span>
                     <span>Materi</span>
                 </a>
-                <a href="<?= BASE_URL ?>/leaderboard" class="student-nav-link nav-tab-leaderboard <?= isStudentNavActive('/leaderboard', $currentPath) ? 'active' : '' ?>">
+                <a href="<?= BASE_URL ?>/leaderboard" class="student-nav-link <?= isStudentNavActive('/leaderboard', $currentPath) ? 'active' : '' ?>">
                     <span class="pixel-nav-dot" aria-hidden="true">■</span>
                     <span>Leaderboard</span>
                 </a>
@@ -770,29 +674,29 @@ function renderBreadcrumb(array $items): string
     <!-- 2. FLOATING BOTTOM NAVIGATION DOCK (MOBILE & TABLET EXCLUSIVE) -->
     <nav class="student-floating-bottom-nav" aria-label="Navigasi Bawah">
         <div class="floating-nav-container">
-            <!-- 1. Dashboard (Emerald) -->
-            <a href="<?= BASE_URL ?>/" class="floating-bottom-btn btn-dashboard <?= isStudentNavActive('/', $currentPath) ? 'active' : '' ?>" title="Dashboard">
+            <!-- 1. Dashboard (Electric Emerald Green) -->
+            <a href="<?= BASE_URL ?>/" class="floating-bottom-btn <?= isStudentNavActive('/', $currentPath) ? 'active' : '' ?>" title="Dashboard">
                 <span class="floating-btn-icon-wrapper">
                     <i data-lucide="layout-dashboard" class="floating-btn-icon"></i>
                 </span>
             </a>
 
-            <!-- 2. Kuis (Cyan) -->
-            <a href="<?= BASE_URL ?>/quiz" class="floating-bottom-btn btn-quiz <?= isStudentNavActive('/quiz', $currentPath) ? 'active' : '' ?>" title="Katalog Kuis">
+            <!-- 2. Kuis (Electric Emerald Green) -->
+            <a href="<?= BASE_URL ?>/quiz" class="floating-bottom-btn <?= isStudentNavActive('/quiz', $currentPath) ? 'active' : '' ?>" title="Katalog Kuis">
                 <span class="floating-btn-icon-wrapper">
                     <i data-lucide="file-question" class="floating-btn-icon"></i>
                 </span>
             </a>
 
-            <!-- 3. Materi Belajar (Amber) -->
-            <a href="<?= BASE_URL ?>/learn" class="floating-bottom-btn btn-learn <?= isStudentNavActive('/learn', $currentPath) ? 'active' : '' ?>" title="Materi Belajar">
+            <!-- 3. Materi Belajar (Electric Emerald Green) -->
+            <a href="<?= BASE_URL ?>/learn" class="floating-bottom-btn <?= isStudentNavActive('/learn', $currentPath) ? 'active' : '' ?>" title="Materi Belajar">
                 <span class="floating-btn-icon-wrapper">
                     <i data-lucide="book-open" class="floating-btn-icon"></i>
                 </span>
             </a>
 
-            <!-- 4. Leaderboard (Purple) -->
-            <a href="<?= BASE_URL ?>/leaderboard" class="floating-bottom-btn btn-leaderboard <?= isStudentNavActive('/leaderboard', $currentPath) ? 'active' : '' ?>" title="Leaderboard">
+            <!-- 4. Leaderboard (Electric Emerald Green) -->
+            <a href="<?= BASE_URL ?>/leaderboard" class="floating-bottom-btn <?= isStudentNavActive('/leaderboard', $currentPath) ? 'active' : '' ?>" title="Leaderboard">
                 <span class="floating-btn-icon-wrapper">
                     <i data-lucide="trophy" class="floating-btn-icon"></i>
                 </span>
