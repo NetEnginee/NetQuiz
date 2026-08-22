@@ -24,14 +24,6 @@ require_once dirname(__DIR__) . '/templates/header.php';
         ['label' => 'Siswa', 'url' => BASE_URL . '/'],
         ['label' => 'Dashboard']
     ]) ?>
-    <div style="display: flex; align-items: center; gap: 0.5rem;">
-        <a href="<?= BASE_URL ?>/quiz" class="btn-primary-black" style="font-size: 0.825rem; padding: 0.4rem 0.85rem;">
-            <span>Mulai Kuis</span>
-        </a>
-        <a href="<?= BASE_URL ?>/learn" class="btn-secondary-outline" style="font-size: 0.825rem; padding: 0.4rem 0.85rem;">
-            <span>Baca Materi</span>
-        </a>
-    </div>
 </div>
 
 <!-- 4 STAT BOXES (PURE TYPOGRAPHY, ZERO DECORATIVE ICONS) -->
@@ -104,6 +96,7 @@ require_once dirname(__DIR__) . '/templates/header.php';
         gap: 1.5rem;
         align-items: start;
     }
+
     @media (max-width: 860px) {
         .student-dashboard-grid {
             grid-template-columns: 1fr;
@@ -121,14 +114,12 @@ require_once dirname(__DIR__) . '/templates/header.php';
             <span class="corner-crosshair corner-tr">+</span>
             <span class="corner-crosshair corner-bl">+</span>
             <span class="corner-crosshair corner-br">+</span>
-            
+
             <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.25rem; padding-bottom: 0.75rem; border-bottom: 1px solid #E5E7EB;">
                 <h3 style="font-family: var(--font-heading); font-size: 1.05rem; font-weight: 800; color: #18181B; margin: 0;">
                     Riwayat Aktivitas Ujian
                 </h3>
-                <a href="<?= BASE_URL ?>/quiz" class="btn-secondary-outline" style="font-size: 0.775rem; padding: 0.35rem 0.7rem;">
-                    <span>Lihat Semua &rarr;</span>
-                </a>
+
             </div>
 
             <?php if (empty($stats['recent_activities'])): ?>
@@ -136,9 +127,7 @@ require_once dirname(__DIR__) . '/templates/header.php';
                     <p style="font-size: 0.875rem; color: #52525B; margin-bottom: 1rem; font-weight: 500;">
                         Belum ada aktivitas ujian kuis yang tercatat.
                     </p>
-                    <a href="<?= BASE_URL ?>/quiz" class="btn-primary-black" style="font-size: 0.825rem; padding: 0.45rem 1rem;">
-                        <span>Mulai Kuis Pertama</span>
-                    </a>
+
                 </div>
             <?php else: ?>
                 <div style="display: flex; flex-direction: column; gap: 0.75rem;">
@@ -178,14 +167,12 @@ require_once dirname(__DIR__) . '/templates/header.php';
             <span class="corner-crosshair corner-tr">+</span>
             <span class="corner-crosshair corner-bl">+</span>
             <span class="corner-crosshair corner-br">+</span>
-            
+
             <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.25rem; padding-bottom: 0.75rem; border-bottom: 1px solid #E5E7EB;">
                 <h3 style="font-family: var(--font-heading); font-size: 1.05rem; font-weight: 800; color: #18181B; margin: 0;">
                     Materi Belajar Terkini
                 </h3>
-                <a href="<?= BASE_URL ?>/learn" class="btn-secondary-outline" style="font-size: 0.775rem; padding: 0.35rem 0.7rem;">
-                    <span>Lihat Modul &rarr;</span>
-                </a>
+
             </div>
 
             <?php if (empty($materials)): ?>
@@ -219,7 +206,7 @@ require_once dirname(__DIR__) . '/templates/header.php';
             <span class="corner-crosshair corner-tr">+</span>
             <span class="corner-crosshair corner-bl">+</span>
             <span class="corner-crosshair corner-br">+</span>
-            
+
             <h3 style="font-family: var(--font-heading); font-size: 1.05rem; font-weight: 800; color: #18181B; margin: 0 0 1.25rem 0;">
                 Distribusi Topik Ujian
             </h3>
@@ -248,7 +235,7 @@ require_once dirname(__DIR__) . '/templates/header.php';
             <span class="corner-crosshair corner-tr">+</span>
             <span class="corner-crosshair corner-bl">+</span>
             <span class="corner-crosshair corner-br">+</span>
-            
+
             <div style="margin-bottom: 1rem;">
                 <h3 style="font-family: var(--font-heading); font-size: 1.05rem; font-weight: 800; color: #18181B; margin: 0;">
                     Lencana Terdekat
@@ -277,8 +264,8 @@ require_once dirname(__DIR__) . '/templates/header.php';
                 </div>
             <?php else: ?>
                 <div style="padding: 1.25rem; text-align: center; background-color: #FAFAFA; border: 1px solid #E5E7EB; border-radius: 8px;">
-                    <p style="font-size: 0.85rem; font-weight: 700; color: #18181B; margin: 0 0 0.2rem 0;">Semua Lencana Terbuka!</p>
-                    <p style="font-size: 0.775rem; color: #71717A; margin: 0;">Anda telah menguasai seluruh pencapaian kuis MikroTik.</p>
+                    <p style="font-size: 0.85rem; font-weight: 700; color: #18181B; margin: 0 0 0.2rem 0;">Belum ada Lencana Terbuka!</p>
+                    <p style="font-size: 0.775rem; color: #71717A; margin: 0;">Kerjakan dan Selesaikan minimal 1 Kuis.</p>
                 </div>
             <?php endif; ?>
         </div>
