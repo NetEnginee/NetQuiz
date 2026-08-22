@@ -31,7 +31,9 @@ require_once dirname(__DIR__) . '/templates/header.php';
         margin-bottom: 1.25rem;
     }
 
-    /* 4-Stat Box Responsive Grid */
+    /* ==========================================================================
+       MINIMALIST FROSTED GLASS STAT CARDS WITH CUTE PIXEL ACCENTS
+       ========================================================================== */
     .student-stats-grid {
         display: grid;
         grid-template-columns: repeat(4, 1fr);
@@ -40,144 +42,88 @@ require_once dirname(__DIR__) . '/templates/header.php';
     }
 
     .student-stat-card {
-        padding: 1.15rem 1.25rem;
-        background-color: rgba(255, 255, 255, 0.72) !important;
+        padding: 1.1rem 1.25rem;
+        background-color: rgba(255, 255, 255, 0.85) !important;
         backdrop-filter: blur(14px);
         -webkit-backdrop-filter: blur(14px);
-        border: 1.5px solid #E4E4E7;
-        border-radius: 8px;
+        border: 1.5px solid #18181B !important;
+        border-radius: 6px;
         position: relative;
         display: flex;
         flex-direction: column;
         justify-content: space-between;
-        box-shadow: 0 3px 0 #E4E4E7, 0 6px 16px rgba(0, 0, 0, 0.05);
+        box-shadow: 0 2.5px 0 #18181B, 0 4px 12px rgba(0, 0, 0, 0.04) !important;
         transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
         user-select: none;
     }
 
+    .student-stat-card .corner-crosshair {
+        color: #22C55E;
+        font-family: var(--font-mono);
+        font-size: 10px;
+        font-weight: 800;
+        opacity: 0.85;
+    }
+
     .student-stat-card:hover {
         transform: translateY(-2px);
+        border-color: #22C55E !important;
+        box-shadow: 0 3.5px 0 #15803D, 0 8px 18px rgba(34, 197, 94, 0.15) !important;
     }
 
     .student-stat-card:active {
-        transform: translateY(1px);
+        transform: translateY(2px);
+        box-shadow: none !important;
+    }
+
+    .stat-card-top-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 0.5rem;
     }
 
     .stat-pixel-dot {
-        font-size: 8px;
+        font-size: 7.5px;
         line-height: 1;
         display: inline-block;
         margin-right: 0.35rem;
         vertical-align: middle;
         user-select: none;
-        transition: text-shadow 0.15s ease;
-    }
-
-    /* 1. Stat 1: Kuis Selesai (Emerald Green #22C55E) */
-    .stat-card-quizzes {
-        border-color: #86EFAC !important;
-        box-shadow: 0 3px 0 #15803D, 0 8px 20px rgba(34, 197, 94, 0.14) !important;
-    }
-
-    .stat-card-quizzes .corner-crosshair {
         color: #22C55E;
-    }
-
-    .stat-card-quizzes .stat-pixel-dot {
-        color: #22C55E;
-        text-shadow: 0 0 6px #22C55E, 0 0 12px rgba(34, 197, 94, 0.6);
-    }
-
-    .stat-card-quizzes:hover {
-        border-color: #22C55E !important;
-        box-shadow: 0 4px 0 #15803D, 0 12px 26px rgba(34, 197, 94, 0.25) !important;
-    }
-
-    .stat-card-quizzes:active {
-        box-shadow: 0 1.5px 0 #15803D !important;
-    }
-
-    /* 2. Stat 2: Rata-rata Skor (Cyber Sky Cyan #38BDF8) */
-    .stat-card-score {
-        border-color: #7DD3FC !important;
-        box-shadow: 0 3px 0 #0284C7, 0 8px 20px rgba(56, 189, 248, 0.14) !important;
-    }
-
-    .stat-card-score .corner-crosshair {
-        color: #38BDF8;
-    }
-
-    .stat-card-score .stat-pixel-dot {
-        color: #38BDF8;
-        text-shadow: 0 0 6px #38BDF8, 0 0 12px rgba(56, 189, 248, 0.6);
-    }
-
-    .stat-card-score:hover {
-        border-color: #38BDF8 !important;
-        box-shadow: 0 4px 0 #0284C7, 0 12px 26px rgba(56, 189, 248, 0.25) !important;
-    }
-
-    .stat-card-score:active {
-        box-shadow: 0 1.5px 0 #0284C7 !important;
-    }
-
-    /* 3. Stat 3: Total Poin (Warm Amber Gold #F59E0B) */
-    .stat-card-points {
-        border-color: #FDE68A !important;
-        box-shadow: 0 3px 0 #D97706, 0 8px 20px rgba(245, 158, 11, 0.14) !important;
-    }
-
-    .stat-card-points .corner-crosshair {
-        color: #F59E0B;
-    }
-
-    .stat-card-points .stat-pixel-dot {
-        color: #F59E0B;
-        text-shadow: 0 0 6px #F59E0B, 0 0 12px rgba(245, 158, 11, 0.6);
-    }
-
-    .stat-card-points:hover {
-        border-color: #F59E0B !important;
-        box-shadow: 0 4px 0 #D97706, 0 12px 26px rgba(245, 158, 11, 0.25) !important;
-    }
-
-    .stat-card-points:active {
-        box-shadow: 0 1.5px 0 #D97706 !important;
-    }
-
-    /* 4. Stat 4: Lencana Prestasi (Royal Purple #A855F7) */
-    .stat-card-badges {
-        border-color: #D8B4FE !important;
-        box-shadow: 0 3px 0 #7E22CE, 0 8px 20px rgba(168, 85, 247, 0.14) !important;
-    }
-
-    .stat-card-badges .corner-crosshair {
-        color: #A855F7;
-    }
-
-    .stat-card-badges .stat-pixel-dot {
-        color: #A855F7;
-        text-shadow: 0 0 6px #A855F7, 0 0 12px rgba(168, 85, 247, 0.6);
-    }
-
-    .stat-card-badges:hover {
-        border-color: #A855F7 !important;
-        box-shadow: 0 4px 0 #7E22CE, 0 12px 26px rgba(168, 85, 247, 0.25) !important;
-    }
-
-    .stat-card-badges:active {
-        box-shadow: 0 1.5px 0 #7E22CE !important;
+        text-shadow: 0 0 6px #22C55E;
     }
 
     .stat-label-text {
         font-size: 0.725rem;
         font-weight: 700;
         color: #71717A;
+        font-family: var(--font-mono);
         text-transform: uppercase;
-        letter-spacing: 0.05em;
-        margin-bottom: 0.4rem;
+        letter-spacing: 0.04em;
         display: flex;
         align-items: center;
+    }
+
+    .stat-pixel-badge-icon {
+        width: 24px;
+        height: 24px;
+        background-color: #FAFAFA;
+        border: 1px solid #E4E4E7;
+        border-radius: 4px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 1px 0 #D4D4D8;
+        image-rendering: pixelated;
+        flex-shrink: 0;
+        transition: all 0.15s ease;
+    }
+
+    .student-stat-card:hover .stat-pixel-badge-icon {
+        background-color: #F0FDF4;
+        border-color: #86EFAC;
+        box-shadow: 0 1px 0 #22C55E;
     }
 
     .stat-value-group {
@@ -193,10 +139,11 @@ require_once dirname(__DIR__) . '/templates/header.php';
         color: #18181B;
         font-family: var(--font-mono);
         line-height: 1.1;
+        letter-spacing: -0.02em;
     }
 
     .stat-unit-text {
-        font-size: 0.775rem;
+        font-size: 0.75rem;
         color: #71717A;
         font-weight: 500;
     }
@@ -472,16 +419,25 @@ require_once dirname(__DIR__) . '/templates/header.php';
     ]) ?>
 </div>
 
-<!-- 4 STAT BOXES (RESPONSIVE HIGH DENSITY GRID WITH FROSTED GLASS 3D VOXEL) -->
 <div class="student-stats-grid">
-    <!-- Stat 1: Kuis Selesai (Emerald) -->
-    <div class="supabase-panel-card student-stat-card stat-card-quizzes">
+    <!-- Stat 1: Kuis Selesai -->
+    <div class="supabase-panel-card student-stat-card">
         <span class="corner-crosshair corner-tl">+</span>
         <span class="corner-crosshair corner-tr">+</span>
         <span class="corner-crosshair corner-bl">+</span>
         <span class="corner-crosshair corner-br">+</span>
-        <div>
+        <div class="stat-card-top-row">
             <span class="stat-label-text"><span class="stat-pixel-dot" aria-hidden="true">■</span>Kuis Selesai</span>
+            <div class="stat-pixel-badge-icon" aria-hidden="true">
+                <svg viewBox="0 0 16 16" width="14" height="14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect x="2" y="5" width="12" height="7" fill="#15803D" rx="1" />
+                    <rect x="3" y="6" width="10" height="5" fill="#22C55E" />
+                    <rect x="4" y="8" width="3" height="1" fill="#FFFFFF" />
+                    <rect x="5" y="7" width="1" height="3" fill="#FFFFFF" />
+                    <rect x="10" y="8" width="1.5" height="1.5" fill="#DCFCE7" />
+                    <rect x="12" y="8" width="1.5" height="1.5" fill="#DCFCE7" />
+                </svg>
+            </div>
         </div>
         <div class="stat-value-group">
             <span class="stat-main-number"><?= (int)($stats['completed_quizzes'] ?? 0) ?></span>
@@ -489,14 +445,23 @@ require_once dirname(__DIR__) . '/templates/header.php';
         </div>
     </div>
 
-    <!-- Stat 2: Rata-rata Skor (Cyan) -->
-    <div class="supabase-panel-card student-stat-card stat-card-score">
+    <!-- Stat 2: Rata-rata Skor -->
+    <div class="supabase-panel-card student-stat-card">
         <span class="corner-crosshair corner-tl">+</span>
         <span class="corner-crosshair corner-tr">+</span>
         <span class="corner-crosshair corner-bl">+</span>
         <span class="corner-crosshair corner-br">+</span>
-        <div>
+        <div class="stat-card-top-row">
             <span class="stat-label-text"><span class="stat-pixel-dot" aria-hidden="true">■</span>Rata-rata Skor</span>
+            <div class="stat-pixel-badge-icon" aria-hidden="true">
+                <svg viewBox="0 0 16 16" width="14" height="14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect x="6" y="2" width="4" height="12" fill="#22C55E" />
+                    <rect x="2" y="6" width="12" height="4" fill="#22C55E" />
+                    <rect x="5" y="5" width="6" height="6" fill="#15803D" />
+                    <rect x="6" y="6" width="4" height="4" fill="#DCFCE7" />
+                    <rect x="7" y="7" width="2" height="2" fill="#15803D" />
+                </svg>
+            </div>
         </div>
         <div class="stat-value-group">
             <span class="stat-main-number"><?= (int)($stats['average_score'] ?? 0) ?>%</span>
@@ -504,14 +469,23 @@ require_once dirname(__DIR__) . '/templates/header.php';
         </div>
     </div>
 
-    <!-- Stat 3: Total Poin (Amber) -->
-    <div class="supabase-panel-card student-stat-card stat-card-points">
+    <!-- Stat 3: Total Poin -->
+    <div class="supabase-panel-card student-stat-card">
         <span class="corner-crosshair corner-tl">+</span>
         <span class="corner-crosshair corner-tr">+</span>
         <span class="corner-crosshair corner-bl">+</span>
         <span class="corner-crosshair corner-br">+</span>
-        <div>
+        <div class="stat-card-top-row">
             <span class="stat-label-text"><span class="stat-pixel-dot" aria-hidden="true">■</span>Total Poin</span>
+            <div class="stat-pixel-badge-icon" aria-hidden="true">
+                <svg viewBox="0 0 16 16" width="14" height="14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect x="4" y="2" width="8" height="12" fill="#15803D" />
+                    <rect x="2" y="4" width="12" height="8" fill="#15803D" />
+                    <rect x="4" y="4" width="8" height="8" fill="#22C55E" />
+                    <rect x="6" y="6" width="4" height="4" fill="#DCFCE7" />
+                    <rect x="7" y="7" width="2" height="2" fill="#FFFFFF" />
+                </svg>
+            </div>
         </div>
         <div class="stat-value-group">
             <span class="stat-main-number"><?= number_format((int)($stats['total_score'] ?? 0)) ?></span>
@@ -519,14 +493,24 @@ require_once dirname(__DIR__) . '/templates/header.php';
         </div>
     </div>
 
-    <!-- Stat 4: Lencana Prestasi (Purple) -->
-    <div class="supabase-panel-card student-stat-card stat-card-badges">
+    <!-- Stat 4: Lencana Prestasi -->
+    <div class="supabase-panel-card student-stat-card">
         <span class="corner-crosshair corner-tl">+</span>
         <span class="corner-crosshair corner-tr">+</span>
         <span class="corner-crosshair corner-bl">+</span>
         <span class="corner-crosshair corner-br">+</span>
-        <div>
-            <span class="stat-label-text"><span class="stat-pixel-dot" aria-hidden="true">■</span>Lencana Prestasi</span>
+        <div class="stat-card-top-row">
+            <span class="stat-label-text"><span class="stat-pixel-dot" aria-hidden="true">■</span>Lencana</span>
+            <div class="stat-pixel-badge-icon" aria-hidden="true">
+                <svg viewBox="0 0 16 16" width="14" height="14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect x="4" y="2" width="8" height="6" fill="#22C55E" stroke="#15803D" stroke-width="1" />
+                    <rect x="2" y="3" width="2" height="3" fill="#86EFAC" />
+                    <rect x="12" y="3" width="2" height="3" fill="#86EFAC" />
+                    <rect x="7" y="8" width="2" height="3" fill="#15803D" />
+                    <rect x="4" y="11" width="8" height="2" fill="#15803D" />
+                    <rect x="5" y="12" width="6" height="1" fill="#22C55E" />
+                </svg>
+            </div>
         </div>
         <div class="stat-value-group">
             <span class="stat-main-number"><?= count($unlockedBadges) ?></span>

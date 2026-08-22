@@ -18,7 +18,7 @@
   font-size: 1.85rem;
   font-weight: 800;
   color: #0f172a;
-  font-family: "Plus Jakarta Sans", sans-serif;
+  font-family: var(--font-heading, "Pixelify Sans", sans-serif);
   margin: 0 0 0.35rem 0;
   letter-spacing: -0.025em;
 }
@@ -39,7 +39,7 @@
   font-size: 1.25rem;
   font-weight: 700;
   color: #0f172a;
-  font-family: "Plus Jakarta Sans", sans-serif;
+  font-family: var(--font-heading, "Pixelify Sans", sans-serif);
   margin-bottom: 1.25rem;
   display: flex;
   align-items: center;
@@ -138,7 +138,7 @@
   font-weight: 600;
   padding: 0.25rem 0.6rem;
   border-radius: 4px;
-  font-family: "Plus Jakarta Sans", sans-serif;
+  font-family: var(--font-heading, "Pixelify Sans", sans-serif);
 }
 
 .diff-easy {
@@ -159,7 +159,7 @@
   font-weight: 700;
   color: #0f172a;
   margin: 0 0 0.85rem 0;
-  font-family: "Plus Jakarta Sans", sans-serif;
+  font-family: var(--font-heading, "Pixelify Sans", sans-serif);
   line-height: 1.45;
   transition: color 0.2s ease;
 }
@@ -196,7 +196,7 @@
   gap: 0.4rem;
   font-weight: 700;
   color: #7c3aed;
-  font-family: "Plus Jakarta Sans", sans-serif;
+  font-family: var(--font-heading, "Pixelify Sans", sans-serif);
   transition: color 0.15s;
   font-size: 0.95rem;
 }
@@ -271,7 +271,7 @@
   color: #0f172a;
   margin-top: 2rem;
   margin-bottom: 1rem;
-  font-family: "Plus Jakarta Sans", sans-serif;
+  font-family: var(--font-heading, "Pixelify Sans", sans-serif);
 }
 
 .material-body h3 {
@@ -280,7 +280,7 @@
   color: #0f172a;
   margin-top: 1.5rem;
   margin-bottom: 0.75rem;
-  font-family: "Plus Jakarta Sans", sans-serif;
+  font-family: var(--font-heading, "Pixelify Sans", sans-serif);
 }
 
 .material-body p {
@@ -350,7 +350,7 @@
   color: #0f172a;
   margin-top: 0;
   margin-bottom: 1rem;
-  font-family: "Plus Jakarta Sans", sans-serif;
+  font-family: var(--font-heading, "Pixelify Sans", sans-serif);
   border-bottom: 1px solid #f1f5f9;
   padding-bottom: 0.5rem;
 }
@@ -412,7 +412,7 @@
   margin-bottom: 1.5rem;
   font-size: 0.95rem;
   line-height: 1.6;
-  font-family: "Plus Jakarta Sans", sans-serif;
+  font-family: var(--font-heading, "Pixelify Sans", sans-serif);
 }
 .material-callout-info {
   background-color: #f0f9ff;
@@ -499,7 +499,7 @@
   padding: 0.75rem 1.5rem;
   border-radius: 6px;
   font-weight: 700;
-  font-family: var(--font-heading, "Plus Jakarta Sans", sans-serif);
+  font-family: var(--font-heading, var(--font-heading, "Pixelify Sans", sans-serif));
   font-size: 0.9rem;
   box-shadow: none;
   transition: none !important;
@@ -564,7 +564,7 @@
   color: #4f46e5;
   border-radius: 0 10px 10px 0;
   line-height: 1.6;
-  font-family: "Plus Jakarta Sans", sans-serif;
+  font-family: var(--font-heading, "Pixelify Sans", sans-serif);
 }
 
 /* Terminal Console Block */
@@ -627,7 +627,7 @@
   font-weight: 700;
   color: #0f172a;
   font-size: 1.05rem;
-  font-family: "Plus Jakarta Sans", sans-serif;
+  font-family: var(--font-heading, "Pixelify Sans", sans-serif);
 }
 .material-icon-box p {
   margin: 0;
@@ -654,7 +654,7 @@
   color: #0f172a;
   font-size: 0.88rem;
   border-bottom: 1px solid #e2e8f0;
-  font-family: "Plus Jakarta Sans", sans-serif;
+  font-family: var(--font-heading, "Pixelify Sans", sans-serif);
 }
 .material-table td {
   padding: 0.9rem 1.25rem;
@@ -695,7 +695,7 @@
   transition: all 0.15s ease-in-out;
   outline: none;
   user-select: none;
-  font-family: "Plus Jakarta Sans", sans-serif;
+  font-family: var(--font-heading, "Pixelify Sans", sans-serif);
 }
 .material-tabs .tab-btn:hover {
   color: #0f172a;
@@ -744,7 +744,7 @@
   font-weight: 700;
   color: #334155;
   margin-bottom: 0.5rem;
-  font-family: "Plus Jakarta Sans", sans-serif;
+  font-family: var(--font-heading, "Pixelify Sans", sans-serif);
 }
 .material-progress .progress-bg {
   background-color: #e2e8f0;
@@ -815,7 +815,7 @@
   font-size: 1.15rem;
   font-weight: 800;
   color: #0f172a;
-  font-family: "Plus Jakarta Sans", sans-serif;
+  font-family: var(--font-heading, "Pixelify Sans", sans-serif);
 }
 .material-card-widget p {
   margin: 0 0 1rem 0;
@@ -872,7 +872,7 @@
   font-weight: 700;
   font-size: 0.95rem;
   color: #0f172a;
-  font-family: "Plus Jakarta Sans", sans-serif;
+  font-family: var(--font-heading, "Pixelify Sans", sans-serif);
 }
 .material-timeline-steps p {
   margin: 0;
