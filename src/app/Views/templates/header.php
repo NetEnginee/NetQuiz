@@ -67,10 +67,12 @@ function renderBreadcrumb(array $items): string
     <link rel="canonical"
         href="<?= (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] ?>">
 
-    <!-- Fonts: Plus Jakarta Sans, Inter, & JetBrains Mono -->
+    <!-- Fonts: Pixelify Sans, Silkscreen, Press Start 2P, Plus Jakarta Sans, Inter, & JetBrains Mono -->
+    <!-- High-Visibility Pixel & Cyber-Grid Typography Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Pixelify+Sans:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Press+Start+2P&family=Silkscreen:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700;800&family=DotGothic16&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700;800&family=Pixelify+Sans:wght@500;600;700&family=VT323&display=swap" rel="stylesheet">
 
     <!-- Global Geist Design System Core Styles -->
     <link rel="stylesheet" href="<?= function_exists('assetUrl') ? assetUrl('/css/dashboard.css') : (BASE_URL . '/css/dashboard.css') ?>">
@@ -306,18 +308,6 @@ function renderBreadcrumb(array $items): string
         .btn-geist-nav-danger:active {
             box-shadow: none !important;
             transform: translateY(2.5px) !important;
-        }
-
-        /* Mobile Floating Bottom Dock Button (Unified Electric Emerald Green) */
-        .floating-bottom-btn {
-            transition: all 0.15s ease;
-        }
-
-        .floating-bottom-btn.active {
-            background-color: #18181B !important;
-            color: #22C55E !important;
-            border-color: #22C55E !important;
-            box-shadow: 0 3px 0 #15803D, 0 4px 10px rgba(34, 197, 94, 0.3) !important;
         }
 
         .student-main-content {
@@ -692,40 +682,35 @@ function renderBreadcrumb(array $items): string
     <!-- 2. FLOATING BOTTOM NAVIGATION DOCK (MOBILE & TABLET EXCLUSIVE) -->
     <nav class="student-floating-bottom-nav" aria-label="Navigasi Bawah">
         <div class="floating-nav-container">
-            <!-- 1. Dashboard (Electric Emerald Green) -->
+            <!-- 1. Dashboard -->
             <a href="<?= BASE_URL ?>/" class="floating-bottom-btn <?= isStudentNavActive('/', $currentPath) ? 'active' : '' ?>" title="Dashboard">
-                <span class="floating-btn-icon-wrapper">
-                    <i data-lucide="layout-dashboard" class="floating-btn-icon"></i>
-                </span>
+                <i data-lucide="layout-dashboard" class="floating-btn-icon"></i>
+                <span class="floating-btn-label">Beranda</span>
             </a>
 
-            <!-- 2. Kuis (Electric Emerald Green) -->
+            <!-- 2. Kuis -->
             <a href="<?= BASE_URL ?>/quiz" class="floating-bottom-btn <?= isStudentNavActive('/quiz', $currentPath) ? 'active' : '' ?>" title="Katalog Kuis">
-                <span class="floating-btn-icon-wrapper">
-                    <i data-lucide="file-question" class="floating-btn-icon"></i>
-                </span>
+                <i data-lucide="file-question" class="floating-btn-icon"></i>
+                <span class="floating-btn-label">Kuis</span>
             </a>
 
-            <!-- 3. Materi Belajar (Electric Emerald Green) -->
+            <!-- 3. Materi Belajar -->
             <a href="<?= BASE_URL ?>/learn" class="floating-bottom-btn <?= isStudentNavActive('/learn', $currentPath) ? 'active' : '' ?>" title="Materi Belajar">
-                <span class="floating-btn-icon-wrapper">
-                    <i data-lucide="book-open" class="floating-btn-icon"></i>
-                </span>
+                <i data-lucide="book-open" class="floating-btn-icon"></i>
+                <span class="floating-btn-label">Materi</span>
             </a>
 
-            <!-- 4. Leaderboard (Electric Emerald Green) -->
+            <!-- 4. Leaderboard -->
             <a href="<?= BASE_URL ?>/leaderboard" class="floating-bottom-btn <?= isStudentNavActive('/leaderboard', $currentPath) ? 'active' : '' ?>" title="Leaderboard">
-                <span class="floating-btn-icon-wrapper">
-                    <i data-lucide="trophy" class="floating-btn-icon"></i>
-                </span>
+                <i data-lucide="trophy" class="floating-btn-icon"></i>
+                <span class="floating-btn-label">Ranking</span>
             </a>
 
             <?php if ($isAdmin): ?>
                 <!-- 5. Admin Panel -->
                 <a href="<?= BASE_URL ?>/admin" class="floating-bottom-btn" title="Admin Panel">
-                    <span class="floating-btn-icon-wrapper">
-                        <i data-lucide="shield" class="floating-btn-icon"></i>
-                    </span>
+                    <i data-lucide="shield" class="floating-btn-icon"></i>
+                    <span class="floating-btn-label">Admin</span>
                 </a>
             <?php endif; ?>
         </div>

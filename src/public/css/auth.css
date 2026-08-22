@@ -29,9 +29,19 @@
   --color-error-text: #cc0000;
 
   /* Typography */
-  --font-heading: "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
+  --font-heading:
+    "Pixelify Sans", "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
+  --font-heading:
+    "Chakra Petch", "Pixelify Sans", system-ui, -apple-system, sans-serif;
   --font-body: "Inter", system-ui, -apple-system, sans-serif;
-  --font-mono: "JetBrains Mono", monospace;
+  --font-mono: "Silkscreen", "JetBrains Mono", monospace;
+  --font-pixel: "Silkscreen", "Press Start 2P", monospace;
+  --font-pixel-heading: "Pixelify Sans", sans-serif;
+  --font-pixel-retro: "Press Start 2P", monospace;
+  --font-mono: "DotGothic16", "JetBrains Mono", monospace;
+  --font-pixel: "DotGothic16", "Chakra Petch", monospace;
+  --font-pixel-heading: "Chakra Petch", "Pixelify Sans", sans-serif;
+  --font-pixel-retro: "VT323", "DotGothic16", monospace;
 
   /* Sizing & Transitions */
   --radius-card: 14px;
