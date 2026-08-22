@@ -73,10 +73,13 @@ function renderBreadcrumb(array $items): string
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
 
     <!-- Global Geist Design System Core Styles -->
-    <link rel="stylesheet" href="<?= BASE_URL ?>/css/dashboard.css?v=<?= time() ?>">
+    <link rel="stylesheet" href="<?= function_exists('assetUrl') ? assetUrl('/css/dashboard.css') : (BASE_URL . '/css/dashboard.css') ?>">
 
     <!-- Lucide Icons CDN -->
     <script src="https://unpkg.com/lucide@latest" defer></script>
+
+    <!-- Top Slim Loading Engine -->
+    <script src="<?= function_exists('assetUrl') ? assetUrl('/js/page-loader.js') : (BASE_URL . '/js/page-loader.js') ?>"></script>
 
     <style>
         html,
@@ -86,16 +89,16 @@ function renderBreadcrumb(array $items): string
             color: #18181B;
         }
 
-        /* Minimalist Geist Top Navbar */
+        /* 3D Isometric Voxel & Geist Top Navbar */
         .student-top-nav {
             position: fixed;
             top: 0;
             left: 0;
             right: 0;
             height: var(--top-nav-height, 56px);
-            background-color: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
+            background-color: rgba(255, 255, 255, 0.94);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
             border-bottom: 1px solid var(--color-border, #E5E7EB);
             z-index: 1000;
             display: flex;
@@ -117,65 +120,156 @@ function renderBreadcrumb(array $items): string
             align-items: center;
         }
 
+        .pixel-brand-mark {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            padding: 2px 4px;
+            background-color: #FFFFFF;
+            border: 1.5px solid #18181B;
+            border-radius: 8px;
+            box-shadow: 0 2.5px 0 #18181B, 0 4px 8px rgba(0, 0, 0, 0.08);
+            perspective: 400px;
+            user-select: none;
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+        }
+
+        .nav-brand-title:hover .pixel-brand-mark {
+            transform: translateY(-1px) rotateX(4deg) rotateY(-6deg);
+            box-shadow: 0 3.5px 0 #18181B, 0 6px 12px rgba(0, 0, 0, 0.12);
+        }
+
+        .pixel-netty-svg {
+            display: block;
+            width: 26px;
+            height: 26px;
+        }
+
+        .nav-brand-title:hover .netty-3d-eye {
+            fill: #22C55E;
+        }
+
+        .pixel-live-dot {
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            width: 6px;
+            height: 6px;
+            background-color: #22C55E;
+            box-shadow: 0 0 5px #22C55E;
+            border-radius: 2px;
+            border: 1px solid #18181B;
+        }
+
         .student-nav-links {
             display: flex;
             align-items: center;
-            gap: 0.35rem;
+            gap: 0.5rem;
         }
 
         .student-nav-link {
-            padding: 0.4rem 0.85rem;
-            font-size: 0.875rem;
-            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.45rem;
+            padding: 0.35rem 0.85rem;
+            font-size: 0.85rem;
+            font-weight: 600;
             color: #52525B;
             text-decoration: none;
             border-radius: 6px;
-            border: 1px solid transparent;
+            border: 1.5px solid transparent;
+            box-shadow: none;
             transition: none !important;
             transform: none !important;
         }
 
+        .pixel-nav-dot {
+            font-size: 7px;
+            line-height: 1;
+            color: transparent;
+            display: inline-block;
+            vertical-align: middle;
+            user-select: none;
+        }
+
         .student-nav-link:hover {
             color: #000000;
-            background-color: var(--color-bg, #FAFAFA);
-            border-color: #000000;
+            background-color: #FAFAFA;
+            border-color: #18181B;
+            box-shadow: 0 2px 0 #18181B;
             transform: none !important;
+        }
+
+        .student-nav-link:hover .pixel-nav-dot {
+            color: #71717A;
         }
 
         .student-nav-link:active {
             background-color: #F4F4F5;
             color: #000000;
-            border-color: #000000;
-            transform: none !important;
+            border-color: #18181B;
+            box-shadow: none;
+            transform: translateY(2px) !important;
         }
 
         .student-nav-link.active {
-            color: #000000;
-            background-color: #F4F4F5;
-            border-color: #E4E4E7;
+            color: #FFFFFF;
+            background-color: #18181B;
+            border-color: #000000;
+            box-shadow: 0 2.5px 0 #000000;
             font-weight: 700;
+        }
+
+        .student-nav-link.active .pixel-nav-dot {
+            color: #22C55E;
         }
 
         .student-nav-controls {
             display: flex;
             align-items: center;
-            gap: 0.65rem;
+            gap: 0.75rem;
         }
 
+        /* 3D Voxel Keycap Avatar Box */
         .student-avatar-box {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            background-color: #18181B;
+            width: 33px;
+            height: 33px;
+            background: linear-gradient(180deg, #27272A 0%, #18181B 100%);
             color: #FFFFFF;
-            font-family: var(--font-heading);
-            font-size: 0.825rem;
+            font-size: 0.85rem;
             font-weight: 800;
             display: flex;
             align-items: center;
             justify-content: center;
-            border: 2px solid #E5E7EB;
+            border-radius: 6px;
+            border: 1.5px solid #000000;
+            box-shadow: 0 2.5px 0 #000000, 0 4px 6px rgba(0, 0, 0, 0.12);
             flex-shrink: 0;
+            user-select: none;
+        }
+
+        /* 3D Tactile Buttons */
+        .btn-geist-nav-secondary {
+            border-radius: 6px !important;
+            border: 1.5px solid #18181B !important;
+            box-shadow: 0 2.5px 0 #18181B !important;
+        }
+
+        .btn-geist-nav-secondary:active {
+            box-shadow: none !important;
+            transform: translateY(2.5px) !important;
+        }
+
+        .btn-geist-nav-danger {
+            border-radius: 6px !important;
+            border: 1.5px solid #18181B !important;
+            box-shadow: 0 2.5px 0 #18181B !important;
+        }
+
+        .btn-geist-nav-danger:active {
+            box-shadow: none !important;
+            transform: translateY(2.5px) !important;
         }
 
         .student-main-content {
@@ -193,28 +287,17 @@ function renderBreadcrumb(array $items): string
             width: 100%;
         }
 
-        /* Dynamic Breadcrumb Styling */
-        .admin-breadcrumb-nav {
-            margin-bottom: 0.65rem;
-        }
-
-        .admin-breadcrumb-list {
-            display: inline-flex;
+        /* Breadcrumb Navigation */
+        .breadcrumb-list {
+            display: flex;
             align-items: center;
-            flex-wrap: wrap;
-            gap: 0.45rem;
+            gap: 0.5rem;
+            font-size: 0.825rem;
+            font-family: var(--font-mono, monospace);
             list-style: none;
             padding: 0;
             margin: 0;
-            font-family: var(--font-heading);
-            font-size: 0.8rem;
             color: #71717A;
-        }
-
-        .breadcrumb-item {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.35rem;
             line-height: 1.4;
         }
 
@@ -314,30 +397,67 @@ function renderBreadcrumb(array $items): string
     <!-- 1. MINIMALIST TOP NAVBAR -->
     <header class="student-top-nav" aria-label="Navigasi Utama">
         <div class="student-nav-container">
-            <!-- Left: Clean Brand Mark -->
+            <!-- Left: Clean Brand Mark with Cute Pixel Router Bot ("Netty") -->
             <div class="student-brand-group">
                 <a href="<?= BASE_URL ?>/" class="nav-brand-title" aria-label="NetQuiz Beranda">
-                    <div class="nav-brand-mark">
-                        <i data-lucide="terminal" class="nav-brand-icon"></i>
-                        <span class="live-dot" title="Server Status: Online"></span>
+                    <div class="pixel-brand-mark">
+                        <svg class="pixel-netty-svg voxel-netty-3d" viewBox="0 0 28 28" width="26" height="26" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <!-- 3D Isometric Drop Shadow -->
+                            <ellipse cx="14" cy="24.5" rx="9" ry="3" fill="rgba(0,0,0,0.14)" />
+
+                            <!-- 3D Left Antenna -->
+                            <path d="M7 8V2.5" stroke="#18181B" stroke-width="1.8" stroke-linecap="round" />
+                            <circle cx="7" cy="2" r="1.8" fill="#22C55E" stroke="#18181B" stroke-width="0.8" />
+
+                            <!-- 3D Right Antenna -->
+                            <path d="M21 8V2.5" stroke="#18181B" stroke-width="1.8" stroke-linecap="round" />
+                            <circle cx="21" cy="2" r="1.8" fill="#22C55E" stroke="#18181B" stroke-width="0.8" />
+
+                            <!-- 3D Chassis: Top Plane (Isometric Highlight Face) -->
+                            <polygon points="14,4.5 24.5,9.8 14,15 3.5,9.8" fill="#3F3F46" stroke="#18181B" stroke-width="1" stroke-linejoin="round" />
+                            <!-- Top Cooling Vents -->
+                            <line x1="11" y1="8" x2="17" y2="11" stroke="#27272A" stroke-width="1" stroke-linecap="round" />
+                            <line x1="8.5" y1="9.2" x2="14.5" y2="12.2" stroke="#27272A" stroke-width="1" stroke-linecap="round" />
+
+                            <!-- 3D Chassis: Front-Left Screen Face -->
+                            <polygon points="3.5,9.8 14,15 14,22.8 3.5,17.6" fill="#09090B" stroke="#18181B" stroke-width="1" stroke-linejoin="round" />
+
+                            <!-- Cute 3D Pixel Glowing Eyes -->
+                            <polygon class="netty-3d-eye" points="6.2,13 8.2,14 8.2,16 6.2,15" fill="#38BDF8" />
+                            <polygon class="netty-3d-eye" points="10,14.8 12,15.8 12,17.8 10,16.8" fill="#38BDF8" />
+
+                            <!-- 3D Chassis: Front-Right Extrusion Face -->
+                            <polygon points="14,15 24.5,9.8 24.5,17.6 14,22.8" fill="#18181B" stroke="#18181B" stroke-width="1" stroke-linejoin="round" />
+
+                            <!-- 3D Side Ethernet Port Insets -->
+                            <polygon points="16,16.2 22.5,13 22.5,15.2 16,18.4" fill="#09090B" />
+                            <!-- 3D LEDs -->
+                            <polygon points="17,14 18.5,13.2 18.5,14.4 17,15.2" fill="#22C55E" />
+                            <polygon points="19.5,12.8 21,12 21,13.2 19.5,14" fill="#38BDF8" />
+                        </svg>
+                        <span class="pixel-live-dot" title="Server Status: Online"></span>
                     </div>
-                    <span class="nav-brand-text">Net<span class="nav-brand-accent">Quiz</span><span class="brand-cursor">_</span></span>
+                    <span class="nav-brand-text">Net<span class="nav-brand-accent">Quiz</span><span class="brand-cursor font-mono">_</span></span>
                 </a>
             </div>
 
-            <!-- Center: Pure Text Navigation Links (Desktop) -->
+            <!-- Center: Pure Text Navigation Links with Cute Pixel Dot Indicators (Desktop) -->
             <nav class="student-nav-links" aria-label="Menu Siswa">
                 <a href="<?= BASE_URL ?>/" class="student-nav-link <?= isStudentNavActive('/', $currentPath) ? 'active' : '' ?>">
-                    Dashboard
+                    <span class="pixel-nav-dot" aria-hidden="true">■</span>
+                    <span>Dashboard</span>
                 </a>
                 <a href="<?= BASE_URL ?>/quiz" class="student-nav-link <?= isStudentNavActive('/quiz', $currentPath) ? 'active' : '' ?>">
-                    Kuis
+                    <span class="pixel-nav-dot" aria-hidden="true">■</span>
+                    <span>Kuis</span>
                 </a>
                 <a href="<?= BASE_URL ?>/learn" class="student-nav-link <?= isStudentNavActive('/learn', $currentPath) ? 'active' : '' ?>">
-                    Materi
+                    <span class="pixel-nav-dot" aria-hidden="true">■</span>
+                    <span>Materi</span>
                 </a>
                 <a href="<?= BASE_URL ?>/leaderboard" class="student-nav-link <?= isStudentNavActive('/leaderboard', $currentPath) ? 'active' : '' ?>">
-                    Leaderboard
+                    <span class="pixel-nav-dot" aria-hidden="true">■</span>
+                    <span>Leaderboard</span>
                 </a>
             </nav>
 
@@ -351,7 +471,7 @@ function renderBreadcrumb(array $items): string
                         </a>
                     <?php endif; ?>
 
-                    <div class="student-avatar-box" title="<?= htmlspecialchars($userName) ?>">
+                    <div class="student-avatar-box font-mono" title="<?= htmlspecialchars($userName) ?>">
                         <?= $userInitial ?>
                     </div>
 

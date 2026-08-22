@@ -853,3 +853,208 @@ button:active,
 .password-toggle:active {
   transform: none !important;
 }
+
+/* ==========================================================================
+   NETQUIZ FULLSCREEN GEIST TERMINAL HUD (VERCEL & CAD BLUEPRINT STANDARD)
+   ========================================================================== */
+.netquiz-fullscreen-loader {
+  position: fixed;
+  inset: 0;
+  z-index: 999998;
+  background-color: rgba(250, 250, 250, 0.92);
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition:
+    opacity 0.22s cubic-bezier(0.16, 1, 0.3, 1),
+    visibility 0.22s;
+  will-change: opacity, transform;
+}
+
+.netquiz-fullscreen-loader.active {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+.netquiz-fullscreen-loader.fade-out {
+  opacity: 0;
+  transform: scale(1.015);
+  pointer-events: none;
+}
+
+.hud-canvas-dots {
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(
+    circle at center,
+    rgba(0, 0, 0, 0.07) 1px,
+    transparent 1px
+  );
+  background-size: 24px 24px;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.hud-card {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  max-width: 380px;
+  background-color: #ffffff;
+  border: 1px solid #e4e4e7;
+  border-radius: 8px;
+  padding: 1.75rem 1.75rem 1.5rem 1.75rem;
+  box-shadow:
+    0 10px 30px -10px rgba(0, 0, 0, 0.08),
+    0 4px 6px -2px rgba(0, 0, 0, 0.03);
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.hud-crosshair {
+  position: absolute;
+  font-family: var(--font-mono, monospace);
+  font-size: 11px;
+  font-weight: 600;
+  color: #71717a;
+  line-height: 1;
+  user-select: none;
+  pointer-events: none;
+}
+
+.hud-tl {
+  top: -6px;
+  left: -5px;
+}
+.hud-tr {
+  top: -6px;
+  right: -5px;
+}
+.hud-bl {
+  bottom: -6px;
+  left: -5px;
+}
+.hud-br {
+  bottom: -6px;
+  right: -5px;
+}
+
+.hud-header {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding-bottom: 0.85rem;
+  border-bottom: 1px solid #f4f4f5;
+}
+
+.hud-brand-mark {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  background-color: #18181b;
+  color: #ffffff;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-family: var(--font-mono, monospace);
+  font-size: 0.8rem;
+  font-weight: 800;
+}
+
+.hud-term-prompt {
+  font-family: var(--font-mono, monospace);
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: #ffffff;
+}
+
+.hud-live-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: #22c55e;
+  box-shadow: 0 0 6px #22c55e;
+}
+
+.hud-brand-title {
+  font-family: var(--font-heading, sans-serif);
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: #18181b;
+  letter-spacing: -0.02em;
+}
+
+.hud-accent {
+  color: #71717a;
+  font-weight: 600;
+}
+
+.hud-cursor {
+  display: inline-block;
+  color: #18181b;
+  animation: cursor-blink 0.8s steps(2, start) infinite;
+}
+
+@keyframes cursor-blink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+}
+
+.hud-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.hud-status-line {
+  font-size: 0.775rem;
+  font-weight: 600;
+  color: #52525b;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.hud-meter-row {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.hud-progress-track {
+  flex: 1;
+  height: 4px;
+  background-color: #f4f4f5;
+  border-radius: 9999px;
+  overflow: hidden;
+  border: 1px solid #e4e4e7;
+}
+
+.hud-progress-fill {
+  height: 100%;
+  width: 0%;
+  background-color: #18181b;
+  border-radius: 9999px;
+  transition: width 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.hud-percent-number {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #18181b;
+  min-width: 38px;
+  text-align: right;
+}

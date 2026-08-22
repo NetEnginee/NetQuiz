@@ -11,8 +11,7 @@ $stats = $stats ?? [
 require_once __DIR__ . '/templates/header.php';
 ?>
 
-<!-- Custom Styles for Dashboard -->
-<link rel="stylesheet" href="<?= BASE_URL ?>/css/dashboard.css?v=<?= time() ?>">
+
 
 <!-- Breadcrumb Navigation -->
 <nav class="breadcrumb"
