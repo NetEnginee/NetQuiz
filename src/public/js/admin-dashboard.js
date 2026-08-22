@@ -136,8 +136,8 @@ document.addEventListener("DOMContentLoaded", () => {
       const headerMeta = {
         "quiz-section": {
           title: "Buat Kuis",
-          desc: "Kelola dan buat kuis serta pertanyaan ujian MikroTik.",
-          actionHtml: `<button type="button" class="btn-primary-black" id="btn-header-open-quiz-studio" onclick="if(window.openQuizStudio) window.openQuizStudio();"><i data-lucide="plus" style="width: 15px; height: 15px;"></i> <span>+ Formulir Kuis Baru</span></button>`,
+          desc: "Buat kuis baru dan kelola daftar pertanyaan ujian.",
+          actionHtml: `<button type="button" class="btn-primary-black" id="btn-header-open-quiz-studio" onclick="if(window.openQuizStudio) window.openQuizStudio();"><i data-lucide="plus" style="width: 15px; height: 15px;"></i> <span>Buat Kuis Baru</span></button>`,
         },
         "member-section": {
           title: "Daftarkan Member",

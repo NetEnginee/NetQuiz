@@ -196,19 +196,19 @@ window.bindPasswordToggles = function () {
 
 //** Global Helper to Open and Close Quiz Studio */
 window.openQuizStudio = function () {
-  const container = document.getElementById("quiz-builder-container");
-  if (container) {
-    container.style.display = "block";
-    const titleInput = document.getElementById("quiz-input-title");
-    if (titleInput) titleInput.focus();
-    container.scrollIntoView({ behavior: "smooth", block: "start" });
+  if (window.switchQuizView) {
+    window.switchQuizView("create");
+  }
+  const titleInput = document.getElementById("quiz-input-title");
+  if (titleInput) {
+    titleInput.focus();
+    titleInput.scrollIntoView({ behavior: "smooth", block: "center" });
   }
 };
 
 window.closeQuizStudio = function () {
-  const container = document.getElementById("quiz-builder-container");
-  if (container) {
-    container.style.display = "none";
+  if (window.switchQuizView) {
+    window.switchQuizView("list");
   }
 };
 
@@ -341,7 +341,7 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 // ==========================================================================
-// 3. MODUL 1: BUAT KUIS (Quizzes High-Density Table & Live Question Studio)
+// 3. MODUL 1: BUAT KUIS (Dedicated Studio View & Quizzes Table)
 // ==========================================================================
 function renderQuizSection() {
   const sec = document.getElementById("quiz-section");
@@ -352,132 +352,152 @@ function renderQuizSection() {
     : [];
 
   sec.innerHTML = `
-        <div class="supabase-panel-card" style="margin-bottom: 2rem;">
-            <!-- Precision Corner Crosshairs -->
-            <span class="corner-crosshair corner-tl">+</span>
-            <span class="corner-crosshair corner-tr">+</span>
-            <span class="corner-crosshair corner-bl">+</span>
-            <span class="corner-crosshair corner-br">+</span>
+        <!-- Top Segmented View Switcher -->
+        <div class="quiz-segmented-switcher-bar">
+            <div class="quiz-segmented-control">
+                <button type="button" class="quiz-segment-tab active" id="tab-btn-quiz-create" onclick="window.switchQuizView('create')">
+                    <i data-lucide="plus-circle" style="width: 15px; height: 15px;"></i>
+                    <span>Buat Kuis Baru</span>
+                </button>
+                <button type="button" class="quiz-segment-tab" id="tab-btn-quiz-list" onclick="window.switchQuizView('list')">
+                    <i data-lucide="list" style="width: 15px; height: 15px;"></i>
+                    <span>Daftar Kuis (${rawQuizzes.length})</span>
+                </button>
+            </div>
+        </div>
 
-            <!-- Quiz Studio Form (Collapsible) -->
-            <div id="quiz-builder-container" style="display: none; padding: 1.5rem; border-bottom: 1px solid #E5E7EB; background-color: #FAFAFA;">
-                <form id="form-create-quiz" action="${window.BASE_URL}/admin/quizzes" method="POST">
+        <!-- VIEW 1: DEDICATED QUIZ CREATION STUDIO FORM -->
+        <div id="quiz-view-create" class="quiz-subview-panel active">
+            <div class="supabase-panel-card">
+                <span class="corner-crosshair corner-tl">+</span>
+                <span class="corner-crosshair corner-tr">+</span>
+                <span class="corner-crosshair corner-bl">+</span>
+                <span class="corner-crosshair corner-br">+</span>
+
+                <form id="form-create-quiz" action="${window.BASE_URL}/admin/quizzes" method="POST" style="padding: 1.75rem;">
                     <input type="hidden" name="csrf_token" value="${window.CSRF_TOKEN || ""}">
-                    
-                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.25rem; padding-bottom: 0.75rem; border-bottom: 1px solid #E5E7EB;">
-                        <div>
-                            <h3 style="font-family: var(--font-heading); font-size: 1.05rem; font-weight: 800; color: #18181B; margin: 0;">Studio Pembuatan Kuis & Soal Ujian</h3>
-                            <p style="font-size: 0.8rem; color: #52525B; margin-top: 0.2rem;">Lengkapi data kuis, konfigurasi durasi, dan susun butir-butir pertanyaan.</p>
-                        </div>
-                        <button type="button" onclick="window.closeQuizStudio()" class="btn-secondary-outline" style="padding: 0.35rem 0.75rem; font-size: 0.8rem;">Tutup Studio</button>
+
+                    <!-- Section Header -->
+                    <div style="margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid #E5E7EB;">
+                        <h3 style="font-family: var(--font-heading); font-size: 1.15rem; font-weight: 800; color: #18181B; margin: 0;">Buat Kuis Baru</h3>
+                        <p style="font-size: 0.825rem; color: #71717A; margin-top: 0.25rem;">Isi informasi kuis dan susun pertanyaan pilihan ganda.</p>
                     </div>
 
                     <!-- 1. Metadata Kuis -->
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div class="form-grid-2col" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
                         <div class="form-field-group">
-                            <label class="form-field-label">Judul Kuis / Ujian</label>
-                            <input type="text" class="form-field-input" name="title" id="quiz-input-title" placeholder="Contoh: Ujian OSPF Routing MTCNA" required>
+                            <label class="form-field-label">Judul Kuis</label>
+                            <input type="text" class="form-field-input" name="title" id="quiz-input-title" placeholder="Misal: OSPF Routing Dasar" required>
                         </div>
                         <div class="form-field-group">
-                            <label class="form-field-label">Kategori MikroTik</label>
+                            <label class="form-field-label">Kategori</label>
                             <select class="panel-select" name="category" id="quiz-input-category" style="width: 100%;" required>
-                                <option value="Routing">Routing & Gateway (MTCNA/MTCRE)</option>
-                                <option value="Security">Firewall, NAT & Security</option>
-                                <option value="Wireless">Wireless & CAPsMAN</option>
-                                <option value="Network Management">Network Management & QoS</option>
+                                <option value="Routing">Routing</option>
+                                <option value="Security">Firewall & Security</option>
+                                <option value="Wireless">Wireless</option>
+                                <option value="Network Management">Network Management</option>
                             </select>
                         </div>
                     </div>
 
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div class="form-grid-2col" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
                         <div class="form-field-group">
-                            <label class="form-field-label">Durasi Ujian (Menit)</label>
+                            <label class="form-field-label">Durasi (Menit)</label>
                             <input type="number" class="form-field-input" name="duration" id="quiz-input-duration" value="15" min="1" max="180" required>
                         </div>
                         <div class="form-field-group">
                             <label class="form-field-label">Tingkat Kesulitan</label>
                             <select class="panel-select" name="difficulty" id="quiz-input-difficulty" style="width: 100%;" required>
-                                <option value="Mudah">Mudah (Basic MTCNA)</option>
-                                <option value="Sedang">Sedang (Intermediate MTCRE)</option>
-                                <option value="Sulit">Sulit (Advanced MTCWE/MTCTCE)</option>
+                                <option value="Mudah">Mudah</option>
+                                <option value="Sedang">Sedang</option>
+                                <option value="Sulit">Sulit</option>
                             </select>
                         </div>
                     </div>
 
-                    <div class="form-field-group">
-                        <label class="form-field-label">Deskripsi Cakupan Ujian</label>
-                        <textarea class="form-field-input" name="description" id="quiz-input-desc" rows="2" placeholder="Tuliskan ringkasan materi atau tujuan dari ujian kuis ini..." required></textarea>
+                    <div class="form-field-group" style="margin-bottom: 1.75rem;">
+                        <label class="form-field-label">Deskripsi</label>
+                        <textarea class="form-field-input" name="description" id="quiz-input-desc" rows="2" placeholder="Deskripsi singkat mengenai materi kuis ini..." required></textarea>
                     </div>
 
-                    <!-- 2. Question Repeater Studio -->
-                    <div style="margin-top: 1.75rem; padding-top: 1.25rem; border-top: 1px dashed #E5E7EB;">
-                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem;">
+                    <!-- 2. Question Repeater -->
+                    <div style="padding-top: 1.5rem; border-top: 1px dashed #E5E7EB;">
+                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.25rem;">
                             <div>
-                                <h4 style="font-family: var(--font-heading); font-size: 0.95rem; font-weight: 800; color: #18181B; margin: 0;">
-                                    Daftar Soal Pertanyaan (<span id="quiz-question-counter">1</span> Soal)
+                                <h4 style="font-family: var(--font-heading); font-size: 1rem; font-weight: 800; color: #18181B; margin: 0;">
+                                    Daftar Soal (<span id="quiz-question-counter">1</span>)
                                 </h4>
-                                <p style="font-size: 0.775rem; color: #71717A; margin-top: 0.15rem;">Setiap soal wajib memiliki teks pertanyaan, 4 pilihan jawaban, dan 1 kunci jawaban benar.</p>
+                                <p style="font-size: 0.775rem; color: #71717A; margin-top: 0.2rem;">Klik tanda radio pada pilihan untuk menentukan kunci jawaban yang benar.</p>
                             </div>
                             <button type="button" id="btn-add-quiz-question" class="btn-secondary-outline" style="font-size: 0.8rem; padding: 0.4rem 0.85rem; display: inline-flex; align-items: center; gap: 0.35rem;">
                                 <i data-lucide="plus" style="width: 14px; height: 14px;"></i>
-                                <span>+ Tambah Soal</span>
+                                <span>Tambah Soal</span>
                             </button>
                         </div>
 
-                        <!-- Question Repeater Container -->
+                        <!-- Question Repeater Stack -->
                         <div id="quiz-questions-repeater-stack" class="quiz-question-repeater-stack">
-                            <!-- Injected dynamically via JS -->
                         </div>
                     </div>
 
-                    <!-- Studio Actions -->
-                    <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 1.5rem; padding-top: 1.25rem; border-top: 1px solid #E5E7EB;">
-                        <button type="button" id="btn-add-another-question" class="btn-secondary-outline" style="font-size: 0.825rem; padding: 0.45rem 0.9rem;">
+                    <!-- Bottom Studio Actions -->
+                    <div class="quiz-form-bottom-bar" style="display: flex; align-items: center; justify-content: space-between; margin-top: 2rem; padding-top: 1.25rem; border-top: 1px solid #E5E7EB; flex-wrap: wrap; gap: 1rem;">
+                        <button type="button" id="btn-add-another-question" class="btn-secondary-outline" style="font-size: 0.825rem; padding: 0.5rem 1rem; display: inline-flex; align-items: center; gap: 0.35rem;">
                             <i data-lucide="plus" style="width: 14px; height: 14px;"></i>
-                            <span>+ Tambah Soal Lagi</span>
+                            <span>Tambah Soal</span>
                         </button>
                         <div style="display: flex; gap: 0.75rem;">
-                            <button type="button" onclick="window.closeQuizStudio()" class="btn-secondary-outline">Batal</button>
-                            <button type="submit" class="btn-primary-black">
-                                <i data-lucide="check" style="width: 15px; height: 15px;"></i>
-                                <span>Simpan & Terbitkan Kuis</span>
+                            <button type="button" onclick="window.switchQuizView('list')" class="btn-secondary-outline" style="padding: 0.5rem 1rem;">Batal</button>
+                            <button type="submit" class="btn-primary-black" style="padding: 0.5rem 1.25rem; display: inline-flex; align-items: center; gap: 0.4rem;">
+                                <i data-lucide="check" style="width: 16px; height: 16px;"></i>
+                                <span>Simpan Kuis</span>
                             </button>
                         </div>
                     </div>
                 </form>
             </div>
+        </div>
 
-            <!-- Toolbar & Search (Anti-Slop Clean Input with Shortcut Badge) -->
-            <div class="panel-toolbar">
-                <div class="panel-toolbar-left">
-                    <div class="search-input-wrapper">
-                        <input type="text" id="quiz-search-input" class="panel-search-input" placeholder="Cari judul kuis atau kategori...">
-                        <span class="search-shortcut-badge" title="Tekan '/' pada keyboard untuk mencari">/</span>
+        <!-- VIEW 2: QUIZZES DATA TABLE -->
+        <div id="quiz-view-list" class="quiz-subview-panel" style="display: none;">
+            <div class="supabase-panel-card" style="margin-bottom: 2rem;">
+                <span class="corner-crosshair corner-tl">+</span>
+                <span class="corner-crosshair corner-tr">+</span>
+                <span class="corner-crosshair corner-bl">+</span>
+                <span class="corner-crosshair corner-br">+</span>
+
+                <!-- Toolbar & Search -->
+                <div class="panel-toolbar">
+                    <div class="panel-toolbar-left">
+                        <div class="search-input-wrapper">
+                            <input type="text" id="quiz-search-input" class="panel-search-input" placeholder="Cari judul atau kategori kuis...">
+                            <span class="search-shortcut-badge" title="Tekan '/' untuk mencari">/</span>
+                        </div>
+                    </div>
+                    <div class="panel-toolbar-right">
+                        <button type="button" class="btn-primary-black" onclick="window.switchQuizView('create')" style="font-size: 0.8rem; padding: 0.45rem 0.9rem; display: inline-flex; align-items: center; gap: 0.35rem;">
+                            <i data-lucide="plus" style="width: 14px; height: 14px;"></i>
+                            <span>Buat Kuis Baru</span>
+                        </button>
                     </div>
                 </div>
-                <div class="panel-toolbar-right">
-                    <button type="button" class="btn-primary-black" onclick="window.openQuizStudio()" style="font-size: 0.8rem; padding: 0.45rem 0.9rem; display: inline-flex; align-items: center; gap: 0.35rem;">
-                        <i data-lucide="plus" style="width: 14px; height: 14px;"></i>
-                        <span>+ Buat Kuis Baru</span>
-                    </button>
-                </div>
-            </div>
 
-            <!-- Data Table -->
-            <div class="panel-table-container">
-                <table class="supabase-data-table">
-                    <thead>
-                        <tr>
-                            <th>JUDUL KUIS</th>
-                            <th>KATEGORI</th>
-                            <th>KESULITAN</th>
-                            <th>DURASI</th>
-                            <th style="text-align: right; width: 90px;">AKSI</th>
-                        </tr>
-                    </thead>
-                    <tbody id="quiz-table-body">
-                    </tbody>
-                </table>
+                <!-- Data Table -->
+                <div class="panel-table-container">
+                    <table class="supabase-data-table">
+                        <thead>
+                            <tr>
+                                <th>JUDUL KUIS</th>
+                                <th>KATEGORI</th>
+                                <th>KESULITAN</th>
+                                <th>DURASI</th>
+                                <th style="text-align: right; width: 90px;">AKSI</th>
+                            </tr>
+                        </thead>
+                        <tbody id="quiz-table-body">
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     `;
@@ -497,50 +517,63 @@ function renderQuizSection() {
     card.setAttribute("data-index", index);
     card.innerHTML = `
             <div class="q-card-top-bar">
-                <span class="q-number-pill">SOAL #${index + 1}</span>
+                <span class="q-number-pill">Soal #${index + 1}</span>
                 <button type="button" class="btn-remove-question" title="Hapus butir soal ini" onclick="removeQuestionBlock(${index})">
                     <i data-lucide="trash-2" style="width: 13px; height: 13px;"></i>
                     <span>Hapus</span>
                 </button>
             </div>
             
-            <div class="form-field-group" style="margin-bottom: 0.75rem;">
-                <label class="form-field-label">Teks Pertanyaan Soal</label>
-                <textarea class="form-field-input" name="questions[${index}][question]" rows="2" placeholder="Tuliskan pertanyaan atau skenario konfigurasi di sini..." required></textarea>
+            <div class="form-field-group" style="margin-bottom: 1rem;">
+                <label class="form-field-label">Pertanyaan</label>
+                <textarea class="form-field-input" name="questions[${index}][question]" rows="2" placeholder="Tulis pertanyaan soal di sini..." required></textarea>
             </div>
 
-            <div class="q-options-grid-2x2">
-                <div class="form-field-group">
-                    <label class="form-field-label">Pilihan A</label>
-                    <input type="text" class="form-field-input" name="questions[${index}][option_a]" placeholder="Teks opsi pilihan A" required>
+            <!-- Integrated Radio Option Stack -->
+            <div class="q-options-stack">
+                <label class="form-field-label" style="margin-bottom: 0.4rem;">Pilihan Jawaban</label>
+                
+                <div class="q-option-row">
+                    <label class="q-correct-radio-label" title="Tandai Pilihan A sebagai Kunci Jawaban Benar">
+                        <input type="radio" name="questions[${index}][correct]" value="A" checked class="q-correct-radio">
+                        <span class="q-option-badge">A</span>
+                    </label>
+                    <input type="text" class="form-field-input q-option-input" name="questions[${index}][option_a]" placeholder="Pilihan A" required>
                 </div>
-                <div class="form-field-group">
-                    <label class="form-field-label">Pilihan B</label>
-                    <input type="text" class="form-field-input" name="questions[${index}][option_b]" placeholder="Teks opsi pilihan B" required>
+
+                <div class="q-option-row">
+                    <label class="q-correct-radio-label" title="Tandai Pilihan B sebagai Kunci Jawaban Benar">
+                        <input type="radio" name="questions[${index}][correct]" value="B" class="q-correct-radio">
+                        <span class="q-option-badge">B</span>
+                    </label>
+                    <input type="text" class="form-field-input q-option-input" name="questions[${index}][option_b]" placeholder="Pilihan B" required>
                 </div>
-                <div class="form-field-group">
-                    <label class="form-field-label">Pilihan C</label>
-                    <input type="text" class="form-field-input" name="questions[${index}][option_c]" placeholder="Teks opsi pilihan C" required>
+
+                <div class="q-option-row">
+                    <label class="q-correct-radio-label" title="Tandai Pilihan C sebagai Kunci Jawaban Benar">
+                        <input type="radio" name="questions[${index}][correct]" value="C" class="q-correct-radio">
+                        <span class="q-option-badge">C</span>
+                    </label>
+                    <input type="text" class="form-field-input q-option-input" name="questions[${index}][option_c]" placeholder="Pilihan C" required>
                 </div>
-                <div class="form-field-group">
-                    <label class="form-field-label">Pilihan D</label>
-                    <input type="text" class="form-field-input" name="questions[${index}][option_d]" placeholder="Teks opsi pilihan D" required>
+
+                <div class="q-option-row">
+                    <label class="q-correct-radio-label" title="Tandai Pilihan D sebagai Kunci Jawaban Benar">
+                        <input type="radio" name="questions[${index}][correct]" value="D" class="q-correct-radio">
+                        <span class="q-option-badge">D</span>
+                    </label>
+                    <input type="text" class="form-field-input q-option-input" name="questions[${index}][option_d]" placeholder="Pilihan D" required>
                 </div>
             </div>
 
-            <div class="q-meta-grid-2col">
-                <div class="form-field-group">
-                    <label class="form-field-label">Kunci Jawaban Benar</label>
-                    <select class="panel-select" name="questions[${index}][correct]" style="width: 100%; font-weight: 700;" required>
-                        <option value="A">Kunci: Pilihan A</option>
-                        <option value="B">Kunci: Pilihan B</option>
-                        <option value="C">Kunci: Pilihan C</option>
-                        <option value="D">Kunci: Pilihan D</option>
-                    </select>
-                </div>
-                <div class="form-field-group">
-                    <label class="form-field-label">Penjelasan / Pembahasan Soal (Opsional)</label>
-                    <input type="text" class="form-field-input" name="questions[${index}][explanation]" placeholder="Alasan mengapa kunci ini benar (ditampilkan pada ulasan ujian)">
+            <!-- Optional Explanation Toggle -->
+            <div class="q-extra-toggle-box">
+                <button type="button" class="btn-toggle-optional" onclick="window.toggleQuestionExtra(${index})">
+                    <i data-lucide="help-circle" style="width: 14px; height: 14px;"></i>
+                    <span id="q-extra-label-${index}">+ Tambah Pembahasan</span>
+                </button>
+                <div class="q-extra-content" id="q-extra-${index}" style="display: none; margin-top: 0.6rem;">
+                    <input type="text" class="form-field-input" name="questions[${index}][explanation]" placeholder="Penjelasan jawaban (opsional)">
                 </div>
             </div>
         `;
@@ -556,7 +589,7 @@ function renderQuizSection() {
     cards.forEach((card, idx) => {
       card.setAttribute("data-index", idx);
       const pill = card.querySelector(".q-number-pill");
-      if (pill) pill.textContent = `SOAL #${idx + 1}`;
+      if (pill) pill.textContent = `Soal #${idx + 1}`;
 
       // Update input names
       const qText = card.querySelector('textarea[name*="[question]"]');
@@ -574,11 +607,23 @@ function renderQuizSection() {
       const optD = card.querySelector('input[name*="[option_d]"]');
       if (optD) optD.name = `questions[${idx}][option_d]`;
 
-      const correct = card.querySelector('select[name*="[correct]"]');
-      if (correct) correct.name = `questions[${idx}][correct]`;
+      const radios = card.querySelectorAll(
+        'input[type="radio"][name*="[correct]"]',
+      );
+      radios.forEach((r) => (r.name = `questions[${idx}][correct]`));
 
       const exp = card.querySelector('input[name*="[explanation]"]');
       if (exp) exp.name = `questions[${idx}][explanation]`;
+
+      const extraBox = card.querySelector(".q-extra-content");
+      if (extraBox) extraBox.id = `q-extra-${idx}`;
+
+      const extraLabel = card.querySelector('[id^="q-extra-label-"]');
+      if (extraLabel) extraLabel.id = `q-extra-label-${idx}`;
+
+      const toggleBtn = card.querySelector(".btn-toggle-optional");
+      if (toggleBtn)
+        toggleBtn.setAttribute("onclick", `window.toggleQuestionExtra(${idx})`);
 
       // Disable delete if only 1 question remains
       const delBtn = card.querySelector(".btn-remove-question");
@@ -590,6 +635,21 @@ function renderQuizSection() {
 
     if (window.lucide) window.lucide.createIcons();
   }
+
+  window.toggleQuestionExtra = function (idx) {
+    const extraContent = document.getElementById(`q-extra-${idx}`);
+    const extraLabel = document.getElementById(`q-extra-label-${idx}`);
+    if (!extraContent) return;
+    if (extraContent.style.display === "none") {
+      extraContent.style.display = "block";
+      if (extraLabel) extraLabel.textContent = "- Sembunyikan Pembahasan";
+      const input = extraContent.querySelector("input");
+      if (input) input.focus();
+    } else {
+      extraContent.style.display = "none";
+      if (extraLabel) extraLabel.textContent = "+ Tambah Pembahasan";
+    }
+  };
 
   window.addQuestionBlock = function () {
     if (!repeaterStack) return;
@@ -630,6 +690,33 @@ function renderQuizSection() {
   if (btnAddQ) btnAddQ.addEventListener("click", window.addQuestionBlock);
   if (btnAddQ2) btnAddQ2.addEventListener("click", window.addQuestionBlock);
 
+  // Switch between Creation Studio View and Quizzes Table View
+  window.switchQuizView = function (view) {
+    const viewCreate = document.getElementById("quiz-view-create");
+    const viewList = document.getElementById("quiz-view-list");
+    const tabCreate = document.getElementById("tab-btn-quiz-create");
+    const tabList = document.getElementById("tab-btn-quiz-list");
+
+    if (view === "create") {
+      if (viewCreate) viewCreate.style.display = "block";
+      if (viewList) viewList.style.display = "none";
+      if (tabCreate) tabCreate.classList.add("active");
+      if (tabList) tabList.classList.remove("active");
+      const titleInput = document.getElementById("quiz-input-title");
+      if (titleInput) titleInput.focus();
+    } else {
+      if (viewCreate) viewCreate.style.display = "none";
+      if (viewList) viewList.style.display = "block";
+      if (tabCreate) tabCreate.classList.remove("active");
+      if (tabList) tabList.classList.add("active");
+    }
+    if (window.lucide) window.lucide.createIcons();
+  };
+
+  window.openQuizStudio = function () {
+    window.switchQuizView("create");
+  };
+
   function renderQuizRows(list) {
     if (!qTbody) return;
     if (list.length === 0) {
@@ -641,7 +728,7 @@ function renderQuizSection() {
                                 <i data-lucide="file-question" style="width: 24px; height: 24px;"></i>
                             </div>
                             <div class="empty-state-title">Belum Ada Kuis</div>
-                            <div class="empty-state-text">Mulai buat kuis baru atau gunakan formulir kuis untuk menambahkan ujian MikroTik.</div>
+                            <div class="empty-state-text">Mulai buat kuis baru untuk menambahkan ujian pembelajaran.</div>
                         </div>
                     </td>
                 </tr>
@@ -687,37 +774,6 @@ function renderQuizSection() {
       renderQuizRows(filtered);
     });
   }
-
-  // Toggle Form Handlers
-  const btnToggle = document.getElementById("btn-toggle-quiz-builder");
-  const btnClose = document.getElementById("btn-close-quiz-builder");
-  const btnCancel = document.getElementById("btn-cancel-quiz-form");
-  const container = document.getElementById("quiz-builder-container");
-  const qTitleInput = document.getElementById("quiz-input-title");
-
-  window.openQuizStudio = function () {
-    if (container) {
-      container.style.display = "block";
-      if (qTitleInput) qTitleInput.focus();
-      container.scrollIntoView({ behavior: "smooth", block: "nearest" });
-    }
-  };
-
-  window.closeQuizStudio = function () {
-    if (container) container.style.display = "none";
-  };
-
-  if (btnToggle)
-    btnToggle.addEventListener("click", () => {
-      if (container.style.display === "none") {
-        openQuizStudio();
-      } else {
-        closeQuizStudio();
-      }
-    });
-
-  if (btnClose) btnClose.addEventListener("click", closeQuizStudio);
-  if (btnCancel) btnCancel.addEventListener("click", closeQuizStudio);
 
   window.confirmDeleteQuiz = function (id, title) {
     showGeistConfirm(
