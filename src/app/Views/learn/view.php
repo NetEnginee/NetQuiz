@@ -17,14 +17,12 @@ require_once dirname(__DIR__) . '/templates/header.php';
 
 <!-- Material View Container -->
 <div style="margin-bottom: 1.5rem;">
-    <!-- Breadcrumb -->
-    <nav class="admin-breadcrumb-nav" aria-label="Breadcrumb" style="margin-bottom: 0.75rem;">
-        <span class="breadcrumb-item"><a href="<?= BASE_URL ?>/learn" style="color: inherit; text-decoration: none;">Materi</a></span>
-        <span class="breadcrumb-separator">/</span>
-        <span class="breadcrumb-item"><?= htmlspecialchars($material['category']) ?></span>
-        <span class="breadcrumb-separator">/</span>
-        <span class="breadcrumb-active"><?= htmlspecialchars($material['title']) ?></span>
-    </nav>
+    <?= renderBreadcrumb([
+        ['label' => 'Siswa', 'url' => BASE_URL . '/'],
+        ['label' => 'Materi', 'url' => BASE_URL . '/learn'],
+        ['label' => $material['category']],
+        ['label' => $material['title']]
+    ]) ?>
 </div>
 
 <!-- 2-Column Article Layout -->
@@ -51,14 +49,59 @@ require_once dirname(__DIR__) . '/templates/header.php';
         <!-- Article Content Styled for Clean High Readability -->
         <div class="material-content-body" style="font-size: 0.95rem; line-height: 1.7; color: #27272A;">
             <style>
-                .material-content-body h2 { font-size: 1.25rem; font-weight: 800; color: #18181B; margin: 1.75rem 0 0.65rem 0; }
-                .material-content-body h3 { font-size: 1.1rem; font-weight: 700; color: #18181B; margin: 1.5rem 0 0.5rem 0; }
-                .material-content-body p { margin-bottom: 1.15rem; color: #3F3F46; }
-                .material-content-body pre { background: #18181B; color: #38BDF8; padding: 1rem 1.25rem; border-radius: 8px; font-family: var(--font-mono); font-size: 0.85rem; overflow-x: auto; margin: 1.25rem 0; border: 1px solid #27272A; }
-                .material-content-body code { font-family: var(--font-mono); font-size: 0.875em; }
-                .material-content-body p code { background: #F4F4F5; color: #18181B; padding: 2px 6px; border-radius: 4px; border: 1px solid #E5E7EB; }
-                .material-content-body ul, .material-content-body ol { margin: 0.75rem 0 1.25rem 1.5rem; color: #3F3F46; }
-                .material-content-body li { margin-bottom: 0.4rem; }
+                .material-content-body h2 {
+                    font-size: 1.25rem;
+                    font-weight: 800;
+                    color: #18181B;
+                    margin: 1.75rem 0 0.65rem 0;
+                }
+
+                .material-content-body h3 {
+                    font-size: 1.1rem;
+                    font-weight: 700;
+                    color: #18181B;
+                    margin: 1.5rem 0 0.5rem 0;
+                }
+
+                .material-content-body p {
+                    margin-bottom: 1.15rem;
+                    color: #3F3F46;
+                }
+
+                .material-content-body pre {
+                    background: #18181B;
+                    color: #38BDF8;
+                    padding: 1rem 1.25rem;
+                    border-radius: 8px;
+                    font-family: var(--font-mono);
+                    font-size: 0.85rem;
+                    overflow-x: auto;
+                    margin: 1.25rem 0;
+                    border: 1px solid #27272A;
+                }
+
+                .material-content-body code {
+                    font-family: var(--font-mono);
+                    font-size: 0.875em;
+                }
+
+                .material-content-body p code {
+                    background: #F4F4F5;
+                    color: #18181B;
+                    padding: 2px 6px;
+                    border-radius: 4px;
+                    border: 1px solid #E5E7EB;
+                }
+
+                .material-content-body ul,
+                .material-content-body ol {
+                    margin: 0.75rem 0 1.25rem 1.5rem;
+                    color: #3F3F46;
+                }
+
+                .material-content-body li {
+                    margin-bottom: 0.4rem;
+                }
             </style>
             <?= $material['content'] ?>
         </div>

@@ -21,11 +21,11 @@ require_once dirname(__DIR__) . '/templates/header.php';
     <!-- Breadcrumb & Exam Banner Header -->
     <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem;">
         <div>
-            <nav class="admin-breadcrumb-nav" aria-label="Breadcrumb" style="margin-bottom: 0.25rem;">
-                <span class="breadcrumb-item">Katalog</span>
-                <span class="breadcrumb-separator">/</span>
-                <span class="breadcrumb-active"><?= htmlspecialchars($quiz['title']) ?></span>
-            </nav>
+            <?= renderBreadcrumb([
+                ['label' => 'Siswa', 'url' => BASE_URL . '/'],
+                ['label' => 'Kuis', 'url' => BASE_URL . '/quiz'],
+                ['label' => $quiz['title']]
+            ]) ?>
             <div style="display: flex; align-items: center; gap: 0.5rem;">
                 <span class="status-badge" style="background-color: #F4F4F5; font-size: 0.725rem;"><?= htmlspecialchars($quiz['category']) ?></span>
                 <span class="status-badge" style="background-color: #F4F4F5; font-size: 0.725rem;"><?= htmlspecialchars($quiz['difficulty']) ?></span>

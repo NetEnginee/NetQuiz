@@ -14,14 +14,14 @@ require_once dirname(__DIR__) . '/templates/header.php';
 ?>
 
 <div style="max-width: 640px; margin: 0 auto;">
-    <!-- Breadcrumb -->
-    <nav class="admin-breadcrumb-nav" aria-label="Breadcrumb" style="margin-bottom: 1.5rem; justify-content: center;">
-        <span class="breadcrumb-item">Kuis</span>
-        <span class="breadcrumb-separator">/</span>
-        <span class="breadcrumb-item"><?= htmlspecialchars($quiz['title'] ?? 'Ujian') ?></span>
-        <span class="breadcrumb-separator">/</span>
-        <span class="breadcrumb-active">Hasil Skor</span>
-    </nav>
+    <div style="display: flex; justify-content: center; margin-bottom: 1.5rem;">
+        <?= renderBreadcrumb([
+            ['label' => 'Siswa', 'url' => BASE_URL . '/'],
+            ['label' => 'Kuis', 'url' => BASE_URL . '/quiz'],
+            ['label' => $quiz['title'] ?? 'Ujian'],
+            ['label' => 'Hasil Skor']
+        ]) ?>
+    </div>
 
     <!-- Score Card Geist -->
     <div class="supabase-panel-card" style="padding: 2.5rem 2rem; text-align: center;">

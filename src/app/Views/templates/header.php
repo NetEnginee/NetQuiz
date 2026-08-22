@@ -7,7 +7,8 @@ $currentUri = $_SERVER['REQUEST_URI'] ?? '/';
 $currentPath = parse_url($currentUri, PHP_URL_PATH) ?? '/';
 
 // Active tab helper
-function isStudentNavActive(string $path, string $currentPath): bool {
+function isStudentNavActive(string $path, string $currentPath): bool
+{
     if ($path === '/' && ($currentPath === '/' || $currentPath === '/dashboard')) {
         return true;
     }
@@ -15,6 +16,41 @@ function isStudentNavActive(string $path, string $currentPath): bool {
         return true;
     }
     return false;
+}
+
+/**
+ * Dynamic Breadcrumb Generator Helper
+ * @param array<array{label: string, url?: string}> $items
+ */
+function renderBreadcrumb(array $items): string
+{
+    if (empty($items)) return '';
+
+    $html = '<nav class="admin-breadcrumb-nav" aria-label="Breadcrumb">';
+    $html .= '<ol class="admin-breadcrumb-list">';
+
+    $total = count($items);
+    foreach ($items as $i => $item) {
+        $isLast = ($i === $total - 1);
+        $label = htmlspecialchars($item['label'] ?? '');
+        $url = $item['url'] ?? null;
+
+        if ($isLast || empty($url)) {
+            $html .= '<li class="breadcrumb-item active" aria-current="page">';
+            $html .= '<span class="breadcrumb-current-text">' . $label . '</span>';
+            $html .= '</li>';
+        } else {
+            $html .= '<li class="breadcrumb-item">';
+            $html .= '<a href="' . htmlspecialchars($url) . '" class="breadcrumb-link">' . $label . '</a>';
+            $html .= '</li>';
+            $html .= '<li class="breadcrumb-separator" aria-hidden="true">/</li>';
+        }
+    }
+
+    $html .= '</ol>';
+    $html .= '</nav>';
+
+    return $html;
 }
 ?>
 <!DOCTYPE html>
@@ -137,6 +173,78 @@ function isStudentNavActive(string $path, string $currentPath): bool {
             width: 100%;
         }
 
+        /* Dynamic Breadcrumb Styling */
+        .admin-breadcrumb-nav {
+            margin-bottom: 0.65rem;
+        }
+
+        .admin-breadcrumb-list {
+            display: inline-flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0.45rem;
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            font-family: var(--font-heading);
+            font-size: 0.8rem;
+            color: #71717A;
+        }
+
+        .breadcrumb-item {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            line-height: 1.4;
+        }
+
+        .breadcrumb-link {
+            color: #71717A;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.15s ease;
+        }
+
+        .breadcrumb-link:hover {
+            color: #18181B;
+        }
+
+        .breadcrumb-separator {
+            color: #D4D4D8;
+            font-size: 0.75rem;
+            user-select: none;
+        }
+
+        .breadcrumb-item.active {
+            color: #18181B;
+            font-weight: 600;
+        }
+
+        .breadcrumb-current-text {
+            max-width: 280px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            display: inline-block;
+            vertical-align: bottom;
+        }
+
+        /* Fixed Footer Styling */
+        .student-fixed-footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 40px;
+            background-color: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-top: 1px solid var(--color-border, #E5E7EB);
+            z-index: 900;
+            display: flex;
+            align-items: center;
+        }
+
         /* Floating Bottom Navigation for Mobile & Tablet */
         .student-floating-bottom-nav {
             display: none;
@@ -154,12 +262,19 @@ function isStudentNavActive(string $path, string $currentPath): bool {
             .student-nav-links {
                 display: none;
             }
+
             .student-floating-bottom-nav {
                 display: flex;
             }
+
+            .student-fixed-footer {
+                display: none;
+            }
+
             .student-shell-container {
                 padding: 0 1rem;
             }
+
             .student-main-content {
                 padding-top: calc(var(--top-nav-height, 56px) + 1.25rem);
                 padding-bottom: 6.5rem;
