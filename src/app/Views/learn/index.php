@@ -7,7 +7,7 @@ require_once dirname(__DIR__) . '/templates/header.php';
 <div style="margin-bottom: 2rem;">
     <?= renderBreadcrumb([
         ['label' => 'Siswa', 'url' => BASE_URL . '/'],
-        ['label' => 'Materi Belajar']
+        ['label' => 'Materi']
     ]) ?>
 </div>
 
