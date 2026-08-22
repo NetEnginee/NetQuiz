@@ -27,14 +27,6 @@ require_once dirname(__DIR__) . '/templates/header.php';
         <span class="breadcrumb-active">Dashboard</span>
     </nav>
     <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;">
-        <div>
-            <h1 style="font-family: var(--font-heading); font-size: 1.5rem; font-weight: 800; color: #18181B; margin: 0 0 0.25rem 0; letter-spacing: -0.02em;">
-                Selamat Datang, <?= htmlspecialchars($userName) ?>
-            </h1>
-            <p style="font-size: 0.875rem; color: #71717A; margin: 0;">
-                Lihat ringkasan aktivitas kuis, pencapaian, dan materi pembelajaran terbaru Anda disini.
-            </p>
-        </div>
     </div>
 </div>
 
@@ -208,7 +200,7 @@ require_once dirname(__DIR__) . '/templates/header.php';
                     <?php foreach (array_slice($materials, 0, 4) as $mat): ?>
                         <a href="<?= BASE_URL ?>/learn/<?= (int)$mat['id'] ?>" style="display: block; padding: 0.85rem; background-color: #FAFAFA; border: 1px solid #E5E7EB; border-radius: 6px; text-decoration: none; transition: all 0.15s ease;" onmouseover="this.style.borderColor='#18181B';" onmouseout="this.style.borderColor='#E5E7EB';">
                             <span class="status-badge" style="background-color: #F4F4F5; font-size: 0.7rem; margin-bottom: 0.4rem;"><?= htmlspecialchars($mat['category'] ?? 'Umum') ?></span>
-                            <h4 style="font-size: 0.875rem; font-weight: 700; color: #18181B; margin: 0 0 0.3rem 0; line-height: 1.35; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;>    
+                            <h4 style="font-size: 0.875rem; font-weight: 700; color: #18181B; margin: 0 0 0.3rem 0; line-height: 1.35; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical;">
                                 <?= htmlspecialchars($mat['title']) ?>
                             </h4>
                             <div style=" display: flex; align-items: center; justify-content: space-between; font-size: 0.75rem; color: #71717A;">
