@@ -2,64 +2,69 @@
 $score = isset($score) ? (int) $score : 0;
 $correct = isset($correct) ? (int) $correct : 0;
 $total = isset($total) ? (int) $total : 0;
-$quiz = $quiz ?? null;
+$quiz = $quiz ?? [
+    'id' => 0,
+    'title' => 'NetQuiz',
+    'category' => 'MikroTik'
+];
+
+$isPassed = $score >= 70;
+
 require_once dirname(__DIR__) . '/templates/header.php';
 ?>
 
-<!-- Custom Styles for Quiz -->
-<link rel="stylesheet" href="<?= BASE_URL ?>/css/quiz.css?v=<?= time() ?>">
-
-<div class="quiz-container">
-    <!-- Breadcrumb Navigation -->
-    <nav class="breadcrumb"
-        style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 2rem; font-size: 0.85rem; font-weight: 500; color: #64748b; font-family: 'Plus Jakarta Sans', sans-serif;">
-        <span style="color: #64748b;">Dashboard</span>
-        <span style="color: #cbd5e1;">/</span>
-        <span style="color: #64748b;">Quiz</span>
-        <span style="color: #cbd5e1;">/</span>
-        <span style="color: #0f172a; font-weight: 600;">Hasil Skor</span>
+<div style="max-width: 640px; margin: 0 auto;">
+    <!-- Breadcrumb -->
+    <nav class="admin-breadcrumb-nav" aria-label="Breadcrumb" style="margin-bottom: 1.5rem; justify-content: center;">
+        <span class="breadcrumb-item">Kuis</span>
+        <span class="breadcrumb-separator">/</span>
+        <span class="breadcrumb-item"><?= htmlspecialchars($quiz['title'] ?? 'Ujian') ?></span>
+        <span class="breadcrumb-separator">/</span>
+        <span class="breadcrumb-active">Hasil Skor</span>
     </nav>
 
-    <!-- Quiz Result Score Card -->
-    <div class="result-card">
-        <div class="result-score-circle">
-            <span class="result-score-value"><?= (int) $score ?></span>
-            <span class="result-score-label">Skor Akhir</span>
+    <!-- Score Card Geist -->
+    <div class="supabase-panel-card" style="padding: 2.5rem 2rem; text-align: center;">
+        <span class="corner-crosshair corner-tl">+</span>
+        <span class="corner-crosshair corner-tr">+</span>
+        <span class="corner-crosshair corner-bl">+</span>
+        <span class="corner-crosshair corner-br">+</span>
+
+        <!-- Score Badge Circle -->
+        <div style="width: 88px; height: 88px; border-radius: 50%; background-color: #18181B; color: #FFFFFF; display: flex; flex-direction: column; align-items: center; justify-content: center; margin: 0 auto 1.5rem; border: 4px solid #E5E7EB; box-shadow: 0 4px 12px rgba(0,0,0,0.06);">
+            <span style="font-size: 1.85rem; font-weight: 800; font-family: var(--font-mono); line-height: 1;"><?= (int)$score ?></span>
+            <span style="font-size: 0.65rem; color: #A1A1AA; font-weight: 600; text-transform: uppercase; margin-top: 2px;">Skor</span>
         </div>
 
-        <h2
-            style="font-size: 1.35rem; font-weight: 800; color: #0f172a; margin: 0; font-family: 'Plus Jakarta Sans', sans-serif;">
+        <h2 style="font-family: var(--font-heading); font-size: 1.4rem; font-weight: 800; color: #18181B; margin: 0 0 0.35rem 0;">
             <?= $score >= 80 ? 'Luar Biasa! 🎉' : ($score >= 60 ? 'Kerja Bagus! 👍' : 'Tetap Semangat! 💪') ?>
         </h2>
-        <p style="font-size: 0.9rem; color: #64748b; margin: 0; line-height: 1.5;">
-            <?= $score >= 80 ? 'Anda memiliki pemahaman konfigurasi MikroTik RouterOS yang luar biasa.' : ($score >= 60 ? 'Anda memiliki dasar pemahaman yang baik, teruslah berlatih.' : 'Pelajari kembali topik ini untuk meningkatkan pemahaman Anda.') ?>
+        <p style="font-size: 0.875rem; color: #71717A; margin: 0 0 2rem 0; line-height: 1.5;">
+            <?= $score >= 80 ? 'Anda memiliki pemahaman konfigurasi RouterOS yang sangat baik.' : ($score >= 60 ? 'Dasar pemahaman Anda sudah baik. Pelajari kembali materi untuk memaksimalkan skor.' : 'Pelajari kembali panduan materi topik ini untuk memperdalam pemahaman.') ?>
         </p>
 
-        <!-- Stats Meta Breakdown -->
-        <div class="result-meta-grid">
-            <div class="result-meta-item">
-                <span class="result-meta-label">Kuis</span>
-                <span class="result-meta-value"><?= htmlspecialchars($quiz['title'] ?? 'NetQuiz') ?></span>
+        <!-- Stats Breakdown Grid -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 2rem; text-align: left;">
+            <div style="padding: 0.85rem 1rem; background-color: #FAFAFA; border: 1px solid #E5E7EB; border-radius: 6px;">
+                <span style="font-size: 0.75rem; color: #71717A; display: block; margin-bottom: 0.2rem;">Kuis Diuji</span>
+                <span style="font-size: 0.9rem; font-weight: 700; color: #18181B;"><?= htmlspecialchars($quiz['title'] ?? 'Kuis') ?></span>
             </div>
-            <div class="result-meta-item">
-                <span class="result-meta-label">Jawaban Benar</span>
-                <span class="result-meta-value"><?= (int) $correct ?> / <?= (int) $total ?></span>
+            <div style="padding: 0.85rem 1rem; background-color: #FAFAFA; border: 1px solid #E5E7EB; border-radius: 6px;">
+                <span style="font-size: 0.75rem; color: #71717A; display: block; margin-bottom: 0.2rem;">Jawaban Benar</span>
+                <span style="font-size: 0.9rem; font-weight: 700; color: #18181B;" class="font-mono"><?= (int)$correct ?> / <?= (int)$total ?> Soal</span>
             </div>
         </div>
 
-        <!-- Action Links -->
-        <div class="result-actions">
-            <a href="<?= BASE_URL ?>/quiz" class="btn-secondary" style="text-decoration: none;">
-                Kembali ke Quiz
+        <!-- Action CTA Buttons -->
+        <div style="display: flex; align-items: center; justify-content: center; gap: 0.75rem; flex-wrap: wrap;">
+            <a href="<?= BASE_URL ?>/quiz" class="btn-secondary-outline" style="font-size: 0.85rem; padding: 0.5rem 1.15rem;">
+                <i data-lucide="arrow-left" style="width: 14px; height: 14px;"></i>
+                <span>Katalog Kuis</span>
             </a>
-            <?php if ($quiz): ?>
-                <?php
-                $reviewUrl = method_exists('\App\Core\Security', 'encryptUrlId')
-                    ? BASE_URL . '/quiz/review/' . \App\Core\Security::encryptUrlId($quiz['id'])
-                    : BASE_URL . '/quiz/review/' . $quiz['id'];
-                ?>
-                <a href="<?= $reviewUrl ?>" class="btn-primary" style="text-decoration: none;">
-                    Review Jawaban
+            <?php if (!empty($quiz['id'])): ?>
+                <a href="<?= BASE_URL ?>/quiz/review/<?= (int)$quiz['id'] ?>" class="btn-primary-black" style="font-size: 0.85rem; padding: 0.5rem 1.25rem;">
+                    <i data-lucide="eye" style="width: 14px; height: 14px;"></i>
+                    <span>Review Jawaban</span>
                 </a>
             <?php endif; ?>
         </div>

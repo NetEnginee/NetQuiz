@@ -1,5 +1,5 @@
 /**
- * NetQuiz Quiz Player Module (Clean State Architecture)
+ * NetQuiz Quiz Player Module (Geist State Architecture)
  */
 (function () {
   "use strict";
@@ -35,13 +35,18 @@
       this.btnSubmit = document.getElementById("btn-submit-quiz");
       this.pageButtons = Array.from(document.querySelectorAll(".page-number"));
 
+      this.btnPause = document.getElementById("btn-pause-quiz");
+      this.pauseDialog = document.getElementById("pause-dialog");
+      this.btnCancelPause = document.getElementById("btn-cancel-pause");
+      this.btnConfirmPause = document.getElementById("btn-confirm-pause");
+
       if (window.lucide) {
         window.lucide.createIcons();
       }
     }
 
     initState() {
-      // 1. Timer Init
+      // 1. Timer Initialization
       if (this.durationSeconds > 0 && this.timerText) {
         let targetTimestamp = localStorage.getItem(this.storageKey);
 
@@ -66,7 +71,7 @@
       }
 
       this.updateSlider();
-      this.checkSubmitReadiness();
+      this.updateAnsweredStatus();
     }
 
     startTimer() {
@@ -97,9 +102,11 @@
 
       if (this.timerPill) {
         if (this.timeLeft <= 60 && this.timeLeft > 0) {
-          this.timerPill.classList.add("warning");
+          this.timerPill.style.backgroundColor = "#EF4444";
+          this.timerPill.style.color = "#FFFFFF";
         } else {
-          this.timerPill.classList.remove("warning");
+          this.timerPill.style.backgroundColor = "#18181B";
+          this.timerPill.style.color = "#FFFFFF";
         }
       }
     }
@@ -113,85 +120,90 @@
       overlay.style.left = "0";
       overlay.style.width = "100vw";
       overlay.style.height = "100vh";
-      overlay.style.backgroundColor = "rgba(15, 23, 42, 0.95)";
-      overlay.style.backdropFilter = "blur(10px)";
+      overlay.style.backgroundColor = "rgba(0, 0, 0, 0.85)";
+      overlay.style.backdropFilter = "blur(8px)";
       overlay.style.color = "#ffffff";
       overlay.style.display = "flex";
       overlay.style.flexDirection = "column";
       overlay.style.justifyContent = "center";
       overlay.style.alignItems = "center";
       overlay.style.zIndex = "99999";
-      overlay.style.fontFamily = "'Plus Jakarta Sans', sans-serif";
+      overlay.style.fontFamily = "var(--font-heading, sans-serif)";
 
       overlay.innerHTML = `
-                <div style="background: #ef4444; border-radius: 50%; width: 72px; height: 72px; display: flex; align-items: center; justify-content: center; margin-bottom: 1.5rem;">
-                    <i data-lucide="clock" style="width: 36px; height: 36px; color: #fff;"></i>
-                </div>
-                <h2 style="font-size:2rem; font-weight:800; margin-bottom:0.5rem; color:#f8fafc;">Waktu Ujian Telah Habis</h2>
-                <p style="font-size:1rem; color:#94a3b8; font-weight:500;">Jawaban Anda sedang dikumpulkan otomatis oleh sistem...</p>
-            `;
+        <div style="background: #18181B; border: 1px solid #333; border-radius: 12px; padding: 2rem; max-width: 420px; text-align: center;">
+            <div style="background: #EF4444; border-radius: 50%; width: 56px; height: 56px; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.25rem;">
+                <i data-lucide="clock" style="width: 28px; height: 28px; color: #fff;"></i>
+            </div>
+            <h2 style="font-size:1.35rem; font-weight:800; margin-bottom:0.4rem; color:#FFFFFF;">Waktu Ujian Habis</h2>
+            <p style="font-size:0.85rem; color:#A1A1AA; font-weight:500; margin: 0;">Jawaban Anda sedang dikumpulkan otomatis oleh sistem...</p>
+        </div>
+      `;
       document.body.appendChild(overlay);
       if (window.lucide) window.lucide.createIcons();
 
       if (this.quizForm) {
-        this.quizForm
-          .querySelectorAll("input[required]")
-          .forEach((input) => input.removeAttribute("required"));
         this.isSubmitting = true;
         setTimeout(() => {
           this.quizForm.submit();
-        }, 1800);
+        }, 1500);
       }
     }
 
     updateSlider() {
       this.blocks.forEach((block, index) => {
         if (index === this.currentSlide) {
-          block.classList.add("active");
+          block.style.display = "block";
         } else {
-          block.classList.remove("active");
+          block.style.display = "none";
         }
       });
 
       if (this.btnPrev) this.btnPrev.disabled = this.currentSlide === 0;
-      if (this.btnNext)
-        this.btnNext.disabled = this.currentSlide === this.totalSlides - 1;
+
+      // Handle Next / Submit Button display
+      const isLastSlide = this.currentSlide === this.totalSlides - 1;
+      if (this.btnNext && this.btnSubmit) {
+        if (isLastSlide) {
+          this.btnNext.style.display = "none";
+          this.btnSubmit.style.display = "inline-flex";
+        } else {
+          this.btnNext.style.display = "inline-flex";
+          this.btnSubmit.style.display = "none";
+        }
+      }
 
       this.pageButtons.forEach((btn, index) => {
-        if (index === this.currentSlide) {
-          btn.classList.add("active");
+        const isCurrent = index === this.currentSlide;
+        const isAnswered = btn.classList.contains("answered");
+
+        if (isCurrent) {
+          btn.style.outline = "2px solid #18181B";
+          btn.style.outlineOffset = "2px";
         } else {
-          btn.classList.remove("active");
+          btn.style.outline = "none";
+        }
+
+        if (isAnswered) {
+          btn.style.backgroundColor = "#18181B";
+          btn.style.borderColor = "#18181B";
+          btn.style.color = "#FFFFFF";
+        } else {
+          btn.style.backgroundColor = "#FFFFFF";
+          btn.style.borderColor = "#E5E7EB";
+          btn.style.color = "#18181B";
         }
       });
     }
 
-    checkSubmitReadiness() {
-      const answeredCount = document.querySelectorAll(
-        '.options-list input[type="radio"]:checked',
-      ).length;
-
-      if (this.btnSubmit) {
-        if (answeredCount === this.totalSlides) {
-          this.btnSubmit.disabled = false;
-          this.btnSubmit.style.opacity = "1";
-          this.btnSubmit.style.cursor = "pointer";
-        } else {
-          this.btnSubmit.disabled = true;
-          this.btnSubmit.style.opacity = "0.5";
-          this.btnSubmit.style.cursor = "not-allowed";
-        }
-      }
-
+    updateAnsweredStatus() {
       this.blocks.forEach((block, index) => {
-        const radioChecked = block.querySelector(
-          '.options-list input[type="radio"]:checked',
-        );
+        const checked = block.querySelector('input[type="radio"]:checked');
         const pageBtn = document.querySelector(
-          `.page-number[data-slide="${index}"]`,
+          `.page-number[data-index="${index}"]`,
         );
         if (pageBtn) {
-          if (radioChecked) {
+          if (checked) {
             pageBtn.classList.add("answered");
           } else {
             pageBtn.classList.remove("answered");
@@ -201,30 +213,13 @@
     }
 
     bindEvents() {
-      // Option click visual update
-      document.querySelectorAll(".option-label").forEach((label) => {
-        label.addEventListener("click", () => {
-          const block = label.closest(".question-block");
-          if (block) {
-            block
-              .querySelectorAll(".option-label")
-              .forEach((el) => el.classList.remove("selected"));
-            label.classList.add("selected");
-          }
-        });
-      });
-
-      // Radio input change
-      document
-        .querySelectorAll('.options-list input[type="radio"]')
-        .forEach((radio) => {
-          radio.addEventListener("change", () => this.checkSubmitReadiness());
-        });
-
-      // Pagination buttons
+      // Pagination numbers click
       this.pageButtons.forEach((btn) => {
         btn.addEventListener("click", () => {
-          const target = parseInt(btn.getAttribute("data-slide"), 10);
+          const target = parseInt(
+            btn.getAttribute("data-index") || btn.getAttribute("data-slide"),
+            10,
+          );
           if (!isNaN(target) && target >= 0 && target < this.totalSlides) {
             this.currentSlide = target;
             this.updateSlider();
@@ -250,6 +245,30 @@
         });
       }
 
+      // Pause Modal Handling
+      if (this.btnPause && this.pauseDialog) {
+        this.btnPause.addEventListener("click", () => {
+          this.pauseDialog.style.display = "flex";
+        });
+      }
+
+      if (this.btnCancelPause && this.pauseDialog) {
+        this.btnCancelPause.addEventListener("click", () => {
+          this.pauseDialog.style.display = "none";
+        });
+      }
+
+      if (this.btnConfirmPause && this.quizForm) {
+        this.btnConfirmPause.addEventListener("click", () => {
+          this.isSubmitting = true;
+          localStorage.removeItem(this.storageKey);
+
+          // Submit to pause route
+          this.quizForm.action = `${window.BASE_URL}/quiz/pause/${this.quizId}`;
+          this.quizForm.submit();
+        });
+      }
+
       if (this.quizForm) {
         this.quizForm.addEventListener("submit", () => {
           this.isSubmitting = true;
@@ -266,7 +285,7 @@
   }
 
   document.addEventListener("DOMContentLoaded", () => {
-    const config = window.NetQuizData || {};
+    const config = window.QUIZ_PLAYER_CONFIG || window.NetQuizData || {};
     window.quizPlayer = new NetQuizPlayer(config);
   });
 })();
