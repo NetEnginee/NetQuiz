@@ -123,6 +123,7 @@ $router->get('/quiz/result/{id}', [\App\Controllers\QuizController::class, 'resu
 $router->get('/quiz/review/{id}', [\App\Controllers\QuizController::class, 'review']);
 $router->get('/learn', [\App\Controllers\LearnController::class, 'index']);
 $router->get('/learn/{id}', [\App\Controllers\LearnController::class, 'viewMaterial']);
+$router->get('/settings', [\App\Controllers\SettingsController::class, 'index']);
 
 // Admin Console Routes
 $router->get('/admin', [\App\Controllers\AdminController::class, 'index']);
