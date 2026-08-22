@@ -704,22 +704,26 @@ function renderQuizSection() {
       description: "Ujian pemahaman dasar routing OSPF dan gateway.",
       questions: [
         {
-          question: "Protokol routing manakah yang menggunakan algoritma link-state?",
+          question:
+            "Protokol routing manakah yang menggunakan algoritma link-state?",
           option_a: "RIP",
           option_b: "OSPF",
           option_c: "BGP",
           option_d: "Static Route",
           correct: "B",
-          explanation: "OSPF (Open Shortest Path First) menggunakan algoritma link-state (Dijkstra).",
+          explanation:
+            "OSPF (Open Shortest Path First) menggunakan algoritma link-state (Dijkstra).",
         },
         {
-          question: "Berapakah nilai default administrative distance untuk OSPF pada RouterOS?",
+          question:
+            "Berapakah nilai default administrative distance untuk OSPF pada RouterOS?",
           option_a: "110",
           option_b: "120",
           option_c: "90",
           option_d: "200",
           correct: "A",
-          explanation: "Nilai default administrative distance untuk OSPF pada RouterOS adalah 110.",
+          explanation:
+            "Nilai default administrative distance untuk OSPF pada RouterOS adalah 110.",
         },
       ],
     };
@@ -783,7 +787,9 @@ function renderQuizSection() {
           }
 
           if (questionsArray.length === 0) {
-            throw new Error("File JSON tidak memiliki butir pertanyaan yang valid.");
+            throw new Error(
+              "File JSON tidak memiliki butir pertanyaan yang valid.",
+            );
           }
 
           // Clear repeater and populate new questions
@@ -795,12 +801,7 @@ function renderQuizSection() {
               const optB = item.option_b || item.pilihan_b || item.b || "";
               const optC = item.option_c || item.pilihan_c || item.c || "";
               const optD = item.option_d || item.pilihan_d || item.d || "";
-              let correct = (
-                item.correct ||
-                item.kunci ||
-                item.jawaban ||
-                "A"
-              )
+              let correct = (item.correct || item.kunci || item.jawaban || "A")
                 .toUpperCase()
                 .trim();
               if (!["A", "B", "C", "D"].includes(correct)) correct = "A";
@@ -808,7 +809,9 @@ function renderQuizSection() {
                 item.explanation || item.pembahasan || item.penjelasan || "";
 
               const block = createQuestionBlock(idx);
-              const qInput = block.querySelector('textarea[name*="[question]"]');
+              const qInput = block.querySelector(
+                'textarea[name*="[question]"]',
+              );
               const aInput = block.querySelector('input[name*="[option_a]"]');
               const bInput = block.querySelector('input[name*="[option_b]"]');
               const cInput = block.querySelector('input[name*="[option_c]"]');
@@ -829,9 +832,12 @@ function renderQuizSection() {
               if (exp && expInput) {
                 expInput.value = exp;
                 const extraContent = block.querySelector(".q-extra-content");
-                const extraLabel = block.querySelector('[id^="q-extra-label-"]');
+                const extraLabel = block.querySelector(
+                  '[id^="q-extra-label-"]',
+                );
                 if (extraContent) extraContent.style.display = "block";
-                if (extraLabel) extraLabel.textContent = "- Sembunyikan Pembahasan";
+                if (extraLabel)
+                  extraLabel.textContent = "- Sembunyikan Pembahasan";
               }
 
               repeaterStack.appendChild(block);
@@ -972,326 +978,126 @@ function renderQuizSection() {
 }
 
 // ==========================================================================
-// 4. MODUL 2: DAFTARKAN MEMBER (High-Precision Form & Recent Feed)
+// 4. MODUL 2: DAFTARKAN MEMBER (Focused Single Registration Form)
 // ==========================================================================
 function renderMemberSection() {
   const sec = document.getElementById("member-section");
   if (!sec) return;
 
-  const rawMembers = Array.isArray(window.NETQUIZ_MEMBERS)
-    ? window.NETQUIZ_MEMBERS
-    : [];
-  const recentMembers = rawMembers.slice(0, 5);
-
   sec.innerHTML = `
-        <div class="member-provision-stack">
-            <!-- 1. Formulir Pendaftaran Siswa Card -->
-            <div class="supabase-panel-card">
-                <!-- Precision Corner Crosshairs -->
-                <span class="corner-crosshair corner-tl">+</span>
-                <span class="corner-crosshair corner-tr">+</span>
-                <span class="corner-crosshair corner-bl">+</span>
-                <span class="corner-crosshair corner-br">+</span>
+        <div class="supabase-panel-card" style="max-width: 800px; margin: 0 auto 2rem 0;">
+            <!-- Precision Corner Crosshairs -->
+            <span class="corner-crosshair corner-tl">+</span>
+            <span class="corner-crosshair corner-tr">+</span>
+            <span class="corner-crosshair corner-bl">+</span>
+            <span class="corner-crosshair corner-br">+</span>
 
-                <form action="${window.BASE_URL}/admin/users/create" method="POST" id="register-member-form">
-                    <input type="hidden" name="csrf_token" value="${window.CSRF_TOKEN || ""}">
-                    
-                    <div class="provision-form-grid">
-                        <!-- Field 1: Username -->
-                        <div class="form-field-group" style="margin-bottom: 0;">
-                            <div class="provision-field-header">
-                                <label class="form-field-label" style="margin: 0;">Username Siswa</label>
-                                <span class="font-mono text-muted" style="font-size: 0.7rem;">Wajib</span>
-                            </div>
-                            <input type="text" class="form-field-input" name="username" id="reg-username" placeholder="budi_santoso" required autocomplete="off">
-                        </div>
+            <form action="${window.BASE_URL}/admin/users/create" method="POST" id="register-member-form" style="padding: 1.75rem;">
+                <input type="hidden" name="csrf_token" value="${window.CSRF_TOKEN || ""}">
+                
+                <!-- Section Header -->
+                <div style="margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid #E5E7EB;">
+                    <h3 style="font-family: var(--font-heading); font-size: 1.15rem; font-weight: 800; color: #18181B; margin: 0;">Daftarkan Member Baru</h3>
+                    <p style="font-size: 0.825rem; color: #71717A; margin-top: 0.25rem;">Buat akun anggota baru untuk mengakses kuis dan materi pembelajaran.</p>
+                </div>
 
-                        <!-- Field 2: Email -->
-                        <div class="form-field-group" style="margin-bottom: 0;">
-                            <div class="provision-field-header">
-                                <label class="form-field-label" style="margin: 0;">Alamat Email</label>
-                                <span class="font-mono text-muted" style="font-size: 0.7rem;">Wajib</span>
-                            </div>
-                            <input type="email" class="form-field-input" name="email" id="reg-email" placeholder="budi@sekolah.sch.id" required autocomplete="off">
-                        </div>
-
-                        <!-- Field 3: Kata Sandi -->
-                        <div class="form-field-group" style="margin-bottom: 0;">
-                            <div class="provision-field-header">
-                                <label class="form-field-label" style="margin: 0;">Kata Sandi Akses</label>
-                                <button type="button" class="btn-inline-generate" id="btn-generate-pw" title="Buat password acak">
-                                    <i data-lucide="key" style="width: 12px; height: 12px;"></i>
-                                    <span>Acak Sandi</span>
-                                </button>
-                            </div>
-                            <div class="password-input-wrapper">
-                                <input type="password" class="form-field-input" name="password" id="reg-password" placeholder="Minimal 8 karakter" required minlength="8">
-                                <button type="button" class="btn-toggle-password" data-target="reg-password" title="Lihat/Sembunyikan Kata Sandi">
-                                    <i data-lucide="eye" style="width: 15px; height: 15px;"></i>
-                                </button>
-                            </div>
-                            <div id="password-strength-bar" class="password-strength-container" style="margin-top: 0.4rem;">
-                                <div class="password-strength-track">
-                                    <div id="password-strength-fill" class="password-strength-fill"></div>
-                                </div>
-                                <span id="password-strength-text" class="password-strength-text"></span>
-                            </div>
-                        </div>
-
-                        <!-- Field 4: Konfirmasi Kata Sandi -->
-                        <div class="form-field-group" style="margin-bottom: 0;">
-                            <div class="provision-field-header">
-                                <label class="form-field-label" style="margin: 0;">Konfirmasi Kata Sandi</label>
-                                <span id="password-match-msg" class="password-match-msg font-mono" style="font-size: 0.7rem;"></span>
-                            </div>
-                            <div class="password-input-wrapper">
-                                <input type="password" class="form-field-input" name="confirm_password" id="reg-confirm-password" placeholder="Ulangi kata sandi" required minlength="8">
-                                <button type="button" class="btn-toggle-password" data-target="reg-confirm-password" title="Lihat/Sembunyikan Kata Sandi">
-                                    <i data-lucide="eye" style="width: 15px; height: 15px;"></i>
-                                </button>
-                            </div>
-                        </div>
+                <!-- 2x2 Form Grid -->
+                <div class="form-grid-2col" style="margin-bottom: 1.25rem;">
+                    <!-- Field 1: Username -->
+                    <div class="form-field-group">
+                        <label class="form-field-label">Username</label>
+                        <input type="text" class="form-field-input" name="username" id="reg-username" placeholder="budi_santoso" required autocomplete="off">
                     </div>
 
-                    <!-- Footer Bar -->
-                    <div class="provision-footer">
-                        <span class="provision-footer-note font-mono">Akun berstatus aktif dan dapat langsung digunakan login.</span>
-                        <div style="display: flex; gap: 0.5rem;">
-                            <button type="reset" class="btn-secondary-outline" id="btn-reset-member-form">Batal</button>
-                            <button type="submit" class="btn-primary-black" id="btn-submit-member">
-                                <i data-lucide="user-plus" style="width: 14px; height: 14px;"></i>
-                                <span>Daftarkan Siswa</span>
+                    <!-- Field 2: Email -->
+                    <div class="form-field-group">
+                        <label class="form-field-label">Email</label>
+                        <input type="email" class="form-field-input" name="email" id="reg-email" placeholder="budi@sekolah.sch.id" required autocomplete="off">
+                    </div>
+                </div>
+
+                <div class="form-grid-2col" style="margin-bottom: 1.75rem;">
+                    <!-- Field 3: Password -->
+                    <div class="form-field-group">
+                        <label class="form-field-label">Password</label>
+                        <div class="password-input-wrapper">
+                            <input type="password" class="form-field-input" name="password" id="reg-password" placeholder="Minimal 8 karakter" required minlength="8">
+                            <button type="button" class="btn-toggle-password" data-target="reg-password" title="Lihat/Sembunyikan Password">
+                                <i data-lucide="eye" style="width: 15px; height: 15px;"></i>
                             </button>
                         </div>
                     </div>
-                </form>
-            </div>
 
-            <!-- 2. Recent Registered Members Feed -->
-            <div class="supabase-panel-card">
-                <!-- Precision Corner Crosshairs -->
-                <span class="corner-crosshair corner-tl">+</span>
-                <span class="corner-crosshair corner-tr">+</span>
-                <span class="corner-crosshair corner-bl">+</span>
-                <span class="corner-crosshair corner-br">+</span>
-
-                <div class="recent-members-header">
-                    <span class="recent-members-title">
-                        <i data-lucide="users" style="width: 15px; height: 15px; color: #71717A;"></i>
-                        <span>Member Terdaftar Terbaru (${recentMembers.length})</span>
-                    </span>
-                    <a href="#manage-section" class="btn-inline-generate" onclick="const b=document.querySelector('.sidebar-menu-btn[data-target=manage-section]'); if(b) b.click();">
-                        <span>Lihat Semua Member &rarr;</span>
-                    </a>
+                    <!-- Field 4: Konfirmasi Password -->
+                    <div class="form-field-group">
+                        <label class="form-field-label">Konfirmasi Password</label>
+                        <div class="password-input-wrapper">
+                            <input type="password" class="form-field-input" name="confirm_password" id="reg-confirm-password" placeholder="Ulangi password" required minlength="8">
+                            <button type="button" class="btn-toggle-password" data-target="reg-confirm-password" title="Lihat/Sembunyikan Password">
+                                <i data-lucide="eye" style="width: 15px; height: 15px;"></i>
+                            </button>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="panel-table-container">
-                    <table class="supabase-data-table">
-                        <thead>
-                            <tr>
-                                <th>MEMBER</th>
-                                <th style="width: 130px;">ROLE</th>
-                                <th style="width: 110px;">STATUS</th>
-                                <th style="width: 150px;">TANGGAL BERGABUNG</th>
-                                <th style="text-align: right; width: 110px;">AKSI</th>
-                            </tr>
-                        </thead>
-                        <tbody id="recent-members-tbody">
-                            ${
-                              recentMembers.length === 0
-                                ? `
-                                <tr>
-                                    <td colspan="5" style="text-align: center; color: #71717A; padding: 2rem;">Belum ada member terdaftar.</td>
-                                </tr>
-                            `
-                                : recentMembers
-                                    .map((m) => {
-                                      const initials = getInitials(
-                                        m.username || m.email,
-                                      );
-                                      const role =
-                                        m.role ||
-                                        (m.email.includes("admin")
-                                          ? "Administrator"
-                                          : "Siswa");
-                                      const dateStr = formatDate(m.created_at);
-                                      const avatarColorClass = getAvatarBgClass(
-                                        m.id || 1,
-                                      );
-                                      const status = m.status || "Aktif";
-                                      const statusClass =
-                                        status === "Aktif"
-                                          ? "status-active"
-                                          : "status-inactive";
-                                      const safeUsername = escapeHtml(
-                                        m.username,
-                                      ).replace(/'/g, "\\'");
-                                      const safeEmail = escapeHtml(
-                                        m.email,
-                                      ).replace(/'/g, "\\'");
-
-                                      return `
-                                    <tr>
-                                        <td>
-                                            <div class="member-user-cell">
-                                                <div class="member-avatar ${avatarColorClass} font-mono">${escapeHtml(initials)}</div>
-                                                <div class="member-user-info">
-                                                    <span class="member-name">${escapeHtml(m.username)}</span>
-                                                    <span class="member-email font-mono">${escapeHtml(m.email)}</span>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td><span class="role-pill ${role === "Administrator" ? "role-admin" : ""}">${escapeHtml(role)}</span></td>
-                                        <td><span class="status-badge ${statusClass}">${escapeHtml(status)}</span></td>
-                                        <td class="font-mono text-muted">${escapeHtml(dateStr)}</td>
-                                        <td style="text-align: right;">
-                                            <div class="table-actions-group">
-                                                <button type="button" class="btn-icon-action" title="Salin Email" onclick="navigator.clipboard.writeText('${safeEmail}'); showGeistToast('success', 'Email Tersalin', '${safeEmail}');">
-                                                    <i data-lucide="copy"></i>
-                                                </button>
-                                                <button type="button" class="btn-icon-action" title="Edit Member" onclick="const b=document.querySelector('.sidebar-menu-btn[data-target=manage-section]'); if(b) b.click(); setTimeout(() => openEditMemberModal(${m.id}, '${safeUsername}', '${safeEmail}'), 100);">
-                                                    <i data-lucide="pencil"></i>
-                                                </button>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                `;
-                                    })
-                                    .join("")
-                            }
-                        </tbody>
-                    </table>
+                <!-- Footer Action Bar -->
+                <div style="display: flex; align-items: center; justify-content: flex-end; gap: 0.75rem; padding-top: 1.25rem; border-top: 1px solid #E5E7EB;">
+                    <button type="reset" class="btn-secondary-outline" style="padding: 0.5rem 1rem;">Batal</button>
+                    <button type="submit" class="btn-primary-black" id="btn-submit-member" style="padding: 0.5rem 1.25rem; display: inline-flex; align-items: center; gap: 0.4rem;">
+                        <i data-lucide="user-plus" style="width: 15px; height: 15px;"></i>
+                        <span>Daftarkan Member</span>
+                    </button>
                 </div>
-            </div>
+            </form>
         </div>
     `;
 
   const regPwdInput = document.getElementById("reg-password");
   const confirmPwdInput = document.getElementById("reg-confirm-password");
-  const strengthFill = document.getElementById("password-strength-fill");
-  const strengthText = document.getElementById("password-strength-text");
-  const matchMsg = document.getElementById("password-match-msg");
-  const btnGenPw = document.getElementById("btn-generate-pw");
   const regForm = document.getElementById("register-member-form");
 
-  // 1-Click Password Generator
-  if (btnGenPw && regPwdInput && confirmPwdInput) {
-    btnGenPw.addEventListener("click", () => {
-      const chars =
-        "abcdefghjkmnpqrstuvwxyzABCDEFGHJKMNPQRSTUVWXYZ23456789!@#$%&*";
-      let generated = "";
-      for (let i = 0; i < 12; i++) {
-        generated += chars.charAt(Math.floor(Math.random() * chars.length));
-      }
-      regPwdInput.type = "text";
-      confirmPwdInput.type = "text";
-      regPwdInput.value = generated;
-      confirmPwdInput.value = generated;
-
-      // Trigger strength calculation
-      regPwdInput.dispatchEvent(new Event("input"));
-      checkPasswordMatch();
-
-      // Copy to clipboard
-      if (navigator.clipboard) {
-        navigator.clipboard.writeText(generated).catch(() => {});
-      }
-
-      showGeistToast(
-        "info",
-        "Password Dibuat",
-        `Password acak tersalin ke clipboard.`,
-      );
-    });
+  // Bind Eye Toggles
+  if (window.bindPasswordToggles) {
+    window.bindPasswordToggles();
   }
 
-  // Password Strength Indicator
-  if (regPwdInput && strengthFill && strengthText) {
-    regPwdInput.addEventListener("input", function () {
-      const val = this.value;
-      let score = 0;
-      if (val.length >= 1) score++;
-      if (val.length >= 8) score++;
-      if (/[a-z]/.test(val) && /[A-Z]/.test(val)) score++;
-      if (/[0-9]/.test(val)) score++;
-      if (/[^a-zA-Z0-9]/.test(val)) score++;
-
-      if (val.length === 0) {
-        strengthFill.style.width = "0%";
-        strengthFill.style.backgroundColor = "#E5E7EB";
-        strengthText.textContent = "";
-      } else if (score <= 2) {
-        strengthFill.style.width = "33%";
-        strengthFill.style.backgroundColor = "#EF4444";
-        strengthText.textContent = "Lemah";
-        strengthText.style.color = "#EF4444";
-      } else if (score <= 3) {
-        strengthFill.style.width = "66%";
-        strengthFill.style.backgroundColor = "#F59E0B";
-        strengthText.textContent = "Sedang";
-        strengthText.style.color = "#F59E0B";
-      } else {
-        strengthFill.style.width = "100%";
-        strengthFill.style.backgroundColor = "#10B981";
-        strengthText.textContent = "Kuat";
-        strengthText.style.color = "#10B981";
-      }
-      if (confirmPwdInput && confirmPwdInput.value.length > 0) {
-        checkPasswordMatch();
-      }
-    });
-  }
-
-  function checkPasswordMatch() {
-    if (!regPwdInput || !confirmPwdInput || !matchMsg) return;
-    const pwd = regPwdInput.value;
-    const cfm = confirmPwdInput.value;
-    if (cfm.length === 0) {
-      matchMsg.textContent = "";
-      return;
-    }
-    if (pwd === cfm) {
-      matchMsg.textContent = "✓ Cocok";
-      matchMsg.style.color = "#10B981";
-    } else {
-      matchMsg.textContent = "✗ Tidak cocok";
-      matchMsg.style.color = "#EF4444";
-    }
-  }
-
-  if (confirmPwdInput) {
-    confirmPwdInput.addEventListener("input", checkPasswordMatch);
-  }
-
-  // Form Submit Handling
+  // Form Submit Validation
   if (regForm) {
     regForm.addEventListener("submit", (e) => {
       const pwd = regPwdInput ? regPwdInput.value : "";
       const cfm = confirmPwdInput ? confirmPwdInput.value : "";
       if (pwd !== cfm) {
         e.preventDefault();
-        showGeistToast(
-          "error",
-          "Validasi Gagal",
-          "Kata sandi dan konfirmasi kata sandi tidak cocok!",
-        );
+        if (window.showGeistToast) {
+          showGeistToast(
+            "error",
+            "Validasi Gagal",
+            "Password dan Konfirmasi Password tidak cocok!",
+          );
+        } else {
+          alert("Password dan Konfirmasi Password tidak cocok!");
+        }
         if (confirmPwdInput) confirmPwdInput.focus();
         return false;
       }
       if (pwd.length < 8) {
         e.preventDefault();
-        showGeistToast(
-          "error",
-          "Validasi Gagal",
-          "Kata sandi minimal harus 8 karakter!",
-        );
+        if (window.showGeistToast) {
+          showGeistToast(
+            "error",
+            "Password Terlalu Pendek",
+            "Password minimal harus 8 karakter.",
+          );
+        } else {
+          alert("Password minimal harus 8 karakter.");
+        }
         if (regPwdInput) regPwdInput.focus();
         return false;
       }
     });
   }
 
-  bindPasswordToggles();
+  if (window.lucide) window.lucide.createIcons();
 }
 
 // ==========================================================================
