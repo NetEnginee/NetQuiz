@@ -1518,6 +1518,9 @@ function renderMaterialsSection() {
 
                     <!-- Editor Box -->
                     <div id="material-editor-wrapper">
+                        <!-- Hidden JSON File Input for Material Upload -->
+                        <input type="file" id="import-material-json-input" accept=".json,application/json" style="display: none;">
+
                         <div class="editor-quick-toolbar" style="display: flex; align-items: center; gap: 4px; padding: 6px 8px; background-color: #F4F4F5; border: 1px solid #E5E7EB; border-bottom: none; border-top-left-radius: 8px; border-top-right-radius: 8px; flex-wrap: wrap;">
                             <button type="button" class="toolbar-btn" onclick="insertHtmlTag('<h2>', '</h2>')" title="Heading 2">H2</button>
                             <button type="button" class="toolbar-btn" onclick="insertHtmlTag('<h3>', '</h3>')" title="Heading 3">H3</button>
@@ -1525,10 +1528,17 @@ function renderMaterialsSection() {
                             <button type="button" class="toolbar-btn" onclick="insertHtmlTag('<em>', '</em>')" title="Italic"><i>I</i></button>
                             <button type="button" class="toolbar-btn" onclick="insertHtmlTag('<pre><code>', '</code></pre>')" title="Blok Perintah CLI RouterOS">&lt;/&gt; CLI</button>
                             <button type="button" class="toolbar-btn" onclick="insertHtmlTag('<ul>\n  <li>', '</li>\n</ul>')" title="Daftar List">• List</button>
-                            <button type="button" class="toolbar-btn" onclick="downloadJsonTemplate()" title="Unduh Template JSON" style="margin-left: auto; font-size: 0.75rem; display: inline-flex; align-items: center; gap: 4px;">
-                                <i data-lucide="download" style="width: 12px; height: 12px;"></i>
-                                <span>Template JSON</span>
-                            </button>
+                            
+                            <div style="margin-left: auto; display: flex; align-items: center; gap: 4px;">
+                                <button type="button" class="toolbar-btn" onclick="downloadJsonTemplate()" title="Unduh Template JSON" style="font-size: 0.75rem; display: inline-flex; align-items: center; gap: 4px;">
+                                    <i data-lucide="download" style="width: 12px; height: 12px;"></i>
+                                    <span>Template JSON</span>
+                                </button>
+                                <button type="button" class="toolbar-btn" onclick="document.getElementById('import-material-json-input').click()" title="Upload Materi format JSON" style="font-size: 0.75rem; display: inline-flex; align-items: center; gap: 4px;">
+                                    <i data-lucide="upload" style="width: 12px; height: 12px;"></i>
+                                    <span>Upload JSON</span>
+                                </button>
+                            </div>
                         </div>
                         <div class="form-field-group" style="margin-bottom: 0;">
                             <textarea class="form-field-input" name="content" id="material-content-textarea" rows="8" placeholder="Tuliskan isi artikel materi panduan konfigurasi atau gunakan toolbar di atas..." required style="border-top-left-radius: 0; border-top-right-radius: 0; min-height: 200px; font-family: var(--font-body); font-size: 0.875rem; line-height: 1.6;"></textarea>
@@ -1722,6 +1732,68 @@ function renderMaterialsSection() {
       previewBox.innerHTML =
         rawContent.trim() ||
         '<p style="color: #71717A; font-style: italic;">Pratinjau kosong. Tulis isi materi terlebih dahulu.</p>';
+    });
+  }
+
+  // Handle JSON Material Upload & Autofill
+  const jsonMatUploadInput = document.getElementById(
+    "import-material-json-input",
+  );
+  if (jsonMatUploadInput) {
+    jsonMatUploadInput.addEventListener("change", function (e) {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function (evt) {
+        try {
+          const data = JSON.parse(evt.target.result);
+
+          if (!data || typeof data !== "object") {
+            throw new Error("Format JSON tidak valid.");
+          }
+
+          const titleInput = document.getElementById("material-input-title");
+          const catSelect = document.getElementById("material-input-category");
+          const diffSelect = document.getElementById(
+            "material-input-difficulty",
+          );
+          const contentArea = document.getElementById(
+            "material-content-textarea",
+          );
+
+          if (data.title && titleInput) titleInput.value = data.title;
+          if (data.category && catSelect) catSelect.value = data.category;
+          if (data.difficulty && diffSelect) diffSelect.value = data.difficulty;
+          if (data.content && contentArea) {
+            contentArea.value = data.content;
+            updateReadingTime();
+          }
+
+          if (window.showGeistToast) {
+            window.showGeistToast(
+              "success",
+              "Import Berhasil",
+              "Materi pembelajaran berhasil dimuat dari file JSON.",
+            );
+          } else {
+            alert("Materi pembelajaran berhasil dimuat dari file JSON.");
+          }
+        } catch (err) {
+          if (window.showGeistToast) {
+            window.showGeistToast(
+              "error",
+              "Gagal Membaca File",
+              "Gagal membaca file JSON: " + err.message,
+            );
+          } else {
+            alert("Gagal membaca file JSON: " + err.message);
+          }
+        } finally {
+          jsonMatUploadInput.value = "";
+        }
+      };
+      reader.readAsText(file);
     });
   }
 
