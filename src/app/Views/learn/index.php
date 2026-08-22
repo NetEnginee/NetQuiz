@@ -10,16 +10,6 @@ require_once dirname(__DIR__) . '/templates/header.php';
         <span class="breadcrumb-separator">/</span>
         <span class="breadcrumb-active">Materi Belajar</span>
     </nav>
-    <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;">
-        <div>
-            <h1 style="font-family: var(--font-heading); font-size: 1.5rem; font-weight: 800; color: #18181B; margin: 0 0 0.25rem 0; letter-spacing: -0.02em;">
-                Pusat Materi Pembelajaran MikroTik
-            </h1>
-            <p style="font-size: 0.875rem; color: #71717A; margin: 0;">
-                Kumpulan modul referensi, teori jaringan, dan panduan sintaks RouterOS CLI.
-            </p>
-        </div>
-    </div>
 </div>
 
 <?php if (empty($groupedMaterials)): ?>
@@ -74,7 +64,7 @@ require_once dirname(__DIR__) . '/templates/header.php';
                                 <h3 style="font-family: var(--font-heading); font-size: 1rem; font-weight: 800; color: #18181B; margin: 0 0 0.4rem 0; line-height: 1.35;">
                                     <?= htmlspecialchars($material['title']) ?>
                                 </h3>
-                                <p style="font-size: 0.825rem; color: #52525B; margin: 0 0 1rem 0; line-height: 1.45; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;">
+                                <p style="font-size: 0.825rem; color: #52525B; margin: 0 0 1rem 0; line-height: 1.45; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical;">
                                     <?= htmlspecialchars($cleanText) ?>
                                 </p>
                             </div>
