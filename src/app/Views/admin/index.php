@@ -260,7 +260,6 @@ $stats = $stats ?? [
                 <span class="floating-btn-icon-wrapper">
                     <i data-lucide="plus" class="floating-btn-icon"></i>
                 </span>
-                <span class="floating-btn-label">Buat Kuis</span>
             </button>
 
             <!-- 2. Daftarkan Member -->
@@ -268,7 +267,6 @@ $stats = $stats ?? [
                 <span class="floating-btn-icon-wrapper">
                     <i data-lucide="user-plus" class="floating-btn-icon"></i>
                 </span>
-                <span class="floating-btn-label">Daftar</span>
             </button>
 
             <!-- 3. Manajemen Member -->
@@ -277,7 +275,6 @@ $stats = $stats ?? [
                     <i data-lucide="users" class="floating-btn-icon"></i>
                     <span class="floating-counter-badge" id="floating-count-members">0</span>
                 </span>
-                <span class="floating-btn-label">Member</span>
             </button>
 
             <!-- 4. Materi Belajar -->
@@ -286,7 +283,6 @@ $stats = $stats ?? [
                     <i data-lucide="book-open" class="floating-btn-icon"></i>
                     <span class="floating-counter-badge" id="floating-count-materials">0</span>
                 </span>
-                <span class="floating-btn-label">Materi</span>
             </button>
 
             <!-- 5. Lencana -->
@@ -295,7 +291,6 @@ $stats = $stats ?? [
                     <i data-lucide="award" class="floating-btn-icon"></i>
                     <span class="floating-counter-badge" id="floating-count-badges">0</span>
                 </span>
-                <span class="floating-btn-label">Lencana</span>
             </button>
         </div>
     </nav>

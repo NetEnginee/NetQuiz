@@ -1286,15 +1286,14 @@ body {
 .floating-bottom-btn {
   background: transparent;
   border: 1px solid transparent;
-  border-radius: 9999px;
-  min-width: 48px;
-  height: 48px;
-  padding: 0 10px;
+  border-radius: 50%;
+  width: 46px;
+  height: 46px;
+  min-width: 46px;
+  padding: 0;
   display: inline-flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 2px;
   color: #52525b;
   cursor: pointer;
   outline: none;
@@ -1309,7 +1308,7 @@ body {
 }
 
 .floating-bottom-btn:active {
-  transform: scale(0.94);
+  transform: scale(0.92);
 }
 
 .floating-bottom-btn.active,
@@ -1317,8 +1316,8 @@ body {
   background-color: #18181b;
   color: #ffffff;
   border-color: #18181b;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-  transform: scale(1.04);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.22);
+  transform: scale(1.08);
 }
 
 .floating-bottom-btn.active:hover {
@@ -1334,24 +1333,15 @@ body {
 }
 
 .floating-btn-icon {
-  width: 18px;
-  height: 18px;
+  width: 20px;
+  height: 20px;
   stroke-width: 2.2;
-}
-
-.floating-btn-label {
-  font-family: var(--font-heading);
-  font-size: 0.65rem;
-  font-weight: 700;
-  letter-spacing: -0.01em;
-  line-height: 1;
-  white-space: nowrap;
 }
 
 .floating-counter-badge {
   position: absolute;
-  top: -6px;
-  right: -10px;
+  top: -4px;
+  right: -6px;
   min-width: 16px;
   height: 16px;
   padding: 0 4px;
@@ -1379,20 +1369,17 @@ body {
 
 @media (max-width: 380px) {
   .floating-nav-container {
-    gap: 4px;
-    padding: 4px 6px;
+    gap: 6px;
+    padding: 5px 8px;
   }
   .floating-bottom-btn {
-    min-width: 42px;
-    height: 44px;
-    padding: 0 6px;
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
   }
   .floating-btn-icon {
-    width: 16px;
-    height: 16px;
-  }
-  .floating-btn-label {
-    font-size: 0.6rem;
+    width: 18px;
+    height: 18px;
   }
 }
 
