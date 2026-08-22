@@ -156,8 +156,6 @@ $stats = $stats ?? [
                                 <li class="breadcrumb-item active" aria-current="page" id="breadcrumb-active-title">Buat Kuis</li>
                             </ol>
                         </nav>
-                        <h1 id="page-header-title" class="admin-page-title">Buat Kuis</h1>
-                        <p id="page-header-desc" class="admin-page-desc">Kelola dan buat kuis serta pertanyaan ujian MikroTik.</p>
                     </div>
                     <div id="page-header-action-container" class="page-header-action-group">
                         <!-- Dynamic page primary action button rendered here -->
