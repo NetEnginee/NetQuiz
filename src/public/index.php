@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 // 1. Session Configuration & Hardening
@@ -66,10 +67,12 @@ define('PUBLIC_ROOT', __DIR__);
 
 // 5. Centralized Error & Exception Handler
 use App\Core\ErrorHandler;
+
 ErrorHandler::register(dirname(__DIR__) . '/logs/php_errors.log', false);
 
 // 6. Security Headers
 use App\Core\Security;
+
 Security::setSecurityHeaders();
 Security::allowBFCache();
 
