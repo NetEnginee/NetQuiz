@@ -2,353 +2,205 @@
 $quiz = $quiz ?? [
     'id' => 0,
     'title' => 'Kuis',
+    'category' => 'MikroTik',
     'questions' => []
 ];
 $userAnswers = $userAnswers ?? [];
 $score = isset($score) ? (int) $score : 0;
+$questions = $quiz['questions'] ?? [];
+
 require_once dirname(__DIR__) . '/templates/header.php';
 ?>
 
-<!-- Custom Styles for Quiz -->
-<link rel="stylesheet" href="<?= BASE_URL ?>/css/quiz.css?v=<?= time() ?>">
-<style>
-    /* Premium Quiz UI Override */
-    .quiz-container {
-        max-width: 800px;
-        margin: 0 auto;
-        padding-bottom: 2rem;
-        animation: fadeIn 0.4s ease-out;
-    }
-
-    .play-card {
-        background: rgba(255, 255, 255, 0.7);
-        backdrop-filter: blur(12px);
-        -webkit-backdrop-filter: blur(12px);
-        border: 1px solid rgba(255, 255, 255, 0.5);
-        border-radius: 16px;
-        padding: 1.5rem 2rem;
-        box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.8);
-    }
-
-    .quiz-header {
-        text-align: center;
-        margin-bottom: 1rem;
-    }
-
-    .quiz-title {
-        font-size: 1.5rem;
-        font-weight: 800;
-        background: linear-gradient(135deg, #7c3aed 0%, #4f46e5 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        margin-bottom: 0.25rem;
-    }
-
-    .question-block {
-        display: none;
-        animation: fadeIn 0.4s ease-out;
-        min-height: 400px;
-    }
-
-    .question-block.active {
-        display: block;
-    }
-
-    .quiz-nav-container {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-top: 1rem;
-    }
-
-    .btn-nav {
-        background: #f1f5f9;
-        color: #475569;
-        border: none;
-        padding: 0.6rem 1.25rem;
-        font-size: 0.9rem;
-        font-weight: 700;
-        border-radius: 10px;
-        cursor: pointer;
-        transition: all 0.2s ease;
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
-    }
-
-    .btn-nav:hover:not(:disabled) {
-        background: #e2e8f0;
-        color: #0f172a;
-    }
-
-    .btn-nav:disabled {
-        opacity: 0.5;
-        cursor: not-allowed;
-    }
-
-    .question-text {
-        font-size: 1.05rem;
-        font-weight: 700;
-        color: #1e293b;
-        margin-bottom: 1rem;
-        line-height: 1.4;
-    }
-
-    .options-list {
-        display: flex;
-        flex-direction: column;
-        gap: 0.5rem;
-    }
-
-    .option-label {
-        position: relative;
-        display: flex;
-        align-items: center;
-        padding: 0.75rem 1rem;
-        border: 2px solid #f1f5f9;
-        border-radius: 10px;
-        background: #f8fafc;
-        font-weight: 500;
-        font-size: 0.9rem;
-        color: #475569;
-        cursor: default;
-    }
-
-    /* States for Review */
-    .option-label.correct-answer {
-        background: #ecfdf5;
-        border-color: #10b981;
-        color: #065f46;
-    }
-
-    .option-label.correct-answer strong {
-        background: #10b981;
-        color: #ffffff;
-    }
-
-    .option-label.wrong-answer {
-        background: #fef2f2;
-        border-color: #ef4444;
-        color: #991b1b;
-    }
-
-    .option-label.wrong-answer strong {
-        background: #ef4444;
-        color: #ffffff;
-    }
-
-    .option-label input[type="radio"] {
-        display: none;
-    }
-
-    .option-label strong {
-        margin-right: 0.5rem;
-        font-weight: 700;
-        color: inherit;
-        background: rgba(15, 23, 42, 0.1);
-        width: 24px;
-        height: 24px;
-        font-size: 0.85rem;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: 6px;
-    }
-
-    @keyframes fadeIn {
-        from {
-            opacity: 0;
-            transform: translateY(10px);
-        }
-
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-
-    .btn-back {
-        background: #f1f5f9;
-        color: #475569;
-        border: none;
-        padding: 0.6rem 1.25rem;
-        font-size: 0.9rem;
-        font-weight: 700;
-        border-radius: 10px;
-        cursor: pointer;
-        transition: all 0.2s ease;
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
-        text-decoration: none;
-    }
-
-    .btn-back:hover {
-        background: #e2e8f0;
-        color: #0f172a;
-    }
-
-    /* Quiz Pagination Styles */
-    .quiz-pagination {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.5rem;
-        justify-content: flex-start;
-        margin-top: 1.5rem;
-        background: rgba(255, 255, 255, 0.7);
-        backdrop-filter: blur(12px);
-        -webkit-backdrop-filter: blur(12px);
-        border: 1px solid rgba(255, 255, 255, 0.5);
-        border-radius: 16px;
-        padding: 1rem 1.5rem;
-        box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.8);
-    }
-
-    .page-number {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        width: 36px;
-        height: 36px;
-        border-radius: 8px;
-        font-size: 0.9rem;
-        font-weight: 700;
-        cursor: pointer;
-        transition: all 0.2s ease;
-        border: 2px solid #e2e8f0;
-        background: #f8fafc;
-        color: #64748b;
-    }
-
-    .page-number.active {
-        border-color: #7c3aed;
-        color: #7c3aed;
-        box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.15);
-    }
-
-    .page-number:hover {
-        transform: translateY(-1px);
-        background: #f1f5f9;
-        border-color: #cbd5e1;
-        color: #0f172a;
-    }
-</style>
-
-<div class="quiz-container">
-    <!-- Breadcrumb Navigation -->
-    <nav class="breadcrumb"
-        style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem; font-size: 0.85rem; font-weight: 500; color: #64748b; font-family: 'Plus Jakarta Sans', sans-serif;">
-        <span style="color: #64748b;">Dashboard</span>
-        <span style="color: #cbd5e1;">/</span>
-        <span style="color: #64748b;">Quiz</span>
-        <span style="color: #cbd5e1;">/</span>
-        <span style="color: #0f172a; font-weight: 600;">Review: <?= htmlspecialchars($quiz['title']) ?></span>
-    </nav>
-
-    <div class="play-card">
-        <div class="quiz-header">
-            <h1 class="quiz-title">Review Kuis</h1>
-            <p style="color: #64748b; font-size: 1rem; font-weight: 600; margin: 0;">Skor Anda: <span
-                    style="color: #10b981; font-size: 1.25rem;"><?= $score ?></span> / 100</p>
+<!-- Quiz Review Container (Max Width 860px) -->
+<div style="max-width: 860px; margin: 0 auto;">
+    <!-- Breadcrumb Header -->
+    <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem;">
+        <div>
+            <nav class="admin-breadcrumb-nav" aria-label="Breadcrumb" style="margin-bottom: 0.25rem;">
+                <span class="breadcrumb-item">Katalog</span>
+                <span class="breadcrumb-separator">/</span>
+                <span class="breadcrumb-item"><?= htmlspecialchars($quiz['title']) ?></span>
+                <span class="breadcrumb-separator">/</span>
+                <span class="breadcrumb-active">Review Pembahasan</span>
+            </nav>
+            <h1 style="font-family: var(--font-heading); font-size: 1.35rem; font-weight: 800; color: #18181B; margin: 0;">
+                Pembahasan Soal & Jawaban
+            </h1>
         </div>
 
-        <?php foreach ($quiz['questions'] as $qIndex => $q): ?>
-            <?php
-            $rawAns = $userAnswers[$qIndex] ?? '';
-            if (is_array($rawAns)) {
-                $rawAns = $rawAns['answer'] ?? ($rawAns['user_answer'] ?? '');
-            }
-            $userAns = strtoupper((string)$rawAns);
-            $correctAns = strtoupper((string)($q['correct'] ?? ''));
-            ?>
-            <div class="question-block <?= $qIndex === 0 ? 'active' : '' ?>">
-                <div style="font-size: 0.9rem; font-weight: 700; color: #7c3aed; margin-bottom: 0.5rem;">Pertanyaan
-                    <?= ($qIndex + 1) ?> dari <?= count($quiz['questions']) ?>
-                </div>
-
-                <?php if (!empty($q['image_path'])): ?>
-                    <div style="margin: 0.5rem 0 1rem 0; text-align: left;">
-                        <img src="<?= BASE_URL ?>/<?= htmlspecialchars($q['image_path']) ?>" alt="Gambar Pertanyaan"
-                            style="max-width: 100%; max-height: 400px; height: auto; border-radius: 8px; border: 1px solid #e2e8f0; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
-                    </div>
-                <?php endif; ?>
-
-                <h3 class="question-text"><?= htmlspecialchars($q['question']) ?></h3>
-
-                <div class="options-list">
-                    <?php foreach ($q['options'] as $key => $optionText): ?>
-                        <?php
-                        $optClass = '';
-                        $iconHtml = '';
-                        if ($key === $correctAns) {
-                            $optClass = 'correct-answer'; // True answer is always green
-                            $iconHtml = '<i data-lucide="check" style="position: absolute; right: 1rem; color: #10b981; width: 1.25rem; height: 1.25rem;"></i>';
-                        } elseif ($key === $userAns && $userAns !== $correctAns) {
-                            $optClass = 'wrong-answer'; // User picked this wrong answer
-                            $iconHtml = '<i data-lucide="x" style="position: absolute; right: 1rem; color: #ef4444; width: 1.25rem; height: 1.25rem;"></i>';
-                        }
-                        ?>
-                        <label class="option-label <?= $optClass ?>">
-                            <span><strong><?= $key ?></strong> <?= htmlspecialchars($optionText) ?></span>
-                            <?= $iconHtml ?>
-                        </label>
-                    <?php endforeach; ?>
-                </div>
-
-                <?php if (!empty($q['explanation']) && $userAns !== $correctAns): ?>
-                    <div style="margin-top: 1rem; text-align: left;">
-                        <button type="button" class="btn-explanation" onclick="showExplanation(<?= $qIndex ?>)"
-                            style="background: rgba(124, 58, 237, 0.08); color: #7c3aed; border: 1px solid rgba(124, 58, 237, 0.2); padding: 0.5rem 1rem; border-radius: 8px; font-weight: 600; font-size: 0.85rem; cursor: pointer; display: inline-flex; align-items: center; gap: 0.5rem; transition: all 0.2s ease;">
-                            Lihat Penjelasan Jawaban
-                        </button>
-                    </div>
-                <?php endif; ?>
-
-                <?php if ($userAns === ''): ?>
-
-                <?php endif; ?>
+        <div style="display: flex; align-items: center; gap: 0.75rem;">
+            <div style="display: inline-flex; align-items: center; gap: 0.45rem; padding: 0.35rem 0.75rem; background-color: #18181B; color: #FFFFFF; border-radius: 6px; font-family: var(--font-mono); font-size: 0.85rem; font-weight: 700;">
+                <span>Skor: <?= (int)$score ?>%</span>
             </div>
-        <?php endforeach; ?>
-
-        <div class="quiz-nav-container">
-            <div style="display: flex; gap: 0.5rem;">
-                <button type="button" id="btn-prev" class="btn-nav" disabled>
-                    <i data-lucide="arrow-left" style="width: 1.2rem; height: 1.2rem;"></i>
-                </button>
-
-                <button type="button" id="btn-next" class="btn-nav">
-                    <i data-lucide="arrow-right" style="width: 1.2rem; height: 1.2rem;"></i>
-                </button>
-            </div>
-
-            <a href="<?= BASE_URL ?>/quiz" class="btn-back"
-                style="background: #fff1f2; color: #e11d48; border: 1px solid #ffe4e6;">
-                <i data-lucide="log-out" style="width: 1.2rem; height: 1.2rem;"></i>
-                Keluar
+            <a href="<?= BASE_URL ?>/quiz" class="btn-secondary-outline" style="font-size: 0.8rem; padding: 0.4rem 0.75rem;">
+                <i data-lucide="arrow-left" style="width: 13px; height: 13px;"></i>
+                <span>Kembali</span>
             </a>
         </div>
     </div>
 
-    <!-- Quiz Pagination -->
-    <div class="quiz-pagination">
-        <?php foreach ($quiz['questions'] as $qIndex => $q): ?>
-            <button type="button" class="page-number <?= $qIndex === 0 ? 'active' : '' ?>" data-slide="<?= $qIndex ?>">
-                <?= $qIndex + 1 ?>
+    <!-- MAIN REVIEW CARD -->
+    <div class="supabase-panel-card" style="padding: 2rem;">
+        <span class="corner-crosshair corner-tl">+</span>
+        <span class="corner-crosshair corner-tr">+</span>
+        <span class="corner-crosshair corner-bl">+</span>
+        <span class="corner-crosshair corner-br">+</span>
+
+        <!-- QUESTIONS CAROUSEL STACK -->
+        <div id="quiz-review-stack">
+            <?php foreach ($questions as $index => $q): ?>
+                <?php
+                $qNum = $index + 1;
+                $userAns = strtoupper((string)($userAnswers[$index] ?? ''));
+                $correctAns = strtoupper((string)($q['correct'] ?? ''));
+                $isCorrect = ($userAns !== '' && $userAns === $correctAns);
+                $options = $q['options'] ?? [
+                    'A' => $q['option_a'] ?? '',
+                    'B' => $q['option_b'] ?? '',
+                    'C' => $q['option_c'] ?? '',
+                    'D' => $q['option_d'] ?? ''
+                ];
+                ?>
+                <div class="question-block <?= $index === 0 ? 'active' : '' ?>" data-index="<?= $index ?>" style="<?= $index === 0 ? 'display: block;' : 'display: none;' ?>">
+                    <!-- Header -->
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.25rem; padding-bottom: 0.75rem; border-bottom: 1px solid #E5E7EB;">
+                        <span style="font-size: 0.8rem; font-weight: 800; color: #71717A; text-transform: uppercase; letter-spacing: 0.05em;">
+                            Pertanyaan <?= $qNum ?> dari <?= count($questions) ?>
+                        </span>
+                        <?php if ($isCorrect): ?>
+                            <span class="status-badge status-active" style="font-size: 0.75rem;">
+                                <i data-lucide="check" style="width: 12px; height: 12px; margin-right: 3px;"></i>
+                                Jawaban Anda Benar
+                            </span>
+                        <?php else: ?>
+                            <span class="status-badge" style="background-color: #FEE2E2; color: #991B1B; font-size: 0.75rem;">
+                                <i data-lucide="x" style="width: 12px; height: 12px; margin-right: 3px;"></i>
+                                <?= $userAns !== '' ? "Jawaban Anda Salah (Pilihan {$userAns})" : "Tidak Dijawab" ?>
+                            </span>
+                        <?php endif; ?>
+                    </div>
+
+                    <!-- Statement -->
+                    <div style="font-size: 1.05rem; font-weight: 700; color: #18181B; margin-bottom: 1.5rem; line-height: 1.5;">
+                        <?= nl2br(htmlspecialchars($q['question'])) ?>
+                    </div>
+
+                    <?php if (!empty($q['image_path'])): ?>
+                        <div style="margin-bottom: 1.5rem; border: 1px solid #E5E7EB; border-radius: 6px; overflow: hidden; max-height: 300px; display: flex; align-items: center; justify-content: center; background-color: #FAFAFA;">
+                            <img src="<?= BASE_URL ?>/<?= htmlspecialchars($q['image_path']) ?>" alt="Soal Gambar" style="max-width: 100%; max-height: 300px; object-fit: contain;">
+                        </div>
+                    <?php endif; ?>
+
+                    <!-- Options List -->
+                    <div style="display: flex; flex-direction: column; gap: 0.75rem; margin-bottom: 1.75rem;">
+                        <?php foreach (['A', 'B', 'C', 'D'] as $optKey): ?>
+                            <?php
+                            $optText = $options[$optKey] ?? '';
+                            $isThisCorrect = ($optKey === $correctAns);
+                            $isThisUserChoice = ($optKey === $userAns);
+
+                            $bgColor = '#FAFAFA';
+                            $borderColor = '#E5E7EB';
+                            $badgeBg = '#FFFFFF';
+                            $badgeColor = '#18181B';
+                            $badgeBorder = '#D4D4D8';
+
+                            if ($isThisCorrect) {
+                                $bgColor = '#F0FDF4';
+                                $borderColor = '#86EFAC';
+                                $badgeBg = '#16A34A';
+                                $badgeColor = '#FFFFFF';
+                                $badgeBorder = '#16A34A';
+                            } elseif ($isThisUserChoice && !$isCorrect) {
+                                $bgColor = '#FEF2F2';
+                                $borderColor = '#FCA5A5';
+                                $badgeBg = '#DC2626';
+                                $badgeColor = '#FFFFFF';
+                                $badgeBorder = '#DC2626';
+                            }
+                            ?>
+                            <div style="display: flex; align-items: center; gap: 1rem; padding: 0.85rem 1.15rem; background-color: <?= $bgColor ?>; border: 1px solid <?= $borderColor ?>; border-radius: 8px;">
+                                <div style="display: flex; align-items: center; justify-content: center; width: 26px; height: 26px; border-radius: 6px; border: 1px solid <?= $badgeBorder ?>; background-color: <?= $badgeBg ?>; color: <?= $badgeColor ?>; font-weight: 800; font-size: 0.8rem; font-family: var(--font-mono); flex-shrink: 0;">
+                                    <?= $optKey ?>
+                                </div>
+                                <span style="font-size: 0.9rem; font-weight: 500; color: #18181B; line-height: 1.4; flex: 1;">
+                                    <?= htmlspecialchars($optText) ?>
+                                </span>
+                                <?php if ($isThisCorrect): ?>
+                                    <span style="font-size: 0.725rem; font-weight: 700; color: #16A34A; text-transform: uppercase;">Kunci Benar</span>
+                                <?php elseif ($isThisUserChoice): ?>
+                                    <span style="font-size: 0.725rem; font-weight: 700; color: #DC2626; text-transform: uppercase;">Pilihan Anda</span>
+                                <?php endif; ?>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+
+                    <!-- Explanation Box -->
+                    <div style="padding: 1rem 1.25rem; background-color: #F4F4F5; border: 1px solid #E5E7EB; border-radius: 8px;">
+                        <div style="display: flex; align-items: center; gap: 0.45rem; margin-bottom: 0.35rem;">
+                            <i data-lucide="info" style="width: 14px; height: 14px; color: #18181B;"></i>
+                            <span style="font-size: 0.8rem; font-weight: 800; color: #18181B; text-transform: uppercase;">Penjelasan Jawaban:</span>
+                        </div>
+                        <p style="font-size: 0.85rem; color: #52525B; margin: 0; line-height: 1.5;">
+                            <?= !empty($q['explanation']) ? nl2br(htmlspecialchars($q['explanation'])) : 'Tidak ada penjelasan tambahan untuk butir soal ini.' ?>
+                        </p>
+                    </div>
+                </div>
+            <?php endforeach; ?>
+        </div>
+
+        <!-- NAVIGATION CONTROLS -->
+        <div style="display: flex; align-items: center; justify-content: space-between; padding-top: 1.25rem; margin-top: 1.5rem; border-top: 1px solid #E5E7EB;">
+            <button type="button" id="btn-prev" class="btn-secondary-outline" style="font-size: 0.85rem; padding: 0.5rem 1rem;">
+                <i data-lucide="arrow-left" style="width: 14px; height: 14px;"></i>
+                <span>Sebelumnya</span>
             </button>
-        <?php endforeach; ?>
+            <button type="button" id="btn-next" class="btn-primary-black" style="font-size: 0.85rem; padding: 0.5rem 1.15rem;">
+                <span>Selanjutnya</span>
+                <i data-lucide="arrow-right" style="width: 14px; height: 14px;"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- BOTTOM PAGINATION NUMBERS -->
+    <div class="supabase-panel-card" style="margin-top: 1.5rem; padding: 1.25rem;">
+        <span class="corner-crosshair corner-tl">+</span>
+        <span class="corner-crosshair corner-tr">+</span>
+        <span class="corner-crosshair corner-bl">+</span>
+        <span class="corner-crosshair corner-br">+</span>
+
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.85rem;">
+            <span style="font-size: 0.775rem; font-weight: 700; color: #71717A; text-transform: uppercase;">Daftar Soal</span>
+            <div style="display: flex; align-items: center; gap: 1rem; font-size: 0.75rem; color: #71717A;">
+                <span style="display: inline-flex; align-items: center; gap: 0.35rem;">
+                    <span style="width: 10px; height: 10px; border-radius: 2px; background-color: #16A34A; display: inline-block;"></span>
+                    <span>Benar</span>
+                </span>
+                <span style="display: inline-flex; align-items: center; gap: 0.35rem;">
+                    <span style="width: 10px; height: 10px; border-radius: 2px; background-color: #DC2626; display: inline-block;"></span>
+                    <span>Salah</span>
+                </span>
+            </div>
+        </div>
+
+        <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+            <?php foreach ($questions as $index => $q): ?>
+                <?php
+                $userAns = strtoupper((string)($userAnswers[$index] ?? ''));
+                $correctAns = strtoupper((string)($q['correct'] ?? ''));
+                $isCorrect = ($userAns !== '' && $userAns === $correctAns);
+                $btnColor = $isCorrect ? '#16A34A' : '#DC2626';
+                ?>
+                <button type="button" class="page-number font-mono <?= $index === 0 ? 'current' : '' ?>" data-index="<?= $index ?>" style="width: 36px; height: 36px; border-radius: 6px; border: 1px solid <?= $btnColor ?>; background-color: <?= $btnColor ?>; color: #FFFFFF; font-weight: 700; font-size: 0.8rem; cursor: pointer; transition: all 0.15s ease;">
+                    <?= $index + 1 ?>
+                </button>
+            <?php endforeach; ?>
+        </div>
     </div>
 </div>
 
-<!-- Expose PHP Variables securely to External JS -->
-<script>
-    window.NetQuizData = <?= json_encode([
-                                'explanations' => array_map(function ($q) {
-                                    return $q['explanation'] ?? '';
-                                }, is_array($quiz['questions'] ?? null) ? $quiz['questions'] : [])
-                            ], JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) ?>;
-</script>
-
-<!-- Load External Quiz Review Script -->
-<script src="<?= BASE_URL ?>/js/quiz-review.js?v=<?= time() ?>" defer></script>
+<!-- Reviewer JS Module -->
+<script src="<?= BASE_URL ?>/js/quiz-review.js?v=<?= time() ?>"></script>
 
 <?php require_once dirname(__DIR__) . '/templates/footer.php'; ?>
