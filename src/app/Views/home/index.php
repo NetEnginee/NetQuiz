@@ -24,6 +24,14 @@ require_once dirname(__DIR__) . '/templates/header.php';
         ['label' => 'Siswa', 'url' => BASE_URL . '/'],
         ['label' => 'Dashboard']
     ]) ?>
+    <div style="display: flex; align-items: center; gap: 0.5rem;">
+        <a href="<?= BASE_URL ?>/quiz" class="btn-primary-black" style="font-size: 0.825rem; padding: 0.4rem 0.85rem;">
+            <span>Mulai Kuis</span>
+        </a>
+        <a href="<?= BASE_URL ?>/learn" class="btn-secondary-outline" style="font-size: 0.825rem; padding: 0.4rem 0.85rem;">
+            <span>Baca Materi</span>
+        </a>
+    </div>
 </div>
 
 <!-- 4 STAT BOXES (PURE TYPOGRAPHY, ZERO DECORATIVE ICONS) -->
@@ -119,41 +127,34 @@ require_once dirname(__DIR__) . '/templates/header.php';
                 <h3 style="font-family: var(--font-heading); font-size: 1.05rem; font-weight: 800; color: #18181B; margin: 0;">
                     Riwayat Aktivitas Ujian
                 </h3>
-
             </div>
 
             <?php if (empty($stats['recent_activities'])): ?>
                 <div style="padding: 2.5rem 1rem; text-align: center;">
-                    <p style="font-size: 0.875rem; color: #52525B; margin-bottom: 1rem; font-weight: 500;">
+                    <p style="font-size: 0.875rem; color: #52525B; margin: 0; font-weight: 500;">
                         Belum ada aktivitas ujian kuis yang tercatat.
                     </p>
-
                 </div>
             <?php else: ?>
                 <div style="display: flex; flex-direction: column; gap: 0.75rem;">
                     <?php foreach (array_slice($stats['recent_activities'], 0, 5) as $act): ?>
-                        <div style="display: flex; align-items: center; justify-content: space-between; padding: 0.85rem 1rem; background-color: #FAFAFA; border: 1px solid #E5E7EB; border-radius: 6px; gap: 1rem; flex-wrap: wrap;">
-                            <div style="display: flex; align-items: center; gap: 0.85rem; min-width: 0;">
-                                <div style="width: 36px; height: 36px; border-radius: 6px; background-color: #18181B; color: #FFFFFF; display: flex; align-items: center; justify-content: center; font-family: var(--font-mono); font-size: 0.85rem; font-weight: 800; flex-shrink: 0;">
-                                    <?= (int)($act['score'] ?? 0) ?>
+                        <div style="display: flex; align-items: center; justify-content: space-between; padding: 0.85rem 1.15rem; background-color: #FAFAFA; border: 1px solid #E5E7EB; border-radius: 8px; gap: 1rem;">
+                            <div style="display: flex; align-items: center; gap: 1rem; min-width: 0; flex: 1;">
+                                <div style="width: 44px; height: 44px; border-radius: 8px; background-color: #18181B; color: #FFFFFF; display: flex; flex-direction: column; align-items: center; justify-content: center; flex-shrink: 0; border: 1px solid #27272A;">
+                                    <span style="font-family: var(--font-mono); font-size: 0.95rem; font-weight: 800; line-height: 1;"><?= (int)($act['score'] ?? 0) ?></span>
                                 </div>
-                                <div style="min-width: 0;">
-                                    <h4 style="font-size: 0.9rem; font-weight: 700; color: #18181B; margin: 0 0 0.15rem 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
-                                        <?= htmlspecialchars($act['title'] ?? 'Kuis') ?>
+                                <div style="min-width: 0; flex: 1;">
+                                    <h4 style="font-size: 0.925rem; font-weight: 700; color: #18181B; margin: 0 0 0.25rem 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; line-height: 1.3;">
+                                        <?= htmlspecialchars($act['quiz_title'] ?? $act['title'] ?? 'Ujian MikroTik') ?>
                                     </h4>
-                                    <div style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.75rem; color: #71717A;">
-                                        <span class="status-badge" style="background-color: #F4F4F5; font-size: 0.7rem;"><?= htmlspecialchars($act['category'] ?? 'MikroTik') ?></span>
+                                    <div style="display: flex; align-items: center; gap: 0.45rem; font-size: 0.75rem; color: #71717A; flex-wrap: wrap;">
+                                        <span class="status-badge" style="background-color: #FFFFFF; border: 1px solid #E5E7EB; font-size: 0.7rem; padding: 1px 6px;"><?= htmlspecialchars($act['category'] ?? 'MikroTik') ?></span>
                                         <span>•</span>
                                         <span class="font-mono"><?= date('d M Y, H:i', strtotime($act['created_at'] ?? 'now')) ?></span>
                                     </div>
                                 </div>
                             </div>
-                            <div>
-                                <?php if (!empty($act['quiz_id'])): ?>
-                                    <a href="<?= BASE_URL ?>/quiz/review/<?= (int)$act['quiz_id'] ?>" class="btn-secondary-outline" style="font-size: 0.75rem; padding: 0.35rem 0.75rem;" title="Review Jawaban">
-                                        <span>Review</span>
-                                    </a>
-                                <?php endif; ?>
+                            <div style="flex-shrink: 0;">
                             </div>
                         </div>
                     <?php endforeach; ?>
@@ -172,24 +173,34 @@ require_once dirname(__DIR__) . '/templates/header.php';
                 <h3 style="font-family: var(--font-heading); font-size: 1.05rem; font-weight: 800; color: #18181B; margin: 0;">
                     Materi Belajar Terkini
                 </h3>
-
+                <a href="<?= BASE_URL ?>/learn" class="btn-secondary-outline" style="font-size: 0.75rem; padding: 0.3rem 0.65rem;">
+                    <span>Lihat Semua &rarr;</span>
+                </a>
             </div>
 
             <?php if (empty($materials)): ?>
-                <div style="padding: 1.5rem; text-align: center; color: #71717A; font-size: 0.85rem;">
+                <div style="padding: 2rem 1rem; text-align: center; color: #71717A; font-size: 0.85rem;">
                     Belum ada materi yang diterbitkan.
                 </div>
             <?php else: ?>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
+                <div style="display: flex; flex-direction: column; gap: 0.75rem;">
                     <?php foreach (array_slice($materials, 0, 4) as $mat): ?>
-                        <a href="<?= BASE_URL ?>/learn/<?= (int)$mat['id'] ?>" style="display: block; padding: 0.85rem; background-color: #FAFAFA; border: 1px solid #E5E7EB; border-radius: 6px; text-decoration: none; transition: all 0.15s ease;" onmouseover="this.style.borderColor='#18181B';" onmouseout="this.style.borderColor='#E5E7EB';">
-                            <span class="status-badge" style="background-color: #F4F4F5; font-size: 0.7rem; margin-bottom: 0.4rem;"><?= htmlspecialchars($mat['category'] ?? 'Umum') ?></span>
-                            <h4 style="font-size: 0.875rem; font-weight: 700; color: #18181B; margin: 0 0 0.3rem 0; line-height: 1.35; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical;">
-                                <?= htmlspecialchars($mat['title']) ?>
-                            </h4>
-                            <div style="display: flex; align-items: center; justify-content: space-between; font-size: 0.75rem; color: #71717A;">
-                                <span><?= htmlspecialchars($mat['difficulty'] ?? 'Mudah') ?></span>
-                                <span class="font-mono">Baca Modul &rarr;</span>
+                        <?php
+                        $cleanText = strip_tags($mat['content'] ?? '');
+                        $readTime = max(1, (int)ceil(str_word_count($cleanText) / 180));
+                        ?>
+                        <a href="<?= BASE_URL ?>/learn/<?= (int)$mat['id'] ?>" style="display: flex; align-items: center; justify-content: space-between; padding: 0.85rem 1.15rem; background-color: #FAFAFA; border: 1px solid #E5E7EB; border-radius: 8px; text-decoration: none; transition: all 0.15s ease; gap: 1rem;" onmouseover="this.style.borderColor='#18181B'; this.style.backgroundColor='#FFFFFF';" onmouseout="this.style.borderColor='#E5E7EB'; this.style.backgroundColor='#FAFAFA';">
+                            <div style="min-width: 0; flex: 1;">
+                                <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem;">
+                                    <span style="font-size: 0.725rem; color: #71717A;" class="font-mono">~<?= $readTime ?> menit baca</span>
+                                </div>
+                                <h4 style="font-size: 0.9rem; font-weight: 700; color: #18181B; margin: 0; line-height: 1.35; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                                    <?= htmlspecialchars($mat['title']) ?>
+                                </h4>
+                            </div>
+                            <div style="flex-shrink: 0; font-size: 0.8rem; font-weight: 600; color: #18181B; font-family: var(--font-mono); display: inline-flex; align-items: center; gap: 0.25rem;">
+                                <span>Baca</span>
+                                <span>&rarr;</span>
                             </div>
                         </a>
                     <?php endforeach; ?>
@@ -264,8 +275,8 @@ require_once dirname(__DIR__) . '/templates/header.php';
                 </div>
             <?php else: ?>
                 <div style="padding: 1.25rem; text-align: center; background-color: #FAFAFA; border: 1px solid #E5E7EB; border-radius: 8px;">
-                    <p style="font-size: 0.85rem; font-weight: 700; color: #18181B; margin: 0 0 0.2rem 0;">Belum ada Lencana Terbuka!</p>
-                    <p style="font-size: 0.775rem; color: #71717A; margin: 0;">Kerjakan dan Selesaikan minimal 1 Kuis.</p>
+                    <p style="font-size: 0.85rem; font-weight: 700; color: #18181B; margin: 0 0 0.2rem 0;">Semua Lencana Terbuka!</p>
+                    <p style="font-size: 0.775rem; color: #71717A; margin: 0;">Anda telah menguasai seluruh pencapaian kuis MikroTik.</p>
                 </div>
             <?php endif; ?>
         </div>
