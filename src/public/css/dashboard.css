@@ -499,12 +499,19 @@ body {
   align-items: center;
   gap: 0.35rem;
   margin-bottom: 0.25rem;
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
 }
 
 .hero-breadcrumb .breadcrumb-link {
   color: var(--text-muted);
   text-decoration: none;
   transition: color 0.15s ease;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .hero-breadcrumb .breadcrumb-link:hover {
@@ -514,11 +521,17 @@ body {
 .hero-breadcrumb .breadcrumb-sep {
   color: var(--text-dim, #52525b);
   user-select: none;
+  flex-shrink: 0;
 }
 
 .hero-breadcrumb .active-tag {
   color: var(--accent-cyan);
   font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+  flex: 0 1 auto;
 }
 
 .hero-main-title {
