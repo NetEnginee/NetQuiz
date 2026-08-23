@@ -70,6 +70,6 @@ if ($isLocal) {
         'db_host' => getenv('DB_HOST') ?: 'sql301.infinityfree.com',
         'db_name' => getenv('DB_NAME') ?: 'if0_42727530_netquiz',
         'db_user' => getenv('DB_USER') ?: 'if0_42727530',
-        'db_pass' => getenv('DB_PASS') ?: '1UnionMzCADHseR',
+        'db_pass' => getenv('DB_PASS') ?: '1UnionMzCAdHseR',
     ];
 }
