@@ -22,18 +22,7 @@ require_once dirname(__DIR__) . '/templates/header.php';
     <!-- 1. Header & Breadcrumb Bar -->
     <section class="dashboard-hero-header mb-6 pb-4">
         <div class="hero-brand-group">
-            <div class="hero-router-box">
-                <span class="live-radar-dot"></span>
-                <svg class="w-6 h-6 text-cyan-400 pixelated" viewBox="0 0 16 16">
-                    <use href="#pixel-router"></use>
-                </svg>
-            </div>
             <div class="hero-title-area">
-                <?= renderBreadcrumb([
-                    ['label' => 'Student', 'url' => BASE_URL . '/'],
-                    ['label' => 'Kuis', 'url' => BASE_URL . '/quiz'],
-                    ['label' => $quiz['title']]
-                ]) ?>
                 <h1 class="hero-main-title">
                     <span><?= htmlspecialchars($quiz['title']) ?></span>
                 </h1>
@@ -46,17 +35,6 @@ require_once dirname(__DIR__) . '/templates/header.php';
                     </span>
                 </div>
             </div>
-        </div>
-
-        <!-- Quick Timer Bar for Mobile / Action Bar -->
-        <div class="mobile-timer-bar flex items-center gap-2">
-            <div class="quiz-timer-pill font-mono text-xs font-bold px-3 py-1.5 bg-zinc-900 border border-zinc-800 rounded-md flex items-center gap-1.5 text-cyan-400">
-                <svg class="w-3.5 h-3.5 pixelated" viewBox="0 0 16 16"><use href="#pixel-router"></use></svg>
-                <span class="timer-display-text">--:--</span>
-            </div>
-            <button type="button" class="btn-pause-trigger btn-hero-secondary font-mono text-xs px-2.5 py-1" onclick="window.playPixelSound && window.playPixelSound('blip');">
-                <span>⏸ Jeda</span>
-            </button>
         </div>
     </section>
 
@@ -116,7 +94,7 @@ require_once dirname(__DIR__) . '/templates/header.php';
                                     <?php endif; ?>
 
                                     <!-- 4 Interactive Radio Options (A, B, C, D) -->
-                                    <div class="options-stack-container">
+                                    <div class="options-stack-container" style="margin-bottom: 0;">
                                         <?php foreach (['A', 'B', 'C', 'D'] as $optKey): ?>
                                             <?php
                                             $optText = $options[$optKey] ?? '';
@@ -126,13 +104,13 @@ require_once dirname(__DIR__) . '/templates/header.php';
                                                 <div class="option-badge font-mono">
                                                     <?= $optKey ?>
                                                 </div>
-                                                <input type="radio" 
-                                                       name="answers[<?= $index ?>]" 
-                                                       value="<?= $optKey ?>" 
-                                                       <?= $isChecked ? 'checked' : '' ?>
-                                                       style="display: none;" 
-                                                       class="option-radio"
-                                                       onchange="window.onOptionSelect(this)">
+                                                <input type="radio"
+                                                    name="answers[<?= $index ?>]"
+                                                    value="<?= $optKey ?>"
+                                                    <?= $isChecked ? 'checked' : '' ?>
+                                                    style="display: none;"
+                                                    class="option-radio"
+                                                    onchange="window.onOptionSelect(this)">
                                                 <span class="option-text-content font-sans">
                                                     <?= htmlspecialchars($optText) ?>
                                                 </span>
@@ -142,23 +120,6 @@ require_once dirname(__DIR__) . '/templates/header.php';
                                 </div>
                             <?php endforeach; ?>
                         <?php endif; ?>
-                    </div>
-
-                    <!-- CAROUSEL NAVIGATION FOOTER -->
-                    <div class="carousel-footer-bar">
-                        <button type="button" id="btn-prev" class="btn-hero-secondary font-mono text-xs" onclick="window.playPixelSound && window.playPixelSound('click');">
-                            <span>← Sebelumnya</span>
-                        </button>
-
-                        <div class="flex items-center gap-2">
-                            <button type="button" id="btn-next" class="btn-hero-primary font-mono text-xs" onclick="window.playPixelSound && window.playPixelSound('click');">
-                                <span>Selanjutnya →</span>
-                            </button>
-
-                            <button type="button" id="btn-submit-carousel" class="btn-hero-primary btn-open-submit-modal font-mono text-xs" style="display: none;" onclick="window.playPixelSound && window.playPixelSound('coin');">
-                                <span>✓ Kumpulkan Ujian</span>
-                            </button>
-                        </div>
                     </div>
                 </form>
             </div>
@@ -181,13 +142,9 @@ require_once dirname(__DIR__) . '/templates/header.php';
                 </div>
 
                 <!-- Big Monospace Timer Badge -->
-                <div id="quiz-timer-desktop" class="timer-digits-display font-mono">
+                <div id="quiz-timer-desktop" class="timer-digits-display font-mono" style="margin-bottom: 0;">
                     <span class="timer-display-text">--:--</span>
                 </div>
-
-                <p class="font-mono text-[11px] text-zinc-500 text-center m-0">
-                    Ujian akan otomatis terkumpul saat timer menyentuh 00:00.
-                </p>
             </div>
 
             <!-- Card 2: Question Palette Grid -->
@@ -212,10 +169,10 @@ require_once dirname(__DIR__) . '/templates/header.php';
                         <?php
                         $isAnswered = isset($pausedAnswers[$index]) && $pausedAnswers[$index] !== '';
                         ?>
-                        <button type="button" 
-                                class="palette-btn font-mono <?= $index === 0 ? 'current' : '' ?> <?= $isAnswered ? 'answered' : '' ?>" 
-                                data-index="<?= $index ?>"
-                                onclick="window.playPixelSound && window.playPixelSound('click');">
+                        <button type="button"
+                            class="palette-btn font-mono <?= $index === 0 ? 'current' : '' ?> <?= $isAnswered ? 'answered' : '' ?>"
+                            data-index="<?= $index ?>"
+                            onclick="window.playPixelSound && window.playPixelSound('click');">
                             <?= $index + 1 ?>
                         </button>
                     <?php endforeach; ?>
