@@ -239,20 +239,8 @@ require_once dirname(__DIR__) . "/templates/header.php";
                         </div>
                         <h4 class="empty-title">Belum Ada Riwayat Ujian</h4>
                         <p class="empty-desc">Selesaikan kuis pertama Anda untuk mulai mengumpulkan poin dan mencatat riwayat evaluasi.</p>
-                        <a href="<?= BASE_URL ?>/quiz" class="btn-hero-primary font-mono text-xs mt-3" onclick="window.playPixelSound && window.playPixelSound('coin');">
-                            <span>⚡ Ambil Kuis Sekarang</span>
-                        </a>
                     </div>
                 <?php endif; ?>
-            </div>
-
-            <!-- Activity Footer -->
-            <div class="activity-panel-footer font-mono">
-                <span class="text-zinc-500">Menampilkan <?= count($recentActivities) ?> riwayat pengerjaan</span>
-                <a href="<?= BASE_URL ?>/quiz" class="text-cyan-400 hover:text-cyan-300 transition flex items-center gap-1">
-                    <span>Semua Kuis</span>
-                    <span>→</span>
-                </a>
             </div>
         </section>
 
