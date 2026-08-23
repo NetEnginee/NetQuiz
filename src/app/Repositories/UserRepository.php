@@ -12,11 +12,11 @@ use App\Core\Database;
  */
 class UserRepository implements UserRepositoryInterface
 {
-    private PDO $db;
+    private Database $db;
 
     public function __construct(?Database $database = null)
     {
-        $this->db = ($database ?? Database::getInstance())->getConnection();
+        $this->db = $database ?? Database::getInstance();
     }
 
     /**

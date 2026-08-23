@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Repositories;
@@ -11,11 +12,11 @@ use App\Core\Database;
  */
 class MaterialRepository implements MaterialRepositoryInterface
 {
-    private PDO $db;
+    private Database $db;
 
     public function __construct(?Database $database = null)
     {
-        $this->db = ($database ?? Database::getInstance())->getConnection();
+        $this->db = $database ?? Database::getInstance();
     }
 
     /**

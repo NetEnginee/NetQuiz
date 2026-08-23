@@ -16,7 +16,9 @@
 </IfModule>
 
 # 3. Mencegah Directory Browsing untuk Folder Assets
-Options -Indexes
+<IfModule mod_autoindex.c>
+    Options -Indexes
+</IfModule>
 
 # 4. Browser Caching (mod_expires) untuk Aset Statis
 <IfModule mod_expires.c>

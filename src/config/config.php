@@ -12,7 +12,21 @@ if (
 $host = $_SERVER['HTTP_HOST'] ?? 'localhost:8080';
 $base_url = $protocol . '://' . $host;
 
-$isLocal = ($host === 'localhost:8080' || $host === '127.0.0.1:8080');
+$hostOnly = explode(':', $host)[0];
+
+$isLocal = (
+    $hostOnly === 'localhost' ||
+    $hostOnly === '127.0.0.1' ||
+    $hostOnly === 'nvram-mysql' ||
+    str_starts_with($hostOnly, '192.168.') ||
+    str_starts_with($hostOnly, '10.') ||
+    str_starts_with($hostOnly, '172.') ||
+    str_ends_with($hostOnly, '.local') ||
+    str_ends_with($hostOnly, '.test') ||
+    str_ends_with($hostOnly, '.lan') ||
+    getenv('APP_ENV') === 'local' ||
+    (isset($_SERVER['SERVER_PORT']) && in_array((int)$_SERVER['SERVER_PORT'], [8080, 8000, 3000], true))
+);
 
 // Optional .env loader if .env file exists in project root or app root
 $envFile = dirname(__DIR__) . '/.env';
