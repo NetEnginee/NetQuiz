@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Repositories;
@@ -14,13 +15,11 @@ use RuntimeException;
  */
 class QuizRepository implements QuizRepositoryInterface
 {
-    private PDO $db;
-    private Database $database;
+    private Database $db;
 
     public function __construct(?Database $database = null)
     {
-        $this->database = $database ?? Database::getInstance();
-        $this->db = $this->database->getConnection();
+        $this->db = $database ?? Database::getInstance();
     }
 
     /**
@@ -120,7 +119,7 @@ class QuizRepository implements QuizRepositoryInterface
      */
     public function createWithQuestions(array $quizData, array $questionsData): int
     {
-        return $this->database->transaction(function (PDO $db) use ($quizData, $questionsData) {
+        return $this->db->transaction(function (PDO $db) use ($quizData, $questionsData) {
             // 1. Insert Quiz
             $stmt = $db->prepare("
                 INSERT INTO quizzes (title, description, category, duration, difficulty, image_path) 
@@ -197,7 +196,7 @@ class QuizRepository implements QuizRepositoryInterface
      */
     public function delete(int $id): bool
     {
-        return $this->database->transaction(function (PDO $db) use ($id) {
+        return $this->db->transaction(function (PDO $db) use ($id) {
             $stmtQ = $db->prepare("DELETE FROM questions WHERE quiz_id = :quiz_id");
             $stmtQ->execute(['quiz_id' => $id]);
 

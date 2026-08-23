@@ -47,7 +47,7 @@
             Gangguan Sistem Server Internal
         </h1>
         <p class="error-main-desc">
-            Terjadi kegagalan proses yang tidak terduga pada daemon kernel RouterOS. Tim teknis administrator telah mencatat log insiden ini untuk segera ditangani.
+            Terjadi kegagalan proses yang tidak terduga pada kernel NetQuiz. Tim administrator telah mencatat log ini untuk segera ditangani.
         </p>
 
         <!-- CLI Context Box -->

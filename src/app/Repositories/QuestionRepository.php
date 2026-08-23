@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Repositories;
@@ -11,13 +12,11 @@ use App\Core\Database;
  */
 class QuestionRepository implements QuestionRepositoryInterface
 {
-    private PDO $db;
-    private Database $database;
+    private Database $db;
 
     public function __construct(?Database $database = null)
     {
-        $this->database = $database ?? Database::getInstance();
-        $this->db = $this->database->getConnection();
+        $this->db = $database ?? Database::getInstance();
     }
 
     /**
@@ -79,7 +78,7 @@ class QuestionRepository implements QuestionRepositoryInterface
      */
     public function createBulk(int $quizId, array $questions): bool
     {
-        return $this->database->transaction(function (PDO $db) use ($quizId, $questions) {
+        return $this->db->transaction(function (PDO $db) use ($quizId, $questions) {
             $stmt = $db->prepare("
                 INSERT INTO questions (quiz_id, question, option_a, option_b, option_c, option_d, correct, explanation, image_path) 
                 VALUES (:quiz_id, :question, :option_a, :option_b, :option_c, :option_d, :correct, :explanation, :image_path)

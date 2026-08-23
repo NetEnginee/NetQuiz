@@ -78,7 +78,15 @@ class AuthController extends Controller
             ]);
         }
 
-        $user = $this->userRepo->findByUsernameOrEmail($identifier);
+        try {
+            $user = $this->userRepo->findByUsernameOrEmail($identifier);
+        } catch (\Throwable $e) {
+            error_log("Login Database Connection Error: " . $e->getMessage());
+            return $this->jsonResponse([
+                'status' => 'error',
+                'errors' => ['general' => 'Tidak dapat terhubung ke server database. Silakan periksa koneksi atau kredensial database.']
+            ], 500);
+        }
 
         if ($user && password_verify($password, $user['password'])) {
             // Check if user status is active

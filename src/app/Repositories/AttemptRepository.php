@@ -12,13 +12,11 @@ use App\Core\Database;
  */
 class AttemptRepository implements AttemptRepositoryInterface
 {
-    private PDO $db;
-    private Database $database;
+    private Database $db;
 
     public function __construct(?Database $database = null)
     {
-        $this->database = $database ?? Database::getInstance();
-        $this->db = $this->database->getConnection();
+        $this->db = $database ?? Database::getInstance();
     }
 
     /**
@@ -103,7 +101,7 @@ class AttemptRepository implements AttemptRepositoryInterface
      */
     public function recordFinishedAttempt(int $userId, int $quizId, string $category, int $score, array $userAnswers): int
     {
-        return $this->database->transaction(function (PDO $db) use ($userId, $quizId, $category, $score, $userAnswers) {
+        return $this->db->transaction(function (PDO $db) use ($userId, $quizId, $category, $score, $userAnswers) {
             // 1. Clear any paused attempt
             $delStmt = $db->prepare("DELETE FROM quiz_attempts WHERE user_id = :user_id AND quiz_id = :quiz_id AND status = 'paused'");
             $delStmt->execute(['user_id' => $userId, 'quiz_id' => $quizId]);

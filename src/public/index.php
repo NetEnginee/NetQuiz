@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 // 1. Session Configuration & Hardening
 if (session_status() === PHP_SESSION_NONE) {
-    ini_set('session.use_strict_mode', '1');
-    ini_set('session.use_only_cookies', '1');
-    ini_set('session.cookie_httponly', '1');
-    ini_set('session.cookie_samesite', 'Strict');
+    @ini_set('session.use_strict_mode', '1');
+    @ini_set('session.use_only_cookies', '1');
+    @ini_set('session.cookie_httponly', '1');
+    @ini_set('session.cookie_samesite', 'Strict');
 
     $isSecure = (
         (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') ||
@@ -15,10 +15,10 @@ if (session_status() === PHP_SESSION_NONE) {
     );
 
     if ($isSecure) {
-        ini_set('session.cookie_secure', '1');
+        @ini_set('session.cookie_secure', '1');
     }
 
-    session_set_cookie_params([
+    @session_set_cookie_params([
         'lifetime' => 86400, // 24 hours
         'path' => '/',
         'domain' => '',
@@ -27,8 +27,10 @@ if (session_status() === PHP_SESSION_NONE) {
         'samesite' => 'Strict'
     ]);
 
-    session_cache_limiter('');
-    session_start();
+    @session_cache_limiter('');
+    if (!headers_sent()) {
+        @session_start();
+    }
 }
 
 // 2. Session Inactivity Timeout (30 minutes)
@@ -36,7 +38,9 @@ $inactivityTimeout = 1800;
 if (isset($_SESSION['last_activity']) && (time() - $_SESSION['last_activity'] > $inactivityTimeout)) {
     session_unset();
     session_destroy();
-    session_start();
+    if (!headers_sent()) {
+        @session_start();
+    }
 }
 $_SESSION['last_activity'] = time();
 
@@ -59,7 +63,7 @@ spl_autoload_register(function ($class) {
 });
 
 // 4. Global Constants
-$config = require_once dirname(__DIR__) . '/config/config.php';
+$config = require dirname(__DIR__) . '/config/config.php';
 define('BASE_URL', $config['base_url']);
 define('APP_NAME', $config['app_name']);
 define('APP_ROOT', dirname(__DIR__) . '/app');

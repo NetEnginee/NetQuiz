@@ -1,1 +1,8 @@
-Require all denied
+RewriteEngine On
+
+# 1. Lindungi direktori core internal dari akses langsung via browser
+RewriteRule ^(app|config|logs|\.env)/ - [F,L]
+
+# 2. Arahkan semua request ke folder public/ jika diunggah ke root htdocs
+RewriteCond %{REQUEST_URI} !^/public/
+RewriteRule ^(.*)$ public/$1 [L]

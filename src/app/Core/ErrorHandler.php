@@ -24,17 +24,17 @@ class ErrorHandler
         self::$logFile = $logFilePath;
         self::$displayErrors = $displayErrors;
 
-        // Ensure log directory exists
+        // Ensure log directory exists safely
         $dir = dirname($logFilePath);
         if (!is_dir($dir)) {
-            mkdir($dir, 0755, true);
+            @mkdir($dir, 0755, true);
         }
 
         // Set error reporting
         error_reporting(E_ALL);
-        ini_set('display_errors', $displayErrors ? '1' : '0');
-        ini_set('log_errors', '1');
-        ini_set('error_log', $logFilePath);
+        @ini_set('display_errors', $displayErrors ? '1' : '0');
+        @ini_set('log_errors', '1');
+        @ini_set('error_log', $logFilePath);
 
         // Register handlers
         set_error_handler([self::class, 'handleError']);
@@ -43,7 +43,8 @@ class ErrorHandler
     }
 
     /**
-     * Convert PHP errors into ErrorException.
+     * Convert PHP fatal/critical errors into ErrorException.
+     * Non-fatal warnings, notices, and deprecated messages are logged without crashing the page.
      */
     public static function handleError(int $level, string $message, string $file = '', int $line = 0): bool
     {
@@ -51,7 +52,14 @@ class ErrorHandler
             return false;
         }
 
-        throw new ErrorException($message, 0, $level, $file, $line);
+        $fatalLevels = E_ERROR | E_PARSE | E_CORE_ERROR | E_COMPILE_ERROR | E_USER_ERROR | E_RECOVERABLE_ERROR;
+        if ($level & $fatalLevels) {
+            throw new ErrorException($message, 0, $level, $file, $line);
+        }
+
+        // For non-fatal warnings/notices, record log without aborting HTTP request with 500
+        self::logException(new ErrorException($message, 0, $level, $file, $line));
+        return true;
     }
 
     /**
