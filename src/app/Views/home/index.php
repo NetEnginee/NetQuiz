@@ -33,12 +33,38 @@ require_once dirname(__DIR__) . "/templates/header.php";
     <!-- 1. Hero & Breadcrumb Bar -->
     <section class="dashboard-hero-header">
         <div class="hero-brand-group">
-            <div class="hero-title-area">
-                <div class="hero-breadcrumb">
-                    <span>Student /</span>
-                    <span class="active-tag">Dashboard</span>
-                </div>
+            <div class="hero-router-box">
+                <svg class="w-7 h-7 pixelated" viewBox="0 0 16 16">
+                    <use href="#pixel-router"></use>
+                </svg>
+                <span class="live-radar-dot"></span>
             </div>
+            <div class="hero-title-area">
+                <?= renderBreadcrumb([
+                    ['label' => 'Student', 'url' => BASE_URL . '/'],
+                    ['label' => 'Dashboard']
+                ]) ?>
+                <h1 class="hero-main-title">
+                    <span>NetQuiz</span><span class="hero-cursor">_</span>
+                    <span class="hero-pill-version">v6.0-PRO</span>
+                    <span class="hero-pill-status">
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                        <span>RouterOS v7.x Ready</span>
+                    </span>
+                </h1>
+            </div>
+        </div>
+
+        <div class="hero-action-bar">
+            <a href="<?= BASE_URL ?>/quiz" class="btn-hero-primary font-mono" onclick="window.playPixelSound && window.playPixelSound('click');">
+                <span>⚡ Mulai Kuis</span>
+            </a>
+            <a href="<?= BASE_URL ?>/learn" class="btn-hero-secondary font-mono" onclick="window.playPixelSound && window.playPixelSound('click');">
+                <span>📚 Materi</span>
+            </a>
+            <a href="<?= BASE_URL ?>/leaderboard" class="btn-hero-secondary font-mono" onclick="window.playPixelSound && window.playPixelSound('click');">
+                <span>🏆 Leaderboard</span>
+            </a>
         </div>
     </section>
 
@@ -385,12 +411,6 @@ require_once dirname(__DIR__) . "/templates/header.php";
                     };
                 ?>
                     <a href="<?= BASE_URL ?>/learn/<?= (int)$mat['id'] ?>" class="material-item-card <?= $themeCatClass ?>" onclick="window.playPixelSound && window.playPixelSound('click');">
-                        <div class="material-book-badge">
-                            <svg class="w-6 h-6 pixelated" viewBox="0 0 16 16">
-                                <use href="#pixel-book"></use>
-                            </svg>
-                        </div>
-
                         <div class="material-card-body">
                             <div class="material-card-top-row font-mono">
                                 <span class="material-cat-tag">

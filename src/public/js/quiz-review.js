@@ -1,5 +1,5 @@
 /**
- * NetQuiz Quiz Review Module (Geist State Architecture)
+ * NetQuiz Quiz Review Module - Vercel Dark & Pixel Engine
  * Handles: Question Carousel, Filter Tabs (All / Correct / Wrong), Color-Coded Palette Navigation.
  */
 (function () {
@@ -17,17 +17,17 @@
 
     initDom() {
       this.blocks = Array.from(
-        document.querySelectorAll(".review-question-block"),
+        document.querySelectorAll(".review-question-block")
       );
       this.totalSlides = this.blocks.length;
 
       this.btnPrev = document.getElementById("btn-prev-review");
       this.btnNext = document.getElementById("btn-next-review");
       this.paletteButtons = Array.from(
-        document.querySelectorAll(".review-palette-btn"),
+        document.querySelectorAll(".review-palette-btn")
       );
       this.filterButtons = Array.from(
-        document.querySelectorAll(".review-filter-btn"),
+        document.querySelectorAll(".review-filter-btn")
       );
 
       if (window.lucide) {
@@ -78,13 +78,13 @@
           btn.style.opacity = "1";
           btn.style.pointerEvents = "auto";
         } else {
-          btn.style.opacity = "0.3";
+          btn.style.opacity = "0.25";
           btn.style.pointerEvents = "auto";
         }
 
         if (index === this.currentSlide) {
           btn.classList.add("current");
-          btn.style.outline = "2px solid #18181B";
+          btn.style.outline = "2px solid #ffffff";
           btn.style.outlineOffset = "2px";
         } else {
           btn.classList.remove("current");
@@ -98,7 +98,7 @@
       if (this.btnPrev) {
         const hasPrev = currentIndexInFiltered > 0;
         this.btnPrev.disabled = !hasPrev;
-        this.btnPrev.style.opacity = hasPrev ? "1" : "0.45";
+        this.btnPrev.style.opacity = hasPrev ? "1" : "0.4";
         this.btnPrev.style.cursor = hasPrev ? "pointer" : "not-allowed";
       }
 
@@ -107,7 +107,7 @@
           currentIndexInFiltered >= 0 &&
           currentIndexInFiltered < filtered.length - 1;
         this.btnNext.disabled = !hasNext;
-        this.btnNext.style.opacity = hasNext ? "1" : "0.45";
+        this.btnNext.style.opacity = hasNext ? "1" : "0.4";
         this.btnNext.style.cursor = hasNext ? "pointer" : "not-allowed";
       }
 
@@ -120,10 +120,6 @@
           btn.classList.remove("active");
         }
       });
-
-      if (window.lucide) {
-        window.lucide.createIcons();
-      }
     }
 
     bindEvents() {
@@ -134,6 +130,7 @@
           if (filter && filter !== this.activeFilter) {
             this.activeFilter = filter;
             this.updateView();
+            if (window.playPixelSound) window.playPixelSound("click");
           }
         });
       });
@@ -150,6 +147,7 @@
             this.currentSlide = target;
             this.updateView();
             window.scrollTo({ top: 0, behavior: "smooth" });
+            if (window.playPixelSound) window.playPixelSound("click");
           }
         });
       });
@@ -166,6 +164,7 @@
             this.currentSlide = filtered[currentIndexInFiltered + 1];
             this.updateView();
             window.scrollTo({ top: 0, behavior: "smooth" });
+            if (window.playPixelSound) window.playPixelSound("click");
           }
         });
       }
@@ -178,9 +177,34 @@
             this.currentSlide = filtered[currentIndexInFiltered - 1];
             this.updateView();
             window.scrollTo({ top: 0, behavior: "smooth" });
+            if (window.playPixelSound) window.playPixelSound("click");
           }
         });
       }
+
+      // Keyboard arrow shortcuts
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "ArrowRight" && !e.target.matches("input, textarea")) {
+          const filtered = this.getFilteredIndices();
+          const currentIndexInFiltered = filtered.indexOf(this.currentSlide);
+          if (
+            currentIndexInFiltered >= 0 &&
+            currentIndexInFiltered < filtered.length - 1
+          ) {
+            this.currentSlide = filtered[currentIndexInFiltered + 1];
+            this.updateView();
+            if (window.playPixelSound) window.playPixelSound("click");
+          }
+        } else if (e.key === "ArrowLeft" && !e.target.matches("input, textarea")) {
+          const filtered = this.getFilteredIndices();
+          const currentIndexInFiltered = filtered.indexOf(this.currentSlide);
+          if (currentIndexInFiltered > 0) {
+            this.currentSlide = filtered[currentIndexInFiltered - 1];
+            this.updateView();
+            if (window.playPixelSound) window.playPixelSound("click");
+          }
+        }
+      });
     }
   }
 

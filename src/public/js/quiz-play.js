@@ -1,6 +1,6 @@
 /**
- * NetQuiz Quiz Player Module (Geist Architecture)
- * Handles: Step Carousel, Question Grid Palette, Realtime Timer, Pause/Resume, and Modals.
+ * NetQuiz Quiz Player Module - Vercel Dark & Pixel Engine
+ * Handles: Carousel Stack, Option Selection, Timer Countdown, Pause/Resume, Modal Overlays, and Audio Synth FX.
  */
 (function () {
   "use strict";
@@ -27,7 +27,7 @@
     initDom() {
       this.timerTexts = document.querySelectorAll(".timer-display-text");
       this.timerPills = document.querySelectorAll(
-        ".quiz-timer-pill, #quiz-timer-desktop",
+        ".quiz-timer-pill, #quiz-timer-desktop"
       );
       this.quizForm = document.getElementById("quiz-form");
       this.timeLeftInput = document.getElementById("time_left");
@@ -38,7 +38,7 @@
       this.btnNext = document.getElementById("btn-next");
       this.btnSubmitCarousel = document.getElementById("btn-submit-carousel");
       this.paletteButtons = Array.from(
-        document.querySelectorAll(".palette-btn"),
+        document.querySelectorAll(".palette-btn")
       );
       this.answeredCounter = document.getElementById("answered-counter-text");
 
@@ -50,18 +50,18 @@
 
       // Submit Confirmation Modal elements
       this.submitModalTriggers = document.querySelectorAll(
-        ".btn-open-submit-modal",
+        ".btn-open-submit-modal"
       );
       this.submitConfirmModal = document.getElementById("submit-confirm-modal");
       this.btnCancelSubmitModal = document.getElementById(
-        "btn-cancel-submit-modal",
+        "btn-cancel-submit-modal"
       );
       this.btnFinalSubmit = document.getElementById("btn-final-submit");
       this.modalAnsweredCount = document.getElementById(
-        "modal-answered-count",
+        "modal-answered-count"
       );
       this.modalUnansweredCount = document.getElementById(
-        "modal-unanswered-count",
+        "modal-unanswered-count"
       );
 
       if (window.lucide) {
@@ -81,7 +81,7 @@
         } else {
           this.timeLeft = Math.max(
             0,
-            Math.floor((parseInt(targetTimestamp, 10) - Date.now()) / 1000),
+            Math.floor((parseInt(targetTimestamp, 10) - Date.now()) / 1000)
           );
           if (this.timeLeft <= 0 || this.timeLeft > this.initialTimeLeft) {
             this.timeLeft = this.initialTimeLeft;
@@ -128,11 +128,9 @@
 
       this.timerPills.forEach((pill) => {
         if (this.timeLeft <= 60 && this.timeLeft > 0) {
-          pill.style.backgroundColor = "#EF4444";
-          pill.style.color = "#FFFFFF";
+          pill.classList.add("warning");
         } else {
-          pill.style.backgroundColor = "#18181B";
-          pill.style.color = "#FFFFFF";
+          pill.classList.remove("warning");
         }
       });
     }
@@ -140,30 +138,33 @@
     handleTimeExpired() {
       localStorage.removeItem(this.storageKey);
 
+      if (window.playPixelSound) {
+        window.playPixelSound("badge");
+      }
+
       const overlay = document.createElement("div");
       overlay.style.position = "fixed";
       overlay.style.inset = "0";
-      overlay.style.backgroundColor = "rgba(0, 0, 0, 0.85)";
-      overlay.style.backdropFilter = "blur(8px)";
+      overlay.style.backgroundColor = "rgba(0, 0, 0, 0.9)";
+      overlay.style.backdropFilter = "blur(12px)";
       overlay.style.color = "#ffffff";
       overlay.style.display = "flex";
       overlay.style.flexDirection = "column";
       overlay.style.justifyContent = "center";
       overlay.style.alignItems = "center";
       overlay.style.zIndex = "99999";
-      overlay.style.fontFamily = "var(--font-heading, sans-serif)";
+      overlay.style.padding = "1rem";
 
       overlay.innerHTML = `
-        <div style="background: #18181B; border: 1px solid #333; border-radius: 12px; padding: 2.5rem 2rem; max-width: 440px; width: 90%; text-align: center;">
-            <div style="background: #EF4444; border-radius: 50%; width: 56px; height: 56px; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.25rem;">
-                <i data-lucide="clock" style="width: 28px; height: 28px; color: #fff;"></i>
+        <div class="modal-dark-card text-center" style="max-width: 420px;">
+            <div style="background: rgba(239, 68, 68, 0.2); border: 1px solid rgba(239, 68, 68, 0.5); border-radius: 50%; width: 56px; height: 56px; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.25rem;">
+                <svg class="w-7 h-7 text-red-400 pixelated" viewBox="0 0 16 16"><use href="#pixel-router"></use></svg>
             </div>
-            <h2 style="font-size: 1.4rem; font-weight: 800; margin-bottom: 0.5rem; color: #FFFFFF;">Waktu Ujian Telah Habis</h2>
-            <p style="font-size: 0.875rem; color: #A1A1AA; font-weight: 500; margin: 0;">Sistem sedang mengumpulkan seluruh jawaban Anda...</p>
+            <h2 class="text-xl font-bold font-sans text-white mb-2">Waktu Ujian Telah Habis</h2>
+            <p class="font-mono text-xs text-zinc-400 mb-0">Sistem sedang mengumpulkan dan mengevaluasi lembar jawaban Anda...</p>
         </div>
       `;
       document.body.appendChild(overlay);
-      if (window.lucide) window.lucide.createIcons();
 
       if (this.quizForm) {
         this.isSubmitting = true;
@@ -184,7 +185,7 @@
 
       if (this.btnPrev) {
         this.btnPrev.disabled = this.currentSlide === 0;
-        this.btnPrev.style.opacity = this.currentSlide === 0 ? "0.45" : "1";
+        this.btnPrev.style.opacity = this.currentSlide === 0 ? "0.4" : "1";
         this.btnPrev.style.cursor =
           this.currentSlide === 0 ? "not-allowed" : "pointer";
       }
@@ -216,7 +217,7 @@
       this.blocks.forEach((block, index) => {
         const checked = block.querySelector('input[type="radio"]:checked');
         const pBtn = document.querySelector(
-          `.palette-btn[data-index="${index}"]`,
+          `.palette-btn[data-index="${index}"]`
         );
         if (checked) {
           answeredCount++;
@@ -297,8 +298,6 @@
         this.btnConfirmPause.addEventListener("click", () => {
           this.isSubmitting = true;
           localStorage.removeItem(this.storageKey);
-
-          // Submit form to pause route
           this.quizForm.action = `${window.BASE_URL}/quiz/pause/${this.quizId}`;
           this.quizForm.submit();
         });
@@ -328,7 +327,7 @@
         });
       }
 
-      // Escape key modal close
+      // Keyboard navigation (ArrowLeft / ArrowRight & Escape)
       document.addEventListener("keydown", (e) => {
         if (e.key === "Escape") {
           if (this.pauseDialog && this.pauseDialog.style.display === "flex") {
@@ -339,6 +338,18 @@
             this.submitConfirmModal.style.display === "flex"
           ) {
             this.submitConfirmModal.style.display = "none";
+          }
+        } else if (e.key === "ArrowRight" && !e.target.matches("input, textarea")) {
+          if (this.currentSlide < this.totalSlides - 1) {
+            this.currentSlide++;
+            this.updateSlider();
+            if (window.playPixelSound) window.playPixelSound("click");
+          }
+        } else if (e.key === "ArrowLeft" && !e.target.matches("input, textarea")) {
+          if (this.currentSlide > 0) {
+            this.currentSlide--;
+            this.updateSlider();
+            if (window.playPixelSound) window.playPixelSound("click");
           }
         }
       });
