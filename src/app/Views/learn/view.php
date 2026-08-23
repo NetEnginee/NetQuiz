@@ -38,10 +38,10 @@ require_once dirname(__DIR__) . '/templates/header.php';
 <div class="learn-page-container">
 
     <!-- 1. Breadcrumb Navigation -->
-    <div class="mb-4">
+    <div class="mb-4 max-w-full overflow-hidden">
         <?= renderBreadcrumb([
             ['label' => 'Student', 'url' => BASE_URL . '/'],
-            ['label' => 'Materi Pembelajaran', 'url' => BASE_URL . '/learn'],
+            ['label' => 'Materi', 'url' => BASE_URL . '/learn'],
             ['label' => $material['category']],
             ['label' => $material['title']]
         ]) ?>
@@ -65,10 +65,10 @@ require_once dirname(__DIR__) . '/templates/header.php';
                 <span class="learn-diff-badge <?= $diffClass ?>">
                     Level: <?= htmlspecialchars($material['difficulty'] ?? 'Mudah') ?>
                 </span>
-                <span class="font-mono text-xs text-zinc-400">
+                <span class="article-meta-info">
                     ⏱ ~<?= $readTime ?> menit baca
                 </span>
-                <span class="font-mono text-xs text-zinc-500">
+                <span class="article-meta-info">
                     • Dipublikasikan <?= date('d M Y', strtotime($material['created_at'])) ?>
                 </span>
             </div>
@@ -105,9 +105,6 @@ require_once dirname(__DIR__) . '/templates/header.php';
                     <h3 class="sidebar-card-title font-sans">
                         Materi Terkait
                     </h3>
-                    <span class="font-mono text-[11px] text-zinc-500">
-                        <?= htmlspecialchars($material['category']) ?>
-                    </span>
                 </div>
 
                 <?php if (empty($otherMaterials)): ?>
