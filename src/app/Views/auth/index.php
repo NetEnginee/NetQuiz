@@ -182,6 +182,7 @@ $mode = $mode ?? 'login';
 
     <!-- Client Interactivity Script -->
     <script src="<?= function_exists('assetUrl') ? assetUrl('/js/auth.js') : (BASE_URL . '/js/auth.js') ?>" defer></script>
+    <script src="<?= function_exists('assetUrl') ? assetUrl('/js/pixel-critters.js') : (BASE_URL . '/js/pixel-critters.js') ?>" defer></script>
 </body>
 
 </html>
