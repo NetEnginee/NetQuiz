@@ -72,6 +72,8 @@ function renderBreadcrumb(array $items): string
     <link rel="stylesheet" href="<?= function_exists('assetUrl') ? assetUrl('/css/dashboard.css') : (BASE_URL . '/css/dashboard.css') ?>">
     <?php if (str_contains($_SERVER['REQUEST_URI'] ?? '', '/quiz')): ?>
         <link rel="stylesheet" href="<?= function_exists('assetUrl') ? assetUrl('/css/quiz.css') : (BASE_URL . '/css/quiz.css') ?>">
+    <?php elseif (str_contains($_SERVER['REQUEST_URI'] ?? '', '/learn')): ?>
+        <link rel="stylesheet" href="<?= function_exists('assetUrl') ? assetUrl('/css/learn.css') : (BASE_URL . '/css/learn.css') ?>">
     <?php endif; ?>
 
     <!-- Lucide Icons CDN -->

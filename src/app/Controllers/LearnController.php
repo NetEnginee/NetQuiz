@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Controllers;
@@ -55,9 +56,26 @@ class LearnController extends Controller
         }
 
         $otherMaterials = $this->materialRepo->getByCategory($material['category']);
-        $otherMaterials = array_filter($otherMaterials, function ($m) use ($id) {
+        $otherMaterials = array_values(array_filter($otherMaterials, function ($m) use ($id) {
             return (int)$m['id'] !== $id;
-        });
+        }));
+
+        // Ensure at least 3 related materials are provided
+        if (count($otherMaterials) < 3) {
+            $allMaterials = $this->materialRepo->getAll();
+            $existingIds = array_map(fn($m) => (int)$m['id'], $otherMaterials);
+            $existingIds[] = $id;
+
+            foreach ($allMaterials as $m) {
+                if (!in_array((int)$m['id'], $existingIds, true)) {
+                    $otherMaterials[] = $m;
+                    $existingIds[] = (int)$m['id'];
+                    if (count($otherMaterials) >= 3) {
+                        break;
+                    }
+                }
+            }
+        }
 
         return $this->view('learn/view', [
             'title' => $material['title'] . ' | NetQuiz',
