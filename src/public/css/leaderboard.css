@@ -27,7 +27,8 @@
   --text-muted: #71717a;
   --text-dim: #52525b;
 
-  --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-sans:
+    "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   --font-mono: "JetBrains Mono", "Courier New", monospace;
   --font-pixel: "Press Start 2P", monospace;
 }
@@ -64,10 +65,22 @@
   z-index: 5;
 }
 
-.panel-crosshair.corner-tl { top: -6px; left: -5px; }
-.panel-crosshair.corner-tr { top: -6px; right: -5px; }
-.panel-crosshair.corner-bl { bottom: -6px; left: -5px; }
-.panel-crosshair.corner-br { bottom: -6px; right: -5px; }
+.panel-crosshair.corner-tl {
+  top: -6px;
+  left: -5px;
+}
+.panel-crosshair.corner-tr {
+  top: -6px;
+  right: -5px;
+}
+.panel-crosshair.corner-bl {
+  bottom: -6px;
+  left: -5px;
+}
+.panel-crosshair.corner-br {
+  bottom: -6px;
+  right: -5px;
+}
 
 /* Breadcrumb in Leaderboard */
 .hero-breadcrumb {
@@ -328,7 +341,8 @@
 }
 
 @keyframes crown-float {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateX(-50%) translateY(0);
   }
   50% {
@@ -468,7 +482,11 @@
 /* Pedestal 1 (Center / Gold - Highest) */
 .pedestal-1 {
   height: 125px;
-  background: linear-gradient(180deg, rgba(245, 166, 35, 0.25) 0%, rgba(24, 21, 10, 0.95) 100%);
+  background: linear-gradient(
+    180deg,
+    rgba(245, 166, 35, 0.25) 0%,
+    rgba(24, 21, 10, 0.95) 100%
+  );
   border: 1px solid rgba(245, 166, 35, 0.5);
   border-bottom: none;
 }
@@ -480,7 +498,11 @@
 /* Pedestal 2 (Left / Silver - Medium) */
 .pedestal-2 {
   height: 95px;
-  background: linear-gradient(180deg, rgba(96, 165, 250, 0.2) 0%, rgba(14, 19, 27, 0.95) 100%);
+  background: linear-gradient(
+    180deg,
+    rgba(96, 165, 250, 0.2) 0%,
+    rgba(14, 19, 27, 0.95) 100%
+  );
   border: 1px solid rgba(96, 165, 250, 0.4);
   border-bottom: none;
 }
@@ -492,7 +514,11 @@
 /* Pedestal 3 (Right / Bronze - Lowest) */
 .pedestal-3 {
   height: 75px;
-  background: linear-gradient(180deg, rgba(251, 146, 60, 0.2) 0%, rgba(24, 17, 8, 0.95) 100%);
+  background: linear-gradient(
+    180deg,
+    rgba(251, 146, 60, 0.2) 0%,
+    rgba(24, 17, 8, 0.95) 100%
+  );
   border: 1px solid rgba(251, 146, 60, 0.4);
   border-bottom: none;
 }
@@ -502,9 +528,15 @@
 }
 
 @media (min-width: 640px) {
-  .pedestal-1 { height: 145px; }
-  .pedestal-2 { height: 110px; }
-  .pedestal-3 { height: 85px; }
+  .pedestal-1 {
+    height: 145px;
+  }
+  .pedestal-2 {
+    height: 110px;
+  }
+  .pedestal-3 {
+    height: 85px;
+  }
 }
 
 /* Empty podium state */
@@ -799,4 +831,236 @@
   color: var(--text-muted);
   margin-left: 0.15rem;
   font-weight: 600;
+}
+
+/* ==========================================================
+   OPTIMASI EMPTY STATE CARD - LEADERBOARD (#4 - #10)
+========================================================== */
+.leaderboard-empty-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 2.75rem 1.5rem;
+  margin: 1rem 0;
+  background: radial-gradient(
+    circle at center,
+    rgba(0, 255, 204, 0.04) 0%,
+    rgba(13, 17, 23, 0.7) 100%
+  );
+  border: 1px dashed rgba(255, 255, 255, 0.12);
+  border-radius: 12px;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.leaderboard-empty-card:hover {
+  border-color: rgba(0, 255, 204, 0.35);
+  box-shadow: 0 0 25px rgba(0, 255, 204, 0.06);
+}
+
+/* Lingkaran Avatar Maskot Pixel */
+.empty-pixel-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 76px;
+  height: 76px;
+  background: rgba(0, 255, 204, 0.06);
+  border: 1px solid rgba(0, 255, 204, 0.25);
+  border-radius: 50%;
+  margin-bottom: 1.2rem;
+  box-shadow: 0 0 20px rgba(0, 255, 204, 0.15);
+}
+
+/* Animasi Melayang Pixel Mascot */
+.pixel-critter-anim {
+  animation: pixelFloat 2.6s ease-in-out infinite;
+  filter: drop-shadow(0 4px 6px rgba(0, 255, 204, 0.35));
+}
+
+@keyframes pixelFloat {
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+/* Pixel Badge */
+.empty-badge {
+  font-family: "Courier New", Courier, monospace;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  color: #00ffcc;
+  background: rgba(0, 255, 204, 0.1);
+  border: 1px solid rgba(0, 255, 204, 0.3);
+  padding: 3px 10px;
+  border-radius: 4px;
+  margin-bottom: 0.75rem;
+  text-transform: uppercase;
+}
+
+/* Teks Judul & Deskripsi */
+.empty-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #f0f6fc;
+  margin: 0 0 0.5rem 0;
+  letter-spacing: 0.3px;
+}
+
+.empty-subtitle {
+  font-size: 0.85rem;
+  color: #8b949e;
+  max-width: 460px;
+  line-height: 1.6;
+  margin: 0 0 1.5rem 0;
+}
+
+/* Button Ajakan Bermain (CTA) */
+.btn-empty-play {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: inherit;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: #0d1117;
+  background: #00ffcc;
+  border: 1px solid #00ffcc;
+  padding: 9px 20px;
+  border-radius: 6px;
+  text-decoration: none;
+  cursor: pointer;
+  box-shadow: 0 0 16px rgba(0, 255, 204, 0.25);
+  transition: all 0.2s ease;
+}
+
+.btn-empty-play:hover {
+  background: #39ffdc;
+  box-shadow: 0 0 24px rgba(0, 255, 204, 0.5);
+  transform: translateY(-2px);
+}
+
+.btn-pixel-arrow {
+  font-weight: 900;
+  font-size: 0.85rem;
+}
+
+/* ==========================================================
+   EMPTY STATE RETRO PIXEL (LEARN THEME STYLE)
+========================================================== */
+.pixel-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 3.5rem 1.5rem;
+  margin-top: 0.5rem;
+  background: transparent;
+}
+
+/* Bingkai Ikon Tengah dengan Crosshair Dots */
+.empty-target-frame {
+  position: relative;
+  width: 64px;
+  height: 64px;
+  margin-bottom: 1.5rem;
+}
+
+.empty-icon-inner {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(244, 114, 182, 0.03);
+  border: 1.5px solid rgba(244, 114, 182, 0.4);
+  border-radius: 14px;
+  box-shadow: 0 0 20px rgba(244, 114, 182, 0.08);
+}
+
+/* 4 Titik Pixel di Sisi Luar Bingkai */
+.target-dot {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  background-color: #f472b6;
+  border-radius: 1px;
+}
+
+.dot-top {
+  top: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.dot-bottom {
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.dot-left {
+  left: -10px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.dot-right {
+  right: -10px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+/* Judul Empty State */
+.empty-state-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0 0 0.6rem 0;
+  letter-spacing: 0.2px;
+}
+
+/* Deskripsi Monospace */
+.empty-state-desc {
+  font-family: "Courier New", Courier, monospace;
+  font-size: 0.82rem;
+  color: #8b949e;
+  max-width: 520px;
+  line-height: 1.7;
+  margin: 0 0 1.75rem 0;
+}
+
+/* Tombol Aksi Ghost Magenta */
+.btn-empty-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: inherit;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #f472b6;
+  background: rgba(244, 114, 182, 0.06);
+  border: 1px solid rgba(244, 114, 182, 0.25);
+  padding: 9px 22px;
+  border-radius: 8px;
+  text-decoration: none;
+  transition: all 0.2s ease-in-out;
+}
+
+.btn-empty-action:hover {
+  background: rgba(244, 114, 182, 0.14);
+  border-color: rgba(244, 114, 182, 0.5);
+  color: #ff8fc7;
+  transform: translateY(-1px);
+  box-shadow: 0 0 12px rgba(244, 114, 182, 0.2);
 }

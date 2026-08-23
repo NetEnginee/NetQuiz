@@ -291,65 +291,55 @@ require_once dirname(__DIR__) . '/templates/header.php';
             </span>
         </div>
 
-        <?php if (empty($tableLeaderboard)): ?>
-            <div class="p-8 text-center text-zinc-500 font-mono text-xs">
-                Belum ada peserta tambahan di luar Top 3 untuk kategori ini.
-            </div>
-        <?php else: ?>
-            <div class="leaderboard-table-wrap">
-                <table class="leaderboard-data-table font-sans">
-                    <thead>
-                        <tr>
-                            <th style="width: 75px; text-align: center;">Rank</th>
-                            <th>Nama Siswa</th>
-                            <th style="text-align: right; width: 140px;">Kuis Selesai</th>
-                            <th style="text-align: right; width: 180px;">Total Akumulasi Skor</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php
-                        $rankNum = 4;
-                        foreach ($tableLeaderboard as $user):
-                            $isCurrent = ((int)$user['id'] === $currentUserId);
-                        ?>
-                            <tr class="<?= $isCurrent ? 'current-user-row' : '' ?>">
-                                <td style="text-align: center;">
-                                    <span class="table-rank-badge rank-other">
-                                        #<?= $rankNum ?>
-                                    </span>
-                                </td>
-                                <td>
-                                    <div class="table-user-cell">
-                                        <div class="table-avatar-circle font-mono">
-                                            <?= strtoupper(substr(htmlspecialchars($user['username']), 0, 1)) ?>
-                                        </div>
-                                        <span class="table-username">
-                                            <?= htmlspecialchars($user['username']) ?>
-                                        </span>
-                                        <?php if ($isCurrent): ?>
-                                            <span class="badge-you-tag">Anda</span>
-                                        <?php endif; ?>
-                                    </div>
-                                </td>
-                                <td style="text-align: right;" class="font-mono text-zinc-400 text-xs">
-                                    <?= (int)($user['completed_quizzes'] ?? 0) ?>
-                                </td>
-                                <td style="text-align: right;">
-                                    <span class="table-score-cell">
-                                        <?= number_format((int)$user['total_score']) ?>
-                                    </span>
-                                    <span class="table-pts-suffix font-mono">Pts</span>
-                                </td>
-                            </tr>
-                        <?php
-                            $rankNum++;
-                        endforeach;
-                        ?>
-                    </tbody>
-                </table>
-            </div>
-        <?php endif; ?>
+        <!-- Leaderboard #4 - #10 List / Empty State -->
+        <div class="leaderboard-others-container">
+            <?php if (!empty($otherRanks)): ?>
+                <div class="leaderboard-table">
+                    <?php foreach ($otherRanks as $rank): ?>
+                        <!-- Render baris ranking peserta -->
+                    <?php endforeach; ?>
+                </div>
+            <?php else: ?>
+                <!-- Empty State Serupa Tampilan Modul Learn -->
+                <div class="pixel-empty-state">
+                    <!-- Icon Box Frame dengan 4 Titik Crosshair Pixel -->
+                    <div class="empty-target-frame">
+                        <span class="target-dot dot-top"></span>
+                        <span class="target-dot dot-right"></span>
+                        <span class="target-dot dot-bottom"></span>
+                        <span class="target-dot dot-left"></span>
+
+                        <div class="empty-icon-inner">
+                            <!-- Cute Pixel Trophy / Note Icon -->
+                            <svg width="34" height="34" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <!-- Papan / Clipboard Base -->
+                                <rect x="5" y="4" width="14" height="17" rx="1" fill="#1e222d" />
+                                <rect x="7" y="6" width="10" height="13" fill="#0d1117" />
+
+                                <!-- Header Clip (Yellow) -->
+                                <rect x="9" y="2" width="6" height="3" fill="#facc15" />
+
+                                <!-- Pixel Check / List Lines -->
+                                <rect x="9" y="8" width="6" height="2" fill="#38bdf8" />
+                                <rect x="9" y="12" width="6" height="2" fill="#f472b6" />
+                                <rect x="9" y="15" width="4" height="2" fill="#38bdf8" />
+                            </svg>
+                        </div>
+                    </div>
+
+                    <h3 class="empty-state-title">Belum Ada Peserta Tambahan</h3>
+                    <p class="empty-state-desc">
+                        Papan peringkat #4 - #10 masih kosong. Taklukkan kuis, kumpulkan akumulasi poin, dan amankan posisimu di arena ini! 🏆
+                    </p>
+
+                    <a href="/quiz" class="btn-empty-action">
+                        Latihan Kuis Dulu &rarr;
+                    </a>
+                </div>
+            <?php endif; ?>
+        </div>
     </div>
+</div>
 
 </div>
 
