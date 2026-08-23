@@ -15,7 +15,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function getAudioContext() {
     if (!audioCtx) {
-      const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+      const AudioContextClass =
+        window.AudioContext || window.webkitAudioContext;
       if (AudioContextClass) {
         audioCtx = new AudioContextClass();
       }
@@ -225,7 +226,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const iconName = type === "success" ? "check-circle-2" : "alert-circle";
     const iconClass =
-      type === "success" ? "geist-toast-icon success" : "geist-toast-icon error";
+      type === "success"
+        ? "geist-toast-icon success"
+        : "geist-toast-icon error";
 
     toast.innerHTML = `
       <i data-lucide="${iconName}" class="${iconClass}"></i>
@@ -278,10 +281,18 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!loginEmailInput) return true;
     const val = loginEmailInput.value.trim();
     if (!val) {
-      showError(loginEmailInput, "login-email-error", "Alamat email wajib diisi.");
+      showError(
+        loginEmailInput,
+        "login-email-error",
+        "Alamat email atau username wajib diisi.",
+      );
       return false;
-    } else if (!emailRegex.test(val)) {
-      showError(loginEmailInput, "login-email-error", "Format email tidak valid.");
+    } else if (val.includes("@") && !emailRegex.test(val)) {
+      showError(
+        loginEmailInput,
+        "login-email-error",
+        "Format email tidak valid.",
+      );
       return false;
     }
     clearError(loginEmailInput, "login-email-error");
@@ -292,13 +303,17 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!loginPasswordInput) return true;
     const val = loginPasswordInput.value;
     if (!val) {
-      showError(loginPasswordInput, "login-password-error", "Kata sandi wajib diisi.");
+      showError(
+        loginPasswordInput,
+        "login-password-error",
+        "Kata sandi wajib diisi.",
+      );
       return false;
     } else if (val.length < 8) {
       showError(
         loginPasswordInput,
         "login-password-error",
-        "Kata sandi minimal 8 karakter."
+        "Kata sandi minimal 8 karakter.",
       );
       return false;
     }
@@ -369,9 +384,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const data = await response.json();
 
-        if (response.ok && (data.status === "success" || data.success === true)) {
+        if (
+          response.ok &&
+          (data.status === "success" || data.success === true)
+        ) {
           playPixelSound("coin");
-          showGeistToast(data.message || "Autentikasi berhasil! Mengalihkan...", "success");
+          showGeistToast(
+            data.message || "Autentikasi berhasil! Mengalihkan...",
+            "success",
+          );
           setTimeout(() => {
             window.location.href = data.redirect || window.BASE_URL + "/";
           }, 650);
@@ -388,13 +409,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
           if (data.errors) {
             if (data.errors.email) {
-              showError(loginEmailInput, "login-email-error", data.errors.email);
+              showError(
+                loginEmailInput,
+                "login-email-error",
+                data.errors.email,
+              );
             }
             if (data.errors.password) {
               showError(
                 loginPasswordInput,
                 "login-password-error",
-                data.errors.password
+                data.errors.password,
               );
             }
           }
@@ -404,7 +429,7 @@ document.addEventListener("DOMContentLoaded", () => {
         setBtnLoading(false);
         showGeistToast(
           "Terjadi kendala jaringan atau kesalahan server. Silakan coba kembali.",
-          "error"
+          "error",
         );
       }
     });

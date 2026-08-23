@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Core;
@@ -152,7 +153,7 @@ class Security
         $ivlen = openssl_cipher_iv_length($cipher);
         $iv = random_bytes($ivlen);
         $ciphertext = openssl_encrypt($plaintext, $cipher, $key, OPENSSL_RAW_DATA, $iv);
-        
+
         $data = $iv . $ciphertext;
         return str_replace(['+', '/', '='], ['-', '_', ''], base64_encode($data));
     }
@@ -166,7 +167,7 @@ class Security
         if (empty($encrypted)) {
             return null;
         }
-        
+
         // Decode base64 URL-safe
         $data = base64_decode(str_replace(['-', '_'], ['+', '/'], $encrypted));
         if ($data === false) {
@@ -182,43 +183,69 @@ class Security
 
         $iv = substr($data, 0, $ivlen);
         $ciphertext = substr($data, $ivlen);
-        
+
         $decrypted = openssl_decrypt($ciphertext, $cipher, $key, OPENSSL_RAW_DATA, $iv);
         return $decrypted !== false ? $decrypted : null;
     }
 
     /**
-     * Check if the current IP address or email is rate-limited (brute force protection).
+     * Get client real IP address safely.
+     */
+    public static function getClientIp(): string
+    {
+        $headers = [
+            'HTTP_CF_CONNECTING_IP', // Cloudflare
+            'HTTP_X_FORWARDED_FOR',
+            'HTTP_X_REAL_IP',
+            'REMOTE_ADDR'
+        ];
+
+        foreach ($headers as $header) {
+            if (!empty($_SERVER[$header])) {
+                $ips = explode(',', $_SERVER[$header]);
+                $ip = trim($ips[0]);
+                if (filter_var($ip, FILTER_VALIDATE_IP)) {
+                    return $ip;
+                }
+            }
+        }
+
+        return '127.0.0.1';
+    }
+
+    /**
+     * Check if the account or IP+account is rate-limited (brute force protection).
      * Returns the remaining lock duration in seconds if limited, null otherwise.
      */
     public static function checkRateLimit(string $email, int $maxAttempts = 5, int $decaySeconds = 300): ?int
     {
-        $ip = $_SERVER['REMOTE_ADDR'] ?? '';
-        if (empty($ip)) {
+        $ip = self::getClientIp();
+        $email = trim(strtolower($email));
+        if (empty($email)) {
             return null;
         }
 
         try {
             $db = Database::getInstance()->getConnection();
-            
+
             // Clean up old attempts
             $cleanStmt = $db->prepare("DELETE FROM login_attempts WHERE attempted_at < DATE_SUB(NOW(), INTERVAL :decay SECOND)");
             $cleanStmt->execute(['decay' => $decaySeconds]);
 
-            // Count attempts from this IP or email in the decay window
-            $stmt = $db->prepare("SELECT COUNT(*) FROM login_attempts WHERE (ip_address = :ip OR email = :email) AND attempted_at >= DATE_SUB(NOW(), INTERVAL :decay SECOND)");
+            // Count attempts for this specific account or IP+account pair in the decay window
+            $stmt = $db->prepare("SELECT COUNT(*) FROM login_attempts WHERE (email = :email OR (ip_address = :ip AND email = :email_pair)) AND attempted_at >= DATE_SUB(NOW(), INTERVAL :decay SECOND)");
             $stmt->execute([
-                'ip' => $ip,
                 'email' => $email,
+                'ip' => $ip,
+                'email_pair' => $email,
                 'decay' => $decaySeconds
             ]);
             $attempts = (int) $stmt->fetchColumn();
 
             if ($attempts >= $maxAttempts) {
                 // Find how many seconds until the block lifts
-                $timeStmt = $db->prepare("SELECT MIN(attempted_at) FROM login_attempts WHERE (ip_address = :ip OR email = :email) AND attempted_at >= DATE_SUB(NOW(), INTERVAL :decay SECOND)");
+                $timeStmt = $db->prepare("SELECT MIN(attempted_at) FROM login_attempts WHERE email = :email AND attempted_at >= DATE_SUB(NOW(), INTERVAL :decay SECOND)");
                 $timeStmt->execute([
-                    'ip' => $ip,
                     'email' => $email,
                     'decay' => $decaySeconds
                 ]);
@@ -229,7 +256,7 @@ class Security
                 }
                 return $decaySeconds;
             }
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             error_log("Rate limit check failed: " . $e->getMessage());
         }
 
@@ -241,8 +268,9 @@ class Security
      */
     public static function recordLoginAttempt(string $email): void
     {
-        $ip = $_SERVER['REMOTE_ADDR'] ?? '';
-        if (empty($ip)) {
+        $ip = self::getClientIp();
+        $email = trim(strtolower($email));
+        if (empty($email)) {
             return;
         }
 
@@ -253,29 +281,28 @@ class Security
                 'ip' => $ip,
                 'email' => $email
             ]);
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             error_log("Failed to record login attempt: " . $e->getMessage());
         }
     }
 
     /**
-     * Clear login attempts upon successful login.
+     * Clear login attempts upon successful login for this account.
      */
     public static function clearLoginAttempts(string $email): void
     {
-        $ip = $_SERVER['REMOTE_ADDR'] ?? '';
-        if (empty($ip)) {
+        $email = trim(strtolower($email));
+        if (empty($email)) {
             return;
         }
 
         try {
             $db = Database::getInstance()->getConnection();
-            $stmt = $db->prepare("DELETE FROM login_attempts WHERE ip_address = :ip OR email = :email");
+            $stmt = $db->prepare("DELETE FROM login_attempts WHERE email = :email");
             $stmt->execute([
-                'ip' => $ip,
                 'email' => $email
             ]);
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             error_log("Failed to clear login attempts: " . $e->getMessage());
         }
     }

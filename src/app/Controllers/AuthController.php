@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Controllers;
@@ -49,25 +50,26 @@ class AuthController extends Controller
             return $this->jsonResponse(['status' => 'error', 'message' => 'Sesi tidak valid, silakan muat ulang halaman.'], 403);
         }
 
-        $email = trim((string)$this->request->input('email', ''));
+        $identifier = trim((string)$this->request->input('email', $this->request->input('username', '')));
         $password = (string)$this->request->input('password', '');
 
-        if (empty($email) || empty($password)) {
+        if (empty($identifier) || empty($password)) {
             return $this->jsonResponse([
                 'status' => 'error',
-                'errors' => ['general' => 'Email dan Password wajib diisi.']
+                'errors' => ['general' => 'Email/Username dan Password wajib diisi.']
             ]);
         }
 
-        if (!Security::isValidEmail($email)) {
+        // If identifier contains @, validate email format
+        if (str_contains($identifier, '@') && !Security::isValidEmail($identifier)) {
             return $this->jsonResponse([
                 'status' => 'error',
                 'errors' => ['email' => 'Format email tidak valid.']
             ]);
         }
 
-        // Brute Force Rate Limiting Protection
-        $lockSeconds = Security::checkRateLimit($email);
+        // Brute Force Rate Limiting Protection (per account identifier)
+        $lockSeconds = Security::checkRateLimit($identifier);
         if ($lockSeconds !== null) {
             $minutes = (int)ceil($lockSeconds / 60);
             return $this->jsonResponse([
@@ -76,12 +78,20 @@ class AuthController extends Controller
             ]);
         }
 
-        $user = $this->userRepo->findByEmail($email);
+        $user = $this->userRepo->findByUsernameOrEmail($identifier);
 
         if ($user && password_verify($password, $user['password'])) {
+            // Check if user status is active
+            if (isset($user['status']) && strcasecmp($user['status'], 'Aktif') !== 0) {
+                return $this->jsonResponse([
+                    'status' => 'error',
+                    'errors' => ['general' => 'Akun Anda berstatus ' . htmlspecialchars($user['status']) . '. Silakan hubungi administrator.']
+                ]);
+            }
+
             session_regenerate_id(true);
             Security::generateCsrfToken(true);
-            Security::clearLoginAttempts($email);
+            Security::clearLoginAttempts($identifier);
 
             $_SESSION['user'] = [
                 'id' => (int)$user['id'],
@@ -97,10 +107,10 @@ class AuthController extends Controller
             ]);
         }
 
-        Security::recordLoginAttempt($email);
+        Security::recordLoginAttempt($identifier);
         return $this->jsonResponse([
             'status' => 'error',
-            'errors' => ['password' => 'Password salah atau email tidak terdaftar.']
+            'errors' => ['password' => 'Password salah atau akun tidak terdaftar.']
         ]);
     }
 
@@ -113,7 +123,19 @@ class AuthController extends Controller
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }
-        unset($_SESSION['user']);
+        $_SESSION = [];
+        if (ini_get("session.use_cookies")) {
+            $params = session_get_cookie_params();
+            setcookie(
+                session_name(),
+                '',
+                time() - 42000,
+                $params["path"],
+                $params["domain"],
+                $params["secure"],
+                $params["httponly"]
+            );
+        }
         session_destroy();
 
         return $this->redirect(BASE_URL . '/login');
