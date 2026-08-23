@@ -20,7 +20,7 @@ require_once dirname(__DIR__) . '/templates/header.php';
 <div class="quiz-play-page-container">
 
     <!-- 1. Header & Breadcrumb Bar -->
-    <section class="dashboard-hero-header mb-5 pb-4">
+    <section class="dashboard-hero-header mb-6 pb-4">
         <div class="hero-brand-group">
             <div class="hero-router-box">
                 <span class="live-radar-dot"></span>
@@ -48,7 +48,7 @@ require_once dirname(__DIR__) . '/templates/header.php';
             </div>
         </div>
 
-        <!-- Quick Timer Bar for Mobile -->
+        <!-- Quick Timer Bar for Mobile / Action Bar -->
         <div class="mobile-timer-bar flex items-center gap-2">
             <div class="quiz-timer-pill font-mono text-xs font-bold px-3 py-1.5 bg-zinc-900 border border-zinc-800 rounded-md flex items-center gap-1.5 text-cyan-400">
                 <svg class="w-3.5 h-3.5 pixelated" viewBox="0 0 16 16"><use href="#pixel-router"></use></svg>
@@ -58,11 +58,11 @@ require_once dirname(__DIR__) . '/templates/header.php';
                 <span>⏸ Jeda</span>
             </button>
         </div>
-    </div>
+    </section>
 
     <!-- 2. Main 2-Column Exam Arena -->
     <div class="quiz-exam-layout">
-        
+
         <!-- LEFT COLUMN: Active Question Carousel -->
         <div class="question-column-left">
             <div class="question-card-container">
@@ -101,7 +101,6 @@ require_once dirname(__DIR__) . '/templates/header.php';
                                                 Soal <?= $qNum ?> dari <?= $totalQuestions ?>
                                             </span>
                                         </div>
-                                        <span class="font-mono text-xs text-zinc-500">Pilih 1 Opsi Jawaban</span>
                                     </div>
 
                                     <!-- Question Statement -->
@@ -130,9 +129,9 @@ require_once dirname(__DIR__) . '/templates/header.php';
                                                 <input type="radio" 
                                                        name="answers[<?= $index ?>]" 
                                                        value="<?= $optKey ?>" 
-                                                       <?= $isChecked ? 'checked' : '' ?> 
+                                                       <?= $isChecked ? 'checked' : '' ?>
                                                        style="display: none;" 
-                                                       class="option-radio" 
+                                                       class="option-radio"
                                                        onchange="window.onOptionSelect(this)">
                                                 <span class="option-text-content font-sans">
                                                     <?= htmlspecialchars($optText) ?>

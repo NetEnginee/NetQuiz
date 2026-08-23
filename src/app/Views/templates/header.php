@@ -34,10 +34,14 @@ function renderBreadcrumb(array $items): string
         $label = htmlspecialchars($item['label'] ?? '');
         $url = $item['url'] ?? null;
 
-        if ($isLast || empty($url)) {
+        if ($isLast) {
             $html .= '<span class="active-tag">' . $label . '</span>';
         } else {
-            $html .= '<a href="' . htmlspecialchars($url) . '" class="breadcrumb-link">' . $label . '</a>';
+            if (!empty($url)) {
+                $html .= '<a href="' . htmlspecialchars($url) . '" class="breadcrumb-link">' . $label . '</a>';
+            } else {
+                $html .= '<span class="breadcrumb-link">' . $label . '</span>';
+            }
             $html .= '<span class="breadcrumb-sep">/</span>';
         }
     }
