@@ -41,9 +41,10 @@
   --glow-red: 0 0 20px rgba(239, 68, 68, 0.25);
 
   /* Fonts */
-  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
-  --font-pixel: 'Press Start 2P', 'JetBrains Mono', monospace;
+  --font-sans:
+    "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-mono: "JetBrains Mono", "Fira Code", monospace;
+  --font-pixel: "Press Start 2P", "JetBrains Mono", monospace;
 }
 
 /* ==========================================================================
@@ -65,15 +66,42 @@ svg.pixelated {
   flex-shrink: 0;
 }
 
-svg.w-3 { width: 12px; height: 12px; }
-svg.w-3\.5 { width: 14px; height: 14px; }
-svg.w-4 { width: 16px; height: 16px; }
-svg.w-5 { width: 20px; height: 20px; }
-svg.w-6 { width: 24px; height: 24px; }
-svg.w-7 { width: 28px; height: 28px; }
-svg.w-8 { width: 32px; height: 32px; }
-svg.w-10 { width: 40px; height: 40px; }
-svg.w-12 { width: 48px; height: 48px; }
+svg.w-3 {
+  width: 12px;
+  height: 12px;
+}
+svg.w-3\.5 {
+  width: 14px;
+  height: 14px;
+}
+svg.w-4 {
+  width: 16px;
+  height: 16px;
+}
+svg.w-5 {
+  width: 20px;
+  height: 20px;
+}
+svg.w-6 {
+  width: 24px;
+  height: 24px;
+}
+svg.w-7 {
+  width: 28px;
+  height: 28px;
+}
+svg.w-8 {
+  width: 32px;
+  height: 32px;
+}
+svg.w-10 {
+  width: 40px;
+  height: 40px;
+}
+svg.w-12 {
+  width: 48px;
+  height: 48px;
+}
 
 /* Breadcrumb Styles */
 .hero-breadcrumb {
@@ -104,6 +132,57 @@ svg.w-12 { width: 48px; height: 48px; }
 .hero-breadcrumb .active-tag {
   color: var(--accent-cyan);
   font-weight: 700;
+}
+
+/* Hero Action Buttons - Consistent Sizing */
+.hero-action-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.hero-action-bar .btn-hero-primary,
+.hero-action-bar .btn-hero-secondary {
+  height: 36px;
+  min-height: 36px;
+  padding: 0 1rem;
+  font-size: 0.775rem;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  border-radius: 6px;
+  box-sizing: border-box;
+  line-height: 1;
+  text-decoration: none;
+  transition: all 0.15s ease;
+}
+
+.hero-action-bar .btn-hero-primary {
+  background-color: #ffffff;
+  color: #000000;
+  border: 1px solid #ffffff;
+  font-weight: 700;
+}
+
+.hero-action-bar .btn-hero-primary:hover {
+  background-color: #e4e4e7;
+  border-color: #e4e4e7;
+  transform: translateY(-1px);
+}
+
+.hero-action-bar .btn-hero-secondary {
+  background-color: var(--bg-card);
+  color: var(--text-primary);
+  border: 1px solid var(--border-card);
+}
+
+.hero-action-bar .btn-hero-secondary:hover {
+  border-color: var(--border-card-hover);
+  background-color: var(--bg-subcard);
+  color: #ffffff;
 }
 
 /* ==========================================================================
@@ -236,14 +315,19 @@ svg.w-12 { width: 48px; height: 48px; }
   position: relative;
   overflow: hidden;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.75);
-  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    transform 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
   min-height: 225px;
 }
 
 .quiz-card-box:hover {
   transform: translateY(-2px);
   border-color: var(--card-hover-border, var(--border-card-hover));
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.85), 0 0 20px var(--card-glow, rgba(80, 227, 194, 0.12));
+  box-shadow:
+    0 12px 30px rgba(0, 0, 0, 0.85),
+    0 0 20px var(--card-glow, rgba(80, 227, 194, 0.12));
 }
 
 .quiz-watermark {
@@ -254,7 +338,9 @@ svg.w-12 { width: 48px; height: 48px; }
   height: 84px;
   opacity: 0.05;
   pointer-events: none;
-  transition: opacity 0.2s ease, transform 0.2s ease;
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease;
 }
 
 .quiz-card-box:hover .quiz-watermark {
@@ -521,17 +607,6 @@ svg.w-12 { width: 48px; height: 48px; }
   flex: 1;
 }
 
-/* Exam & Review Carousel Footer */
-.carousel-footer-bar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding-top: 1.5rem;
-  border-top: 1px solid var(--border-subtle);
-  flex-wrap: wrap;
-  gap: 1rem;
-}
-
 /* Desktop & Mobile Countdown Timer Box */
 .desktop-timer-card {
   background-color: var(--bg-card);
@@ -572,8 +647,13 @@ svg.w-12 { width: 48px; height: 48px; }
 }
 
 @keyframes pulse-timer-warning {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.02); }
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.02);
+  }
 }
 
 /* Question Palette Grid */
@@ -589,8 +669,10 @@ svg.w-12 { width: 48px; height: 48px; }
 .palette-buttons-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(40px, 1fr));
-  gap: 0.6rem;
-  margin-bottom: 1.35rem;
+  gap: 0.75rem;
+  margin-top: 1.25rem;
+  margin-bottom: 1.5rem;
+  padding: 0.35rem 0;
 }
 
 .palette-btn {
@@ -635,10 +717,67 @@ svg.w-12 { width: 48px; height: 48px; }
   justify-content: space-between;
   font-size: 0.725rem;
   color: var(--text-muted);
-  padding-top: 1rem;
+  padding-top: 1.15rem;
   border-top: 1px solid var(--border-subtle);
-  margin-bottom: 1.25rem;
+  margin-bottom: 0.35rem;
   gap: 0.5rem;
+  flex-wrap: nowrap;
+}
+
+.legend-badge-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.3rem 0.65rem;
+  border-radius: 5px;
+  background-color: var(--bg-subcard);
+  border: 1px solid var(--border-subtle);
+  font-size: 0.725rem;
+  line-height: 1;
+  height: 28px;
+  box-sizing: border-box;
+}
+
+.legend-badge-item span,
+.legend-badge-item strong {
+  display: inline-flex;
+  align-items: center;
+  line-height: 1;
+}
+
+.legend-correct {
+  color: #34d399;
+  border-color: rgba(16, 185, 129, 0.25);
+}
+
+.legend-wrong {
+  color: #f87171;
+  border-color: rgba(239, 68, 68, 0.25);
+}
+
+.legend-active {
+  color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.legend-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 2px;
+  display: inline-block;
+  flex-shrink: 0;
+  margin: 0;
+}
+
+.legend-dot-active {
+  width: 7px;
+  height: 7px;
+  border-radius: 2px;
+  background-color: #ffffff;
+  box-shadow: 0 0 6px rgba(255, 255, 255, 0.8);
+  display: inline-block;
+  flex-shrink: 0;
+  margin: 0;
 }
 
 /* ==========================================================================
@@ -650,7 +789,10 @@ svg.w-12 { width: 48px; height: 48px; }
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  min-height: calc(100dvh - 58px - 60px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px));
+  min-height: calc(
+    100dvh - 58px - 60px - env(safe-area-inset-top, 0px) -
+      env(safe-area-inset-bottom, 0px)
+  );
   width: 100%;
 }
 
@@ -667,7 +809,9 @@ svg.w-12 { width: 48px; height: 48px; }
   padding: clamp(1.4rem, 2.8vh, 2.25rem) clamp(1.4rem, 3.8vw, 2.5rem);
   text-align: center;
   position: relative;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.9), 0 0 30px rgba(80, 227, 194, 0.06);
+  box-shadow:
+    0 20px 50px rgba(0, 0, 0, 0.9),
+    0 0 30px rgba(80, 227, 194, 0.06);
 }
 
 .result-status-badge-wrap {
@@ -686,7 +830,9 @@ svg.w-12 { width: 48px; height: 48px; }
   align-items: center;
   justify-content: center;
   margin: 0 auto clamp(0.65rem, 1.6vh, 1.15rem);
-  box-shadow: 0 0 25px rgba(0, 0, 0, 0.8), 0 0 15px rgba(80, 227, 194, 0.12);
+  box-shadow:
+    0 0 25px rgba(0, 0, 0, 0.8),
+    0 0 15px rgba(80, 227, 194, 0.12);
   transition: transform 0.2s ease;
 }
 
@@ -806,12 +952,45 @@ svg.w-12 { width: 48px; height: 48px; }
   border-color: rgba(239, 68, 68, 0.4);
 }
 
-.review-explanation-terminal {
-  padding: 1.35rem 1.6rem;
+.review-explanation-sidebar-card {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-card);
+  border-radius: 10px;
+  padding: clamp(1.25rem, 2vw, 1.6rem);
+  position: relative;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.75);
+}
+
+.explanation-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 0.65rem;
+  margin-bottom: 0.85rem;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+#review-explanation-stack {
   background-color: #050505;
-  border: 1px solid var(--border-card-hover);
+  border: 1px solid var(--border-subtle);
   border-radius: 8px;
-  margin-top: 2rem;
+  padding: 1.15rem 1.25rem;
+  min-height: 100px;
+}
+
+.review-explanation-item {
+  animation: fadeIn 0.15s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(2px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .review-palette-btn {

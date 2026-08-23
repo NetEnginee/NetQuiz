@@ -1,6 +1,6 @@
 /**
  * NetQuiz Quiz Player Module - Vercel Dark & Pixel Engine
- * Handles: Carousel Stack, Option Selection, Timer Countdown, Pause/Resume, Modal Overlays, and Audio Synth FX.
+ * Handles: Option Selection, Palette Navigation, Timer Countdown, Pause/Resume, Modal Overlays, and Audio Synth FX.
  */
 (function () {
   "use strict";
@@ -34,9 +34,6 @@
       this.blocks = Array.from(document.querySelectorAll(".question-block"));
       this.totalSlides = this.blocks.length;
 
-      this.btnPrev = document.getElementById("btn-prev");
-      this.btnNext = document.getElementById("btn-next");
-      this.btnSubmitCarousel = document.getElementById("btn-submit-carousel");
       this.paletteButtons = Array.from(
         document.querySelectorAll(".palette-btn")
       );
@@ -99,69 +96,61 @@
     }
 
     startTimer() {
-      this.timerInterval = setInterval(() => {
-        this.timeLeft--;
+      if (this.timerInterval) clearInterval(this.timerInterval);
 
+      this.timerInterval = setInterval(() => {
         if (this.timeLeft <= 0) {
           clearInterval(this.timerInterval);
-          this.timeLeft = 0;
-          this.updateTimerDisplay();
-          this.handleTimeExpired();
-        } else {
-          this.updateTimerDisplay();
+          this.onTimerExpired();
+          return;
         }
+
+        this.timeLeft--;
+        if (this.timeLeftInput) {
+          this.timeLeftInput.value = this.timeLeft;
+        }
+        this.updateTimerDisplay();
       }, 1000);
     }
 
     updateTimerDisplay() {
       const minutes = Math.floor(this.timeLeft / 60);
       const seconds = this.timeLeft % 60;
-      const formatted = `${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
+      const formatted = `${String(minutes).padStart(2, "0")}:${String(
+        seconds
+      ).padStart(2, "0")}`;
 
       this.timerTexts.forEach((el) => {
         el.textContent = formatted;
       });
 
-      if (this.timeLeftInput) {
-        this.timeLeftInput.value = this.timeLeft;
+      // Warning pulse when less than 60 seconds remain
+      if (this.timeLeft <= 60) {
+        this.timerPills.forEach((el) => {
+          el.classList.add("warning");
+        });
+      } else {
+        this.timerPills.forEach((el) => {
+          el.classList.remove("warning");
+        });
       }
-
-      this.timerPills.forEach((pill) => {
-        if (this.timeLeft <= 60 && this.timeLeft > 0) {
-          pill.classList.add("warning");
-        } else {
-          pill.classList.remove("warning");
-        }
-      });
     }
 
-    handleTimeExpired() {
-      localStorage.removeItem(this.storageKey);
+    onTimerExpired() {
+      if (this.isSubmitting) return;
 
+      localStorage.removeItem(this.storageKey);
       if (window.playPixelSound) {
         window.playPixelSound("badge");
       }
 
+      // Show auto-submit notification
       const overlay = document.createElement("div");
-      overlay.style.position = "fixed";
-      overlay.style.inset = "0";
-      overlay.style.backgroundColor = "rgba(0, 0, 0, 0.9)";
-      overlay.style.backdropFilter = "blur(12px)";
-      overlay.style.color = "#ffffff";
-      overlay.style.display = "flex";
-      overlay.style.flexDirection = "column";
-      overlay.style.justifyContent = "center";
-      overlay.style.alignItems = "center";
-      overlay.style.zIndex = "99999";
-      overlay.style.padding = "1rem";
-
+      overlay.className = "dialog-overlay";
       overlay.innerHTML = `
-        <div class="modal-dark-card text-center" style="max-width: 420px;">
-            <div style="background: rgba(239, 68, 68, 0.2); border: 1px solid rgba(239, 68, 68, 0.5); border-radius: 50%; width: 56px; height: 56px; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.25rem;">
-                <svg class="w-7 h-7 text-red-400 pixelated" viewBox="0 0 16 16"><use href="#pixel-router"></use></svg>
-            </div>
-            <h2 class="text-xl font-bold font-sans text-white mb-2">Waktu Ujian Telah Habis</h2>
-            <p class="font-mono text-xs text-zinc-400 mb-0">Sistem sedang mengumpulkan dan mengevaluasi lembar jawaban Anda...</p>
+        <div class="modal-dark-card text-center">
+          <h3 class="modal-title-text text-red-400">⏱ Waktu Ujian Telah Habis!</h3>
+          <p class="modal-desc-text">Jawaban Anda sedang dikumpulkan secara otomatis ke server...</p>
         </div>
       `;
       document.body.appendChild(overlay);
@@ -182,25 +171,6 @@
           block.style.display = "none";
         }
       });
-
-      if (this.btnPrev) {
-        this.btnPrev.disabled = this.currentSlide === 0;
-        this.btnPrev.style.opacity = this.currentSlide === 0 ? "0.4" : "1";
-        this.btnPrev.style.cursor =
-          this.currentSlide === 0 ? "not-allowed" : "pointer";
-      }
-
-      // Handle Next / Submit button visibility in carousel footer
-      const isLastSlide = this.currentSlide === this.totalSlides - 1;
-      if (this.btnNext && this.btnSubmitCarousel) {
-        if (isLastSlide) {
-          this.btnNext.style.display = "none";
-          this.btnSubmitCarousel.style.display = "inline-flex";
-        } else {
-          this.btnNext.style.display = "inline-flex";
-          this.btnSubmitCarousel.style.display = "none";
-        }
-      }
 
       // Update palette active states
       this.paletteButtons.forEach((btn, index) => {
@@ -252,28 +222,7 @@
         });
       });
 
-      // 2. Next / Prev navigation
-      if (this.btnNext) {
-        this.btnNext.addEventListener("click", () => {
-          if (this.currentSlide < this.totalSlides - 1) {
-            this.currentSlide++;
-            this.updateSlider();
-            window.scrollTo({ top: 0, behavior: "smooth" });
-          }
-        });
-      }
-
-      if (this.btnPrev) {
-        this.btnPrev.addEventListener("click", () => {
-          if (this.currentSlide > 0) {
-            this.currentSlide--;
-            this.updateSlider();
-            window.scrollTo({ top: 0, behavior: "smooth" });
-          }
-        });
-      }
-
-      // 3. Pause Modal Dialog
+      // 2. Pause Modal Dialog
       this.pauseTriggers.forEach((trigger) => {
         trigger.addEventListener("click", () => {
           if (this.pauseDialog) this.pauseDialog.style.display = "flex";
@@ -298,12 +247,15 @@
         this.btnConfirmPause.addEventListener("click", () => {
           this.isSubmitting = true;
           localStorage.removeItem(this.storageKey);
-          this.quizForm.action = `${window.BASE_URL}/quiz/pause/${this.quizId}`;
+
+          // Submit via pause action URL
+          const action = `${window.BASE_URL || ""}/quiz/pause/${this.quizId}`;
+          this.quizForm.setAttribute("action", action);
           this.quizForm.submit();
         });
       }
 
-      // 4. Submit Confirmation Modal
+      // 3. Submit Confirmation Modal Dialog
       this.submitModalTriggers.forEach((trigger) => {
         trigger.addEventListener("click", () => {
           this.updateAnsweredCounter();
@@ -327,19 +279,17 @@
         });
       }
 
-      // Keyboard navigation (ArrowLeft / ArrowRight & Escape)
+      if (this.btnFinalSubmit && this.quizForm) {
+        this.btnFinalSubmit.addEventListener("click", () => {
+          this.isSubmitting = true;
+          localStorage.removeItem(this.storageKey);
+          this.quizForm.submit();
+        });
+      }
+
+      // 4. Keyboard arrow navigation shortcuts
       document.addEventListener("keydown", (e) => {
-        if (e.key === "Escape") {
-          if (this.pauseDialog && this.pauseDialog.style.display === "flex") {
-            this.pauseDialog.style.display = "none";
-          }
-          if (
-            this.submitConfirmModal &&
-            this.submitConfirmModal.style.display === "flex"
-          ) {
-            this.submitConfirmModal.style.display = "none";
-          }
-        } else if (e.key === "ArrowRight" && !e.target.matches("input, textarea")) {
+        if (e.key === "ArrowRight" && !e.target.matches("input, textarea")) {
           if (this.currentSlide < this.totalSlides - 1) {
             this.currentSlide++;
             this.updateSlider();
@@ -351,36 +301,18 @@
             this.updateSlider();
             if (window.playPixelSound) window.playPixelSound("click");
           }
-        }
-      });
-
-      if (this.btnFinalSubmit && this.quizForm) {
-        this.btnFinalSubmit.addEventListener("click", () => {
-          this.isSubmitting = true;
-          localStorage.removeItem(this.storageKey);
-          this.quizForm.action = `${window.BASE_URL}/quiz/submit/${this.quizId}`;
-          this.quizForm.submit();
-        });
-      }
-
-      // 5. Native Form Submit cleanup
-      if (this.quizForm) {
-        this.quizForm.addEventListener("submit", () => {
-          this.isSubmitting = true;
-          localStorage.removeItem(this.storageKey);
-        });
-      }
-
-      window.addEventListener("pagehide", () => {
-        if (this.isSubmitting) {
-          localStorage.removeItem(this.storageKey);
+        } else if (e.key === "Escape") {
+          if (this.pauseDialog) this.pauseDialog.style.display = "none";
+          if (this.submitConfirmModal)
+            this.submitConfirmModal.style.display = "none";
         }
       });
     }
   }
 
   document.addEventListener("DOMContentLoaded", () => {
-    const config = window.QUIZ_PLAYER_CONFIG || {};
-    window.quizPlayer = new NetQuizPlayer(config);
+    if (window.QUIZ_PLAYER_CONFIG) {
+      window.quizPlayer = new NetQuizPlayer(window.QUIZ_PLAYER_CONFIG);
+    }
   });
 })();
