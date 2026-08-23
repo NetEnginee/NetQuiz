@@ -892,38 +892,71 @@ textarea.form-field-input:focus {
    7. MATERIAL EDITOR & TOOLBAR
    ========================================================================== */
 
-.editor-quick-toolbar {
+.editor-toolbar-container {
   display: flex;
-  align-items: center;
-  gap: 4px;
-  padding: 8px 10px;
+  flex-direction: column;
   background-color: #0c0c0f;
   border: 1px solid var(--border-card);
   border-bottom: none;
   border-top-left-radius: 8px;
   border-top-right-radius: 8px;
+  overflow: hidden;
+}
+
+.toolbar-tier {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 10px;
   flex-wrap: wrap;
-  row-gap: 6px;
+  row-gap: 5px;
+}
+
+.toolbar-tier-primary {
+  background-color: #0e0e12;
+  border-bottom: 1px solid #1c1c22;
+}
+
+.toolbar-tier-secondary {
+  background-color: #09090c;
+}
+
+.toolbar-section-badge {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+  background-color: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 2px 6px;
+  border-radius: 4px;
+  user-select: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
 }
 
 .toolbar-group {
   display: inline-flex;
   align-items: center;
   gap: 3px;
+  flex-wrap: wrap;
 }
 
 .toolbar-group-divider {
   width: 1px;
-  height: 18px;
+  height: 16px;
   background-color: var(--border-card);
-  margin: 0 4px;
+  margin: 0 3px;
 }
 
 .toolbar-btn {
   background-color: #141418;
   border: 1px solid var(--border-card);
   border-radius: 4px;
-  padding: 4px 8px;
+  padding: 3.5px 7.5px;
   font-family: var(--font-mono);
   font-size: 0.725rem;
   color: var(--text-secondary);

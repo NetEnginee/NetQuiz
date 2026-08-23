@@ -840,11 +840,21 @@ svg.w-12,
   letter-spacing: 0.02em;
 }
 
-.callout-note .callout-header { color: #60a5fa; }
-.callout-tip .callout-header { color: #34d399; }
-.callout-warning .callout-header { color: #fbbf24; }
-.callout-danger .callout-header { color: #f87171; }
-.callout-success .callout-header { color: #50e3c2; }
+.callout-note .callout-header {
+  color: #60a5fa;
+}
+.callout-tip .callout-header {
+  color: #34d399;
+}
+.callout-warning .callout-header {
+  color: #fbbf24;
+}
+.callout-danger .callout-header {
+  color: #f87171;
+}
+.callout-success .callout-header {
+  color: #50e3c2;
+}
 
 /* Step Guide Numbered Cards */
 .step-guide-container {
@@ -1049,7 +1059,12 @@ svg.w-12,
 .material-content-body hr.section-divider {
   border: none;
   height: 1px;
-  background: linear-gradient(90deg, transparent, var(--border-card-hover), transparent);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--border-card-hover),
+    transparent
+  );
   margin: 2.5rem 0;
 }
 
