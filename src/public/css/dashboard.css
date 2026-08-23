@@ -491,55 +491,6 @@ body {
   min-width: 0;
 }
 
-/* --- Global Breadcrumb Navigation --- */
-.hero-breadcrumb-nav {
-  margin-bottom: 0.25rem;
-}
-
-.hero-breadcrumb-list {
-  display: inline-flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 0.35rem;
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  font-family: var(--font-mono);
-  font-size: 0.725rem;
-  color: var(--text-muted);
-}
-
-.breadcrumb-item {
-  display: inline-flex;
-  align-items: center;
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.breadcrumb-link {
-  color: var(--text-secondary);
-  text-decoration: none;
-  transition: color 0.15s ease;
-}
-
-.breadcrumb-link:hover {
-  color: #ffffff;
-  text-decoration: underline;
-}
-
-.breadcrumb-sep {
-  color: var(--text-dim);
-  font-weight: 600;
-  user-select: none;
-  padding: 0 0.15rem;
-}
-
-.breadcrumb-active-tag {
-  color: var(--accent-cyan);
-  font-weight: 700;
-}
-
 .hero-breadcrumb {
   font-family: var(--font-mono);
   font-size: 0.725rem;

@@ -20,34 +20,32 @@ require_once dirname(__DIR__) . '/templates/header.php';
 <div class="quiz-play-page-container">
 
     <!-- 1. Header & Breadcrumb Bar -->
-    <div class="dashboard-hero-header">
-        <div class="hero-brand-group">
-            <div class="hero-router-box">
-                <svg class="w-7 h-7 pixelated" viewBox="0 0 16 16">
-                    <use href="#pixel-router"></use>
-                </svg>
-                <span class="live-radar-dot"></span>
-            </div>
-            <div class="hero-title-area">
-                <?= renderBreadcrumb([
-                    ['label' => 'Student', 'url' => BASE_URL . '/'],
-                    ['label' => 'Kuis', 'url' => BASE_URL . '/quiz'],
-                    ['label' => $quiz['title']]
-                ]) ?>
+    <div class="dashboard-hero-header mb-5 pb-4">
+        <div>
+            <?= renderBreadcrumb([
+                ['label' => 'Student', 'url' => BASE_URL . '/'],
+                ['label' => 'Kuis', 'url' => BASE_URL . '/quiz'],
+                ['label' => $quiz['title']]
+            ]) ?>
+            <div class="hero-title-row">
                 <h1 class="hero-main-title">
-                    <span><?= htmlspecialchars($quiz['title']) ?></span><span class="hero-cursor">_</span>
-                    <span class="hero-pill-version"><?= htmlspecialchars($quiz['category']) ?></span>
-                    <span class="hero-pill-status"><?= htmlspecialchars($quiz['difficulty']) ?></span>
+                    <span><?= htmlspecialchars($quiz['title']) ?></span>
                 </h1>
+                <div class="flex items-center gap-2 mt-1">
+                    <span class="quiz-diff-pill font-mono font-bold text-cyan-400">
+                        <?= htmlspecialchars($quiz['category']) ?>
+                    </span>
+                    <span class="quiz-diff-pill font-mono">
+                        <?= htmlspecialchars($quiz['difficulty']) ?>
+                    </span>
+                </div>
             </div>
         </div>
 
         <!-- Quick Timer Bar for Mobile -->
         <div class="mobile-timer-bar flex items-center gap-2">
             <div class="quiz-timer-pill font-mono text-xs font-bold px-3 py-1.5 bg-zinc-900 border border-zinc-800 rounded-md flex items-center gap-1.5 text-cyan-400">
-                <svg class="w-3.5 h-3.5 pixelated" viewBox="0 0 16 16">
-                    <use href="#pixel-router"></use>
-                </svg>
+                <svg class="w-3.5 h-3.5 pixelated" viewBox="0 0 16 16"><use href="#pixel-router"></use></svg>
                 <span class="timer-display-text">--:--</span>
             </div>
             <button type="button" class="btn-pause-trigger btn-hero-secondary font-mono text-xs px-2.5 py-1" onclick="window.playPixelSound && window.playPixelSound('blip');">
@@ -58,7 +56,7 @@ require_once dirname(__DIR__) . '/templates/header.php';
 
     <!-- 2. Main 2-Column Exam Arena -->
     <div class="quiz-exam-layout">
-
+        
         <!-- LEFT COLUMN: Active Question Carousel -->
         <div class="question-column-left">
             <div class="question-card-container">
@@ -123,13 +121,13 @@ require_once dirname(__DIR__) . '/templates/header.php';
                                                 <div class="option-badge font-mono">
                                                     <?= $optKey ?>
                                                 </div>
-                                                <input type="radio"
-                                                    name="answers[<?= $index ?>]"
-                                                    value="<?= $optKey ?>"
-                                                    <?= $isChecked ? 'checked' : '' ?>
-                                                    style="display: none;"
-                                                    class="option-radio"
-                                                    onchange="window.onOptionSelect(this)">
+                                                <input type="radio" 
+                                                       name="answers[<?= $index ?>]" 
+                                                       value="<?= $optKey ?>" 
+                                                       <?= $isChecked ? 'checked' : '' ?> 
+                                                       style="display: none;" 
+                                                       class="option-radio" 
+                                                       onchange="window.onOptionSelect(this)">
                                                 <span class="option-text-content font-sans">
                                                     <?= htmlspecialchars($optText) ?>
                                                 </span>
@@ -209,10 +207,10 @@ require_once dirname(__DIR__) . '/templates/header.php';
                         <?php
                         $isAnswered = isset($pausedAnswers[$index]) && $pausedAnswers[$index] !== '';
                         ?>
-                        <button type="button"
-                            class="palette-btn font-mono <?= $index === 0 ? 'current' : '' ?> <?= $isAnswered ? 'answered' : '' ?>"
-                            data-index="<?= $index ?>"
-                            onclick="window.playPixelSound && window.playPixelSound('click');">
+                        <button type="button" 
+                                class="palette-btn font-mono <?= $index === 0 ? 'current' : '' ?> <?= $isAnswered ? 'answered' : '' ?>" 
+                                data-index="<?= $index ?>"
+                                onclick="window.playPixelSound && window.playPixelSound('click');">
                             <?= $index + 1 ?>
                         </button>
                     <?php endforeach; ?>

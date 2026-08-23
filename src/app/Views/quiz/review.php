@@ -29,28 +29,26 @@ require_once dirname(__DIR__) . '/templates/header.php';
 <div class="quiz-review-page-container">
 
     <!-- 1. Top Header & Breadcrumb -->
-    <div class="dashboard-hero-header">
-        <div class="hero-brand-group">
-            <div class="hero-router-box">
-                <svg class="w-7 h-7 pixelated" viewBox="0 0 16 16">
-                    <use href="#pixel-router"></use>
-                </svg>
-                <span class="live-radar-dot"></span>
-            </div>
-            <div class="hero-title-area">
-                <?= renderBreadcrumb([
-                    ['label' => 'Student', 'url' => BASE_URL . '/'],
-                    ['label' => 'Kuis', 'url' => BASE_URL . '/quiz'],
-                    ['label' => $quiz['title']],
-                    ['label' => 'Review Pembahasan']
-                ]) ?>
+    <div class="dashboard-hero-header mb-5 pb-4">
+        <div>
+            <?= renderBreadcrumb([
+                ['label' => 'Student', 'url' => BASE_URL . '/'],
+                ['label' => 'Kuis', 'url' => BASE_URL . '/quiz'],
+                ['label' => $quiz['title']],
+                ['label' => 'Review Pembahasan']
+            ]) ?>
+            <div class="hero-title-row">
                 <h1 class="hero-main-title">
-                    <span>Review: <?= htmlspecialchars($quiz['title']) ?></span><span class="hero-cursor">_</span>
-                    <span class="hero-pill-version"><?= htmlspecialchars($quiz['category']) ?></span>
-                    <span class="<?= $score >= 70 ? 'hero-pill-version' : 'hero-pill-status text-red-400' ?>">
+                    <span>Review: <?= htmlspecialchars($quiz['title']) ?></span>
+                </h1>
+                <div class="flex items-center gap-2 mt-1">
+                    <span class="quiz-diff-pill font-mono font-bold text-cyan-400">
+                        <?= htmlspecialchars($quiz['category']) ?>
+                    </span>
+                    <span class="quiz-diff-pill font-mono font-bold <?= $score >= 70 ? 'text-emerald-400' : 'text-red-400' ?>">
                         Skor: <?= (int)$score ?>%
                     </span>
-                </h1>
+                </div>
             </div>
         </div>
 
@@ -66,30 +64,30 @@ require_once dirname(__DIR__) . '/templates/header.php';
 
     <!-- 2. Main 2-Column Review Layout -->
     <div class="quiz-review-layout">
-
+        
         <!-- LEFT COLUMN: Question Carousel & Detailed Explanation -->
         <div class="review-column-left">
             <!-- Filter Tabs Switcher -->
             <div class="quiz-filter-bar mb-4 py-2">
                 <div class="filter-tabs-group">
                     <span class="filter-label font-mono">Filter Soal:</span>
-                    <button type="button"
-                        class="review-filter-btn quiz-segment-tab font-mono active"
-                        data-filter="all"
-                        onclick="window.playPixelSound && window.playPixelSound('click');">
+                    <button type="button" 
+                            class="review-filter-btn quiz-segment-tab font-mono active" 
+                            data-filter="all"
+                            onclick="window.playPixelSound && window.playPixelSound('click');">
                         <span>Semua Soal (<?= $totalQuestions ?>)</span>
                     </button>
-                    <button type="button"
-                        class="review-filter-btn quiz-segment-tab font-mono text-emerald-400"
-                        data-filter="correct"
-                        onclick="window.playPixelSound && window.playPixelSound('click');">
+                    <button type="button" 
+                            class="review-filter-btn quiz-segment-tab font-mono text-emerald-400" 
+                            data-filter="correct"
+                            onclick="window.playPixelSound && window.playPixelSound('click');">
                         <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block"></span>
                         <span>Benar (<?= $correctCount ?>)</span>
                     </button>
-                    <button type="button"
-                        class="review-filter-btn quiz-segment-tab font-mono text-red-400"
-                        data-filter="wrong"
-                        onclick="window.playPixelSound && window.playPixelSound('click');">
+                    <button type="button" 
+                            class="review-filter-btn quiz-segment-tab font-mono text-red-400" 
+                            data-filter="wrong"
+                            onclick="window.playPixelSound && window.playPixelSound('click');">
                         <span class="w-1.5 h-1.5 rounded-full bg-red-400 inline-block"></span>
                         <span>Salah (<?= $wrongCount ?>)</span>
                     </button>
@@ -117,11 +115,11 @@ require_once dirname(__DIR__) . '/templates/header.php';
                             'D' => $q['option_d'] ?? ''
                         ];
                         ?>
-                        <div class="review-question-block"
-                            data-index="<?= $index ?>"
-                            data-correct="<?= $isCorrect ? '1' : '0' ?>"
-                            style="<?= $index === 0 ? 'display: block;' : 'display: none;' ?>">
-
+                        <div class="review-question-block" 
+                             data-index="<?= $index ?>" 
+                             data-correct="<?= $isCorrect ? '1' : '0' ?>" 
+                             style="<?= $index === 0 ? 'display: block;' : 'display: none;' ?>">
+                            
                             <!-- Header Status -->
                             <div class="question-header-bar">
                                 <span class="question-count-label font-sans">
@@ -129,9 +127,7 @@ require_once dirname(__DIR__) . '/templates/header.php';
                                 </span>
                                 <?php if ($isCorrect): ?>
                                     <span class="quiz-status-tag status-finished font-mono text-xs">
-                                        <svg class="w-3 h-3 pixelated" viewBox="0 0 16 16">
-                                            <use href="#pixel-sparkle"></use>
-                                        </svg>
+                                        <svg class="w-3 h-3 pixelated" viewBox="0 0 16 16"><use href="#pixel-sparkle"></use></svg>
                                         <span>Jawaban Benar</span>
                                     </span>
                                 <?php else: ?>
@@ -200,9 +196,7 @@ require_once dirname(__DIR__) . '/templates/header.php';
                             <!-- Technical RouterOS Explanation Box -->
                             <div class="review-explanation-terminal">
                                 <div class="flex items-center gap-2 mb-2">
-                                    <svg class="w-4 h-4 pixelated text-cyan-400" viewBox="0 0 16 16">
-                                        <use href="#pixel-robot"></use>
-                                    </svg>
+                                    <svg class="w-4 h-4 pixelated text-cyan-400" viewBox="0 0 16 16"><use href="#pixel-robot"></use></svg>
                                     <span class="font-mono text-xs font-bold text-cyan-400 uppercase tracking-wider">
                                         Pembahasan Teknis MikroTik RouterOS
                                     </span>
@@ -278,11 +272,11 @@ require_once dirname(__DIR__) . '/templates/header.php';
                         $correctAns = strtoupper((string)($q['correct'] ?? ''));
                         $isCorrect = ($userAns !== '' && $userAns === $correctAns);
                         ?>
-                        <button type="button"
-                            class="review-palette-btn font-mono <?= $index === 0 ? 'current' : '' ?> <?= $isCorrect ? 'is-correct' : 'is-wrong' ?>"
-                            data-index="<?= $index ?>"
-                            data-correct="<?= $isCorrect ? '1' : '0' ?>"
-                            onclick="window.playPixelSound && window.playPixelSound('click');">
+                        <button type="button" 
+                                class="review-palette-btn font-mono <?= $index === 0 ? 'current' : '' ?> <?= $isCorrect ? 'is-correct' : 'is-wrong' ?>" 
+                                data-index="<?= $index ?>" 
+                                data-correct="<?= $isCorrect ? '1' : '0' ?>"
+                                onclick="window.playPixelSound && window.playPixelSound('click');">
                             <?= $index + 1 ?>
                         </button>
                     <?php endforeach; ?>
