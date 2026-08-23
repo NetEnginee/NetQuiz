@@ -27,9 +27,7 @@ function renderBreadcrumb(array $items): string
 {
     if (empty($items)) return '';
 
-    $html = '<nav class="admin-breadcrumb-nav" aria-label="Breadcrumb">';
-    $html .= '<ol class="admin-breadcrumb-list font-mono">';
-
+    $html = '<nav class="hero-breadcrumb" aria-label="Breadcrumb">';
     $total = count($items);
     foreach ($items as $i => $item) {
         $isLast = ($i === $total - 1);
@@ -37,18 +35,12 @@ function renderBreadcrumb(array $items): string
         $url = $item['url'] ?? null;
 
         if ($isLast || empty($url)) {
-            $html .= '<li class="breadcrumb-item active" aria-current="page">';
-            $html .= '<span class="breadcrumb-current-text">' . $label . '</span>';
-            $html .= '</li>';
+            $html .= '<span class="active-tag">' . $label . '</span>';
         } else {
-            $html .= '<li class="breadcrumb-item">';
             $html .= '<a href="' . htmlspecialchars($url) . '" class="breadcrumb-link">' . $label . '</a>';
-            $html .= '</li>';
-            $html .= '<li class="breadcrumb-separator" aria-hidden="true">/</li>';
+            $html .= '<span class="breadcrumb-sep">/</span>';
         }
     }
-
-    $html .= '</ol>';
     $html .= '</nav>';
 
     return $html;

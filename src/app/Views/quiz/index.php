@@ -11,15 +11,17 @@ require_once dirname(__DIR__) . '/templates/header.php';
 
 <div class="quiz-catalog-page-container">
 
-    <!-- 1. Breadcrumb & Hero Header -->
-    <div class="dashboard-hero-header">
-        <div>
-            <?= renderBreadcrumb([
-                ['label' => 'Student', 'url' => BASE_URL . '/'],
-                ['label' => 'Kuis']
-            ]) ?>
+    <!-- 1. Hero & Breadcrumb Header -->
+    <section class="dashboard-hero-header">
+        <div class="hero-brand-group">
+            <div class="hero-title-area">
+                <?= renderBreadcrumb([
+                    ['label' => 'Student', 'url' => BASE_URL . '/'],
+                    ['label' => 'Kuis']
+                ]) ?>
+            </div>
         </div>
-    </div>
+    </section>
 
     <!-- 2. Filter Bar: Difficulty Switcher -->
     <div class="quiz-filter-bar">
@@ -80,31 +82,32 @@ require_once dirname(__DIR__) . '/templates/header.php';
             <?php foreach ($categorized as $categoryName => $quizzes): ?>
                 <?php if (!empty($quizzes)):
                     $catThemeColor = match ($categoryName) {
-                        'Routing' => 'var(--accent-cyan)',
-                        'Firewall & NAT' => 'var(--accent-gold)',
-                        'Wireless' => 'var(--accent-pink)',
-                        'Network Management' => 'var(--accent-emerald)',
-                        default => 'var(--accent-blue)'
+                        'Routing' => '#38bdf8',
+                        'Firewall & NAT' => '#fbbf24',
+                        'Wireless' => '#f472b6',
+                        'Network Management' => '#34d399',
+                        default => '#0070f3'
                     };
-                    $catWatermark = match ($categoryName) {
+                    $catIconSvg = match ($categoryName) {
                         'Routing' => '#pixel-router',
                         'Firewall & NAT' => '#pixel-robot',
                         'Wireless' => '#pixel-sparkle',
-                        default => '#pixel-computer'
+                        'Network Management' => '#pixel-computer',
+                        default => '#pixel-book'
                     };
                 ?>
                     <section class="quiz-category-section" aria-labelledby="cat-heading-<?= md5($categoryName) ?>">
                         <!-- Category Section Header -->
                         <div class="category-header-row">
                             <div class="category-title-wrap">
-                                <div class="category-icon-box" style="border-color: <?= $catThemeColor ?>33;">
-                                    <span class="w-2.5 h-2.5 rounded-xs" style="background-color: <?= $catThemeColor ?>;"></span>
+                                <div class="category-icon-box" style="border-color: <?= $catThemeColor ?>44; background-color: <?= $catThemeColor ?>14;">
+                                    <svg class="w-5 h-5 pixelated" viewBox="0 0 16 16" style="color: <?= $catThemeColor ?>;">
+                                        <use href="<?= $catIconSvg ?>"></use>
+                                    </svg>
                                 </div>
-                                <div>
-                                    <h2 id="cat-heading-<?= md5($categoryName) ?>" class="category-title font-sans">
-                                        <?= htmlspecialchars($categoryName) ?>
-                                    </h2>
-                                </div>
+                                <h2 id="cat-heading-<?= md5($categoryName) ?>" class="category-title font-sans">
+                                    <?= htmlspecialchars($categoryName) ?>
+                                </h2>
                             </div>
                             <span class="category-count-badge font-mono">
                                 <?= count($quizzes) ?> Paket Kuis
@@ -127,10 +130,10 @@ require_once dirname(__DIR__) . '/templates/header.php';
 
                                     <!-- Pixel Watermark SVG -->
                                     <svg class="quiz-watermark pixelated" viewBox="0 0 16 16">
-                                        <use href="<?= $catWatermark ?>"></use>
+                                        <use href="<?= $catIconSvg ?>"></use>
                                     </svg>
 
-                                    <div>
+                                    <div class="quiz-card-content">
                                         <!-- Top Meta Badges -->
                                         <div class="quiz-card-top-row font-mono">
                                             <span class="quiz-diff-pill">
@@ -139,7 +142,7 @@ require_once dirname(__DIR__) . '/templates/header.php';
 
                                             <?php if ($isFinished): ?>
                                                 <span class="quiz-status-tag status-finished">
-                                                    <svg class="w-3 h-3 pixelated" viewBox="0 0 16 16">
+                                                    <svg class="w-3 h-3 pixelated inline-block" viewBox="0 0 16 16">
                                                         <use href="#pixel-sparkle"></use>
                                                     </svg>
                                                     <span>Selesai (<?= (int)$userScore ?> pts)</span>
@@ -173,7 +176,7 @@ require_once dirname(__DIR__) . '/templates/header.php';
                                                 </svg>
                                                 <span><?= (int)($q['duration'] ?? 15) ?> mnt</span>
                                             </span>
-                                            <span class="text-zinc-600">•</span>
+                                            <span class="meta-separator">•</span>
                                             <span class="meta-item">
                                                 <span><?= (int)($q['question_count'] ?? 10) ?> soal</span>
                                             </span>

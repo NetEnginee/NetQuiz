@@ -20,14 +20,20 @@ require_once dirname(__DIR__) . '/templates/header.php';
 <div class="quiz-play-page-container">
 
     <!-- 1. Header & Breadcrumb Bar -->
-    <div class="dashboard-hero-header mb-5 pb-4">
-        <div>
-            <?= renderBreadcrumb([
-                ['label' => 'Student', 'url' => BASE_URL . '/'],
-                ['label' => 'Kuis', 'url' => BASE_URL . '/quiz'],
-                ['label' => $quiz['title']]
-            ]) ?>
-            <div class="hero-title-row">
+    <section class="dashboard-hero-header mb-5 pb-4">
+        <div class="hero-brand-group">
+            <div class="hero-router-box">
+                <span class="live-radar-dot"></span>
+                <svg class="w-6 h-6 text-cyan-400 pixelated" viewBox="0 0 16 16">
+                    <use href="#pixel-router"></use>
+                </svg>
+            </div>
+            <div class="hero-title-area">
+                <?= renderBreadcrumb([
+                    ['label' => 'Student', 'url' => BASE_URL . '/'],
+                    ['label' => 'Kuis', 'url' => BASE_URL . '/quiz'],
+                    ['label' => $quiz['title']]
+                ]) ?>
                 <h1 class="hero-main-title">
                     <span><?= htmlspecialchars($quiz['title']) ?></span>
                 </h1>
