@@ -49,6 +49,22 @@ class Security
     }
 
     /**
+     * Check if email belongs to Administrator.
+     */
+    public static function isAdminEmail(?string $email): bool
+    {
+        if (empty($email)) {
+            return false;
+        }
+        $cleanEmail = strtolower(trim($email));
+        return in_array($cleanEmail, [
+            'super@netquiz.academy',
+            'admin@routerosquiz.academy',
+            'admin@quiz.local'
+        ], true);
+    }
+
+    /**
      * Get the current user's role.
      */
     public static function getCurrentRole(): Role
@@ -57,7 +73,7 @@ class Security
             return Role::GUEST;
         }
         $email = isset($_SESSION['user']['email']) ? trim($_SESSION['user']['email']) : '';
-        return (strcasecmp($email, 'admin@routerosquiz.academy') === 0) ? Role::ADMIN : Role::USER;
+        return self::isAdminEmail($email) ? Role::ADMIN : Role::USER;
     }
 
     /**
@@ -146,7 +162,7 @@ class Security
     /**
      * Encrypt a value (like an integer ID) securely for URL usage.
      */
-    public static function encryptUrlId($value): string
+    public static function encryptUrlId(string|int $value): string
     {
         $plaintext = (string) $value;
         $cipher = 'AES-256-CBC';

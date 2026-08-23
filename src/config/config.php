@@ -29,9 +29,9 @@ if ($isLocal) {
         'app_name' => 'NetQuiz Academy',
         'base_url' => $base_url,
         // Database Config for InfinityFree Production Shared Hosting
-        'db_host' => 'sql213.infinityfree.com',
-        'db_name' => 'if0_42364306_db_mikrotik_quiz',
-        'db_user' => 'if0_42364306',
-        'db_pass' => 'routerosquiz123',
+        'db_host' => 'sql301.infinityfree.com',
+        'db_name' => 'if0_42727530_netquiz',
+        'db_user' => 'if0_42727530',
+        'db_pass' => '1UnionMzCAdHseR',
     ];
 }

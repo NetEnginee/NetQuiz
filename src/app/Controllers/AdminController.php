@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Controllers;
@@ -33,7 +34,7 @@ class AdminController extends Controller
     private function checkAdmin(): void
     {
         $email = isset($_SESSION['user']['email']) ? trim($_SESSION['user']['email']) : '';
-        if (!isset($_SESSION['user']) || strcasecmp($email, 'admin@routerosquiz.academy') !== 0) {
+        if (!isset($_SESSION['user']) || !Security::isAdminEmail($email)) {
             header('Location: ' . BASE_URL . '/');
             exit;
         }

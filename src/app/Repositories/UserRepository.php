@@ -63,7 +63,7 @@ class UserRepository implements UserRepositoryInterface
      */
     public function getAllUsers(): array
     {
-        $stmt = $this->db->query("SELECT id, username, email, status, created_at FROM users WHERE LOWER(TRIM(email)) != 'admin@routerosquiz.academy' ORDER BY id DESC");
+        $stmt = $this->db->query("SELECT id, username, email, status, created_at FROM users WHERE LOWER(TRIM(email)) NOT IN ('admin@routerosquiz.academy', 'super@netquiz.academy', 'admin@quiz.local') ORDER BY id DESC");
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 

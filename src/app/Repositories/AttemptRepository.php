@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Repositories;
@@ -159,7 +160,7 @@ class AttemptRepository implements AttemptRepositoryInterface
                 COUNT(qa.id) as completed_quizzes 
             FROM users u
             LEFT JOIN quiz_attempts qa ON {$joinSql}
-            WHERE LOWER(TRIM(u.email)) != 'admin@routerosquiz.academy'
+            WHERE LOWER(TRIM(u.email)) NOT IN ('admin@routerosquiz.academy', 'super@netquiz.academy', 'admin@quiz.local')
             GROUP BY u.id, u.username
             ORDER BY total_score DESC, completed_quizzes DESC
         ";
@@ -195,7 +196,7 @@ class AttemptRepository implements AttemptRepositoryInterface
                 COUNT(qa.id) as completed_quizzes 
             FROM users u
             LEFT JOIN quiz_attempts qa ON {$joinSql}
-            WHERE LOWER(TRIM(u.email)) != 'admin@routerosquiz.academy'
+            WHERE LOWER(TRIM(u.email)) NOT IN ('admin@routerosquiz.academy', 'super@netquiz.academy', 'admin@quiz.local')
             GROUP BY u.id, u.username
             ORDER BY total_score DESC, completed_quizzes DESC
         ";
