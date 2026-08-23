@@ -11,6 +11,9 @@ src/public/uploads/questions/*
 !src/public/uploads/questions/.gitkeep
 src/public/uploads/materials/*
 !src/public/uploads/materials/.gitkeep
+# Agent & Analysis directories
+.agents/*
+analysis/
 
 # OS / IDE artifacts
 .DS_Store
