@@ -1,88 +1,184 @@
 <?php
 $groupedMaterials = $groupedMaterials ?? [];
+$totalModules = 0;
+foreach ($groupedMaterials as $items) {
+    $totalModules += count($items);
+}
+
+// Category theme mappings
+$categoryThemes = [
+    'Routing' => [
+        'icon' => 'pixel-router',
+        'color' => '#60a5fa',
+        'themeClass' => 'theme-routing',
+        'pillClass' => 'cat-routing'
+    ],
+    'Firewall & NAT' => [
+        'icon' => 'pixel-robot',
+        'color' => '#fbbf24',
+        'themeClass' => 'theme-firewall',
+        'pillClass' => 'cat-firewall'
+    ],
+    'Wireless' => [
+        'icon' => 'pixel-sparkle',
+        'color' => '#f472b6',
+        'themeClass' => 'theme-wireless',
+        'pillClass' => 'cat-wireless'
+    ],
+    'Network Management' => [
+        'icon' => 'pixel-computer',
+        'color' => '#50e3c2',
+        'themeClass' => 'theme-network',
+        'pillClass' => 'cat-network'
+    ]
+];
+
 require_once dirname(__DIR__) . '/templates/header.php';
 ?>
 
-<!-- Breadcrumb & Header -->
-<div style="margin-bottom: 2rem;">
-    <?= renderBreadcrumb([
-        ['label' => 'Siswa', 'url' => BASE_URL . '/'],
-        ['label' => 'Materi']
-    ]) ?>
-</div>
+<div class="learn-page-container pt-2">
 
-<?php if (empty($groupedMaterials)): ?>
-    <div class="supabase-panel-card" style="padding: 3rem 1.5rem; text-align: center;">
-        <span class="corner-crosshair corner-tl">+</span>
-        <span class="corner-crosshair corner-tr">+</span>
-        <span class="corner-crosshair corner-bl">+</span>
-        <span class="corner-crosshair corner-br">+</span>
-        <div style="width: 44px; height: 44px; border-radius: 50%; background-color: #F4F4F5; margin: 0 auto 0.75rem; display: flex; align-items: center; justify-content: center; color: #71717A;">
-            <i data-lucide="book-open" style="width: 22px; height: 22px;"></i>
+    <!-- 1. Category Filter Toolbar (Without Search) -->
+    <div class="learn-toolbar-panel">
+        <span class="panel-crosshair corner-tl">+</span>
+        <span class="panel-crosshair corner-tr">+</span>
+        <span class="panel-crosshair corner-bl">+</span>
+        <span class="panel-crosshair corner-br">+</span>
+
+        <!-- Category Tabs -->
+        <div class="learn-filter-tabs">
+            <button type="button"
+                class="learn-segment-tab font-mono active"
+                data-category="all"
+                onclick="window.playPixelSound && window.playPixelSound('click');">
+                <span>Semua (<?= $totalModules ?>)</span>
+            </button>
+            <?php foreach ($groupedMaterials as $category => $items): ?>
+                <?php
+                $theme = $categoryThemes[$category] ?? [
+                    'icon' => 'pixel-router',
+                    'color' => '#ffffff',
+                    'pillClass' => 'cat-routing'
+                ];
+                ?>
+                <button type="button"
+                    class="learn-segment-tab font-mono"
+                    data-category="<?= htmlspecialchars($category) ?>"
+                    onclick="window.playPixelSound && window.playPixelSound('click');">
+                    <span class="w-1.5 h-1.5 rounded-full inline-block" style="background-color: <?= $theme['color'] ?>;"></span>
+                    <span><?= htmlspecialchars($category) ?> (<?= count($items) ?>)</span>
+                </button>
+            <?php endforeach; ?>
         </div>
-        <h3 style="font-size: 1rem; font-weight: 800; color: #18181B; margin: 0 0 0.25rem 0;">Belum Ada Materi Tersedia</h3>
-        <p style="font-size: 0.85rem; color: #71717A; margin: 0;">Materi pembelajaran sedang disiapkan oleh administrator.</p>
     </div>
-<?php else: ?>
-    <div style="display: flex; flex-direction: column; gap: 2.5rem;">
-        <?php foreach ($groupedMaterials as $category => $items): ?>
-            <div>
-                <!-- Category Heading -->
-                <div style="display: flex; align-items: center; gap: 0.65rem; margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid #E5E7EB;">
-                    <i data-lucide="folder" style="width: 18px; height: 18px; color: #18181B;"></i>
-                    <h2 style="font-family: var(--font-heading); font-size: 1.15rem; font-weight: 800; color: #18181B; margin: 0;">
-                        <?= htmlspecialchars($category) ?>
-                    </h2>
-                    <span class="font-mono" style="font-size: 0.75rem; color: #71717A;">(<?= count($items) ?> Modul)</span>
-                </div>
 
-                <!-- Materials Grid -->
-                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 290px), 1fr)); gap: 1.25rem;">
-                    <?php foreach ($items as $material): ?>
-                        <?php
-                        $cleanText = strip_tags($material['content'] ?? '');
-                        $wordCount = str_word_count($cleanText);
-                        $readTime = max(1, (int)ceil($wordCount / 180));
-                        ?>
-                        <div class="supabase-panel-card" style="padding: 1.25rem; display: flex; flex-direction: column; justify-content: space-between;">
-                            <span class="corner-crosshair corner-tl">+</span>
-                            <span class="corner-crosshair corner-tr">+</span>
-                            <span class="corner-crosshair corner-bl">+</span>
-                            <span class="corner-crosshair corner-br">+</span>
-
-                            <div>
-                                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.75rem;">
-                                    <span class="status-badge" style="background-color: #F4F4F5; font-size: 0.7rem;">
-                                        <?= htmlspecialchars($material['difficulty'] ?? 'Umum') ?>
-                                    </span>
-                                    <span class="font-mono" style="font-size: 0.725rem; color: #71717A;">
-                                        ~<?= $readTime ?> menit baca
-                                    </span>
-                                </div>
-
-                                <h3 style="font-family: var(--font-heading); font-size: 1rem; font-weight: 800; color: #18181B; margin: 0 0 0.4rem 0; line-height: 1.35;">
-                                    <?= htmlspecialchars($material['title']) ?>
-                                </h3>
-                                <p style="font-size: 0.825rem; color: #52525B; margin: 0 0 1rem 0; line-height: 1.45; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical;">
-                                    <?= htmlspecialchars($cleanText) ?>
-                                </p>
+    <!-- 2. Materials Categorized Grid Sections -->
+    <?php if (empty($groupedMaterials)): ?>
+        <div class="empty-modules-panel">
+            <svg class="w-10 h-10 pixelated text-zinc-600 mx-auto mb-3" width="40" height="40" viewBox="0 0 16 16">
+                <use href="#pixel-book"></use>
+            </svg>
+            <h3 class="font-sans text-base font-bold text-white mb-1">Belum Ada Materi Tersedia</h3>
+            <p class="font-mono text-xs text-zinc-500 max-w-md mx-auto">
+                Materi modul pembelajaran sedang disiapkan oleh administrator jaringan.
+            </p>
+        </div>
+    <?php else: ?>
+        <div id="learn-catalog-container">
+            <?php foreach ($groupedMaterials as $category => $items): ?>
+                <?php
+                $theme = $categoryThemes[$category] ?? [
+                    'icon' => 'pixel-router',
+                    'color' => '#ffffff',
+                    'themeClass' => 'theme-routing',
+                    'pillClass' => 'cat-routing'
+                ];
+                ?>
+                <section class="learn-category-section" data-category="<?= htmlspecialchars($category) ?>">
+                    <!-- Section Header -->
+                    <div class="category-header-row">
+                        <div class="category-title-wrap">
+                            <div class="category-icon-box">
+                                <svg class="w-5 h-5 pixelated" width="20" height="20" style="color: <?= $theme['color'] ?>;" viewBox="0 0 16 16">
+                                    <use href="#<?= $theme['icon'] ?>"></use>
+                                </svg>
                             </div>
-
-                            <div style="padding-top: 0.75rem; border-top: 1px solid #E5E7EB; display: flex; align-items: center; justify-content: space-between;">
-                                <span class="font-mono" style="font-size: 0.75rem; color: #71717A;">
-                                    <?= date('d M Y', strtotime($material['created_at'] ?? 'now')) ?>
-                                </span>
-                                <a href="<?= BASE_URL ?>/learn/<?= (int)$material['id'] ?>" class="btn-primary-black" style="font-size: 0.775rem; padding: 0.35rem 0.75rem;">
-                                    <span>Baca Modul</span>
-                                    <i data-lucide="arrow-right" style="width: 12px; height: 12px;"></i>
-                                </a>
+                            <div>
+                                <h2 class="category-title font-sans">
+                                    <?= htmlspecialchars($category) ?>
+                                </h2>
                             </div>
                         </div>
-                    <?php endforeach; ?>
-                </div>
-            </div>
-        <?php endforeach; ?>
-    </div>
-<?php endif; ?>
+                        <span class="category-count-badge font-mono">
+                            <?= count($items) ?> Modul
+                        </span>
+                    </div>
+
+                    <!-- Clean Cards Grid for Category (Without Inner Card Icons) -->
+                    <div class="learn-material-grid">
+                        <?php foreach ($items as $material): ?>
+                            <?php
+                            $cleanText = strip_tags($material['content'] ?? '');
+                            $wordCount = str_word_count($cleanText);
+                            $readTime = max(1, (int)ceil($wordCount / 180));
+                            $diff = strtolower($material['difficulty'] ?? 'mudah');
+                            $diffClass = match ($diff) {
+                                'sedang' => 'diff-sedang',
+                                'sulit', 'hard' => 'diff-sulit',
+                                default => 'diff-mudah'
+                            };
+                            ?>
+                            <a href="<?= BASE_URL ?>/learn/<?= (int)$material['id'] ?>"
+                                class="learn-material-card <?= $theme['themeClass'] ?>"
+                                data-category="<?= htmlspecialchars($category) ?>"
+                                data-title="<?= htmlspecialchars($material['title']) ?>"
+                                onclick="window.playPixelSound && window.playPixelSound('click');">
+
+                                <span class="panel-crosshair corner-tl">+</span>
+                                <span class="panel-crosshair corner-tr">+</span>
+                                <span class="panel-crosshair corner-bl">+</span>
+                                <span class="panel-crosshair corner-br">+</span>
+
+                                <!-- Card Content Body -->
+                                <div class="material-card-body">
+                                    <div class="material-card-top-meta">
+                                        <span class="learn-diff-badge <?= $diffClass ?>">
+                                            <?= htmlspecialchars($material['difficulty'] ?? 'Mudah') ?>
+                                        </span>
+                                        <span class="read-action-link font-mono text-xs">
+                                            <span>Baca Modul</span>
+                                            <span class="arrow-move">→</span>
+                                        </span>
+                                    </div>
+
+                                    <h3 class="material-card-title font-sans">
+                                        <?= htmlspecialchars($material['title']) ?>
+                                    </h3>
+
+                                    <p class="material-card-excerpt font-sans">
+                                        <?= htmlspecialchars($cleanText) ?>
+                                    </p>
+
+                                    <div class="material-card-footer flex items-center justify-between pt-2.5 mt-2 border-t border-zinc-800/80">
+                                        <span class="material-card-date font-mono text-xs text-zinc-500">
+                                            <?= date('d M Y', strtotime($material['created_at'] ?? 'now')) ?>
+                                        </span>
+                                        <span class="font-mono text-[11px] text-zinc-400">
+                                            ⏱ ~<?= $readTime ?> mnt baca
+                                        </span>
+                                    </div>
+                                </div>
+                            </a>
+                        <?php endforeach; ?>
+                    </div>
+                </section>
+            <?php endforeach; ?>
+        </div>
+    <?php endif; ?>
+
+</div>
+
+<!-- Learning Engine JS Module -->
+<script src="<?= function_exists('assetUrl') ? assetUrl('/js/learn-catalog.js') : (BASE_URL . '/js/learn-catalog.js') ?>"></script>
 
 <?php require_once dirname(__DIR__) . '/templates/footer.php'; ?>

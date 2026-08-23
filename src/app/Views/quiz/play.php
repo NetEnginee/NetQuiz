@@ -178,18 +178,18 @@ require_once dirname(__DIR__) . '/templates/header.php';
                     <?php endforeach; ?>
                 </div>
 
-                <!-- Palette Legend -->
+                <!-- Palette Legend with Badges & Explicit Indicators -->
                 <div class="palette-legend-row font-mono">
-                    <span class="inline-flex items-center gap-1">
-                        <span class="w-2.5 h-2.5 rounded-xs bg-white inline-block"></span>
+                    <span class="legend-badge-item">
+                        <span class="legend-dot bg-white"></span>
                         <span>Terjawab</span>
                     </span>
-                    <span class="inline-flex items-center gap-1">
-                        <span class="w-2.5 h-2.5 rounded-xs bg-zinc-900 border border-zinc-700 inline-block"></span>
+                    <span class="legend-badge-item">
+                        <span class="legend-dot bg-zinc-900 border border-zinc-700"></span>
                         <span>Belum</span>
                     </span>
-                    <span class="inline-flex items-center gap-1">
-                        <span class="w-2.5 h-2.5 rounded-xs border border-cyan-400 inline-block"></span>
+                    <span class="legend-badge-item legend-active">
+                        <span class="legend-dot-active"></span>
                         <span>Aktif</span>
                     </span>
                 </div>
