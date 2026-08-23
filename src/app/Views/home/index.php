@@ -368,11 +368,6 @@ require_once dirname(__DIR__) . "/templates/header.php";
                     <h2 id="materials-panel-title" class="panel-title-text">Newest Learning Materials</h2>
                 </div>
             </div>
-
-            <a href="<?= BASE_URL ?>/learn" class="btn-hero-secondary font-mono text-xs" onclick="window.playPixelSound && window.playPixelSound('click');">
-                <span>Semua Materi</span>
-                <span>→</span>
-            </a>
         </div>
 
         <!-- Materials Cards Grid -->
@@ -380,26 +375,42 @@ require_once dirname(__DIR__) . "/templates/header.php";
             <?php if (!empty($materials)): ?>
                 <?php foreach ($materials as $mat):
                     $mCat = $mat['category'] ?? 'Routing';
-                    $mDifficulty = $mat['difficulty'] ?? 'Beginner';
+                    $mDifficulty = $mat['difficulty'] ?? 'Mudah';
+                    $mSnippet = !empty($mat['content']) ? mb_strimwidth(strip_tags($mat['content']), 0, 110, '...') : 'Panduan komprehensif konfigurasi RouterOS MikroTik.';
+                    $themeCatClass = match ($mCat) {
+                        'Firewall & NAT' => 'cat-theme-amber',
+                        'Wireless' => 'cat-theme-pink',
+                        'Network Management' => 'cat-theme-emerald',
+                        default => 'cat-theme-cyan'
+                    };
                 ?>
-                    <a href="<?= BASE_URL ?>/learn/<?= (int)$mat['id'] ?>" class="material-item-card" onclick="window.playPixelSound && window.playPixelSound('click');">
-                        <div class="material-card-left">
-                            <div class="material-book-badge">
-                                <svg class="w-5 h-5 pixelated" viewBox="0 0 16 16">
-                                    <use href="#pixel-book"></use>
-                                </svg>
-                            </div>
-                            <div class="material-text-info">
-                                <div class="material-meta-row font-mono">
-                                    <span class="text-cyan-400"><?= htmlspecialchars($mCat) ?></span>
-                                    <span>• <?= htmlspecialchars($mDifficulty) ?></span>
-                                    <span>• ~2 min read</span>
-                                </div>
-                                <h3 class="material-title"><?= htmlspecialchars($mat['title']) ?></h3>
-                            </div>
+                    <a href="<?= BASE_URL ?>/learn/<?= (int)$mat['id'] ?>" class="material-item-card <?= $themeCatClass ?>" onclick="window.playPixelSound && window.playPixelSound('click');">
+                        <div class="material-book-badge">
+                            <svg class="w-6 h-6 pixelated" viewBox="0 0 16 16">
+                                <use href="#pixel-book"></use>
+                            </svg>
                         </div>
-                        <div class="material-card-right font-mono text-xs text-cyan-400">
-                            <span>Baca →</span>
+
+                        <div class="material-card-body">
+                            <div class="material-card-top-row font-mono">
+                                <span class="material-cat-tag">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-current"></span>
+                                    <span><?= htmlspecialchars($mCat) ?></span>
+                                </span>
+                                <span class="material-read-time">~2 min read</span>
+                            </div>
+
+                            <h3 class="material-card-title"><?= htmlspecialchars($mat['title']) ?></h3>
+
+                            <p class="material-card-snippet"><?= htmlspecialchars($mSnippet) ?></p>
+
+                            <div class="material-card-footer font-mono">
+                                <span class="material-diff-badge"><?= htmlspecialchars($mDifficulty) ?></span>
+                                <span class="material-cta-text">
+                                    <span>Baca Materi</span>
+                                    <span class="cta-arrow">→</span>
+                                </span>
+                            </div>
                         </div>
                     </a>
                 <?php endforeach; ?>
