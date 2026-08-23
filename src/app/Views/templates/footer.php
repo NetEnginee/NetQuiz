@@ -6,7 +6,7 @@
             <div class="student-shell-container footer-inner">
                 <div class="footer-left">
                     <span class="nav-brand-text">Net<span class="nav-brand-accent">Quiz</span><span class="brand-cursor">_</span></span>
-                    <span class="footer-copy">© <?= date('Y') ?> Networking Academy. All rights reserved.</span>
+                    <span class="footer-copy">© <?= date('Y') ?> Networking Academy and Quiz. All rights reserved.</span>
                 </div>
                 <div class="footer-right">
                     <span class="footer-badge">
@@ -205,6 +205,9 @@
                 }
             });
         </script>
+
+        <!-- Pixel Critters Interactive Bottom Mascot Runner Engine -->
+        <script src="<?= function_exists('assetUrl') ? assetUrl('/js/pixel-critters.js') : (BASE_URL . '/js/pixel-critters.js') ?>" defer></script>
         </body>
 
         </html>
