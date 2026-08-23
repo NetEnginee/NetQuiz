@@ -968,7 +968,23 @@ body {
   display: grid;
   grid-template-columns: 7fr 5fr;
   gap: 1.5rem;
-  align-items: start;
+  align-items: stretch;
+}
+
+.left-activity-panel {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.right-dashboard-column {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.materials-dashboard-section {
+  margin-top: 1.5rem;
 }
 
 .dashboard-panel-box {
@@ -1052,6 +1068,7 @@ body {
   display: flex;
   flex-direction: column;
   gap: 0.6rem;
+  flex: 1;
 }
 
 .activity-row-item {
@@ -1228,13 +1245,14 @@ body {
 
 /* Empty State */
 .activity-empty-state {
-  padding: 2rem 1rem;
+  padding: 2.5rem 1rem;
   text-align: center;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
+  flex: 1;
 }
 
 .empty-icon-box {
@@ -1260,6 +1278,208 @@ body {
   color: var(--text-muted);
   max-width: 320px;
   line-height: 1.4;
+}
+
+/* ==========================================================================
+   PIXEL EMPTY STATE — Reusable across all views
+   ========================================================================== */
+
+.pixel-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 2.5rem 1.5rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.pixel-empty-state .empty-scene {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.25rem;
+}
+
+/* The main floating icon */
+.pixel-empty-state .empty-main-icon {
+  width: 64px;
+  height: 64px;
+  background-color: var(--bg-subcard, #111111);
+  border: 1.5px solid var(--border-card, #222222);
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: empty-float 3s ease-in-out infinite;
+  position: relative;
+  z-index: 2;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.6);
+}
+
+.pixel-empty-state .empty-main-icon svg {
+  opacity: 0.55;
+  transition: opacity 0.3s ease;
+}
+
+.pixel-empty-state:hover .empty-main-icon svg {
+  opacity: 0.85;
+}
+
+.pixel-empty-state:hover .empty-main-icon {
+  border-color: var(--empty-accent, var(--accent-cyan, #50e3c2));
+  box-shadow: 0 0 20px var(--empty-glow, rgba(80, 227, 194, 0.15));
+}
+
+/* Orbiting sparkle dots */
+.pixel-empty-state .sparkle-orbit {
+  position: absolute;
+  width: 100px;
+  height: 100px;
+  z-index: 1;
+}
+
+.pixel-empty-state .sparkle-dot {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  border-radius: 1px;
+  background-color: var(--empty-accent, var(--accent-cyan));
+  opacity: 0.35;
+  animation: sparkle-blink 2.5s ease-in-out infinite;
+}
+
+.pixel-empty-state .sparkle-dot:nth-child(1) {
+  top: 5px; left: 50%;
+  animation-delay: 0s;
+}
+.pixel-empty-state .sparkle-dot:nth-child(2) {
+  top: 50%; right: 0;
+  animation-delay: 0.6s;
+}
+.pixel-empty-state .sparkle-dot:nth-child(3) {
+  bottom: 5px; left: 50%;
+  animation-delay: 1.2s;
+}
+.pixel-empty-state .sparkle-dot:nth-child(4) {
+  top: 50%; left: 0;
+  animation-delay: 1.8s;
+}
+
+/* Text content */
+.pixel-empty-state .empty-headline {
+  font-size: 1rem;
+  font-weight: 800;
+  color: #ffffff;
+  margin: 0 0 0.35rem;
+  letter-spacing: -0.01em;
+}
+
+.pixel-empty-state .empty-subtext {
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: 0.72rem;
+  color: var(--text-muted, #71717a);
+  max-width: 340px;
+  line-height: 1.55;
+  margin: 0;
+}
+
+/* CTA link */
+.pixel-empty-state .empty-cta-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 1rem;
+  padding: 0.45rem 0.85rem;
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--empty-accent, var(--accent-cyan, #50e3c2));
+  background-color: transparent;
+  border: 1px solid var(--border-card, #222222);
+  border-radius: 6px;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.pixel-empty-state .empty-cta-link:hover {
+  background-color: rgba(255, 255, 255, 0.04);
+  border-color: var(--empty-accent, var(--accent-cyan));
+  transform: translateY(-1px);
+}
+
+.pixel-empty-state .empty-cta-link .cta-arrow {
+  display: inline-block;
+  transition: transform 0.2s ease;
+}
+
+.pixel-empty-state .empty-cta-link:hover .cta-arrow {
+  transform: translateX(3px);
+}
+
+/* Color theme variants */
+.pixel-empty-state.empty-theme-cyan {
+  --empty-accent: #50e3c2;
+  --empty-glow: rgba(80, 227, 194, 0.15);
+}
+.pixel-empty-state.empty-theme-amber {
+  --empty-accent: #fbbf24;
+  --empty-glow: rgba(251, 191, 36, 0.15);
+}
+.pixel-empty-state.empty-theme-pink {
+  --empty-accent: #f472b6;
+  --empty-glow: rgba(244, 114, 182, 0.15);
+}
+.pixel-empty-state.empty-theme-purple {
+  --empty-accent: #a78bfa;
+  --empty-glow: rgba(167, 139, 250, 0.15);
+}
+.pixel-empty-state.empty-theme-blue {
+  --empty-accent: #60a5fa;
+  --empty-glow: rgba(96, 165, 250, 0.15);
+}
+
+/* Full-panel variant (for quiz/learn/leaderboard pages) */
+.pixel-empty-state.empty-panel-full {
+  background-color: var(--bg-card, #0a0a0a);
+  border: 1px dashed var(--border-card-hover, #333333);
+  border-radius: 10px;
+  padding: 3.5rem 2rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+  position: relative;
+}
+
+/* Inline variant (for badges grid / materials section within a card) */
+.pixel-empty-state.empty-inline {
+  padding: 1.5rem 1rem;
+}
+
+.pixel-empty-state.empty-inline .empty-main-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 10px;
+}
+
+.pixel-empty-state.empty-inline .empty-headline {
+  font-size: 0.85rem;
+}
+
+.pixel-empty-state.empty-inline .empty-subtext {
+  font-size: 0.68rem;
+  max-width: 280px;
+}
+
+/* Animations */
+@keyframes empty-float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-6px); }
+}
+
+@keyframes sparkle-blink {
+  0%, 100% { opacity: 0.15; transform: scale(0.8); }
+  50% { opacity: 0.5; transform: scale(1.2); }
 }
 
 .activity-panel-footer {
