@@ -107,7 +107,7 @@ require_once dirname(__DIR__) . '/templates/header.php';
                 </div>
             </div>
             <h3 class="empty-headline">Belum Ada Materi Tersedia</h3>
-            <p class="empty-subtext">Perpustakaan modul pembelajaran sedang dikurasi oleh administrator jaringan. Buku pixel ini sabar menunggu konten pertamanya! 📖</p>
+            <p class="empty-subtext">Paket modul telah diambil oleh hacker. Tunggu beberapa saat sebelum admin mengiriml lagi!</p>
             <a href="<?= BASE_URL ?>/quiz" class="empty-cta-link" onclick="window.playPixelSound && window.playPixelSound('click');">
                 <span>Latihan Kuis Dulu</span>
                 <span class="cta-arrow">→</span>

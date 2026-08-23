@@ -1,7 +1,5 @@
 <?php
 $activeCategory = $activeCategory ?? 'all';
-$currentUserStats = $currentUserStats ?? null;
-$currentUserRank = $currentUserRank ?? 0;
 $leaderboard = $leaderboard ?? [];
 $currentUserId = (int)($_SESSION['user']['id'] ?? 0);
 
@@ -229,50 +227,7 @@ require_once dirname(__DIR__) . '/templates/header.php';
         <?php endif; ?>
     </section>
 
-    <!-- 4. PERSONAL USER RANK CARD BANNER -->
-    <div class="user-rank-status-card">
-        <span class="panel-crosshair corner-tl">+</span>
-        <span class="panel-crosshair corner-tr">+</span>
-        <span class="panel-crosshair corner-bl">+</span>
-        <span class="panel-crosshair corner-br">+</span>
-
-        <div class="user-rank-left">
-            <div class="user-rank-avatar font-mono">
-                <?= strtoupper(substr(htmlspecialchars($_SESSION['user']['name'] ?? 'U'), 0, 1)) ?>
-            </div>
-            <div class="user-rank-info">
-                <div class="user-rank-tagline">
-                    <span>Posisi Anda Saat Ini</span>
-                </div>
-                <div class="user-rank-name">
-                    <?= htmlspecialchars($_SESSION['user']['name'] ?? 'Siswa') ?>
-                </div>
-            </div>
-        </div>
-
-        <div class="user-rank-stats-group">
-            <div class="user-stat-box">
-                <span class="user-stat-label">Peringkat</span>
-                <span class="user-stat-val cyan">
-                    <?= $currentUserRank > 0 ? ('#' . $currentUserRank) : 'Unranked' ?>
-                </span>
-            </div>
-            <div class="user-stat-box">
-                <span class="user-stat-label">Total Akumulasi</span>
-                <span class="user-stat-val gold">
-                    <?= number_format((int)($currentUserStats['total_score'] ?? 0)) ?> <span class="text-xs font-normal text-zinc-400">Pts</span>
-                </span>
-            </div>
-            <div class="user-stat-box">
-                <span class="user-stat-label">Kuis Selesai</span>
-                <span class="user-stat-val">
-                    <?= (int)($currentUserStats['completed_quizzes'] ?? 0) ?>
-                </span>
-            </div>
-        </div>
-    </div>
-
-    <!-- 5. RANKINGS TABLE CARD (Rank 4 onwards) -->
+    <!-- 4. RANKINGS TABLE CARD (Rank 4 onwards) -->
     <?php
     $tableLeaderboard = array_slice($leaderboard, 3);
     ?>

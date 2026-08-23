@@ -98,13 +98,14 @@ class Security
     }
 
     /**
-     * Configure headers to completely block caching (e.g. for logout, admin pages, or sensitive forms).
+     * Configure headers to completely block caching (e.g. for dynamic authenticated pages, logout, or forms).
      */
     public static function preventBFCache(): void
     {
         header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
         header('Cache-Control: post-check=0, pre-check=0', false);
         header('Pragma: no-cache');
+        header('Expires: 0');
     }
 
     /**

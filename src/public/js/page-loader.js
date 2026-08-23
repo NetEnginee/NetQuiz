@@ -4,7 +4,7 @@
  * Zero Dependencies | Ultra-Snappy Non-Blocking | Self-Contained Resilient Styles
  */
 (function (window, document) {
-  'use strict';
+  "use strict";
 
   let status = null;
   let timer = null;
@@ -18,11 +18,11 @@
   let styleInjected = false;
 
   const STATUS_MESSAGES = [
-    { threshold: 0, text: '[SYS.INIT // DISPATCHING_BUFFERS]' },
-    { threshold: 25, text: '[ROUTEROS // MOUNTING_CORE_V8]' },
-    { threshold: 60, text: '[NETQUIZ // SYNC_COMPONENTS]' },
-    { threshold: 85, text: '[TERMINAL // READY_FOR_DISPATCH]' },
-    { threshold: 100, text: '[SYSTEM // CONNECTION_ONLINE]' }
+    { threshold: 0, text: "[SYS.INIT // DISPATCHING_BUFFERS]" },
+    { threshold: 25, text: "[ROUTEROS // MOUNTING_CORE_V8]" },
+    { threshold: 60, text: "[NETQUIZ // SYNC_COMPONENTS]" },
+    { threshold: 85, text: "[TERMINAL // READY_FOR_DISPATCH]" },
+    { threshold: 100, text: "[SYSTEM // CONNECTION_ONLINE]" },
   ];
 
   function getStatusMessage(percent) {
@@ -36,11 +36,12 @@
   }
 
   function injectLoaderStyles() {
-    if (styleInjected || document.getElementById('netquiz-loader-styles')) return;
+    if (styleInjected || document.getElementById("netquiz-loader-styles"))
+      return;
     styleInjected = true;
 
-    const style = document.createElement('style');
-    style.id = 'netquiz-loader-styles';
+    const style = document.createElement("style");
+    style.id = "netquiz-loader-styles";
     style.textContent = `
       .netquiz-fullscreen-loader {
         position: fixed;
@@ -205,10 +206,10 @@
     if (fsLoaderEl) return;
     injectLoaderStyles();
 
-    fsLoaderEl = document.createElement('div');
-    fsLoaderEl.id = 'netquiz-fullscreen-loader';
-    fsLoaderEl.className = 'netquiz-fullscreen-loader';
-    fsLoaderEl.setAttribute('aria-hidden', 'true');
+    fsLoaderEl = document.createElement("div");
+    fsLoaderEl.id = "netquiz-fullscreen-loader";
+    fsLoaderEl.className = "netquiz-fullscreen-loader";
+    fsLoaderEl.setAttribute("aria-hidden", "true");
 
     fsLoaderEl.innerHTML = `
       <div class="hud-canvas-dots" aria-hidden="true"></div>
@@ -239,9 +240,9 @@
     `;
 
     (document.body || document.documentElement).appendChild(fsLoaderEl);
-    hudFillEl = fsLoaderEl.querySelector('#hud-progress-fill');
-    hudPercentEl = fsLoaderEl.querySelector('#hud-percentage');
-    hudStatusEl = fsLoaderEl.querySelector('#hud-status-text');
+    hudFillEl = fsLoaderEl.querySelector("#hud-progress-fill");
+    hudPercentEl = fsLoaderEl.querySelector("#hud-percentage");
+    hudStatusEl = fsLoaderEl.querySelector("#hud-status-text");
   }
 
   function set(percent) {
@@ -249,8 +250,8 @@
     percent = Math.max(0, Math.min(100, percent));
     status = percent;
 
-    if (!fsLoaderEl.classList.contains('active')) {
-      fsLoaderEl.classList.add('active');
+    if (!fsLoaderEl.classList.contains("active")) {
+      fsLoaderEl.classList.add("active");
     }
     if (hudFillEl) {
       hudFillEl.style.width = `${percent}%`;
@@ -307,14 +308,14 @@
 
     setTimeout(() => {
       if (fsLoaderEl) {
-        fsLoaderEl.classList.add('fade-out');
+        fsLoaderEl.classList.add("fade-out");
       }
 
       setTimeout(() => {
         if (fsLoaderEl) {
-          fsLoaderEl.classList.remove('active', 'fade-out');
-          if (hudFillEl) hudFillEl.style.width = '0%';
-          if (hudPercentEl) hudPercentEl.textContent = '0%';
+          fsLoaderEl.classList.remove("active", "fade-out");
+          if (hudFillEl) hudFillEl.style.width = "0%";
+          if (hudPercentEl) hudPercentEl.textContent = "0%";
         }
         status = null;
       }, 200);
@@ -328,16 +329,16 @@
     done: done,
     isStarted: function () {
       return status !== null;
-    }
+    },
   };
 
   // Immediate check on script execution
-  if (document.readyState === 'loading') {
+  if (document.readyState === "loading") {
     start();
-    document.addEventListener('DOMContentLoaded', function () {
+    document.addEventListener("DOMContentLoaded", function () {
       done();
     });
-    window.addEventListener('load', function () {
+    window.addEventListener("load", function () {
       done(true);
     });
   } else {
@@ -346,32 +347,35 @@
   }
 
   // Handle browser back/forward navigation (bfcache)
-  window.addEventListener('pageshow', function () {
+  window.addEventListener("pageshow", function (event) {
     done(true);
+    if (event.persisted) {
+      window.location.reload();
+    }
   });
 
   // Universal Navigation Click Interceptor (Only for standard cross-page GET links)
-  document.addEventListener('click', function (e) {
+  document.addEventListener("click", function (e) {
     if (e.which > 1 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) {
       return;
     }
 
-    const anchor = e.target.closest('a');
+    const anchor = e.target.closest("a");
     if (!anchor) return;
     if (e.defaultPrevented) return;
 
-    const href = anchor.getAttribute('href');
+    const href = anchor.getAttribute("href");
     if (!href) return;
 
-    const target = anchor.getAttribute('target');
-    if (target && target !== '_self') return;
+    const target = anchor.getAttribute("target");
+    if (target && target !== "_self") return;
 
     if (
-      href.startsWith('#') ||
-      href.startsWith('javascript:') ||
-      href.startsWith('mailto:') ||
-      href.startsWith('tel:') ||
-      anchor.hasAttribute('download')
+      href.startsWith("#") ||
+      href.startsWith("javascript:") ||
+      href.startsWith("mailto:") ||
+      href.startsWith("tel:") ||
+      anchor.hasAttribute("download")
     ) {
       return;
     }
@@ -379,7 +383,11 @@
     try {
       const url = new URL(anchor.href, window.location.href);
       if (url.origin === window.location.origin) {
-        if (url.pathname === window.location.pathname && url.search === window.location.search && url.hash === window.location.hash) {
+        if (
+          url.pathname === window.location.pathname &&
+          url.search === window.location.search &&
+          url.hash === window.location.hash
+        ) {
           return;
         }
         start();
@@ -390,14 +398,16 @@
   });
 
   // Intercept form submissions only for traditional full-page GET/POST (exclude AJAX forms)
-  document.addEventListener('submit', function (e) {
+  document.addEventListener("submit", function (e) {
     const form = e.target;
     // If submission is handled via JS (novalidate or preventDefault in AJAX like login), do not lock with full page loader
-    if (form && !form.hasAttribute('data-ajax') && form.id !== 'login-form') {
-      if (!form.hasAttribute('target') || form.getAttribute('target') === '_self') {
+    if (form && !form.hasAttribute("data-ajax") && form.id !== "login-form") {
+      if (
+        !form.hasAttribute("target") ||
+        form.getAttribute("target") === "_self"
+      ) {
         start();
       }
     }
   });
-
 })(window, document);

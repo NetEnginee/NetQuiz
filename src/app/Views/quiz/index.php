@@ -75,8 +75,8 @@ require_once dirname(__DIR__) . '/templates/header.php';
                     </svg>
                 </div>
             </div>
-            <h3 class="empty-headline">Tidak Ada Kuis Ditemukan</h3>
-            <p class="empty-subtext">Belum ada paket soal yang cocok dengan filter yang dipilih. Router pixel ini sedang menunggu perintah dari Anda! 🎮</p>
+            <h3 class="empty-headline">Belum Ada Kuis</h3>
+            <p class="empty-subtext">Paket kuis sedang dalam Layer 4, tunggu beberapa saat sampai tiba di Layer 7!</p>
             <a href="<?= BASE_URL ?>/quiz?difficulty=all" class="empty-cta-link" onclick="window.playPixelSound && window.playPixelSound('click');">
                 <span>⚡ Tampilkan Semua Kuis</span>
                 <span class="cta-arrow">→</span>
