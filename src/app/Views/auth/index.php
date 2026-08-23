@@ -112,18 +112,18 @@ $mode = $mode ?? 'login';
                     <form id="login-form" method="POST" novalidate class="auth-form" autocomplete="on">
                         <input type="hidden" name="csrf_token" value="<?= \App\Core\Security::generateCsrfToken() ?>">
 
-                        <!-- Email Field -->
+                        <!-- Email / Username Field -->
                         <div class="field-wrapper">
                             <div class="field-header">
-                                <label for="login-email" class="field-label">Alamat Email</label>
+                                <label for="login-email" class="field-label">Alamat Email / Username</label>
                                 <span class="field-hint font-mono">[IDENTIFIER]</span>
                             </div>
                             <div class="input-container">
                                 <span class="input-icon-left" aria-hidden="true">
-                                    <i data-lucide="mail"></i>
+                                    <i data-lucide="user"></i>
                                 </span>
-                                <input type="email" id="login-email" name="email" class="form-input with-left-icon font-mono"
-                                    placeholder="operator@routerosquiz.academy" required autocomplete="email" spellcheck="false">
+                                <input type="text" id="login-email" name="email" class="form-input with-left-icon font-mono"
+                                    placeholder="operator@routerosquiz.academy atau username" required autocomplete="username" spellcheck="false">
                             </div>
                             <span class="field-error-text font-mono" id="login-email-error" aria-live="polite"></span>
                         </div>

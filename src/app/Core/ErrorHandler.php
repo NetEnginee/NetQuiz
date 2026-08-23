@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Core;
@@ -139,9 +140,15 @@ class ErrorHandler
         $logEntry = "[{$timestamp}] {$type}: {$message} in {$file}:{$line}\nStack trace:\n{$trace}\n\n";
 
         if (!empty(self::$logFile)) {
-            error_log($logEntry, 3, self::$logFile);
+            $logDir = dirname(self::$logFile);
+            if (!is_dir($logDir)) {
+                @mkdir($logDir, 0777, true);
+            }
+            if (@error_log($logEntry, 3, self::$logFile) === false) {
+                @error_log($logEntry);
+            }
         } else {
-            error_log($logEntry);
+            @error_log($logEntry);
         }
     }
 }

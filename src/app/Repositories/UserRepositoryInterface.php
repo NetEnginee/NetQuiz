@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Repositories;
@@ -10,6 +11,7 @@ interface UserRepositoryInterface
 {
     public function findById(int $id): ?array;
     public function findByEmail(string $email): ?array;
+    public function findByUsernameOrEmail(string $identifier): ?array;
     public function getAllUsers(): array;
     public function emailExists(string $email, ?int $excludeId = null): bool;
     public function usernameExists(string $username, ?int $excludeId = null): bool;

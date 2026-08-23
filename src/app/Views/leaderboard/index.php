@@ -293,11 +293,49 @@ require_once dirname(__DIR__) . '/templates/header.php';
 
         <!-- Leaderboard #4 - #10 List / Empty State -->
         <div class="leaderboard-others-container">
-            <?php if (!empty($otherRanks)): ?>
-                <div class="leaderboard-table">
-                    <?php foreach ($otherRanks as $rank): ?>
-                        <!-- Render baris ranking peserta -->
-                    <?php endforeach; ?>
+            <?php if (!empty($tableLeaderboard)): ?>
+                <div class="leaderboard-table-wrap">
+                    <table class="leaderboard-data-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 80px; text-align: center;">Posisi</th>
+                                <th>Peserta</th>
+                                <th style="text-align: right;">Kuis Selesai</th>
+                                <th style="text-align: right;">Total Skor</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php foreach ($tableLeaderboard as $index => $row): ?>
+                                <?php
+                                $rankNumber = $index + 4;
+                                $isCurrentUser = ((int)$row['id'] === $currentUserId);
+                                ?>
+                                <tr class="<?= $isCurrentUser ? 'current-user-row' : '' ?>">
+                                    <td style="text-align: center;">
+                                        <span class="table-rank-badge rank-other">#<?= $rankNumber ?></span>
+                                    </td>
+                                    <td>
+                                        <div class="table-user-cell">
+                                            <div class="table-avatar-circle">
+                                                <?= strtoupper(substr(htmlspecialchars($row['username'] ?? 'U'), 0, 1)) ?>
+                                            </div>
+                                            <span class="table-username"><?= htmlspecialchars($row['username'] ?? 'Peserta') ?></span>
+                                            <?php if ($isCurrentUser): ?>
+                                                <span class="badge-you-tag">Anda</span>
+                                            <?php endif; ?>
+                                        </div>
+                                    </td>
+                                    <td style="text-align: right; font-family: var(--font-mono); color: var(--text-secondary);">
+                                        <?= (int)($row['completed_quizzes'] ?? 0) ?> Kuis
+                                    </td>
+                                    <td style="text-align: right;">
+                                        <span class="table-score-cell"><?= number_format((int)($row['total_score'] ?? 0)) ?></span>
+                                        <span class="table-pts-suffix">Pts</span>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
                 </div>
             <?php else: ?>
                 <!-- Empty State Serupa Tampilan Modul Learn -->
@@ -332,15 +370,13 @@ require_once dirname(__DIR__) . '/templates/header.php';
                         Papan peringkat #4 - #10 masih kosong. Taklukkan kuis, kumpulkan akumulasi poin, dan amankan posisimu di arena ini! 🏆
                     </p>
 
-                    <a href="/quiz" class="btn-empty-action">
+                    <a href="<?= BASE_URL ?>/quiz" class="btn-empty-action">
                         Latihan Kuis Dulu &rarr;
                     </a>
                 </div>
             <?php endif; ?>
         </div>
     </div>
-</div>
-
 </div>
 
 <?php require_once dirname(__DIR__) . '/templates/footer.php'; ?>

@@ -168,7 +168,7 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (4,'admin@routerosquiz.academy','admin@routerosquiz.academy','$2y$12$pBOojrk4TIMUcSUQCErzhuBkzFh7pmFQsrdDU/vzM3BQkN4jMYnXm','Aktif','2026-07-07 04:40:48','2026-07-08 04:03:05',NULL);
+INSERT INTO `users` VALUES (4,'admin','admin@routerosquiz.academy','$2y$12$u0y0NaPNVMm0zdsW1H5gReQRFF1D94s4/xOUUfwGcSGdnSBuFd.ye','Aktif','2026-07-07 04:40:48','2026-07-08 04:03:05',NULL);
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 -- Table structure for table `materials`
@@ -192,6 +192,23 @@ INSERT INTO `materials` VALUES
 (1,'Pengenalan Dasar Routing Static di MikroTik','<h2>Apa itu Routing Static?</h2><p>Static routing adalah metode routing di mana administrator jaringan secara manual mengkonfigurasi rute-rute dalam tabel routing router. Ini adalah cara paling mendasar untuk menghubungkan dua atau lebih jaringan berbeda melalui MikroTik.</p><h3>Langkah Konfigurasi Static Route di RouterOS:</h3><pre><code>/ip route\nadd dst-address=192.168.2.0/24 gateway=192.168.1.1</code></pre><p>Parameter utama yang perlu dikonfigurasi adalah <strong>dst-address</strong> (jaringan tujuan) dan <strong>gateway</strong> (IP hop berikutnya/interface keluar).</p>','Routing','Mudah',NULL,'2026-07-14 00:00:00','2026-07-14 00:00:00'),
 (2,'Dasar-Dasar Firewall Filter Rules','<h2>Fungsi Firewall Filter</h2><p>Firewall filter pada MikroTik RouterOS digunakan untuk melindungi router dari akses tidak sah serta mengontrol lalu lintas data yang masuk, keluar, atau melewati router.</p><h3>Chain Utama pada Filter Rules:</h3><ul><li><strong>Input</strong>: Digunakan untuk memfilter paket data yang ditujukan langsung ke router.</li><li><strong>Forward</strong>: Digunakan untuk memfilter paket data yang melintasi router dari satu interface ke interface lainnya.</li><li><strong>Output</strong>: Digunakan untuk memfilter paket data yang berasal dari router itu sendiri.</li></ul><h3>Contoh Konfigurasi Memblokir Ping (ICMP):</h3><pre><code>/ip firewall filter\nadd chain=input protocol=icmp action=drop</code></pre>','Firewall & NAT','Mudah',NULL,'2026-07-14 00:00:00','2026-07-14 00:00:00');
 UNLOCK TABLES;
+
+--
+-- Table structure for table `login_attempts`
+--
+
+DROP TABLE IF EXISTS `login_attempts`;
+CREATE TABLE `login_attempts` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `ip_address` varchar(45) NOT NULL,
+  `email` varchar(100) NOT NULL,
+  `attempted_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `idx_ip_email` (`ip_address`, `email`),
+  KEY `idx_email` (`email`),
+  KEY `idx_attempted_at` (`attempted_at`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
 
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 

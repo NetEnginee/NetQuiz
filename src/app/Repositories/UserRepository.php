@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Repositories;
@@ -34,11 +35,28 @@ class UserRepository implements UserRepositoryInterface
      */
     public function findByEmail(string $email): ?array
     {
-        $stmt = $this->db->prepare("SELECT * FROM users WHERE email = :email LIMIT 1");
+        $stmt = $this->db->prepare("SELECT * FROM users WHERE LOWER(TRIM(email)) = LOWER(TRIM(:email)) LIMIT 1");
         $stmt->execute(['email' => $email]);
-        $user = $stmt->fetch();
+        $user = $stmt->fetch(PDO::FETCH_ASSOC);
         return $user ?: null;
     }
+
+    /**
+     * Find user by username or email address.
+     */
+    public function findByUsernameOrEmail(string $identifier): ?array
+    {
+        $identifier = trim($identifier);
+        if (empty($identifier)) {
+            return null;
+        }
+
+        $stmt = $this->db->prepare("SELECT * FROM users WHERE LOWER(TRIM(email)) = LOWER(:id1) OR LOWER(TRIM(username)) = LOWER(:id2) LIMIT 1");
+        $stmt->execute(['id1' => $identifier, 'id2' => $identifier]);
+        $user = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $user ?: null;
+    }
+
 
     /**
      * Fetch all non-admin registered users.
@@ -92,7 +110,8 @@ class UserRepository implements UserRepositoryInterface
      */
     public function create(string $username, string $email, string $password): int
     {
-        $hashedPassword = password_hash($password, PASSWORD_ARGON2ID);
+        $algo = defined('PASSWORD_ARGON2ID') ? PASSWORD_ARGON2ID : PASSWORD_DEFAULT;
+        $hashedPassword = password_hash($password, $algo);
         if ($hashedPassword === false || $hashedPassword === null) {
             $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
         }
@@ -125,7 +144,8 @@ class UserRepository implements UserRepositoryInterface
      */
     public function updatePassword(int $id, string $newPassword): bool
     {
-        $hashedPassword = password_hash($newPassword, PASSWORD_ARGON2ID);
+        $algo = defined('PASSWORD_ARGON2ID') ? PASSWORD_ARGON2ID : PASSWORD_DEFAULT;
+        $hashedPassword = password_hash($newPassword, $algo);
         if ($hashedPassword === false || $hashedPassword === null) {
             $hashedPassword = password_hash($newPassword, PASSWORD_DEFAULT);
         }
