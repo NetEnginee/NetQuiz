@@ -29,21 +29,9 @@ require_once dirname(__DIR__) . '/templates/header.php';
 <div class="quiz-review-page-container">
 
     <!-- 1. Top Header & Breadcrumb -->
-    <section class="dashboard-hero-header mb-5 pb-4">
+    <section class="dashboard-hero-header mb-6 pb-4">
         <div class="hero-brand-group">
-            <div class="hero-router-box">
-                <span class="live-radar-dot"></span>
-                <svg class="w-6 h-6 text-cyan-400 pixelated" viewBox="0 0 16 16">
-                    <use href="#pixel-router"></use>
-                </svg>
-            </div>
             <div class="hero-title-area">
-                <?= renderBreadcrumb([
-                    ['label' => 'Student', 'url' => BASE_URL . '/'],
-                    ['label' => 'Kuis', 'url' => BASE_URL . '/quiz'],
-                    ['label' => $quiz['title']],
-                    ['label' => 'Review Pembahasan']
-                ]) ?>
                 <h1 class="hero-main-title">
                     <span>Review: <?= htmlspecialchars($quiz['title']) ?></span>
                 </h1>
@@ -52,7 +40,7 @@ require_once dirname(__DIR__) . '/templates/header.php';
                         <?= htmlspecialchars($quiz['category']) ?>
                     </span>
                     <span class="quiz-diff-pill font-mono font-bold <?= $score >= 70 ? 'text-emerald-400' : 'text-red-400' ?>">
-                        Skor: <?= (int)$score ?>%
+                        Skor Akhir: <?= (int)$score ?>%
                     </span>
                 </div>
             </div>
@@ -60,40 +48,40 @@ require_once dirname(__DIR__) . '/templates/header.php';
 
         <div class="hero-action-bar">
             <a href="<?= BASE_URL ?>/quiz" class="btn-hero-secondary font-mono text-xs" onclick="window.playPixelSound && window.playPixelSound('click');">
-                <span>← Katalog Kuis</span>
+                <span>← Kembali ke Kuis</span>
             </a>
             <a href="<?= BASE_URL ?>/quiz/play/<?= (int)$quiz['id'] ?>" class="btn-hero-primary font-mono text-xs" onclick="window.playPixelSound && window.playPixelSound('click');">
-                <span>🔄 Ulangi Kuis</span>
+                <span>Ulangi Kuis</span>
             </a>
         </div>
-    </div>
+    </section>
 
     <!-- 2. Main 2-Column Review Layout -->
     <div class="quiz-review-layout">
-        
+
         <!-- LEFT COLUMN: Question Carousel & Detailed Explanation -->
         <div class="review-column-left">
             <!-- Filter Tabs Switcher -->
             <div class="quiz-filter-bar mb-4 py-2">
                 <div class="filter-tabs-group">
                     <span class="filter-label font-mono">Filter Soal:</span>
-                    <button type="button" 
-                            class="review-filter-btn quiz-segment-tab font-mono active" 
-                            data-filter="all"
-                            onclick="window.playPixelSound && window.playPixelSound('click');">
+                    <button type="button"
+                        class="review-filter-btn quiz-segment-tab font-mono active"
+                        data-filter="all"
+                        onclick="window.playPixelSound && window.playPixelSound('click');">
                         <span>Semua Soal (<?= $totalQuestions ?>)</span>
                     </button>
-                    <button type="button" 
-                            class="review-filter-btn quiz-segment-tab font-mono text-emerald-400" 
-                            data-filter="correct"
-                            onclick="window.playPixelSound && window.playPixelSound('click');">
+                    <button type="button"
+                        class="review-filter-btn quiz-segment-tab font-mono text-emerald-400"
+                        data-filter="correct"
+                        onclick="window.playPixelSound && window.playPixelSound('click');">
                         <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block"></span>
                         <span>Benar (<?= $correctCount ?>)</span>
                     </button>
-                    <button type="button" 
-                            class="review-filter-btn quiz-segment-tab font-mono text-red-400" 
-                            data-filter="wrong"
-                            onclick="window.playPixelSound && window.playPixelSound('click');">
+                    <button type="button"
+                        class="review-filter-btn quiz-segment-tab font-mono text-red-400"
+                        data-filter="wrong"
+                        onclick="window.playPixelSound && window.playPixelSound('click');">
                         <span class="w-1.5 h-1.5 rounded-full bg-red-400 inline-block"></span>
                         <span>Salah (<?= $wrongCount ?>)</span>
                     </button>
@@ -121,11 +109,11 @@ require_once dirname(__DIR__) . '/templates/header.php';
                             'D' => $q['option_d'] ?? ''
                         ];
                         ?>
-                        <div class="review-question-block" 
-                             data-index="<?= $index ?>" 
-                             data-correct="<?= $isCorrect ? '1' : '0' ?>" 
-                             style="<?= $index === 0 ? 'display: block;' : 'display: none;' ?>">
-                            
+                        <div class="review-question-block"
+                            data-index="<?= $index ?>"
+                            data-correct="<?= $isCorrect ? '1' : '0' ?>"
+                            style="<?= $index === 0 ? 'display: block;' : 'display: none;' ?>">
+
                             <!-- Header Status -->
                             <div class="question-header-bar">
                                 <span class="question-count-label font-sans">
@@ -133,7 +121,9 @@ require_once dirname(__DIR__) . '/templates/header.php';
                                 </span>
                                 <?php if ($isCorrect): ?>
                                     <span class="quiz-status-tag status-finished font-mono text-xs">
-                                        <svg class="w-3 h-3 pixelated" viewBox="0 0 16 16"><use href="#pixel-sparkle"></use></svg>
+                                        <svg class="w-3.5 h-3.5 pixelated" viewBox="0 0 16 16">
+                                            <use href="#pixel-sparkle"></use>
+                                        </svg>
                                         <span>Jawaban Benar</span>
                                     </span>
                                 <?php else: ?>
@@ -202,7 +192,9 @@ require_once dirname(__DIR__) . '/templates/header.php';
                             <!-- Technical RouterOS Explanation Box -->
                             <div class="review-explanation-terminal">
                                 <div class="flex items-center gap-2 mb-2">
-                                    <svg class="w-4 h-4 pixelated text-cyan-400" viewBox="0 0 16 16"><use href="#pixel-robot"></use></svg>
+                                    <svg class="w-4 h-4 pixelated text-cyan-400" viewBox="0 0 16 16">
+                                        <use href="#pixel-robot"></use>
+                                    </svg>
                                     <span class="font-mono text-xs font-bold text-cyan-400 uppercase tracking-wider">
                                         Pembahasan Teknis MikroTik RouterOS
                                     </span>
@@ -228,85 +220,58 @@ require_once dirname(__DIR__) . '/templates/header.php';
         </div>
 
         <!-- RIGHT COLUMN: Evaluation Summary & Palette -->
-        <div class="review-column-right space-y-5">
-            <!-- Card 1: Score & Statistics -->
-            <div class="desktop-timer-card">
-                <span class="panel-crosshair corner-tl">+</span>
-                <span class="panel-crosshair corner-tr">+</span>
-                <span class="panel-crosshair corner-bl">+</span>
-                <span class="panel-crosshair corner-br">+</span>
 
-                <div class="mb-3">
-                    <span class="font-mono text-xs font-bold text-zinc-400 uppercase tracking-wider">Ringkasan Hasil</span>
-                </div>
 
-                <div class="grid grid-cols-2 gap-2 mb-3">
-                    <div class="p-3 bg-zinc-900 border border-emerald-500/30 rounded-md text-center">
-                        <span class="font-mono text-xl font-bold text-emerald-400 block leading-none"><?= $correctCount ?></span>
-                        <span class="font-mono text-[10px] font-bold text-emerald-500 uppercase mt-1 block">Benar</span>
-                    </div>
-                    <div class="p-3 bg-zinc-900 border border-red-500/30 rounded-md text-center">
-                        <span class="font-mono text-xl font-bold text-red-400 block leading-none"><?= $wrongCount ?></span>
-                        <span class="font-mono text-[10px] font-bold text-red-500 uppercase mt-1 block">Salah</span>
-                    </div>
-                </div>
+        <!-- Card 2: Question Review Palette Grid -->
+        <div class="palette-card-box">
+            <span class="panel-crosshair corner-tl">+</span>
+            <span class="panel-crosshair corner-tr">+</span>
+            <span class="panel-crosshair corner-bl">+</span>
+            <span class="panel-crosshair corner-br">+</span>
 
-                <div class="flex items-center justify-between font-mono text-xs p-2 bg-zinc-900/60 border border-zinc-800 rounded-md">
-                    <span class="text-zinc-500">Total Akurasi:</span>
-                    <span class="font-bold text-white"><?= (int)$score ?>%</span>
-                </div>
+            <div class="flex items-center justify-between pb-2 mb-3 border-b border-zinc-800">
+                <h4 class="font-sans text-xs font-bold text-white uppercase tracking-wider m-0">
+                    Palet Soal Evaluasi
+                </h4>
             </div>
 
-            <!-- Card 2: Question Review Palette Grid -->
-            <div class="palette-card-box">
-                <span class="panel-crosshair corner-tl">+</span>
-                <span class="panel-crosshair corner-tr">+</span>
-                <span class="panel-crosshair corner-bl">+</span>
-                <span class="panel-crosshair corner-br">+</span>
+            <!-- Palette Grid -->
+            <div id="review-palette-grid" class="palette-buttons-grid">
+                <?php foreach ($questions as $index => $q): ?>
+                    <?php
+                    $userAns = strtoupper((string)($userAnswers[$index] ?? ''));
+                    $correctAns = strtoupper((string)($q['correct'] ?? ''));
+                    $isCorrect = ($userAns !== '' && $userAns === $correctAns);
+                    ?>
+                    <button type="button"
+                        class="review-palette-btn font-mono <?= $index === 0 ? 'current' : '' ?> <?= $isCorrect ? 'is-correct' : 'is-wrong' ?>"
+                        data-index="<?= $index ?>"
+                        data-correct="<?= $isCorrect ? '1' : '0' ?>"
+                        onclick="window.playPixelSound && window.playPixelSound('click');">
+                        <?= $index + 1 ?>
+                    </button>
+                <?php endforeach; ?>
+            </div>
 
-                <div class="flex items-center justify-between pb-2 mb-3 border-b border-zinc-800">
-                    <h4 class="font-sans text-xs font-bold text-white uppercase tracking-wider m-0">
-                        Palet Soal Evaluasi
-                    </h4>
-                </div>
-
-                <!-- Palette Grid -->
-                <div id="review-palette-grid" class="palette-buttons-grid">
-                    <?php foreach ($questions as $index => $q): ?>
-                        <?php
-                        $userAns = strtoupper((string)($userAnswers[$index] ?? ''));
-                        $correctAns = strtoupper((string)($q['correct'] ?? ''));
-                        $isCorrect = ($userAns !== '' && $userAns === $correctAns);
-                        ?>
-                        <button type="button" 
-                                class="review-palette-btn font-mono <?= $index === 0 ? 'current' : '' ?> <?= $isCorrect ? 'is-correct' : 'is-wrong' ?>" 
-                                data-index="<?= $index ?>" 
-                                data-correct="<?= $isCorrect ? '1' : '0' ?>"
-                                onclick="window.playPixelSound && window.playPixelSound('click');">
-                            <?= $index + 1 ?>
-                        </button>
-                    <?php endforeach; ?>
-                </div>
-
-                <!-- Palette Legend -->
-                <div class="palette-legend-row font-mono">
-                    <span class="inline-flex items-center gap-1 text-emerald-400">
-                        <span class="w-2.5 h-2.5 rounded-xs bg-emerald-500 inline-block"></span>
-                        <span>Benar</span>
-                    </span>
-                    <span class="inline-flex items-center gap-1 text-red-400">
-                        <span class="w-2.5 h-2.5 rounded-xs bg-red-500 inline-block"></span>
-                        <span>Salah</span>
-                    </span>
-                    <span class="inline-flex items-center gap-1 text-zinc-300">
-                        <span class="w-2.5 h-2.5 rounded-xs border border-white inline-block"></span>
-                        <span>Aktif</span>
-                    </span>
-                </div>
+            <!-- Palette Legend -->
+            <div class="palette-legend-row font-mono">
+                <span class="inline-flex items-center gap-1 text-emerald-400">
+                    <span class="w-2.5 h-2.5 rounded-xs bg-emerald-500 inline-block"></span>
+                    <span>Benar</span>
+                </span>
+                <span class="inline-flex items-center gap-1 text-red-400">
+                    <span class="w-2.5 h-2.5 rounded-xs bg-red-500 inline-block"></span>
+                    <span>Salah</span>
+                </span>
+                <span class="inline-flex items-center gap-1 text-zinc-300">
+                    <span class="w-2.5 h-2.5 rounded-xs border border-white inline-block"></span>
+                    <span>Aktif</span>
+                </span>
             </div>
         </div>
-
     </div>
+
+</div>
 
 </div>
 
