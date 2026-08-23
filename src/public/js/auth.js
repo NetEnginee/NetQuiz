@@ -87,10 +87,8 @@ document.addEventListener("DOMContentLoaded", () => {
   function updateSoundButtonUI() {
     if (soundToggleBtn && soundIcon && soundLabel) {
       if (soundEnabled) {
-        soundIcon.textContent = "🔊";
         soundLabel.textContent = "Sound: ON";
       } else {
-        soundIcon.textContent = "🔇";
         soundLabel.textContent = "Sound: OFF";
       }
     }

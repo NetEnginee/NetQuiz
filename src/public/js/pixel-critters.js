@@ -118,7 +118,7 @@
         width: 100vw;
         height: 105px;
         pointer-events: none;
-        z-index: 998;
+        z-index: 1005; /* Di atas seluruh section page, card, dan tepat di atas nav */
         overflow: hidden;
         user-select: none;
       }
@@ -482,15 +482,23 @@
 
   // Engine Initializer: Single Cal/Adel strolling calmly along the bottom
   function initCrittersEngine() {
+    if (window.__pixelCrittersInitialized && document.getElementById("pixel-critters-bottom-runner")) {
+      return;
+    }
+    window.__pixelCrittersInitialized = true;
+
     injectCritterStyles();
     const container = ensureRunnerContainer();
+
+    // Pastikan container bersih jika di-reinit
+    container.innerHTML = "";
 
     // Hanya menggunakan karakter Cal/Adel
     const calConfig = MASCOTS.find((m) => m.id === "cal") || MASCOTS[0];
     const cal = new PixelCritter(calConfig, container);
 
     function updateViewportWidth() {
-      return window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+      return window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth || 360;
     }
 
     let screenWidth = updateViewportWidth();
@@ -537,9 +545,15 @@
     });
   }
 
+  // Multi-lifecycle hooks untuk memastikan berjalan di semua views & SPA navigation
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", initCrittersEngine);
   } else {
     initCrittersEngine();
   }
+
+  // Backup fallback on window load & pageshow (BFCache / dynamic page transitions)
+  window.addEventListener("pageshow", function () {
+    setTimeout(initCrittersEngine, 50);
+  });
 })(window, document);
