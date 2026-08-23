@@ -137,7 +137,7 @@ class AttemptRepository implements AttemptRepositoryInterface
     }
 
     /**
-     * Query leaderboard rankings.
+     * Query leaderboard rankings with direct SQL limit for maximum performance.
      */
     public function getLeaderboard(?string $category = null, int $limit = 10): array
     {
@@ -151,6 +151,7 @@ class AttemptRepository implements AttemptRepositoryInterface
         }
 
         $joinSql = implode(" AND ", $joinConditions);
+        $safeLimit = max(1, min(100, $limit));
 
         $query = "
             SELECT 
@@ -163,13 +164,12 @@ class AttemptRepository implements AttemptRepositoryInterface
             WHERE LOWER(TRIM(u.email)) NOT IN ('admin@routerosquiz.academy', 'super@netquiz.academy', 'admin@quiz.local')
             GROUP BY u.id, u.username
             ORDER BY total_score DESC, completed_quizzes DESC
+            LIMIT {$safeLimit}
         ";
 
         $stmt = $this->db->prepare($query);
         $stmt->execute($params);
-        $all = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-        return array_slice($all, 0, $limit);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
     /**
@@ -188,7 +188,9 @@ class AttemptRepository implements AttemptRepositoryInterface
 
         $joinSql = implode(" AND ", $joinConditions);
 
-        $query = "
+        // 1. Fetch the specific user's stats
+        $userParams = array_merge($params, ['user_id' => $userId]);
+        $userQuery = "
             SELECT 
                 u.id, 
                 u.username, 
@@ -196,25 +198,44 @@ class AttemptRepository implements AttemptRepositoryInterface
                 COUNT(qa.id) as completed_quizzes 
             FROM users u
             LEFT JOIN quiz_attempts qa ON {$joinSql}
-            WHERE LOWER(TRIM(u.email)) NOT IN ('admin@routerosquiz.academy', 'super@netquiz.academy', 'admin@quiz.local')
+            WHERE u.id = :user_id
             GROUP BY u.id, u.username
-            ORDER BY total_score DESC, completed_quizzes DESC
         ";
 
-        $stmt = $this->db->prepare($query);
-        $stmt->execute($params);
-        $all = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $stmt = $this->db->prepare($userQuery);
+        $stmt->execute($userParams);
+        $stats = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        $rank = 0;
-        $stats = null;
-
-        foreach ($all as $index => $row) {
-            if ((int)$row['id'] === $userId) {
-                $rank = $index + 1;
-                $stats = $row;
-                break;
-            }
+        if (!$stats) {
+            return ['rank' => 0, 'stats' => null];
         }
+
+        $userScore = (int)$stats['total_score'];
+        $userQuizzes = (int)$stats['completed_quizzes'];
+
+        // 2. Count users who have a strictly higher score (or tie-breakers)
+        $rankQuery = "
+            SELECT COUNT(*) + 1 as user_rank
+            FROM (
+                SELECT 
+                    u.id, 
+                    COALESCE(SUM(qa.score), 0) as total_score, 
+                    COUNT(qa.id) as completed_quizzes
+                FROM users u
+                LEFT JOIN quiz_attempts qa ON {$joinSql}
+                WHERE LOWER(TRIM(u.email)) NOT IN ('admin@routerosquiz.academy', 'super@netquiz.academy', 'admin@quiz.local')
+                GROUP BY u.id
+                HAVING (total_score > {$userScore})
+                   OR (total_score = {$userScore} AND completed_quizzes > {$userQuizzes})
+                   OR (total_score = {$userScore} AND completed_quizzes = {$userQuizzes} AND u.id < {$userId})
+            ) as leaderboard_ahead
+        ";
+
+        $rankStmt = $this->db->prepare($rankQuery);
+        $rankStmt->execute($params);
+        $rankResult = $rankStmt->fetch(PDO::FETCH_ASSOC);
+
+        $rank = (int)($rankResult['user_rank'] ?? 1);
 
         return [
             'rank' => $rank,

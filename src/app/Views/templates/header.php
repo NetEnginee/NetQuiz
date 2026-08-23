@@ -234,10 +234,6 @@ function renderBreadcrumb(array $items): string
                 <i data-lucide="trophy"></i>
                 <span>Rank</span>
             </a>
-            <a href="<?= BASE_URL ?>/settings" class="mobile-nav-item <?= isStudentNavActive('/settings', $currentPath) ? 'active' : '' ?>">
-                <i data-lucide="user"></i>
-                <span>Profil</span>
-            </a>
         </div>
     </nav>
 

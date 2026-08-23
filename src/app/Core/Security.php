@@ -110,7 +110,7 @@ class Security
     public static function allowBFCache(): void
     {
         header('Cache-Control: private, max-age=0, must-revalidate');
-        header('Pragma: cache');
+        header('Pragma: no-cache');
     }
 
     /**
@@ -160,24 +160,36 @@ class Security
     }
 
     /**
-     * Encrypt a value (like an integer ID) securely for URL usage.
+     * Get secret key for cryptography.
+     */
+    private static function getSecretKey(): string
+    {
+        $secret = getenv('APP_KEY') ?: 'RouterOS-Quiz-Academy-Secret-Key-1298471';
+        return hash('sha256', $secret, true);
+    }
+
+    /**
+     * Encrypt a value securely for URL usage using Authenticated Encryption (AES-256-GCM).
      */
     public static function encryptUrlId(string|int $value): string
     {
         $plaintext = (string) $value;
-        $cipher = 'AES-256-CBC';
-        $key = hash('sha256', 'RouterOS-Quiz-Academy-Secret-Key-1298471');
+        $cipher = 'aes-256-gcm';
+        $key = self::getSecretKey();
         $ivlen = openssl_cipher_iv_length($cipher);
         $iv = random_bytes($ivlen);
-        $ciphertext = openssl_encrypt($plaintext, $cipher, $key, OPENSSL_RAW_DATA, $iv);
+        $tag = '';
 
-        $data = $iv . $ciphertext;
+        $ciphertext = openssl_encrypt($plaintext, $cipher, $key, OPENSSL_RAW_DATA, $iv, $tag, '', 16);
+
+        // Format: [1 byte version (1)] + [12 bytes IV] + [16 bytes Tag] + [Ciphertext]
+        $data = "\x01" . $iv . $tag . $ciphertext;
         return str_replace(['+', '/', '='], ['-', '_', ''], base64_encode($data));
     }
 
     /**
      * Decrypt a URL-safe encrypted value back to its original value.
-     * Returns null if decryption fails or tampering is detected.
+     * Supports both modern AES-256-GCM and legacy AES-256-CBC payloads.
      */
     public static function decryptUrlId(?string $encrypted): ?string
     {
@@ -186,23 +198,41 @@ class Security
         }
 
         // Decode base64 URL-safe
-        $data = base64_decode(str_replace(['-', '_'], ['+', '/'], $encrypted));
-        if ($data === false) {
+        $data = base64_decode(str_replace(['-', '_'], ['+', '/'], $encrypted), true);
+        if ($data === false || strlen($data) < 16) {
             return null;
         }
 
+        $key = self::getSecretKey();
+
+        // Check for version 1 (AES-256-GCM)
+        if ($data[0] === "\x01" && strlen($data) >= 29) {
+            $ivlen = 12; // Standard GCM IV length
+            $taglen = 16;
+            $iv = substr($data, 1, $ivlen);
+            $tag = substr($data, 1 + $ivlen, $taglen);
+            $ciphertext = substr($data, 1 + $ivlen + $taglen);
+
+            $decrypted = openssl_decrypt($ciphertext, 'aes-256-gcm', $key, OPENSSL_RAW_DATA, $iv, $tag);
+            if ($decrypted !== false) {
+                return $decrypted;
+            }
+        }
+
+        // Fallback for legacy AES-256-CBC payloads
+        $legacyKey = hash('sha256', 'RouterOS-Quiz-Academy-Secret-Key-1298471');
         $cipher = 'AES-256-CBC';
-        $key = hash('sha256', 'RouterOS-Quiz-Academy-Secret-Key-1298471');
         $ivlen = openssl_cipher_iv_length($cipher);
-        if (strlen($data) < $ivlen) {
-            return null;
+        if (strlen($data) >= $ivlen) {
+            $iv = substr($data, 0, $ivlen);
+            $ciphertext = substr($data, $ivlen);
+            $decrypted = openssl_decrypt($ciphertext, $cipher, $legacyKey, OPENSSL_RAW_DATA, $iv);
+            if ($decrypted !== false) {
+                return $decrypted;
+            }
         }
 
-        $iv = substr($data, 0, $ivlen);
-        $ciphertext = substr($data, $ivlen);
-
-        $decrypted = openssl_decrypt($ciphertext, $cipher, $key, OPENSSL_RAW_DATA, $iv);
-        return $decrypted !== false ? $decrypted : null;
+        return null;
     }
 
     /**

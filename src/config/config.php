@@ -14,10 +14,33 @@ $base_url = $protocol . '://' . $host;
 
 $isLocal = ($host === 'localhost:8080' || $host === '127.0.0.1:8080');
 
+// Optional .env loader if .env file exists in project root or app root
+$envFile = dirname(__DIR__) . '/.env';
+if (file_exists($envFile) && is_readable($envFile)) {
+    $lines = file($envFile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+    foreach ($lines as $line) {
+        $line = trim($line);
+        if ($line === '' || str_starts_with($line, '#')) {
+            continue;
+        }
+        if (str_contains($line, '=')) {
+            [$name, $value] = explode('=', $line, 2);
+            $name = trim($name);
+            $value = trim($value, " \t\n\r\0\x0B\"'");
+            if (!array_key_exists($name, $_SERVER) && !array_key_exists($name, $_ENV)) {
+                putenv("{$name}={$value}");
+                $_ENV[$name] = $value;
+                $_SERVER[$name] = $value;
+            }
+        }
+    }
+}
+
 if ($isLocal) {
     return [
-        'app_name' => 'NetQuiz (Dev)',
-        'base_url' => $base_url,
+        'app_name' => getenv('APP_NAME') ?: 'NetQuiz (Dev)',
+        'base_url' => getenv('APP_URL') ?: $base_url,
+        'app_key' => getenv('APP_KEY') ?: 'NetQuiz-Dev-Secure-Secret-Key-89234710',
         // Database Config for Docker Local Dev
         'db_host' => getenv('DB_HOST') ?: 'nvram-mysql',
         'db_name' => getenv('DB_NAME') ?: 'db_mikrotik_quiz',
@@ -26,12 +49,13 @@ if ($isLocal) {
     ];
 } else {
     return [
-        'app_name' => 'NetQuiz Academy',
-        'base_url' => $base_url,
+        'app_name' => getenv('APP_NAME') ?: 'NetQuiz Academy',
+        'base_url' => getenv('APP_URL') ?: $base_url,
+        'app_key' => getenv('APP_KEY') ?: 'NetQuiz-Prod-Secure-Secret-Key-72314981',
         // Database Config for InfinityFree Production Shared Hosting
-        'db_host' => 'sql301.infinityfree.com',
-        'db_name' => 'if0_42727530_netquiz',
-        'db_user' => 'if0_42727530',
-        'db_pass' => '1UnionMzCAdHseR',
+        'db_host' => getenv('DB_HOST') ?: 'sql301.infinityfree.com',
+        'db_name' => getenv('DB_NAME') ?: 'if0_42727530_netquiz',
+        'db_user' => getenv('DB_USER') ?: 'if0_42727530',
+        'db_pass' => getenv('DB_PASS') ?: '1UnionMzCADHseR',
     ];
 }
