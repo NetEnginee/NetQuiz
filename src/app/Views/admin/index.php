@@ -11,7 +11,7 @@ $stats = $stats ?? [
 ];
 ?>
 <!DOCTYPE html>
-<html lang="id">
+<html lang="id" class="dark">
 
 <head>
     <meta charset="UTF-8">
@@ -19,11 +19,10 @@ $stats = $stats ?? [
     <title><?= htmlspecialchars($title) ?> | NetQuiz Admin</title>
     <meta name="description" content="Panel Kontrol Administrator NetQuiz Platform.">
 
-    <!-- Fonts: Plus Jakarta Sans, Inter, & JetBrains Mono -->
+    <!-- Fonts: Inter (UI), JetBrains Mono (Code/Metadata), Press Start 2P (Retro Accents) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Pixelify+Sans:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Press+Start+2P&family=Silkscreen:wght@400;700&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700;800&family=DotGothic16&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700;800&family=Pixelify+Sans:wght@500;600;700&family=VT323&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Press+Start+2P&display=swap" rel="stylesheet">
 
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
@@ -31,8 +30,9 @@ $stats = $stats ?? [
     <!-- Top Slim Loading Engine -->
     <script src="<?= function_exists('assetUrl') ? assetUrl('/js/page-loader.js') : (BASE_URL . '/js/page-loader.js') ?>"></script>
 
-    <!-- Custom Dashboard Stylesheet -->
+    <!-- Vercel Dark Global & Admin Stylesheets -->
     <link rel="stylesheet" href="<?= function_exists('assetUrl') ? assetUrl('/css/dashboard.css') : (BASE_URL . '/css/dashboard.css') ?>">
+    <link rel="stylesheet" href="<?= function_exists('assetUrl') ? assetUrl('/css/admin.css') : (BASE_URL . '/css/admin.css') ?>">
 
     <!-- Global App State & Database Real Datasets -->
     <script>
@@ -46,172 +46,15 @@ $stats = $stats ?? [
     </script>
 </head>
 
-<body>
-    <!-- Background Canvas Ornaments (Dual-Layer Blueprint Grid - Preserved) -->
-    <!-- 8-Bit Pixel Cyber-Grid & Cute Floating Background Ornaments -->
-    <div class="bg-ornament-grid" aria-hidden="true"></div>
-    <div class="bg-ornament-major-grid" aria-hidden="true"></div>
-    <div class="bg-ornament-ambient" aria-hidden="true"></div>
-    <div class="viewport-framing-line left-line" aria-hidden="true"></div>
-    <div class="viewport-framing-line right-line" aria-hidden="true"></div>
+<body class="bg-vercel-bg text-zinc-100 font-sans antialiased min-h-screen relative overflow-x-hidden selection:bg-vercel-accent selection:text-white">
 
-    <!-- Cute 8-Bit Floating Decors Layer (Enhanced Fun & Variety) -->
-    <div class="pixel-bg-decor-layer" aria-hidden="true">
-        <!-- 1. Pixel Clouds (4 Total) -->
-        <svg class="pixel-bg-item pixel-cloud-left-1" viewBox="0 0 32 16" width="64" height="32" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <rect x="8" y="2" width="12" height="4" fill="#D4D4D8" />
-            <rect x="4" y="6" width="24" height="4" fill="#D4D4D8" />
-            <rect x="2" y="10" width="28" height="4" fill="#A1A1AA" />
-            <rect x="6" y="4" width="4" height="2" fill="#FFFFFF" />
-        </svg>
-
-        <svg class="pixel-bg-item pixel-cloud-right-1" viewBox="0 0 36 18" width="72" height="36" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <rect x="10" y="2" width="14" height="4" fill="#D4D4D8" />
-            <rect x="4" y="6" width="26" height="4" fill="#D4D4D8" />
-            <rect x="2" y="10" width="32" height="4" fill="#A1A1AA" />
-            <rect x="8" y="4" width="6" height="2" fill="#FFFFFF" />
-        </svg>
-
-        <svg class="pixel-bg-item pixel-cloud-left-2" viewBox="0 0 28 14" width="56" height="28" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <rect x="8" y="2" width="10" height="3" fill="#D4D4D8" />
-            <rect x="4" y="5" width="20" height="4" fill="#D4D4D8" />
-            <rect x="2" y="9" width="24" height="3" fill="#A1A1AA" />
-        </svg>
-
-        <svg class="pixel-bg-item pixel-cloud-right-2" viewBox="0 0 30 15" width="60" height="30" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <rect x="8" y="2" width="12" height="3" fill="#D4D4D8" />
-            <rect x="3" y="5" width="22" height="4" fill="#D4D4D8" />
-            <rect x="1" y="9" width="26" height="4" fill="#A1A1AA" />
-        </svg>
-
-        <!-- 2. 8-Bit Pixel Game Hearts ♥ (2 Total) -->
-        <svg class="pixel-bg-item pixel-heart-1" viewBox="0 0 10 9" width="20" height="18" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <rect x="2" y="0" width="2" height="1" fill="#F43F5E" />
-            <rect x="6" y="0" width="2" height="1" fill="#F43F5E" />
-            <rect x="1" y="1" width="4" height="2" fill="#F43F5E" />
-            <rect x="5" y="1" width="4" height="2" fill="#F43F5E" />
-            <rect x="2" y="1" width="1" height="1" fill="#FFE4E6" />
-            <rect x="1" y="3" width="8" height="2" fill="#F43F5E" />
-            <rect x="2" y="5" width="6" height="2" fill="#F43F5E" />
-            <rect x="3" y="7" width="4" height="1" fill="#F43F5E" />
-            <rect x="4" y="8" width="2" height="1" fill="#F43F5E" />
-        </svg>
-
-        <svg class="pixel-bg-item pixel-heart-2" viewBox="0 0 10 9" width="18" height="16" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <rect x="2" y="0" width="2" height="1" fill="#FB7185" />
-            <rect x="6" y="0" width="2" height="1" fill="#FB7185" />
-            <rect x="1" y="1" width="4" height="2" fill="#FB7185" />
-            <rect x="5" y="1" width="4" height="2" fill="#FB7185" />
-            <rect x="2" y="1" width="1" height="1" fill="#FFF1F2" />
-            <rect x="1" y="3" width="8" height="2" fill="#FB7185" />
-            <rect x="2" y="5" width="6" height="2" fill="#FB7185" />
-            <rect x="3" y="7" width="4" height="1" fill="#FB7185" />
-            <rect x="4" y="8" width="2" height="1" fill="#FB7185" />
-        </svg>
-
-        <!-- 3. 8-Bit Pixel Lightning Bolts ⚡ (2 Total) -->
-        <svg class="pixel-bg-item pixel-lightning-1" viewBox="0 0 8 12" width="16" height="24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <polygon points="5,0 1,6 4,6 3,12 7,5 4,5" fill="#F59E0B" stroke="#D97706" stroke-width="0.5" />
-        </svg>
-
-        <svg class="pixel-bg-item pixel-lightning-2" viewBox="0 0 8 12" width="14" height="21" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <polygon points="5,0 1,6 4,6 3,12 7,5 4,5" fill="#FBBF24" stroke="#D97706" stroke-width="0.5" />
-        </svg>
-
-        <!-- 4. 8-Bit Pixel WiFi Waves 📶 (2 Total) -->
-        <svg class="pixel-bg-item pixel-wifi-1" viewBox="0 0 12 10" width="22" height="18" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <rect x="1" y="1" width="10" height="2" fill="#38BDF8" />
-            <rect x="3" y="4" width="6" height="2" fill="#38BDF8" />
-            <rect x="5" y="7" width="2" height="2" fill="#22C55E" />
-        </svg>
-
-        <svg class="pixel-bg-item pixel-wifi-2" viewBox="0 0 12 10" width="20" height="16" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <rect x="1" y="1" width="10" height="2" fill="#38BDF8" />
-            <rect x="3" y="4" width="6" height="2" fill="#38BDF8" />
-            <rect x="5" y="7" width="2" height="2" fill="#22C55E" />
-        </svg>
-
-        <!-- 5. 8-Bit Pixel Diamonds / Gems 💎 (2 Total) -->
-        <svg class="pixel-bg-item pixel-gem-1" viewBox="0 0 12 10" width="20" height="16" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <polygon points="3,1 9,1 11,4 6,9 1,4" fill="#38BDF8" stroke="#0284C7" stroke-width="0.6" />
-            <polygon points="4,2 8,2 9,4 6,7 3,4" fill="#BAE6FD" />
-        </svg>
-
-        <svg class="pixel-bg-item pixel-gem-2" viewBox="0 0 12 10" width="18" height="15" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <polygon points="3,1 9,1 11,4 6,9 1,4" fill="#34D399" stroke="#059669" stroke-width="0.6" />
-            <polygon points="4,2 8,2 9,4 6,7 3,4" fill="#A7F3D0" />
-        </svg>
-
-        <!-- 6. Twinkling Pixel Stars ✦ (6 Total) -->
-        <svg class="pixel-bg-item pixel-star-1" viewBox="0 0 9 9" width="18" height="18" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <rect x="4" y="0" width="1" height="9" fill="#38BDF8" />
-            <rect x="0" y="4" width="9" height="1" fill="#38BDF8" />
-            <rect x="3" y="3" width="3" height="3" fill="#0284C7" />
-        </svg>
-
-        <svg class="pixel-bg-item pixel-star-2" viewBox="0 0 9 9" width="16" height="16" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <rect x="4" y="0" width="1" height="9" fill="#F59E0B" />
-            <rect x="0" y="4" width="9" height="1" fill="#F59E0B" />
-            <rect x="3" y="3" width="3" height="3" fill="#D97706" />
-        </svg>
-
-        <svg class="pixel-bg-item pixel-star-3" viewBox="0 0 9 9" width="16" height="16" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <rect x="4" y="0" width="1" height="9" fill="#22C55E" />
-            <rect x="0" y="4" width="9" height="1" fill="#22C55E" />
-            <rect x="3" y="3" width="3" height="3" fill="#15803D" />
-        </svg>
-
-        <svg class="pixel-bg-item pixel-star-4" viewBox="0 0 9 9" width="14" height="14" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <rect x="4" y="0" width="1" height="9" fill="#A1A1AA" />
-            <rect x="0" y="4" width="9" height="1" fill="#A1A1AA" />
-            <rect x="3" y="3" width="3" height="3" fill="#71717A" />
-        </svg>
-
-        <svg class="pixel-bg-item pixel-star-5" viewBox="0 0 9 9" width="16" height="16" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <rect x="4" y="0" width="1" height="9" fill="#A855F7" />
-            <rect x="0" y="4" width="9" height="1" fill="#A855F7" />
-            <rect x="3" y="3" width="3" height="3" fill="#7E22CE" />
-        </svg>
-
-        <svg class="pixel-bg-item pixel-star-6" viewBox="0 0 9 9" width="15" height="15" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <rect x="4" y="0" width="1" height="9" fill="#38BDF8" />
-            <rect x="0" y="4" width="9" height="1" fill="#38BDF8" />
-            <rect x="3" y="3" width="3" height="3" fill="#0284C7" />
-        </svg>
-
-        <!-- 7. 3D Voxel Data Packet Cubes (4 Total) -->
-        <svg class="pixel-bg-item pixel-cube-1" viewBox="0 0 16 16" width="22" height="22" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <polygon points="8,1 15,5 8,9 1,5" fill="#D4D4D8" />
-            <polygon points="1,5 8,9 8,15 1,11" fill="#A1A1AA" />
-            <polygon points="8,9 15,5 15,11 8,15" fill="#71717A" />
-        </svg>
-
-        <svg class="pixel-bg-item pixel-cube-2" viewBox="0 0 16 16" width="20" height="20" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <polygon points="8,1 15,5 8,9 1,5" fill="#D4D4D8" />
-            <polygon points="1,5 8,9 8,15 1,11" fill="#A1A1AA" />
-            <polygon points="8,9 15,5 15,11 8,15" fill="#71717A" />
-        </svg>
-
-        <svg class="pixel-bg-item pixel-cube-3" viewBox="0 0 16 16" width="22" height="22" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <polygon points="8,1 15,5 8,9 1,5" fill="#D4D4D8" />
-            <polygon points="1,5 8,9 8,15 1,11" fill="#A1A1AA" />
-            <polygon points="8,9 15,5 15,11 8,15" fill="#71717A" />
-        </svg>
-
-        <svg class="pixel-bg-item pixel-cube-4" viewBox="0 0 16 16" width="18" height="18" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <polygon points="8,1 15,5 8,9 1,5" fill="#D4D4D8" />
-            <polygon points="1,5 8,9 8,15 1,11" fill="#A1A1AA" />
-            <polygon points="8,9 15,5 15,11 8,15" fill="#71717A" />
-        </svg>
-    </div>
-
-    <!-- 1. TOP NAVBAR (STRICT RULE 1 PRESERVED) -->
+    <!-- 1. TOP NAVBAR (SOLID VERCEL DARK) -->
     <header class="admin-top-nav">
         <div class="admin-nav-container">
             <div class="nav-brand-group">
                 <a href="<?= BASE_URL ?>/admin" class="nav-brand-title" aria-label="NetQuiz Admin Dashboard">
                     <div class="nav-brand-mark">
-                        <i data-lucide="terminal" class="nav-brand-icon"></i>
+                        <i data-lucide="terminal" class="nav-brand-icon" style="width: 16px; height: 16px;"></i>
                         <span class="live-dot" title="Server Status: Online"></span>
                     </div>
                     <span class="nav-brand-text">Net<span class="nav-brand-accent">Quiz</span><span class="brand-cursor">_</span></span>
@@ -220,7 +63,7 @@ $stats = $stats ?? [
 
             <div class="nav-controls-group">
                 <span class="nav-admin-badge font-mono" title="Role: Administrator System">
-                    <i data-lucide="shield-check" class="nav-user-icon"></i>
+                    <i data-lucide="shield-check" style="width: 14px; height: 14px;"></i>
                     <span class="nav-text-desktop">Administrator</span>
                 </span>
 
@@ -241,7 +84,7 @@ $stats = $stats ?? [
 
     <!-- MAIN APP LAYOUT (VERTICAL SIDEBAR + MAIN CANVAS SHELL) -->
     <div class="admin-app-layout">
-        <!-- 2. LEFT VERTICAL SIDEBAR (STRICT RULE 2: PERMANENT + Buat Kuis Baru BUTTON) -->
+        <!-- 2. LEFT VERTICAL SIDEBAR -->
         <aside id="admin-vertical-sidebar" class="admin-vertical-sidebar" aria-label="Navigasi Panel Administrator">
             <!-- Mobile Drawer Header with Close Button (X) -->
             <div class="sidebar-header-mobile">
@@ -254,6 +97,7 @@ $stats = $stats ?? [
             <!-- Permanent Canonical Sidebar Top Button (+ Buat Kuis Baru) -->
             <button type="button" class="sidebar-cta-btn active" data-target="quiz-section" aria-selected="true" role="tab" id="tab-btn-quiz-section">
                 <span class="sidebar-menu-label-group">
+                    <i data-lucide="plus" style="width: 15px; height: 15px;"></i>
                     <span>Buat Kuis Baru</span>
                 </span>
             </button>
@@ -293,7 +137,7 @@ $stats = $stats ?? [
             </nav>
         </aside>
 
-        <!-- 3. UNIFIED CANVAS SHELL CONTAINER (MAX 1152px / max-w-6xl RATA KIRI) -->
+        <!-- 3. UNIFIED CANVAS SHELL CONTAINER (MAX 1152px / max-w-6xl) -->
         <main class="admin-main-canvas" id="admin-workspace">
             <div id="admin-canvas-shell" class="canvas-shell-container max-w-6xl">
                 <!-- Dynamic Page Header Bar (Breadcrumb + Title Left + Action Right) -->
@@ -317,17 +161,17 @@ $stats = $stats ?? [
                     </div>
                 </div>
 
-                <!-- System Session Alerts -->
+                <!-- System Session Alerts (Vercel Dark Styled) -->
                 <?php if (isset($_SESSION['admin_success'])): ?>
-                    <div style="background-color: #F0FDF4; border: 1px solid #BBF7D0; color: #166534; padding: 0.75rem 1rem; border-radius: 8px; margin-bottom: 1.5rem; font-size: 0.875rem;">
-                        <?= htmlspecialchars($_SESSION['admin_success']);
-                        unset($_SESSION['admin_success']); ?>
+                    <div style="background-color: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); color: #34D399; padding: 0.75rem 1rem; border-radius: 8px; margin-bottom: 1.5rem; font-size: 0.875rem; display: flex; align-items: center; gap: 0.5rem;">
+                        <i data-lucide="check-circle-2" style="width: 16px; height: 16px; flex-shrink: 0;"></i>
+                        <span><?= htmlspecialchars($_SESSION['admin_success']); unset($_SESSION['admin_success']); ?></span>
                     </div>
                 <?php endif; ?>
                 <?php if (isset($_SESSION['admin_error'])): ?>
-                    <div style="background-color: #FFF0F0; border: 1px solid #FFC0C0; color: #CC0000; padding: 0.75rem 1rem; border-radius: 8px; margin-bottom: 1.5rem; font-size: 0.875rem;">
-                        <?= htmlspecialchars($_SESSION['admin_error']);
-                        unset($_SESSION['admin_error']); ?>
+                    <div style="background-color: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); color: #F87171; padding: 0.75rem 1rem; border-radius: 8px; margin-bottom: 1.5rem; font-size: 0.875rem; display: flex; align-items: center; gap: 0.5rem;">
+                        <i data-lucide="alert-circle" style="width: 16px; height: 16px; flex-shrink: 0;"></i>
+                        <span><?= htmlspecialchars($_SESSION['admin_error']); unset($_SESSION['admin_error']); ?></span>
                     </div>
                 <?php endif; ?>
 
@@ -368,8 +212,8 @@ $stats = $stats ?? [
         <div class="admin-modal-content" style="max-width: 480px;">
             <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.25rem;">
                 <div>
-                    <h3 style="font-family: var(--font-heading); font-size: 1.05rem; font-weight: 800; color: #18181B; margin: 0;">Edit Data Member</h3>
-                    <p style="font-size: 0.8rem; color: #52525B; margin-top: 0.2rem;">Perbarui username, email, atau reset kata sandi siswa.</p>
+                    <h3 style="font-family: var(--font-heading); font-size: 1.05rem; font-weight: 800; color: #ffffff; margin: 0;">Edit Data Member</h3>
+                    <p style="font-size: 0.8rem; color: #a1a1aa; margin-top: 0.2rem;">Perbarui username, email, atau reset kata sandi siswa.</p>
                 </div>
                 <button type="button" onclick="closeEditMemberModal()" class="toast-close-btn" title="Tutup">
                     <i data-lucide="x" style="width: 16px; height: 16px;"></i>
@@ -417,7 +261,7 @@ $stats = $stats ?? [
         </div>
     </div>
 
-    <!-- 8. FLOATING BOTTOM BUTTON NAVIGATION DOCK (MOBILE & TABLET EXCLUSIVE) -->
+    <!-- 7. FLOATING BOTTOM BUTTON NAVIGATION DOCK (MOBILE & TABLET EXCLUSIVE) -->
     <nav id="admin-floating-bottom-nav" class="admin-floating-bottom-nav" role="tablist" aria-label="Navigasi Cepat Panel Admin">
         <div class="floating-nav-container">
             <!-- 1. Buat Kuis Baru (Active Default / CTA Hero) -->

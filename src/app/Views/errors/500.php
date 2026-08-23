@@ -1,152 +1,80 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="id" class="dark">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= htmlspecialchars($title ?? '500 - Kesalahan Server Internal') ?> | NetQuiz</title>
-    <!-- Google Fonts -->
+
+    <!-- Fonts: Inter (UI), JetBrains Mono (Code/Metadata), Press Start 2P (Retro Accents) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:ital,wght@0,400;0,700;1,400&family=Press+Start+2P&display=swap" rel="stylesheet">
+
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest" defer></script>
-    <style>
-        :root {
-            --primary: #f43f5e;
-            --bg: #f8fafc;
-            --text: #0f172a;
-            --text-muted: #64748b;
-        }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        body {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            background-color: var(--bg);
-            color: var(--text);
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-            position: relative;
-        }
-
-        .glow-bg {
-            position: absolute;
-            width: 600px;
-            height: 600px;
-            background: radial-gradient(circle, rgba(244, 63, 94, 0.06) 0%, rgba(248, 250, 252, 0) 75%);
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 1;
-            pointer-events: none;
-        }
-
-        .container {
-            position: relative;
-            z-index: 2;
-            text-align: center;
-            padding: 2rem;
-            width: 100%;
-            max-width: 480px;
-        }
-
-        .error-code {
-            font-family: 'Outfit', sans-serif;
-            font-size: 6.5rem;
-            font-weight: 800;
-            line-height: 1;
-            letter-spacing: -0.04em;
-            color: #18181B;
-            margin-bottom: 0.5rem;
-        }
-
-        .error-title {
-            font-size: 1.25rem;
-            font-weight: 700;
-            color: #0f172a;
-            margin-bottom: 0.75rem;
-        }
-
-        .error-desc {
-            font-size: 0.95rem;
-            color: var(--text-muted);
-            line-height: 1.6;
-            margin-bottom: 2rem;
-        }
-
-        .btn-home {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            background-color: #000000;
-            color: #ffffff;
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            font-size: 0.875rem;
-            font-weight: 700;
-            padding: 0.75rem 1.75rem;
-            border-radius: 6px;
-            text-decoration: none;
-            border: 1px solid #000000;
-            cursor: pointer;
-            box-shadow: none;
-            transition: none !important;
-            transform: none !important;
-        }
-
-        .btn-home:hover {
-            background-color: #FAFAFA;
-            color: #000000;
-            border-color: #000000;
-            box-shadow: none;
-            transform: none !important;
-        }
-
-        .btn-home:active {
-            background-color: #F4F4F5;
-            color: #000000;
-            border-color: #000000;
-            transform: none !important;
-        }
-
-        .icon-box {
-            width: 56px;
-            height: 56px;
-            background: #fff1f2;
-            border: 1px solid #fecaca;
-            border-radius: 12px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 1.5rem;
-            color: var(--primary);
-        }
-    </style>
+    <!-- Stylesheet -->
+    <link rel="stylesheet" href="<?= defined('BASE_URL') ? BASE_URL : '' ?>/css/errors.css">
 </head>
-<body>
-    <div class="glow-bg" aria-hidden="true"></div>
 
-    <div class="container">
-        <div class="icon-box">
-            <i data-lucide="server-crash" style="width: 28px; height: 28px;"></i>
+<body class="error-page-body theme-500">
+
+    <!-- Interactive Background Pixel Critters Canvas -->
+    <canvas id="pixelCrittersCanvas" class="error-canvas-bg" aria-hidden="true"></canvas>
+
+    <!-- Retro CRT Scanline Texture Overlay -->
+    <div class="scanlines-overlay" aria-hidden="true"></div>
+
+    <!-- Main Vercel Dark Error Panel Card -->
+    <div class="error-panel-card">
+        <span class="panel-crosshair corner-tl">+</span>
+        <span class="panel-crosshair corner-tr">+</span>
+        <span class="panel-crosshair corner-bl">+</span>
+        <span class="panel-crosshair corner-br">+</span>
+
+        <!-- Terminal Status Badge -->
+        <div class="error-status-badge">
+            <span class="status-dot-pulse"></span>
+            <span>STATUS: ERR_KERNEL_PANIC_DAEMON</span>
         </div>
-        <div class="error-code">500</div>
-        <h1 class="error-title">Kesalahan Server Internal</h1>
-        <p class="error-desc">
-            Terjadi gangguan teknis yang tidak terduga pada server. Tim administrator telah menerima laporan log masalah ini.
+
+        <!-- 8-Bit Glowing Error Number -->
+        <div class="error-huge-code">500</div>
+
+        <!-- Title & Subtitle -->
+        <h1 class="error-main-heading">
+            Gangguan Sistem Server Internal
+        </h1>
+        <p class="error-main-desc">
+            Terjadi kegagalan proses yang tidak terduga pada daemon kernel RouterOS. Tim teknis administrator telah mencatat log insiden ini untuk segera ditangani.
         </p>
-        <a href="<?= defined('BASE_URL') ? BASE_URL : '/' ?>" class="btn-home">
-            <i data-lucide="arrow-left" style="width: 16px; height: 16px;"></i>
-            <span>Kembali ke Halaman Utama</span>
-        </a>
+
+        <!-- CLI Context Box -->
+        <div class="error-cli-box">
+            <span class="error-cli-prompt">[admin@netquiz] &gt;</span>
+            <span class="error-cli-text">/log print where topics~"error|critical" ; # core_dump</span>
+        </div>
+
+        <!-- Action Buttons Group -->
+        <div class="error-actions-group">
+            <button type="button" onclick="window.location.reload();" class="btn-pixel-primary">
+                <i data-lucide="refresh-cw" style="width: 14px; height: 14px;"></i>
+                <span>Muat Ulang Halaman</span>
+            </button>
+            <a href="<?= defined('BASE_URL') ? BASE_URL : '/' ?>/" class="btn-pixel-secondary">
+                <i data-lucide="arrow-left" style="width: 14px; height: 14px;"></i>
+                <span>Kembali ke Beranda</span>
+            </a>
+        </div>
+
+        <div class="error-footer-hint">
+            Tip: Cobalah untuk memuat ulang halaman atau periksa koneksi Anda beberapa saat lagi.
+        </div>
     </div>
 
+    <!-- Scripts -->
+    <script src="<?= defined('BASE_URL') ? BASE_URL : '' ?>/js/pixel-critters.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             if (window.lucide) {
@@ -155,4 +83,5 @@
         });
     </script>
 </body>
+
 </html>
