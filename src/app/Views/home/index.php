@@ -238,7 +238,7 @@ require_once dirname(__DIR__) . "/templates/header.php";
                             </svg>
                         </div>
                         <h4 class="empty-title">Belum Ada Riwayat Ujian</h4>
-                        <p class="empty-desc">Selesaikan kuis pertama Anda untuk mulai mengumpulkan poin dan mencatat riwayat evaluasi.</p>
+                        <p class="empty-desc">Selesaikan kuis pertama Anda untuk mulai menjadi seorang Network Engineer Ahli.</p>
                     </div>
                 <?php endif; ?>
             </div>
@@ -248,7 +248,7 @@ require_once dirname(__DIR__) . "/templates/header.php";
         <div class="right-dashboard-column">
 
             <!-- Topic Distribution Panel -->
-            <section class="dashboard-panel-box" aria-labelledby="topic-panel-title">
+            <section class="dashboard-panel-box topic-distribution-panel" aria-labelledby="topic-panel-title">
                 <span class="panel-crosshair corner-tl">+</span>
                 <span class="panel-crosshair corner-tr">+</span>
                 <span class="panel-crosshair corner-bl">+</span>
@@ -293,7 +293,7 @@ require_once dirname(__DIR__) . "/templates/header.php";
             </section>
 
             <!-- Unlocked Badges Panel -->
-            <section class="dashboard-panel-box mt-5" aria-labelledby="badges-panel-title">
+            <section class="dashboard-panel-box badges-dashboard-panel" aria-labelledby="badges-panel-title">
                 <span class="panel-crosshair corner-tl">+</span>
                 <span class="panel-crosshair corner-tr">+</span>
                 <span class="panel-crosshair corner-bl">+</span>
@@ -332,8 +332,26 @@ require_once dirname(__DIR__) . "/templates/header.php";
                             </div>
                         <?php endforeach; ?>
                     <?php else: ?>
-                        <div class="font-mono text-xs text-zinc-500 py-3 text-center col-span-4">
-                            Belum ada lencana terdaftar.
+                        <div class="pixel-empty-state empty-inline empty-theme-amber" style="grid-column: 1 / -1;">
+                            <div class="empty-scene">
+                                <div class="sparkle-orbit">
+                                    <span class="sparkle-dot"></span>
+                                    <span class="sparkle-dot"></span>
+                                    <span class="sparkle-dot"></span>
+                                    <span class="sparkle-dot"></span>
+                                </div>
+                                <div class="empty-main-icon">
+                                    <svg class="w-8 h-8 pixelated" viewBox="0 0 16 16">
+                                        <use href="#pixel-coin"></use>
+                                    </svg>
+                                </div>
+                            </div>
+                            <h4 class="empty-headline">Belum Ada Lencana</h4>
+                            <p class="empty-subtext">Selesaikan kuis dan kumpulkan prestasi untuk membuka koleksi lencana pixel Anda! ✨</p>
+                            <a href="<?= BASE_URL ?>/quiz" class="empty-cta-link" onclick="window.playPixelSound && window.playPixelSound('click');">
+                                <span>Mulai Kuis Pertama</span>
+                                <span class="cta-arrow">→</span>
+                            </a>
                         </div>
                     <?php endif; ?>
                 </div>
@@ -397,8 +415,26 @@ require_once dirname(__DIR__) . "/templates/header.php";
                     </a>
                 <?php endforeach; ?>
             <?php else: ?>
-                <div class="font-mono text-xs text-zinc-500 py-4 text-center col-span-2">
-                    Belum ada materi pembelajaran yang dipublikasikan.
+                <div class="pixel-empty-state empty-inline empty-theme-pink" style="grid-column: 1 / -1;">
+                    <div class="empty-scene">
+                        <div class="sparkle-orbit">
+                            <span class="sparkle-dot"></span>
+                            <span class="sparkle-dot"></span>
+                            <span class="sparkle-dot"></span>
+                            <span class="sparkle-dot"></span>
+                        </div>
+                        <div class="empty-main-icon">
+                            <svg class="w-8 h-8 pixelated" viewBox="0 0 16 16">
+                                <use href="#pixel-book"></use>
+                            </svg>
+                        </div>
+                    </div>
+                    <h4 class="empty-headline">Materi Sedang Disiapkan</h4>
+                    <p class="empty-subtext">Modul pembelajaran RouterOS MikroTik sedang dikurasi oleh administrator. Nantikan konten terbaru! 📚</p>
+                    <a href="<?= BASE_URL ?>/quiz" class="empty-cta-link" onclick="window.playPixelSound && window.playPixelSound('click');">
+                        <span>Latihan Kuis Dulu</span>
+                        <span class="cta-arrow">→</span>
+                    </a>
                 </div>
             <?php endif; ?>
         </div>

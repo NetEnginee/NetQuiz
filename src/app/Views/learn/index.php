@@ -87,14 +87,31 @@ require_once dirname(__DIR__) . '/templates/header.php';
 
     <!-- 2. Materials Categorized Grid Sections -->
     <?php if (empty($groupedMaterials)): ?>
-        <div class="empty-modules-panel">
-            <svg class="w-10 h-10 pixelated text-zinc-600 mx-auto mb-3" width="40" height="40" viewBox="0 0 16 16">
-                <use href="#pixel-book"></use>
-            </svg>
-            <h3 class="font-sans text-base font-bold text-white mb-1">Belum Ada Materi Tersedia</h3>
-            <p class="font-mono text-xs text-zinc-500 max-w-md mx-auto">
-                Materi modul pembelajaran sedang disiapkan oleh administrator jaringan.
-            </p>
+        <div class="pixel-empty-state empty-panel-full empty-theme-pink">
+            <span class="panel-crosshair corner-tl">+</span>
+            <span class="panel-crosshair corner-tr">+</span>
+            <span class="panel-crosshair corner-bl">+</span>
+            <span class="panel-crosshair corner-br">+</span>
+
+            <div class="empty-scene">
+                <div class="sparkle-orbit">
+                    <span class="sparkle-dot"></span>
+                    <span class="sparkle-dot"></span>
+                    <span class="sparkle-dot"></span>
+                    <span class="sparkle-dot"></span>
+                </div>
+                <div class="empty-main-icon">
+                    <svg class="w-10 h-10 pixelated" viewBox="0 0 16 16">
+                        <use href="#pixel-book"></use>
+                    </svg>
+                </div>
+            </div>
+            <h3 class="empty-headline">Belum Ada Materi Tersedia</h3>
+            <p class="empty-subtext">Perpustakaan modul pembelajaran sedang dikurasi oleh administrator jaringan. Buku pixel ini sabar menunggu konten pertamanya! 📖</p>
+            <a href="<?= BASE_URL ?>/quiz" class="empty-cta-link" onclick="window.playPixelSound && window.playPixelSound('click');">
+                <span>Latihan Kuis Dulu</span>
+                <span class="cta-arrow">→</span>
+            </a>
         </div>
     <?php else: ?>
         <div id="learn-catalog-container">

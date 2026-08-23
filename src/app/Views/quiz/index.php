@@ -56,26 +56,31 @@ require_once dirname(__DIR__) . '/templates/header.php';
 
     <!-- 3. Categorized Quizzes Sections -->
     <?php if ($totalQuizzesCount === 0): ?>
-        <div class="dashboard-panel-box text-center py-12">
+        <div class="pixel-empty-state empty-panel-full empty-theme-cyan">
             <span class="panel-crosshair corner-tl">+</span>
             <span class="panel-crosshair corner-tr">+</span>
             <span class="panel-crosshair corner-bl">+</span>
             <span class="panel-crosshair corner-br">+</span>
 
-            <div class="w-12 h-12 rounded-lg bg-zinc-900 border border-zinc-800 flex items-center justify-center mx-auto mb-3 text-zinc-500">
-                <svg class="w-6 h-6 pixelated" viewBox="0 0 16 16">
-                    <use href="#pixel-router"></use>
-                </svg>
+            <div class="empty-scene">
+                <div class="sparkle-orbit">
+                    <span class="sparkle-dot"></span>
+                    <span class="sparkle-dot"></span>
+                    <span class="sparkle-dot"></span>
+                    <span class="sparkle-dot"></span>
+                </div>
+                <div class="empty-main-icon">
+                    <svg class="w-10 h-10 pixelated" viewBox="0 0 16 16">
+                        <use href="#pixel-router"></use>
+                    </svg>
+                </div>
             </div>
-            <h3 class="text-base font-bold text-white mb-1">Tidak Ada Kuis Ditemukan</h3>
-            <p class="font-mono text-xs text-zinc-500 max-w-md mx-auto">
-                Belum ada paket soal yang cocok dengan filter tingkat kesulitan yang dipilih.
-            </p>
-            <div class="mt-4">
-                <a href="<?= BASE_URL ?>/quiz?difficulty=all" class="btn-hero-primary font-mono text-xs" onclick="window.playPixelSound && window.playPixelSound('click');">
-                    <span>Tampilkan Semua Kuis</span>
-                </a>
-            </div>
+            <h3 class="empty-headline">Tidak Ada Kuis Ditemukan</h3>
+            <p class="empty-subtext">Belum ada paket soal yang cocok dengan filter yang dipilih. Router pixel ini sedang menunggu perintah dari Anda! 🎮</p>
+            <a href="<?= BASE_URL ?>/quiz?difficulty=all" class="empty-cta-link" onclick="window.playPixelSound && window.playPixelSound('click');">
+                <span>⚡ Tampilkan Semua Kuis</span>
+                <span class="cta-arrow">→</span>
+            </a>
         </div>
     <?php else: ?>
         <div class="space-y-10">
