@@ -416,13 +416,13 @@ function renderQuizSection() {
                     </div>
 
                     <!-- 2. Question Repeater -->
-                    <div style="padding-top: 1.5rem; border-top: 1px dashed #E5E7EB;">
+                    <div style="padding-top: 1.5rem; border-top: 1px dashed #222222;">
                         <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 0.75rem;">
                             <div>
                                 <h4 style="font-family: var(--font-heading); font-size: 1rem; font-weight: 800; color: #ffffff; margin: 0;">
                                     Daftar Soal (<span id="quiz-question-counter">1</span>)
                                 </h4>
-                                <p style="font-size: 0.775rem; color: #71717A; margin-top: 0.2rem;">Klik tanda radio pada pilihan untuk menentukan kunci jawaban yang benar.</p>
+                                <p style="font-size: 0.775rem; color: #a1a1aa; margin-top: 0.2rem;">Klik tanda radio pada pilihan untuk menentukan kunci jawaban yang benar.</p>
                             </div>
                             <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
                                 <!-- Hidden File Input for JSON Upload -->
@@ -996,9 +996,9 @@ function renderMemberSection() {
                 <input type="hidden" name="csrf_token" value="${window.CSRF_TOKEN || ""}">
                 
                 <!-- Section Header -->
-                <div style="margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid #E5E7EB;">
+                <div style="margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid #222222;">
                     <h3 style="font-family: var(--font-heading); font-size: 1.15rem; font-weight: 800; color: #ffffff; margin: 0;">Daftarkan Member Baru</h3>
-                    <p style="font-size: 0.825rem; color: #71717A; margin-top: 0.25rem;">Buat akun anggota baru untuk mengakses kuis dan materi pembelajaran.</p>
+                    <p style="font-size: 0.825rem; color: #a1a1aa; margin-top: 0.25rem;">Buat akun anggota baru untuk mengakses kuis dan materi pembelajaran.</p>
                 </div>
 
                 <!-- 2x2 Form Grid -->
@@ -1349,6 +1349,61 @@ function renderManageMemberSection() {
     });
   }
 
+  const btnBulkActivate = document.getElementById("btn-bulk-activate");
+  const btnBulkSuspend = document.getElementById("btn-bulk-suspend");
+
+  if (btnBulkActivate) {
+    btnBulkActivate.addEventListener("click", () => {
+      const selected = document.querySelectorAll(
+        ".member-row-checkbox:checked",
+      );
+      if (selected.length === 0) return;
+      showGeistToast(
+        "success",
+        "Aktivasi Berhasil",
+        `${selected.length} member telah diaktifkan.`,
+      );
+      selected.forEach((cb) => {
+        const row = cb.closest("tr");
+        if (row) {
+          const badge = row.querySelector(".status-badge");
+          if (badge) {
+            badge.className = "status-badge status-active";
+            badge.textContent = "Aktif";
+          }
+        }
+      });
+      if (floatingBulkBar) floatingBulkBar.classList.remove("active");
+      if (selectAllCheckbox) selectAllCheckbox.checked = false;
+    });
+  }
+
+  if (btnBulkSuspend) {
+    btnBulkSuspend.addEventListener("click", () => {
+      const selected = document.querySelectorAll(
+        ".member-row-checkbox:checked",
+      );
+      if (selected.length === 0) return;
+      showGeistToast(
+        "info",
+        "Status Diperbarui",
+        `${selected.length} member telah dinonaktifkan.`,
+      );
+      selected.forEach((cb) => {
+        const row = cb.closest("tr");
+        if (row) {
+          const badge = row.querySelector(".status-badge");
+          if (badge) {
+            badge.className = "status-badge status-inactive";
+            badge.textContent = "Nonaktif";
+          }
+        }
+      });
+      if (floatingBulkBar) floatingBulkBar.classList.remove("active");
+      if (selectAllCheckbox) selectAllCheckbox.checked = false;
+    });
+  }
+
   // Bulk Export to CSV
   if (btnBulkExport) {
     btnBulkExport.addEventListener("click", () => {
@@ -1466,9 +1521,9 @@ function renderMaterialsSection() {
                     <input type="hidden" name="csrf_token" value="${window.CSRF_TOKEN || ""}">
                     
                     <!-- Section Header -->
-                    <div style="margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid #E5E7EB;">
+                    <div style="margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid #222222;">
                         <h3 style="font-family: var(--font-heading); font-size: 1.15rem; font-weight: 800; color: #ffffff; margin: 0;">Tulis Artikel Materi Baru</h3>
-                        <p style="font-size: 0.825rem; color: #71717A; margin-top: 0.25rem;">Susun modul materi pembelajaran dan panduan konfigurasi MikroTik RouterOS.</p>
+                        <p style="font-size: 0.825rem; color: #a1a1aa; margin-top: 0.25rem;">Susun modul materi pembelajaran dan panduan konfigurasi MikroTik RouterOS.</p>
                     </div>
 
                     <!-- Field: Judul -->
@@ -1510,7 +1565,7 @@ function renderMaterialsSection() {
                                 <span>Pratinjau</span>
                             </button>
                         </div>
-                        <span class="reading-time-pill" id="material-reading-time" style="font-size: 0.75rem; color: #71717A; display: inline-flex; align-items: center; gap: 4px;">
+                        <span class="reading-time-pill" id="material-reading-time" style="font-size: 0.75rem; color: #a1a1aa; display: inline-flex; align-items: center; gap: 4px;">
                             <i data-lucide="clock" style="width: 12px; height: 12px;"></i>
                             <span>~1 menit baca</span>
                         </span>
@@ -1547,7 +1602,7 @@ function renderMaterialsSection() {
 
                     <!-- Live Student Preview Box -->
                     <div id="material-preview-box" class="material-live-preview-box" style="display: none; padding: 1.25rem; border: 1px solid #222222; border-radius: 8px; background-color: #08080a; min-height: 200px;">
-                        <p style="color: #71717A; font-style: italic;">Pratinjau kosong. Tulis isi materi terlebih dahulu.</p>
+                        <p style="color: #a1a1aa; font-style: italic;">Pratinjau kosong. Tulis isi materi terlebih dahulu.</p>
                     </div>
 
                     <!-- Footer Action Bar -->
@@ -1731,7 +1786,7 @@ function renderMaterialsSection() {
       const rawContent = contentTextarea ? contentTextarea.value : "";
       previewBox.innerHTML =
         rawContent.trim() ||
-        '<p style="color: #71717A; font-style: italic;">Pratinjau kosong. Tulis isi materi terlebih dahulu.</p>';
+        '<p style="color: #a1a1aa; font-style: italic;">Pratinjau kosong. Tulis isi materi terlebih dahulu.</p>';
     });
   }
 
@@ -1857,9 +1912,9 @@ function renderBadgeSection() {
                     <input type="hidden" name="icon" id="badge-selected-icon" value="award">
                     
                     <!-- Section Header -->
-                    <div style="margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid #E5E7EB;">
+                    <div style="margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid #222222;">
                         <h3 style="font-family: var(--font-heading); font-size: 1.15rem; font-weight: 800; color: #ffffff; margin: 0;">Buat Lencana Prestasi Baru</h3>
-                        <p style="font-size: 0.825rem; color: #71717A; margin-top: 0.25rem;">Tentukan nama lencana, target kuis selesai, dan ikon visual penghargaan siswa.</p>
+                        <p style="font-size: 0.825rem; color: #a1a1aa; margin-top: 0.25rem;">Tentukan nama lencana, target kuis selesai, dan ikon visual penghargaan siswa.</p>
                     </div>
 
                     <!-- Grid 2-kolom: Nama Lencana & Target Kuis -->
@@ -1957,8 +2012,8 @@ function renderBadgeSection() {
 
                             <!-- Footer Kartu Ringkas -->
                             <div style="margin-top: 1rem; padding-top: 0.65rem; border-top: 1px solid #222222; display: flex; align-items: center; justify-content: space-between;">
-                                <span style="font-size: 0.75rem; color: #71717A;" class="font-mono">Diperoleh oleh ${b.earned_count || 0} Siswa</span>
-                                <span class="status-badge" style="background-color: #0f0f12; color: #71717A; font-size: 0.7rem;">Aktif</span>
+                                <span style="font-size: 0.75rem; color: #a1a1aa;" class="font-mono">Diperoleh oleh ${b.earned_count || 0} Siswa</span>
+                                <span class="status-badge" style="background-color: #0f0f12; color: #a1a1aa; font-size: 0.7rem;">Aktif</span>
                             </div>
                         </div>
                     `,
