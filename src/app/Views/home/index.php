@@ -238,7 +238,7 @@ require_once dirname(__DIR__) . "/templates/header.php";
                             </svg>
                         </div>
                         <h4 class="empty-title">Belum Ada Riwayat Ujian</h4>
-                        <p class="empty-desc">Selesaikan kuis pertama Anda untuk mulai menjadi seorang Network Engineer Ahli.</p>
+                        <p class="empty-desc">Kerjakan dan Selesaikan minimal untuk mulai menjadi seorang Network Engineer Sejati.</p>
                     </div>
                 <?php endif; ?>
             </div>
@@ -347,9 +347,9 @@ require_once dirname(__DIR__) . "/templates/header.php";
                                 </div>
                             </div>
                             <h4 class="empty-headline">Belum Ada Lencana</h4>
-                            <p class="empty-subtext">Selesaikan kuis dan kumpulkan prestasi untuk membuka koleksi lencana pixel Anda! ✨</p>
+                            <p class="empty-subtext">Kerjakan dan Selesaikan minimal 1 kuis dan kumpulkan prestasi untuk membuka Lencana</p>
                             <a href="<?= BASE_URL ?>/quiz" class="empty-cta-link" onclick="window.playPixelSound && window.playPixelSound('click');">
-                                <span>Mulai Kuis Pertama</span>
+                                <span>Kerjakan Kuis Pertama</span>
                                 <span class="cta-arrow">→</span>
                             </a>
                         </div>
@@ -430,7 +430,7 @@ require_once dirname(__DIR__) . "/templates/header.php";
                         </div>
                     </div>
                     <h4 class="empty-headline">Materi Sedang Disiapkan</h4>
-                    <p class="empty-subtext">Modul pembelajaran RouterOS MikroTik sedang dikurasi oleh administrator. Nantikan konten terbaru! 📚</p>
+                    <p class="empty-subtext">Modul pembelajaran sedang dibuat oleh administrator. Nantikan konten terbaru</p>
                     <a href="<?= BASE_URL ?>/quiz" class="empty-cta-link" onclick="window.playPixelSound && window.playPixelSound('click');">
                         <span>Latihan Kuis Dulu</span>
                         <span class="cta-arrow">→</span>

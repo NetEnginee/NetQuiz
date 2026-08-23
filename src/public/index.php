@@ -85,7 +85,7 @@ ErrorHandler::register(dirname(__DIR__) . '/logs/php_errors.log', false);
 use App\Core\Security;
 
 Security::setSecurityHeaders();
-Security::allowBFCache();
+Security::preventBFCache();
 
 // 7. Dependency Injection Container Setup & Service Bindings
 use App\Core\Container;

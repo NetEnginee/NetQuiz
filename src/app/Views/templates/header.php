@@ -1,8 +1,8 @@
 <?php
 $isAdmin = isset($_SESSION['user']['email']) && (strcasecmp(trim($_SESSION['user']['email']), 'admin@routerosquiz.academy') === 0);
-$userName = $_SESSION['user']['name'] ?? 'Siswa';
-$userEmail = $_SESSION['user']['email'] ?? '';
-$userInitial = strtoupper(substr(htmlspecialchars($userName), 0, 1));
+$userName = !empty($_SESSION['user']['name']) ? trim((string)$_SESSION['user']['name']) : (!empty($_SESSION['user']['username']) ? trim((string)$_SESSION['user']['username']) : 'Siswa');
+$userEmail = isset($_SESSION['user']['email']) ? trim((string)$_SESSION['user']['email']) : '';
+$userInitial = !empty($userName) ? strtoupper(mb_substr(htmlspecialchars($userName), 0, 1, 'UTF-8')) : 'S';
 $currentUri = $_SERVER['REQUEST_URI'] ?? '/';
 $currentPath = parse_url($currentUri, PHP_URL_PATH) ?? '/';
 $isQuizPlay = (bool)preg_match('#^/quiz/[0-9]+/play#', $currentPath) || str_contains($currentPath, '/play');
@@ -204,7 +204,7 @@ function renderBreadcrumb(array $items): string
 
                 <!-- User Keycap Avatar Box -->
                 <span class="student-avatar-box font-mono" title="Hallo!! <?= htmlspecialchars($userName) ?>" aria-label="Profil Siswa">
-                    <span><?= $userInitial ?></span>
+                    <span class="header-avatar-initials"><?= $userInitial ?></span>
                 </span>
 
                 <!-- Logout Button -->

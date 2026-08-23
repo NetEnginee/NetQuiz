@@ -99,6 +99,9 @@ class AuthController extends Controller
                 'email' => $user['email']
             ];
 
+            session_write_close();
+            Security::preventBFCache();
+
             $redirectUrl = (strcasecmp(trim($user['email']), 'admin@routerosquiz.academy') === 0) ? BASE_URL . '/admin' : BASE_URL . '/';
             return $this->jsonResponse([
                 'status' => 'success',

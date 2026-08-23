@@ -6,13 +6,12 @@
             <div class="student-shell-container footer-inner">
                 <div class="footer-left">
                     <span class="nav-brand-text">Net<span class="nav-brand-accent">Quiz</span><span class="brand-cursor">_</span></span>
-                    <span class="footer-copy">© <?= date('Y') ?> RouterOS Academy. All rights reserved.</span>
+                    <span class="footer-copy">© <?= date('Y') ?> Networking Academy. All rights reserved.</span>
                 </div>
                 <div class="footer-right">
                     <span class="footer-badge">
                         <span>Protected with Encryption</span>
                     </span>
-                    <span class="footer-latency">Latency: <strong class="text-zinc-300">?ms</strong></span>
                 </div>
             </div>
         </footer>
