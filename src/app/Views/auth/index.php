@@ -82,8 +82,7 @@ $mode = $mode ?? 'login';
                             <span id="soundLabel">Sound: ON</span>
                         </button>
                         <div class="system-status-pill font-mono">
-                            <span class="pill-dot"></span>
-                            <span>v6.0-PRO</span>
+                            <span>Secure</span>
                         </div>
                     </div>
                 </div>
@@ -172,9 +171,8 @@ $mode = $mode ?? 'login';
 
                     <!-- Card Footer Micro-Note -->
                     <div class="card-footer-note">
-                        <span class="note-icon">🔒</span>
                         <span class="note-text font-mono">
-                            Sesi dilindungi enkripsi AES-256 & mitigasi Brute Force aktif.
+                            Setiap sesi dilindungi dengan enkripsi AES-256.
                         </span>
                     </div>
                 </section>
