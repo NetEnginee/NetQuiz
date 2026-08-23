@@ -18,29 +18,6 @@ require_once dirname(__DIR__) . '/templates/header.php';
                 ['label' => 'Student', 'url' => BASE_URL . '/'],
                 ['label' => 'Kuis']
             ]) ?>
-            <div class="hero-title-row">
-                <h1 class="hero-main-title">
-                    <span>Katalog Kuis MikroTik</span><span class="text-cyan-400">_</span>
-                </h1>
-                <div class="system-status-pill">
-                    <span class="status-indicator-dot"></span>
-                    <span>MTCNA & MTCRE Prep</span>
-                </div>
-            </div>
-            <p class="font-mono text-xs text-zinc-500 mt-1">
-                Uji kompetensi teknis konfigurasi RouterOS melalui simulasi ujian berbasis skenario real-world.
-            </p>
-        </div>
-
-        <div class="hero-action-bar">
-            <a href="<?= BASE_URL ?>/learn" class="btn-hero-secondary font-mono" onclick="window.playPixelSound && window.playPixelSound('click');">
-                <svg class="w-3.5 h-3.5 pixelated" viewBox="0 0 16 16"><use href="#pixel-book"></use></svg>
-                <span>Materi Belajar</span>
-            </a>
-            <a href="<?= BASE_URL ?>/leaderboard" class="btn-hero-secondary font-mono" onclick="window.playPixelSound && window.playPixelSound('click');">
-                <svg class="w-3.5 h-3.5 pixelated" viewBox="0 0 16 16"><use href="#pixel-coin"></use></svg>
-                <span>Leaderboard</span>
-            </a>
         </div>
     </div>
 
@@ -48,24 +25,24 @@ require_once dirname(__DIR__) . '/templates/header.php';
     <div class="quiz-filter-bar">
         <div class="filter-tabs-group">
             <span class="filter-label font-mono">Tingkat Kesulitan:</span>
-            <a href="<?= BASE_URL ?>/quiz?difficulty=all" 
-               class="quiz-segment-tab font-mono <?= $activeDifficulty === 'all' ? 'active' : '' ?>"
-               onclick="window.playPixelSound && window.playPixelSound('click');">
+            <a href="<?= BASE_URL ?>/quiz?difficulty=all"
+                class="quiz-segment-tab font-mono <?= $activeDifficulty === 'all' ? 'active' : '' ?>"
+                onclick="window.playPixelSound && window.playPixelSound('click');">
                 <span>Semua</span>
             </a>
-            <a href="<?= BASE_URL ?>/quiz?difficulty=Mudah" 
-               class="quiz-segment-tab font-mono <?= $activeDifficulty === 'Mudah' ? 'active' : '' ?>"
-               onclick="window.playPixelSound && window.playPixelSound('click');">
+            <a href="<?= BASE_URL ?>/quiz?difficulty=Mudah"
+                class="quiz-segment-tab font-mono <?= $activeDifficulty === 'Mudah' ? 'active' : '' ?>"
+                onclick="window.playPixelSound && window.playPixelSound('click');">
                 <span>Mudah</span>
             </a>
-            <a href="<?= BASE_URL ?>/quiz?difficulty=Sedang" 
-               class="quiz-segment-tab font-mono <?= $activeDifficulty === 'Sedang' ? 'active' : '' ?>"
-               onclick="window.playPixelSound && window.playPixelSound('click');">
+            <a href="<?= BASE_URL ?>/quiz?difficulty=Sedang"
+                class="quiz-segment-tab font-mono <?= $activeDifficulty === 'Sedang' ? 'active' : '' ?>"
+                onclick="window.playPixelSound && window.playPixelSound('click');">
                 <span>Sedang</span>
             </a>
-            <a href="<?= BASE_URL ?>/quiz?difficulty=Sulit" 
-               class="quiz-segment-tab font-mono <?= $activeDifficulty === 'Sulit' ? 'active' : '' ?>"
-               onclick="window.playPixelSound && window.playPixelSound('click');">
+            <a href="<?= BASE_URL ?>/quiz?difficulty=Sulit"
+                class="quiz-segment-tab font-mono <?= $activeDifficulty === 'Sulit' ? 'active' : '' ?>"
+                onclick="window.playPixelSound && window.playPixelSound('click');">
                 <span>Sulit</span>
             </a>
         </div>
@@ -82,9 +59,11 @@ require_once dirname(__DIR__) . '/templates/header.php';
             <span class="panel-crosshair corner-tr">+</span>
             <span class="panel-crosshair corner-bl">+</span>
             <span class="panel-crosshair corner-br">+</span>
-            
+
             <div class="w-12 h-12 rounded-lg bg-zinc-900 border border-zinc-800 flex items-center justify-center mx-auto mb-3 text-zinc-500">
-                <svg class="w-6 h-6 pixelated" viewBox="0 0 16 16"><use href="#pixel-router"></use></svg>
+                <svg class="w-6 h-6 pixelated" viewBox="0 0 16 16">
+                    <use href="#pixel-router"></use>
+                </svg>
             </div>
             <h3 class="text-base font-bold text-white mb-1">Tidak Ada Kuis Ditemukan</h3>
             <p class="font-mono text-xs text-zinc-500 max-w-md mx-auto">
@@ -99,7 +78,7 @@ require_once dirname(__DIR__) . '/templates/header.php';
     <?php else: ?>
         <div class="space-y-10">
             <?php foreach ($categorized as $categoryName => $quizzes): ?>
-                <?php if (!empty($quizzes)): 
+                <?php if (!empty($quizzes)):
                     $catThemeColor = match ($categoryName) {
                         'Routing' => 'var(--accent-cyan)',
                         'Firewall & NAT' => 'var(--accent-gold)',
@@ -160,7 +139,9 @@ require_once dirname(__DIR__) . '/templates/header.php';
 
                                             <?php if ($isFinished): ?>
                                                 <span class="quiz-status-tag status-finished">
-                                                    <svg class="w-3 h-3 pixelated" viewBox="0 0 16 16"><use href="#pixel-sparkle"></use></svg>
+                                                    <svg class="w-3 h-3 pixelated" viewBox="0 0 16 16">
+                                                        <use href="#pixel-sparkle"></use>
+                                                    </svg>
                                                     <span>Selesai (<?= (int)$userScore ?> pts)</span>
                                                 </span>
                                             <?php elseif ($isPaused): ?>
@@ -187,7 +168,9 @@ require_once dirname(__DIR__) . '/templates/header.php';
                                     <div class="quiz-card-footer">
                                         <div class="quiz-card-meta font-mono">
                                             <span class="meta-item">
-                                                <svg class="w-3.5 h-3.5 pixelated" viewBox="0 0 16 16"><use href="#pixel-router"></use></svg>
+                                                <svg class="w-3.5 h-3.5 pixelated" viewBox="0 0 16 16">
+                                                    <use href="#pixel-router"></use>
+                                                </svg>
                                                 <span><?= (int)($q['duration'] ?? 15) ?> mnt</span>
                                             </span>
                                             <span class="text-zinc-600">•</span>
@@ -198,28 +181,28 @@ require_once dirname(__DIR__) . '/templates/header.php';
 
                                         <div class="quiz-card-actions">
                                             <?php if ($isFinished): ?>
-                                                <a href="<?= BASE_URL ?>/quiz/review/<?= (int)$q['id'] ?>" 
-                                                   class="btn-hero-secondary font-mono text-xs" 
-                                                   title="Review Pembahasan"
-                                                   onclick="window.playPixelSound && window.playPixelSound('click');">
+                                                <a href="<?= BASE_URL ?>/quiz/review/<?= (int)$q['id'] ?>"
+                                                    class="btn-hero-secondary font-mono text-xs"
+                                                    title="Review Pembahasan"
+                                                    onclick="window.playPixelSound && window.playPixelSound('click');">
                                                     <span>Review</span>
                                                 </a>
-                                                <a href="<?= BASE_URL ?>/quiz/play/<?= (int)$q['id'] ?>" 
-                                                   class="btn-hero-primary font-mono text-xs" 
-                                                   title="Ulangi Ujian"
-                                                   onclick="window.playPixelSound && window.playPixelSound('click');">
+                                                <a href="<?= BASE_URL ?>/quiz/play/<?= (int)$q['id'] ?>"
+                                                    class="btn-hero-primary font-mono text-xs"
+                                                    title="Ulangi Ujian"
+                                                    onclick="window.playPixelSound && window.playPixelSound('click');">
                                                     <span>Ulangi</span>
                                                 </a>
                                             <?php elseif ($isPaused): ?>
-                                                <a href="<?= BASE_URL ?>/quiz/play/<?= (int)$q['id'] ?>" 
-                                                   class="btn-hero-primary font-mono text-xs"
-                                                   onclick="window.playPixelSound && window.playPixelSound('click');">
+                                                <a href="<?= BASE_URL ?>/quiz/play/<?= (int)$q['id'] ?>"
+                                                    class="btn-hero-primary font-mono text-xs"
+                                                    onclick="window.playPixelSound && window.playPixelSound('click');">
                                                     <span>Lanjutkan ▶</span>
                                                 </a>
                                             <?php else: ?>
-                                                <a href="<?= BASE_URL ?>/quiz/play/<?= (int)$q['id'] ?>" 
-                                                   class="btn-hero-primary font-mono text-xs"
-                                                   onclick="window.playPixelSound && window.playPixelSound('click');">
+                                                <a href="<?= BASE_URL ?>/quiz/play/<?= (int)$q['id'] ?>"
+                                                    class="btn-hero-primary font-mono text-xs"
+                                                    onclick="window.playPixelSound && window.playPixelSound('click');">
                                                     <span>⚡ Mulai Kuis</span>
                                                 </a>
                                             <?php endif; ?>
