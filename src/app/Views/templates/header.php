@@ -1,5 +1,5 @@
 <?php
-$isAdmin = isset($_SESSION['user']['email']) && (strcasecmp(trim($_SESSION['user']['email']), 'admin@routerosquiz.academy') === 0);
+$isAdmin = isset($_SESSION['user']['email']) && \App\Core\Security::isAdminEmail($_SESSION['user']['email']);
 $userName = !empty($_SESSION['user']['name']) ? trim((string)$_SESSION['user']['name']) : (!empty($_SESSION['user']['username']) ? trim((string)$_SESSION['user']['username']) : 'Siswa');
 $userEmail = isset($_SESSION['user']['email']) ? trim((string)$_SESSION['user']['email']) : '';
 $userInitial = !empty($userName) ? strtoupper(mb_substr(htmlspecialchars($userName), 0, 1, 'UTF-8')) : 'S';

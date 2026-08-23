@@ -1715,8 +1715,9 @@ body {
 
 /* Tablet Breakpoint (<= 1024px) */
 @media (max-width: 1024px) {
-  .student-nav-links {
-    display: none;
+  .student-nav-links,
+  .student-avatar-box {
+    display: none !important;
   }
   .student-floating-bottom-nav {
     display: flex;

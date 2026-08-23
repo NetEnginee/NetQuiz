@@ -26,7 +26,7 @@ class AuthController extends Controller
 
         if (isset($_SESSION['user'])) {
             $email = isset($_SESSION['user']['email']) ? trim($_SESSION['user']['email']) : '';
-            $redirectUrl = (strcasecmp($email, 'admin@routerosquiz.academy') === 0) ? BASE_URL . '/admin' : BASE_URL . '/';
+            $redirectUrl = Security::isAdminEmail($email) ? BASE_URL . '/admin' : BASE_URL . '/';
             return $this->redirect($redirectUrl);
         }
 
@@ -102,7 +102,7 @@ class AuthController extends Controller
             session_write_close();
             Security::preventBFCache();
 
-            $redirectUrl = (strcasecmp(trim($user['email']), 'admin@routerosquiz.academy') === 0) ? BASE_URL . '/admin' : BASE_URL . '/';
+            $redirectUrl = Security::isAdminEmail(trim($user['email'])) ? BASE_URL . '/admin' : BASE_URL . '/';
             return $this->jsonResponse([
                 'status' => 'success',
                 'message' => 'Login berhasil!',

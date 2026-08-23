@@ -9,6 +9,7 @@ use App\Core\Authorize;
 use App\Core\Role;
 use App\Core\Request;
 use App\Core\Response;
+use App\Core\Security;
 use App\Repositories\QuizRepositoryInterface;
 use App\Repositories\MaterialRepositoryInterface;
 use App\Repositories\BadgeRepositoryInterface;
@@ -55,7 +56,7 @@ class HomeController extends Controller
     public function dashboardRedirect(): Response
     {
         $email = $_SESSION['user']['email'] ?? '';
-        if (strcasecmp(trim($email), 'admin@routerosquiz.academy') === 0) {
+        if (Security::isAdminEmail($email)) {
             return $this->redirect(BASE_URL . '/admin');
         }
 
