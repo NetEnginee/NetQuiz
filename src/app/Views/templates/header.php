@@ -27,8 +27,8 @@ function renderBreadcrumb(array $items): string
 {
     if (empty($items)) return '';
 
-    $html = '<nav class="admin-breadcrumb-nav" aria-label="Breadcrumb">';
-    $html .= '<ol class="admin-breadcrumb-list font-mono">';
+    $html = '<nav class="hero-breadcrumb-nav" aria-label="Breadcrumb">';
+    $html .= '<ol class="hero-breadcrumb-list font-mono">';
 
     $total = count($items);
     foreach ($items as $i => $item) {
@@ -38,13 +38,13 @@ function renderBreadcrumb(array $items): string
 
         if ($isLast || empty($url)) {
             $html .= '<li class="breadcrumb-item active" aria-current="page">';
-            $html .= '<span class="breadcrumb-current-text">' . $label . '</span>';
+            $html .= '<span class="breadcrumb-active-tag">' . $label . '</span>';
             $html .= '</li>';
         } else {
             $html .= '<li class="breadcrumb-item">';
             $html .= '<a href="' . htmlspecialchars($url) . '" class="breadcrumb-link">' . $label . '</a>';
             $html .= '</li>';
-            $html .= '<li class="breadcrumb-separator" aria-hidden="true">/</li>';
+            $html .= '<li class="breadcrumb-sep" aria-hidden="true">/</li>';
         }
     }
 
@@ -74,6 +74,9 @@ function renderBreadcrumb(array $items): string
 
     <!-- Global Vercel Dark & Pixel Dashboard Stylesheet -->
     <link rel="stylesheet" href="<?= function_exists('assetUrl') ? assetUrl('/css/dashboard.css') : (BASE_URL . '/css/dashboard.css') ?>">
+    <?php if (str_contains($_SERVER['REQUEST_URI'] ?? '', '/quiz')): ?>
+        <link rel="stylesheet" href="<?= function_exists('assetUrl') ? assetUrl('/css/quiz.css') : (BASE_URL . '/css/quiz.css') ?>">
+    <?php endif; ?>
 
     <!-- Lucide Icons CDN -->
     <script src="https://unpkg.com/lucide@latest" defer></script>
@@ -93,56 +96,58 @@ function renderBreadcrumb(array $items): string
     <!-- Network Data Animation Canvas Background -->
     <canvas id="networkCanvas" class="network-canvas pointer-events-none fixed inset-0 z-0 opacity-40" aria-hidden="true"></canvas>
 
-    <!-- Inline SVG Pixel Art Sprite Sheet -->
-    <svg class="hidden" style="display: none;" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-        <!-- 16-bit Gold Coin -->
-        <g id="pixel-coin">
-            <path fill="#F5A623" d="M3,1 h6 v1 h2 v2 h1 v6 h-1 v2 h-2 v1 h-6 v-1 h-2 v-2 h-1 v-6 h1 v-2 h2 z" />
-            <path fill="#FFE17D" d="M4,2 h4 v1 h-4 z M3,3 h2 v2 h-2 z M3,5 h1 v3 h-1 z" />
-            <path fill="#D48806" d="M4,9 h5 v1 h-5 z M9,3 h1 v6 h-1 z M7,10 h2 v1 h-2 z" />
-            <path fill="#FFF" d="M5,4 h2 v4 h-2 z" />
-        </g>
+    <!-- Inline SVG Pixel Art Sprite Sheet (Standard SVG Defs Symbols) -->
+    <svg xmlns="http://www.w3.org/2000/svg" style="position: absolute; width: 0; height: 0; overflow: hidden;" aria-hidden="true">
+        <defs>
+            <!-- 16-bit Gold Coin -->
+            <symbol id="pixel-coin" viewBox="0 0 16 16">
+                <path fill="#F5A623" d="M3,1 h6 v1 h2 v2 h1 v6 h-1 v2 h-2 v1 h-6 v-1 h-2 v-2 h-1 v-6 h1 v-2 h2 z" />
+                <path fill="#FFE17D" d="M4,2 h4 v1 h-4 z M3,3 h2 v2 h-2 z M3,5 h1 v3 h-1 z" />
+                <path fill="#D48806" d="M4,9 h5 v1 h-5 z M9,3 h1 v6 h-1 z M7,10 h2 v1 h-2 z" />
+                <path fill="#FFF" d="M5,4 h2 v4 h-2 z" />
+            </symbol>
 
-        <!-- 16-bit MikroTik Router -->
-        <g id="pixel-router">
-            <path fill="#0070F3" d="M2,8 h12 v6 h-12 z" />
-            <path fill="#50E3C2" d="M4,2 h1 v6 h-1 z M11,2 h1 v6 h-1 z" />
-            <path fill="#7928CA" d="M3,9 h2 v2 h-2 z M7,9 h2 v2 h-2 z M11,9 h2 v2 h-2 z" />
-            <path fill="#00FF66" d="M3,12 h1 v1 h-1 z M5,12 h1 v1 h-1 z M7,12 h1 v1 h-1 z M9,12 h1 v1 h-1 z" />
-            <path fill="#111" d="M1,14 h14 v1 h-14 z" />
-        </g>
+            <!-- 16-bit MikroTik Router -->
+            <symbol id="pixel-router" viewBox="0 0 16 16">
+                <path fill="#0070F3" d="M2,8 h12 v6 h-12 z" />
+                <path fill="#50E3C2" d="M4,2 h1 v6 h-1 z M11,2 h1 v6 h-1 z" />
+                <path fill="#7928CA" d="M3,9 h2 v2 h-2 z M7,9 h2 v2 h-2 z M11,9 h2 v2 h-2 z" />
+                <path fill="#00FF66" d="M3,12 h1 v1 h-1 z M5,12 h1 v1 h-1 z M7,12 h1 v1 h-1 z M9,12 h1 v1 h-1 z" />
+                <path fill="#111" d="M1,14 h14 v1 h-14 z" />
+            </symbol>
 
-        <!-- 16-bit Computer Monitor -->
-        <g id="pixel-computer">
-            <path fill="#333" d="M1,1 h14 v10 h-14 z M6,11 h4 v3 h-4 z M4,14 h8 v1 h-8 z" />
-            <path fill="#000" d="M2,2 h12 v8 h-12 z" />
-            <path fill="#50E3C2" d="M4,4 h4 v1 h-4 z M4,6 h6 v1 h-6 z M4,8 h2 v1 h-2 z" />
-            <path fill="#00FF66" d="M11,8 h1 v1 h-1 z" />
-        </g>
+            <!-- 16-bit Computer Monitor -->
+            <symbol id="pixel-computer" viewBox="0 0 16 16">
+                <path fill="#333" d="M1,1 h14 v10 h-14 z M6,11 h4 v3 h-4 z M4,14 h8 v1 h-8 z" />
+                <path fill="#000" d="M2,2 h12 v8 h-12 z" />
+                <path fill="#50E3C2" d="M4,4 h4 v1 h-4 z M4,6 h6 v1 h-6 z M4,8 h2 v1 h-2 z" />
+                <path fill="#00FF66" d="M11,8 h1 v1 h-1 z" />
+            </symbol>
 
-        <!-- 16-bit AI Robot -->
-        <g id="pixel-robot">
-            <path fill="#7928CA" d="M4,2 h8 v2 h-8 z M3,4 h10 v8 h-10 z M7,1 h2 v1 h-2 z" />
-            <path fill="#000" d="M5,6 h2 v3 h-2 z M9,6 h2 v3 h-2 z M6,10 h4 v1 h-4 z" />
-            <path fill="#FF0080" d="M5,7 h2 v1 h-2 z M9,7 h2 v1 h-2 z" />
-            <path fill="#50E3C2" d="M1,6 h2 v3 h-2 z M13,6 h2 v3 h-2 z" />
-            <path fill="#333" d="M5,12 h6 v3 h-6 z" />
-        </g>
+            <!-- 16-bit AI Robot -->
+            <symbol id="pixel-robot" viewBox="0 0 16 16">
+                <path fill="#7928CA" d="M4,2 h8 v2 h-8 z M3,4 h10 v8 h-10 z M7,1 h2 v1 h-2 z" />
+                <path fill="#000" d="M5,6 h2 v3 h-2 z M9,6 h2 v3 h-2 z M6,10 h4 v1 h-4 z" />
+                <path fill="#FF0080" d="M5,7 h2 v1 h-2 z M9,7 h2 v1 h-2 z" />
+                <path fill="#50E3C2" d="M1,6 h2 v3 h-2 z M13,6 h2 v3 h-2 z" />
+                <path fill="#333" d="M5,12 h6 v3 h-6 z" />
+            </symbol>
 
-        <!-- 16-bit Book -->
-        <g id="pixel-book">
-            <path fill="#FF0080" d="M2,2 h11 v12 h-11 z" />
-            <path fill="#FFF" d="M4,3 h8 v10 h-8 z" />
-            <path fill="#333" d="M2,2 h2 v12 h-2 z M12,2 h1 v12 h-1 z" />
-            <path fill="#0070F3" d="M6,5 h4 v1 h-4 z M6,7 h5 v1 h-5 z M6,9 h3 v1 h-3 z" />
-            <path fill="#F5A623" d="M8,1 h2 v4 h-2 z" />
-        </g>
+            <!-- 16-bit Book -->
+            <symbol id="pixel-book" viewBox="0 0 16 16">
+                <path fill="#FF0080" d="M2,2 h11 v12 h-11 z" />
+                <path fill="#FFF" d="M4,3 h8 v10 h-8 z" />
+                <path fill="#333" d="M2,2 h2 v12 h-2 z M12,2 h1 v12 h-1 z" />
+                <path fill="#0070F3" d="M6,5 h4 v1 h-4 z M6,7 h5 v1 h-5 z M6,9 h3 v1 h-3 z" />
+                <path fill="#F5A623" d="M8,1 h2 v4 h-2 z" />
+            </symbol>
 
-        <!-- 16-bit Sparkle / Star -->
-        <g id="pixel-sparkle">
-            <path fill="#50E3C2" d="M7,1 h2 v14 h-2 z M1,7 h14 v2 h-14 z M4,4 h2 v2 h-2 z M10,10 h2 v2 h-2 z M10,4 h2 v2 h-2 z M4,10 h2 v2 h-2 z" />
-            <path fill="#FFF" d="M7,7 h2 v2 h-2 z" />
-        </g>
+            <!-- 16-bit Sparkle / Star -->
+            <symbol id="pixel-sparkle" viewBox="0 0 16 16">
+                <path fill="#50E3C2" d="M7,1 h2 v14 h-2 z M1,7 h14 v2 h-14 z M4,4 h2 v2 h-2 z M10,10 h2 v2 h-2 z M10,4 h2 v2 h-2 z M4,10 h2 v2 h-2 z" />
+                <path fill="#FFF" d="M7,7 h2 v2 h-2 z" />
+            </symbol>
+        </defs>
     </svg>
 
     <!-- Top Navigation Bar (Vercel Dark & Pixel Masterpiece) -->
@@ -155,8 +160,7 @@ function renderBreadcrumb(array $items): string
                         <svg class="pixel-brand-svg pixelated" viewBox="0 0 16 16">
                             <use href="#pixel-router"></use>
                         </svg>
-                        <span class="status-ping" title="Sistem Online"></span>
-                        <span class="status-dot"></span>
+
                     </div>
                     <div class="brand-text-wrap">
                         <span class="nav-brand-text">Net<span class="nav-brand-accent">Quiz</span><span class="brand-cursor font-mono">_</span></span>

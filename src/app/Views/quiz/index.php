@@ -9,141 +9,203 @@ foreach ($categorized as $quizzesList) {
 require_once dirname(__DIR__) . '/templates/header.php';
 ?>
 
-<!-- Header & Breadcrumb -->
-<div style="margin-bottom: 2rem;">
-    <?= renderBreadcrumb([
-        ['label' => 'Siswa', 'url' => BASE_URL . '/'],
-        ['label' => 'Kuis']
-    ]) ?>
-</div>
+<div class="quiz-catalog-page-container">
 
-<!-- Filter Bar: Difficulty Switcher -->
-<div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; margin-bottom: 2rem; padding: 0.75rem 1rem; background-color: #FFFFFF; border: 1px solid #E5E7EB; border-radius: 8px;">
-    <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
-        <span style="font-size: 0.8rem; font-weight: 700; color: #71717A; text-transform: uppercase; margin-right: 0.25rem;">Tingkat Kesulitan:</span>
-        <a href="<?= BASE_URL ?>/quiz?difficulty=all" class="quiz-segment-tab <?= $activeDifficulty === 'all' ? 'active' : '' ?>" style="text-decoration: none; font-size: 0.8rem; padding: 0.35rem 0.75rem;">
-            Semua
-        </a>
-        <a href="<?= BASE_URL ?>/quiz?difficulty=Mudah" class="quiz-segment-tab <?= $activeDifficulty === 'Mudah' ? 'active' : '' ?>" style="text-decoration: none; font-size: 0.8rem; padding: 0.35rem 0.75rem;">
-            Mudah
-        </a>
-        <a href="<?= BASE_URL ?>/quiz?difficulty=Sedang" class="quiz-segment-tab <?= $activeDifficulty === 'Sedang' ? 'active' : '' ?>" style="text-decoration: none; font-size: 0.8rem; padding: 0.35rem 0.75rem;">
-            Sedang
-        </a>
-        <a href="<?= BASE_URL ?>/quiz?difficulty=Sulit" class="quiz-segment-tab <?= $activeDifficulty === 'Sulit' ? 'active' : '' ?>" style="text-decoration: none; font-size: 0.8rem; padding: 0.35rem 0.75rem;">
-            Sulit
-        </a>
+    <!-- 1. Hero Header -->
+    <div class="dashboard-hero-header">
+        <div class="hero-brand-group"
+            <div class="hero-title-area">
+            <?= renderBreadcrumb([
+                ['label' => 'Student', 'url' => BASE_URL . '/'],
+                ['label' => 'Kuis']
+            ]) ?>
+        </div>
     </div>
 </div>
 
-<!-- Categorized Quizzes Sections -->
+<!-- 2. Filter Bar: Difficulty Switcher -->
+<div class="quiz-filter-bar">
+    <div class="filter-tabs-group">
+        <span class="filter-label font-mono">Tingkat Kesulitan:</span>
+        <a href="<?= BASE_URL ?>/quiz?difficulty=all"
+            class="quiz-segment-tab font-mono <?= $activeDifficulty === 'all' ? 'active' : '' ?>"
+            onclick="window.playPixelSound && window.playPixelSound('click');">
+            <span>Semua</span>
+        </a>
+        <a href="<?= BASE_URL ?>/quiz?difficulty=Mudah"
+            class="quiz-segment-tab font-mono <?= $activeDifficulty === 'Mudah' ? 'active' : '' ?>"
+            onclick="window.playPixelSound && window.playPixelSound('click');">
+            <span>Mudah</span>
+        </a>
+        <a href="<?= BASE_URL ?>/quiz?difficulty=Sedang"
+            class="quiz-segment-tab font-mono <?= $activeDifficulty === 'Sedang' ? 'active' : '' ?>"
+            onclick="window.playPixelSound && window.playPixelSound('click');">
+            <span>Sedang</span>
+        </a>
+        <a href="<?= BASE_URL ?>/quiz?difficulty=Sulit"
+            class="quiz-segment-tab font-mono <?= $activeDifficulty === 'Sulit' ? 'active' : '' ?>"
+            onclick="window.playPixelSound && window.playPixelSound('click');">
+            <span>Sulit</span>
+        </a>
+    </div>
+
+    <div class="font-mono text-xs text-zinc-500">
+        <span>Total: <strong class="text-zinc-200"><?= $totalQuizzesCount ?></strong> Kuis Tersedia</span>
+    </div>
+</div>
+
+<!-- 3. Categorized Quizzes Sections -->
 <?php if ($totalQuizzesCount === 0): ?>
-    <div class="supabase-panel-card" style="padding: 3rem 1.5rem; text-align: center;">
-        <span class="corner-crosshair corner-tl">+</span>
-        <span class="corner-crosshair corner-tr">+</span>
-        <span class="corner-crosshair corner-bl">+</span>
-        <span class="corner-crosshair corner-br">+</span>
-        <div style="width: 44px; height: 44px; border-radius: 50%; background-color: #F4F4F5; margin: 0 auto 0.75rem; display: flex; align-items: center; justify-content: center; color: #71717A;">
-            <i data-lucide="file-question" style="width: 22px; height: 22px;"></i>
+    <div class="dashboard-panel-box text-center py-12">
+        <span class="panel-crosshair corner-tl">+</span>
+        <span class="panel-crosshair corner-tr">+</span>
+        <span class="panel-crosshair corner-bl">+</span>
+        <span class="panel-crosshair corner-br">+</span>
+
+        <div class="w-12 h-12 rounded-lg bg-zinc-900 border border-zinc-800 flex items-center justify-center mx-auto mb-3 text-zinc-500">
+            <svg class="w-6 h-6 pixelated" viewBox="0 0 16 16">
+                <use href="#pixel-router"></use>
+            </svg>
         </div>
-        <h3 style="font-family: var(--font-heading); font-size: 1rem; font-weight: 800; color: #18181B; margin: 0 0 0.25rem 0;">Tidak Ada Kuis Tersedia</h3>
-        <p style="font-size: 0.85rem; color: #71717A; margin: 0;">Belum ada kuis yang sesuai dengan filter tingkat kesulitan yang dipilih.</p>
+        <h3 class="text-base font-bold text-white mb-1">Tidak Ada Kuis Ditemukan</h3>
+        <p class="font-mono text-xs text-zinc-500 max-w-md mx-auto">
+            Belum ada paket soal yang cocok dengan filter tingkat kesulitan yang dipilih.
+        </p>
+        <div class="mt-4">
+            <a href="<?= BASE_URL ?>/quiz?difficulty=all" class="btn-hero-primary font-mono text-xs" onclick="window.playPixelSound && window.playPixelSound('click');">
+                <span>Tampilkan Semua Kuis</span>
+            </a>
+        </div>
     </div>
 <?php else: ?>
-    <div style="display: flex; flex-direction: column; gap: 2.5rem;">
+    <div class="space-y-10">
         <?php foreach ($categorized as $categoryName => $quizzes): ?>
-            <?php if (!empty($quizzes)): ?>
-                <div>
+            <?php if (!empty($quizzes)):
+                $catThemeColor = match ($categoryName) {
+                    'Routing' => 'var(--accent-cyan)',
+                    'Firewall & NAT' => 'var(--accent-gold)',
+                    'Wireless' => 'var(--accent-pink)',
+                    'Network Management' => 'var(--accent-emerald)',
+                    default => 'var(--accent-blue)'
+                };
+                $catWatermark = match ($categoryName) {
+                    'Routing' => '#pixel-router',
+                    'Firewall & NAT' => '#pixel-robot',
+                    'Wireless' => '#pixel-sparkle',
+                    default => '#pixel-computer'
+                };
+            ?>
+                <section class="quiz-category-section" aria-labelledby="cat-heading-<?= md5($categoryName) ?>">
                     <!-- Category Section Header -->
-                    <div style="display: flex; align-items: center; gap: 0.65rem; margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid #E5E7EB;">
-                        <i data-lucide="folder" style="width: 18px; height: 18px; color: #18181B;"></i>
-                        <h2 style="font-family: var(--font-heading); font-size: 1.15rem; font-weight: 800; color: #18181B; margin: 0;">
-                            <?= htmlspecialchars($categoryName) ?>
-                        </h2>
-                        <span class="font-mono" style="font-size: 0.75rem; color: #71717A;">(<?= count($quizzes) ?> Kuis)</span>
+                    <div class="category-header-row">
+                        <div class="category-title-wrap">
+                            <div class="category-icon-box" style="border-color: <?= $catThemeColor ?>33;">
+                                <span class="w-2.5 h-2.5 rounded-xs" style="background-color: <?= $catThemeColor ?>;"></span>
+                            </div>
+                            <div>
+                                <h2 id="cat-heading-<?= md5($categoryName) ?>" class="category-title font-sans">
+                                    <?= htmlspecialchars($categoryName) ?>
+                                </h2>
+                            </div>
+                        </div>
+                        <span class="category-count-badge font-mono">
+                            <?= count($quizzes) ?> Paket Kuis
+                        </span>
                     </div>
 
                     <!-- Quizzes Grid -->
-                    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 290px), 1fr)); gap: 1.25rem;">
+                    <div class="quiz-catalog-grid">
                         <?php foreach ($quizzes as $q): ?>
                             <?php
                             $isFinished = !empty($q['is_completed']) || !empty($q['completed']);
                             $isPaused = !empty($q['is_paused']) || !empty($q['paused']);
                             $userScore = $q['score'] ?? null;
                             ?>
-                            <div class="supabase-panel-card" style="padding: 1.25rem; display: flex; flex-direction: column; justify-content: space-between;">
-                                <span class="corner-crosshair corner-tl">+</span>
-                                <span class="corner-crosshair corner-tr">+</span>
-                                <span class="corner-crosshair corner-bl">+</span>
-                                <span class="corner-crosshair corner-br">+</span>
+                            <div class="quiz-card-box" style="--card-hover-border: <?= $catThemeColor ?>; --card-glow: <?= $catThemeColor ?>33;">
+                                <span class="panel-crosshair corner-tl">+</span>
+                                <span class="panel-crosshair corner-tr">+</span>
+                                <span class="panel-crosshair corner-bl">+</span>
+                                <span class="panel-crosshair corner-br">+</span>
+
+                                <!-- Pixel Watermark SVG -->
+                                <svg class="quiz-watermark pixelated" viewBox="0 0 16 16">
+                                    <use href="<?= $catWatermark ?>"></use>
+                                </svg>
 
                                 <div>
                                     <!-- Top Meta Badges -->
-                                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.75rem;">
-                                        <span class="status-badge" style="background-color: #F4F4F5; font-size: 0.7rem;">
+                                    <div class="quiz-card-top-row font-mono">
+                                        <span class="quiz-diff-pill">
                                             <?= htmlspecialchars($q['difficulty'] ?? 'Mudah') ?>
                                         </span>
+
                                         <?php if ($isFinished): ?>
-                                            <span class="status-badge status-active" style="font-size: 0.7rem;">
-                                                <i data-lucide="check" style="width: 11px; height: 11px; margin-right: 2px;"></i>
-                                                Selesai (Skor: <?= (int)$userScore ?>)
+                                            <span class="quiz-status-tag status-finished">
+                                                <svg class="w-3 h-3 pixelated" viewBox="0 0 16 16">
+                                                    <use href="#pixel-sparkle"></use>
+                                                </svg>
+                                                <span>Selesai (<?= (int)$userScore ?> pts)</span>
                                             </span>
                                         <?php elseif ($isPaused): ?>
-                                            <span class="status-badge" style="background-color: #FEF3C7; color: #92400E; font-size: 0.7rem;">
-                                                <i data-lucide="pause" style="width: 10px; height: 10px; margin-right: 2px;"></i>
-                                                Dijeda
+                                            <span class="quiz-status-tag status-paused">
+                                                <span>⏸ Dijeda</span>
                                             </span>
                                         <?php else: ?>
-                                            <span class="status-badge" style="background-color: #F4F4F5; color: #71717A; font-size: 0.7rem;">
-                                                Belum Dikerjakan
+                                            <span class="quiz-status-tag status-unattempted">
+                                                <span>Belum Dikerjakan</span>
                                             </span>
                                         <?php endif; ?>
                                     </div>
 
                                     <!-- Quiz Title & Description -->
-                                    <h3 style="font-family: var(--font-heading); font-size: 1rem; font-weight: 800; color: #18181B; margin: 0 0 0.4rem 0; line-height: 1.35;">
+                                    <h3 class="quiz-card-title">
                                         <?= htmlspecialchars($q['title']) ?>
                                     </h3>
-                                    <p style="font-size: 0.825rem; color: #52525B; margin: 0 0 1rem 0; line-height: 1.45; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical;">
-                                        <?= htmlspecialchars($q['description'] ?? '') ?>
+                                    <p class="quiz-card-desc">
+                                        <?= htmlspecialchars($q['description'] ?? 'Uji pengetahuan mendalam konfigurasi RouterOS MikroTik.') ?>
                                     </p>
                                 </div>
 
                                 <!-- Card Footer: Duration, Questions & CTA Button -->
-                                <div style="padding-top: 0.75rem; border-top: 1px solid #E5E7EB; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem;">
-                                    <div style="display: flex; align-items: center; gap: 0.75rem; font-size: 0.75rem; color: #71717A;" class="font-mono">
-                                        <span style="display: inline-flex; align-items: center; gap: 0.25rem;">
-                                            <i data-lucide="clock" style="width: 12px; height: 12px;"></i>
-                                            <?= (int)($q['duration'] ?? 15) ?> mnt
+                                <div class="quiz-card-footer">
+                                    <div class="quiz-card-meta font-mono">
+                                        <span class="meta-item">
+                                            <svg class="w-3.5 h-3.5 pixelated" viewBox="0 0 16 16">
+                                                <use href="#pixel-router"></use>
+                                            </svg>
+                                            <span><?= (int)($q['duration'] ?? 15) ?> mnt</span>
                                         </span>
-                                        <span>•</span>
-                                        <span style="display: inline-flex; align-items: center; gap: 0.25rem;">
-                                            <i data-lucide="help-circle" style="width: 12px; height: 12px;"></i>
-                                            <?= (int)($q['question_count'] ?? 1) ?> soal
+                                        <span class="text-zinc-600">•</span>
+                                        <span class="meta-item">
+                                            <span><?= (int)($q['question_count'] ?? 10) ?> soal</span>
                                         </span>
                                     </div>
 
-                                    <div>
+                                    <div class="quiz-card-actions">
                                         <?php if ($isFinished): ?>
-                                            <div style="display: flex; align-items: center; gap: 0.4rem;">
-                                                <a href="<?= BASE_URL ?>/quiz/review/<?= (int)$q['id'] ?>" class="btn-secondary-outline" style="font-size: 0.775rem; padding: 0.35rem 0.65rem;" title="Review Pembahasan">
-                                                    <i data-lucide="file-text" style="width: 12px; height: 12px;"></i>
-                                                    <span>Review</span>
-                                                </a>
-                                                <a href="<?= BASE_URL ?>/quiz/play/<?= (int)$q['id'] ?>" class="btn-primary-black" style="font-size: 0.775rem; padding: 0.35rem 0.65rem;" title="Ulangi Kuis">
-                                                    <i data-lucide="rotate-ccw" style="width: 12px; height: 12px;"></i>
-                                                    <span>Ulangi</span>
-                                                </a>
-                                            </div>
+                                            <a href="<?= BASE_URL ?>/quiz/review/<?= (int)$q['id'] ?>"
+                                                class="btn-hero-secondary font-mono text-xs"
+                                                title="Review Pembahasan"
+                                                onclick="window.playPixelSound && window.playPixelSound('click');">
+                                                <span>Review</span>
+                                            </a>
+                                            <a href="<?= BASE_URL ?>/quiz/play/<?= (int)$q['id'] ?>"
+                                                class="btn-hero-primary font-mono text-xs"
+                                                title="Ulangi Ujian"
+                                                onclick="window.playPixelSound && window.playPixelSound('click');">
+                                                <span>Ulangi</span>
+                                            </a>
                                         <?php elseif ($isPaused): ?>
-                                            <a href="<?= BASE_URL ?>/quiz/play/<?= (int)$q['id'] ?>" class="btn-primary-black" style="font-size: 0.775rem; padding: 0.35rem 0.75rem;">
-                                                <i data-lucide="play" style="width: 12px; height: 12px;"></i>
-                                                <span>Lanjutkan</span>
+                                            <a href="<?= BASE_URL ?>/quiz/play/<?= (int)$q['id'] ?>"
+                                                class="btn-hero-primary font-mono text-xs"
+                                                onclick="window.playPixelSound && window.playPixelSound('click');">
+                                                <span>Lanjutkan ▶</span>
                                             </a>
                                         <?php else: ?>
-                                            <a href="<?= BASE_URL ?>/quiz/play/<?= (int)$q['id'] ?>" class="btn-primary-black" style="font-size: 0.775rem; padding: 0.35rem 0.75rem;">
-                                                <i data-lucide="play" style="width: 12px; height: 12px;"></i>
-                                                <span>Mulai Kuis</span>
+                                            <a href="<?= BASE_URL ?>/quiz/play/<?= (int)$q['id'] ?>"
+                                                class="btn-hero-primary font-mono text-xs"
+                                                onclick="window.playPixelSound && window.playPixelSound('click');">
+                                                <span>⚡ Mulai Kuis</span>
                                             </a>
                                         <?php endif; ?>
                                     </div>
@@ -151,10 +213,12 @@ require_once dirname(__DIR__) . '/templates/header.php';
                             </div>
                         <?php endforeach; ?>
                     </div>
-                </div>
+                </section>
             <?php endif; ?>
         <?php endforeach; ?>
     </div>
 <?php endif; ?>
+
+</div>
 
 <?php require_once dirname(__DIR__) . '/templates/footer.php'; ?>
