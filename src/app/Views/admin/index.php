@@ -30,8 +30,9 @@ $stats = $stats ?? [
     <!-- Top Slim Loading Engine -->
     <script src="<?= function_exists('assetUrl') ? assetUrl('/js/page-loader.js') : (BASE_URL . '/js/page-loader.js') ?>"></script>
 
-    <!-- Vercel Dark Global & Admin Stylesheets -->
+    <!-- Vercel Dark Global, Learn Reader & Admin Stylesheets -->
     <link rel="stylesheet" href="<?= function_exists('assetUrl') ? assetUrl('/css/dashboard.css') : (BASE_URL . '/css/dashboard.css') ?>">
+    <link rel="stylesheet" href="<?= function_exists('assetUrl') ? assetUrl('/css/learn.css') : (BASE_URL . '/css/learn.css') ?>">
     <link rel="stylesheet" href="<?= function_exists('assetUrl') ? assetUrl('/css/admin.css') : (BASE_URL . '/css/admin.css') ?>">
 
     <!-- Global App State & Database Real Datasets -->
@@ -165,13 +166,15 @@ $stats = $stats ?? [
                 <?php if (isset($_SESSION['admin_success'])): ?>
                     <div style="background-color: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); color: #34D399; padding: 0.75rem 1rem; border-radius: 8px; margin-bottom: 1.5rem; font-size: 0.875rem; display: flex; align-items: center; gap: 0.5rem;">
                         <i data-lucide="check-circle-2" style="width: 16px; height: 16px; flex-shrink: 0;"></i>
-                        <span><?= htmlspecialchars($_SESSION['admin_success']); unset($_SESSION['admin_success']); ?></span>
+                        <span><?= htmlspecialchars($_SESSION['admin_success']);
+                                unset($_SESSION['admin_success']); ?></span>
                     </div>
                 <?php endif; ?>
                 <?php if (isset($_SESSION['admin_error'])): ?>
                     <div style="background-color: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); color: #F87171; padding: 0.75rem 1rem; border-radius: 8px; margin-bottom: 1.5rem; font-size: 0.875rem; display: flex; align-items: center; gap: 0.5rem;">
                         <i data-lucide="alert-circle" style="width: 16px; height: 16px; flex-shrink: 0;"></i>
-                        <span><?= htmlspecialchars($_SESSION['admin_error']); unset($_SESSION['admin_error']); ?></span>
+                        <span><?= htmlspecialchars($_SESSION['admin_error']);
+                                unset($_SESSION['admin_error']); ?></span>
                     </div>
                 <?php endif; ?>
 

@@ -69,7 +69,7 @@ $mode = $mode ?? 'login';
                             <span class="status-dot"></span>
                         </div>
                         <div class="brand-text-block">
-                            <div class="brand-sub-label font-mono">ROUTEROS ACADEMY //</div>
+                            <div class="brand-sub-label font-mono">NETWORKING ACADEMY //</div>
                             <div class="brand-name">
                                 <span>NetQuiz</span><span class="brand-cursor">_</span>
                             </div>

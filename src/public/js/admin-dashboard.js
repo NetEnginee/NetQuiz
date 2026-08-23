@@ -83,6 +83,10 @@ function formatHtmlContent() {
   textarea.value = formatted.trim();
 }
 
+window.downloadJsonTemplate = downloadJsonTemplate;
+window.insertHtmlTag = insertHtmlTag;
+window.formatHtmlContent = formatHtmlContent;
+
 document.addEventListener("DOMContentLoaded", () => {
   // Initialize Lucide SVG Icons
   if (window.lucide) {
@@ -198,6 +202,12 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       // Smoothly reset scroll to top on tab switch
+      const mainCanvasEl =
+        document.querySelector(".admin-main-canvas") ||
+        document.getElementById("admin-workspace");
+      if (mainCanvasEl) {
+        mainCanvasEl.scrollTo({ top: 0, behavior: "instant" });
+      }
       window.scrollTo({ top: 0, behavior: "instant" });
 
       // Update active list button text dynamically
@@ -1221,15 +1231,27 @@ document.addEventListener("DOMContentLoaded", () => {
     : null;
   // --- TOPBAR & SIDEBAR SCROLL SYNCHRONIZATION ---
   const topNav = document.querySelector(".admin-top-nav");
+  const scrollableCanvas =
+    document.querySelector(".admin-main-canvas") ||
+    document.getElementById("admin-workspace");
   function handleAppScroll() {
     if (!topNav) return;
-    if (window.scrollY > 8) {
+    const currentScroll =
+      (scrollableCanvas ? scrollableCanvas.scrollTop : 0) ||
+      window.scrollY ||
+      0;
+    if (currentScroll > 8) {
       topNav.classList.add("scrolled");
     } else {
       topNav.classList.remove("scrolled");
     }
   }
 
+  if (scrollableCanvas) {
+    scrollableCanvas.addEventListener("scroll", handleAppScroll, {
+      passive: true,
+    });
+  }
   window.addEventListener("scroll", handleAppScroll, { passive: true });
   handleAppScroll();
 
