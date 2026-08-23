@@ -1,19 +1,90 @@
 // --- NETQUIZ ADMIN DASHBOARD CONTROLLER (EXTERNAL JS) ---
 
-// Global function to trigger template.json download for import
+// Global function to trigger template.json download with rich demo and complete toolbar guide
 function downloadJsonTemplate() {
   const templateData = {
-    title: "Contoh Judul Materi Pembelajaran",
+    title: "",
     category: "Routing",
-    content:
-      "<h2>Sub-Bab Materi</h2><p>Tulis paragraf penjelasan materi di sini...</p><h3>Contoh Konfigurasi CLI</h3><pre><code>/ip route add gateway=192.168.1.1</code></pre>",
+    difficulty: "Mudah",
+    content: "",
+    _panduan_dan_keterangan_toolbar: {
+      deskripsi:
+        "Panduan lengkap penggunaan fitur toolbar dan komponen HTML yang didukung di Editor Materi NetQuiz.",
+      fitur_auto_format:
+        "Anda dapat menulis dalam teks biasa atau Markdown (seperti # untuk judul, **teks** untuk tebal, > [!NOTE] untuk callout, baris /ip untuk terminal CLI), lalu klik tombol '⚡ Auto Format' pada toolbar editor untuk mengonversinya secara otomatis menjadi format HTML NetQuiz yang rapi.",
+      daftar_toolbar_dan_fungsinya: {
+        "⚡ Auto Format":
+          "Mengonversi sintaks Markdown, baris CLI RouterOS, checklist, callout, dan tabel secara cerdas ke format HTML NetQuiz.",
+        "🧹 Rapikan HTML":
+          "Merapikan indentasi, spasi baris, dan penataan tag HTML editor.",
+        "H2, H3, H4":
+          "Heading terstruktur: H2 (Judul Bab), H3 (Sub-Bab pembahasan), H4 (Poin penting spesifik).",
+        "¶ P (Paragraf)":
+          "Membungkus paragraf teks penjelasan dengan tag <p>...</p>.",
+        "B, I, U, S":
+          "Format huruf: Bold <strong>, Italic <em>, Underline <u>, dan Strikethrough <s>.",
+        Mark: "Memberikan efek highlight / stabilo kuning lembut <mark>...",
+        Code: "Menandai nama perintah, parameter, atau kode inline <code>...",
+        "[Kbd]":
+          "Menampilkan lencana tombol keyboard retro <kbd>Ctrl</kbd> + <kbd>C</kbd>.",
+        "── HR":
+          'Garis pembatas bagian horizontal <hr class="section-divider">.',
+        "• List": "Daftar poin bullet tidak berurutan <ul><li>...</li></ul>.",
+        "1. List": "Daftar langkah atau nomor berurutan <ol><li>...</li></ol>.",
+        "☑ Task":
+          'Daftar checklist interaktif <ul class="task-list"><li><input type="checkbox">...</li></ul>.',
+        "📋 Key-Val": "Daftar parameter spesifikasi konfigurasi jaringan.",
+        "🖥️ RouterOS CLI":
+          "Blok terminal MikroTik RouterOS lengkap dengan header dot berwarna dan tombol Salin aktif.",
+        "🐧 Linux Bash":
+          "Blok terminal shell Linux/Ubuntu dengan tombol Salin aktif.",
+        "📦 JSON": "Blok format konfigurasi payload API atau file JSON.",
+        "💡 Info":
+          "Kotak sorotan informasi / catatan berwarna biru (callout-note).",
+        "✨ Tips":
+          "Kotak sorotan tips & trik efisiensi berwarna hijau (callout-tip).",
+        "⚠️ Peringatan":
+          "Kotak sorotan peringatan pencegahan kesalahan berwarna kuning (callout-warning).",
+        "🚨 Bahaya":
+          "Kotak peringatan risiko kritis berwarna merah (callout-danger).",
+        "✅ Best Practice":
+          "Kotak panduan praktik terbaik dan hasil verifikasi berwarna emerald (callout-success).",
+        "💬 Kutipan": "Kutipan teori atau referensi teks <blockquote>...",
+        "📊 Tabel":
+          "Tabel data responsif modern dengan header gelap dan baris zebra.",
+        "🔢 Step Guide":
+          "Kartu alur kerja konfigurasi bernomor urut bertahap (Langkah 1, 2, 3).",
+        "🌐 Network Card":
+          "Kartu ringkasan spesifikasi parameter IP Address, Gateway, DNS, dan Interface.",
+        "🔽 Accordion":
+          "Kotak buka-tutup interaktif <details><summary> untuk FAQ atau spoiler solusi.",
+        "🖼️ Gambar":
+          "Elemen gambar <figure> dengan <img> dan keterangan <figcaption>.",
+        "🔗 Link":
+          "Tautan eksternal dengan target _blank dan proteksi noopener.",
+        "📋 Salin HTML":
+          "Menyalin seluruh kode markup HTML editor ke clipboard.",
+        "🗑️ Bersihkan": "Mengosongkan teks editor dengan konfirmasi.",
+        "📥 Upload JSON": "Memuat artikel materi langsung dari berkas JSON.",
+        "📤 Template JSON":
+          "Mengunduh file JSON template materi lengkap beserta panduan toolbar ini.",
+      },
+      kategori_tersedia: [
+        "Routing",
+        "Firewall & NAT",
+        "Wireless",
+        "Network Management",
+      ],
+      tingkat_kesulitan_tersedia: ["Mudah", "Sedang", "Sulit"],
+    },
   };
+
   const jsonString = JSON.stringify(templateData, null, 2);
   const blob = new Blob([jsonString], { type: "application/json" });
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
-  a.download = "template_materi.json";
+  a.download = "template_materi_pembelajaran.json";
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
