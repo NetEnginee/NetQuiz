@@ -1,158 +1,87 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="id" class="dark">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Akses Ditolak | 403 Forbidden</title>
-    <!-- Google Fonts -->
+    <title>403 - Akses Ditolak | NetQuiz</title>
+
+    <!-- Fonts: Inter (UI), JetBrains Mono (Code/Metadata), Press Start 2P (Retro Accents) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:ital,wght@0,400;0,700;1,400&family=Press+Start+2P&display=swap" rel="stylesheet">
+
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest" defer></script>
-    <style>
-        :root {
-            --primary: #ef4444;
-            --bg: #f8fafc;
-            --text: #0f172a;
-            --text-muted: #64748b;
-        }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        body {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            background-color: var(--bg);
-            color: var(--text);
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-            position: relative;
-        }
-
-        /* Animated background glow */
-        .glow-bg {
-            position: absolute;
-            width: 600px;
-            height: 600px;
-            background: radial-gradient(circle, rgba(239, 68, 68, 0.06) 0%, rgba(248, 250, 252, 0) 75%);
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 1;
-            pointer-events: none;
-        }
-
-        .container {
-            position: relative;
-            z-index: 2;
-            text-align: center;
-            padding: 2rem;
-            width: 100%;
-            max-width: 480px;
-        }
-
-        .error-code {
-            font-family: 'Outfit', sans-serif;
-            font-size: 9rem;
-            font-weight: 800;
-            line-height: 1;
-            background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 1.5rem;
-            letter-spacing: -0.04em;
-            display: inline-block;
-            animation: float 5s infinite ease-in-out;
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-8px); }
-        }
-
-        h1 {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            font-size: 1.75rem;
-            font-weight: 800;
-            color: var(--text);
-            margin-bottom: 0.75rem;
-            letter-spacing: -0.03em;
-        }
-
-        p {
-            color: var(--text-muted);
-            font-size: 0.95rem;
-            line-height: 1.6;
-            margin-bottom: 2.25rem;
-            padding: 0 1.5rem;
-        }
-
-        .btn-home {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            background-color: #000000;
-            color: #ffffff;
-            text-decoration: none;
-            padding: 0.75rem 1.75rem;
-            border-radius: 6px;
-            font-weight: 700;
-            font-size: 0.875rem;
-            border: 1px solid #000000;
-            cursor: pointer;
-            box-shadow: none;
-            transition: none !important;
-            transform: none !important;
-        }
-
-        .btn-home:hover {
-            background-color: #FAFAFA;
-            color: #000000;
-            border-color: #000000;
-            box-shadow: none;
-            transform: none !important;
-        }
-
-        .btn-home:active {
-            background-color: #F4F4F5;
-            color: #000000;
-            border-color: #000000;
-            transform: none !important;
-        }
-    </style>
+    <!-- Stylesheet -->
+    <link rel="stylesheet" href="<?= defined('BASE_URL') ? BASE_URL : '' ?>/css/errors.css">
 </head>
-<body>
-    <div class="glow-bg"></div>
-    <div class="container">
-        <div class="error-code">403</div>
-        <h1>Akses Ditolak</h1>
-        <p>
-            Maaf, Anda tidak memiliki izin untuk mengakses halaman ini. Silakan kembali ke dashboard atau hubungi administrator Anda.
+
+<body class="error-page-body theme-403">
+
+    <!-- Interactive Background Pixel Critters Canvas -->
+    <canvas id="pixelCrittersCanvas" class="error-canvas-bg" aria-hidden="true"></canvas>
+
+    <!-- Retro CRT Scanline Texture Overlay -->
+    <div class="scanlines-overlay" aria-hidden="true"></div>
+
+    <!-- Main Vercel Dark Error Panel Card -->
+    <div class="error-panel-card">
+        <span class="panel-crosshair corner-tl">+</span>
+        <span class="panel-crosshair corner-tr">+</span>
+        <span class="panel-crosshair corner-bl">+</span>
+        <span class="panel-crosshair corner-br">+</span>
+
+        <!-- Terminal Status Badge -->
+        <div class="error-status-badge">
+            <span class="status-dot-pulse"></span>
+            <span>STATUS: ERR_FIREWALL_DROP_POLICY</span>
+        </div>
+
+        <!-- 8-Bit Glowing Error Number -->
+        <div class="error-huge-code">403</div>
+
+        <!-- Title & Subtitle -->
+        <h1 class="error-main-heading">
+            Akses Ditolak oleh Firewall Filter
+        </h1>
+        <p class="error-main-desc">
+            Paket kamu di-drop oleh keamanan NetQuiz. Kamu tidak memiliki izin untuk mengakses bagian ini.
         </p>
-        <div style="display: flex; gap: 1rem; justify-content: center; margin-top: 1.5rem; flex-wrap: wrap;">
-            <a href="<?= BASE_URL ?>/" class="btn-home">
-                <i data-lucide="arrow-left" style="width: 1.1rem; height: 1.1rem;"></i>
-                Kembali ke Dashboard
+
+        <!-- CLI Context Box -->
+        <div class="error-cli-box">
+            <span class="error-cli-prompt">[admin@netquiz] &gt;</span>
+            <span class="error-cli-text">/ip firewall filter add chain=input action=drop comment="unauthorized"</span>
+        </div>
+
+        <!-- Action Buttons Group -->
+        <div class="error-actions-group">
+            <a href="<?= defined('BASE_URL') ? BASE_URL : '/' ?>/" class="btn-pixel-primary">
+                <i data-lucide="arrow-left" style="width: 14px; height: 14px;"></i>
+                <span>Kembali ke Dashboard</span>
             </a>
-            <a href="<?= BASE_URL ?>/logout" class="btn-home">
-                <i data-lucide="log-out" style="width: 1.1rem; height: 1.1rem;"></i>
-                Logout & Ganti Akun
+            <a href="<?= defined('BASE_URL') ? BASE_URL : '/' ?>/logout" class="btn-pixel-secondary">
+                <i data-lucide="log-out" style="width: 14px; height: 14px;"></i>
+                <span>Logout & Ganti Akun</span>
             </a>
+        </div>
+
+        <div class="error-footer-hint">
+            Tip: Hubungi administrator apabila Anda memerlukan hak akses tambahan.
         </div>
     </div>
 
+    <!-- Scripts -->
+    <script src="<?= defined('BASE_URL') ? BASE_URL : '' ?>/js/pixel-critters.js"></script>
     <script>
-        // Initialize Lucide Icons
-        if (window.lucide) {
-            window.lucide.createIcons();
-        }
+        document.addEventListener('DOMContentLoaded', () => {
+            if (window.lucide) {
+                window.lucide.createIcons();
+            }
+        });
     </script>
 </body>
+
 </html>

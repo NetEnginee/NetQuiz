@@ -616,9 +616,9 @@ document.addEventListener("DOMContentLoaded", () => {
       item.style.border = "1px solid #e2e8f0";
       item.innerHTML = `
                 <div class="quiz-row-info">
-                    <span style="font-weight: 700; font-size: 0.85rem; color: #0f172a;">#${index + 1}: ${q.question}</span>
-                    <span style="font-size: 0.75rem; color: #64748b;">Pilihan: [A: ${q.option_a}] [B: ${q.option_b}] [C: ${q.option_c}] [D: ${q.option_d}] &bull; Jawaban: <strong style="color: #7c3aed;">${q.correct}</strong></span>
-                    ${q.explanation ? `<span style="font-size: 0.75rem; color: #475569; display: block; margin-top: 0.25rem;"><strong>Penjelasan:</strong> ${escapeHtml(q.explanation)}</span>` : ""}
+                    <span style="font-weight: 700; font-size: 0.85rem; color: #ffffff;">#${index + 1}: ${q.question}</span>
+                    <span style="font-size: 0.75rem; color: #a1a1aa;">Pilihan: [A: ${q.option_a}] [B: ${q.option_b}] [C: ${q.option_c}] [D: ${q.option_d}] &bull; Jawaban: <strong style="color: #50e3c2;">${q.correct}</strong></span>
+                    ${q.explanation ? `<span style="font-size: 0.75rem; color: #a1a1aa; display: block; margin-top: 0.25rem;"><strong>Penjelasan:</strong> ${escapeHtml(q.explanation)}</span>` : ""}
                     ${q.image ? '<span style="font-size: 0.7rem; color: #0d9488;"><i data-lucide="image" style="width: 0.8rem; height: 0.8rem;"></i> Termasuk Gambar</span>' : ""}
                 </div>
                 <button type="button" class="btn-danger-sm" style="padding: 0.3rem 0.6rem;" onclick="removeQuestion(${index})">

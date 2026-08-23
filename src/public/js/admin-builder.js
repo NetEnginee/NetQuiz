@@ -419,7 +419,7 @@ function renderQuizSection() {
                     <div style="padding-top: 1.5rem; border-top: 1px dashed #E5E7EB;">
                         <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 0.75rem;">
                             <div>
-                                <h4 style="font-family: var(--font-heading); font-size: 1rem; font-weight: 800; color: #18181B; margin: 0;">
+                                <h4 style="font-family: var(--font-heading); font-size: 1rem; font-weight: 800; color: #ffffff; margin: 0;">
                                     Daftar Soal (<span id="quiz-question-counter">1</span>)
                                 </h4>
                                 <p style="font-size: 0.775rem; color: #71717A; margin-top: 0.2rem;">Klik tanda radio pada pilihan untuk menentukan kunci jawaban yang benar.</p>
@@ -451,7 +451,7 @@ function renderQuizSection() {
                     </div>
 
                     <!-- Bottom Studio Actions -->
-                    <div class="quiz-form-bottom-bar" style="display: flex; align-items: center; justify-content: space-between; margin-top: 2rem; padding-top: 1.25rem; border-top: 1px solid #E5E7EB; flex-wrap: wrap; gap: 1rem;">
+                    <div class="quiz-form-bottom-bar" style="display: flex; align-items: center; justify-content: space-between; margin-top: 2rem; padding-top: 1.25rem; border-top: 1px solid #222222; flex-wrap: wrap; gap: 1rem;">
                         <button type="button" id="btn-add-another-question" class="btn-secondary-outline" style="font-size: 0.825rem; padding: 0.5rem 1rem; display: inline-flex; align-items: center; gap: 0.35rem;">
                             <i data-lucide="plus" style="width: 14px; height: 14px;"></i>
                             <span>Tambah Soal</span>
@@ -925,7 +925,7 @@ function renderQuizSection() {
       .map(
         (q) => `
             <tr>
-                <td style="font-weight: 700; color: #18181B;">${escapeHtml(q.title)}</td>
+                <td style="font-weight: 700; color: #ffffff;">${escapeHtml(q.title)}</td>
                 <td><span class="role-pill">${escapeHtml(q.category || "Routing")}</span></td>
                 <td><span class="status-badge status-active">${escapeHtml(q.difficulty || "Mudah")}</span></td>
                 <td class="font-mono text-muted">${q.duration || 15} Menit</td>
@@ -997,7 +997,7 @@ function renderMemberSection() {
                 
                 <!-- Section Header -->
                 <div style="margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid #E5E7EB;">
-                    <h3 style="font-family: var(--font-heading); font-size: 1.15rem; font-weight: 800; color: #18181B; margin: 0;">Daftarkan Member Baru</h3>
+                    <h3 style="font-family: var(--font-heading); font-size: 1.15rem; font-weight: 800; color: #ffffff; margin: 0;">Daftarkan Member Baru</h3>
                     <p style="font-size: 0.825rem; color: #71717A; margin-top: 0.25rem;">Buat akun anggota baru untuk mengakses kuis dan materi pembelajaran.</p>
                 </div>
 
@@ -1041,7 +1041,7 @@ function renderMemberSection() {
                 </div>
 
                 <!-- Footer Action Bar -->
-                <div style="display: flex; align-items: center; justify-content: flex-end; gap: 0.75rem; padding-top: 1.25rem; border-top: 1px solid #E5E7EB;">
+                <div style="display: flex; align-items: center; justify-content: flex-end; gap: 0.75rem; padding-top: 1.25rem; border-top: 1px solid #222222;">
                     <button type="reset" class="btn-secondary-outline" style="padding: 0.5rem 1rem;">Batal</button>
                     <button type="submit" class="btn-primary-black" id="btn-submit-member" style="padding: 0.5rem 1.25rem; display: inline-flex; align-items: center; gap: 0.4rem;">
                         <i data-lucide="user-plus" style="width: 15px; height: 15px;"></i>
@@ -1467,7 +1467,7 @@ function renderMaterialsSection() {
                     
                     <!-- Section Header -->
                     <div style="margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid #E5E7EB;">
-                        <h3 style="font-family: var(--font-heading); font-size: 1.15rem; font-weight: 800; color: #18181B; margin: 0;">Tulis Artikel Materi Baru</h3>
+                        <h3 style="font-family: var(--font-heading); font-size: 1.15rem; font-weight: 800; color: #ffffff; margin: 0;">Tulis Artikel Materi Baru</h3>
                         <p style="font-size: 0.825rem; color: #71717A; margin-top: 0.25rem;">Susun modul materi pembelajaran dan panduan konfigurasi MikroTik RouterOS.</p>
                     </div>
 
@@ -1521,7 +1521,7 @@ function renderMaterialsSection() {
                         <!-- Hidden JSON File Input for Material Upload -->
                         <input type="file" id="import-material-json-input" accept=".json,application/json" style="display: none;">
 
-                        <div class="editor-quick-toolbar" style="display: flex; align-items: center; gap: 4px; padding: 6px 8px; background-color: #F4F4F5; border: 1px solid #E5E7EB; border-bottom: none; border-top-left-radius: 8px; border-top-right-radius: 8px; flex-wrap: wrap;">
+                        <div class="editor-quick-toolbar" style="display: flex; align-items: center; gap: 4px; padding: 6px 8px; background-color: #0f0f12; border: 1px solid #222222; border-bottom: none; border-top-left-radius: 8px; border-top-right-radius: 8px; flex-wrap: wrap;">
                             <button type="button" class="toolbar-btn" onclick="insertHtmlTag('<h2>', '</h2>')" title="Heading 2">H2</button>
                             <button type="button" class="toolbar-btn" onclick="insertHtmlTag('<h3>', '</h3>')" title="Heading 3">H3</button>
                             <button type="button" class="toolbar-btn" onclick="insertHtmlTag('<strong>', '</strong>')" title="Bold"><b>B</b></button>
@@ -1546,12 +1546,12 @@ function renderMaterialsSection() {
                     </div>
 
                     <!-- Live Student Preview Box -->
-                    <div id="material-preview-box" class="material-live-preview-box" style="display: none; padding: 1.25rem; border: 1px solid #E5E7EB; border-radius: 8px; background-color: #FAFAFA; min-height: 200px;">
+                    <div id="material-preview-box" class="material-live-preview-box" style="display: none; padding: 1.25rem; border: 1px solid #222222; border-radius: 8px; background-color: #08080a; min-height: 200px;">
                         <p style="color: #71717A; font-style: italic;">Pratinjau kosong. Tulis isi materi terlebih dahulu.</p>
                     </div>
 
                     <!-- Footer Action Bar -->
-                    <div style="display: flex; align-items: center; justify-content: flex-end; gap: 0.75rem; padding-top: 1.25rem; margin-top: 1.5rem; border-top: 1px solid #E5E7EB;">
+                    <div style="display: flex; align-items: center; justify-content: flex-end; gap: 0.75rem; padding-top: 1.25rem; margin-top: 1.5rem; border-top: 1px solid #222222;">
                         <button type="button" onclick="window.switchMaterialView('list')" class="btn-secondary-outline" style="padding: 0.5rem 1rem;">Batal</button>
                         <button type="submit" class="btn-primary-black" style="padding: 0.5rem 1.25rem; display: inline-flex; align-items: center; gap: 0.4rem;">
                             <i data-lucide="check" style="width: 15px; height: 15px;"></i>
@@ -1627,7 +1627,7 @@ function renderMaterialsSection() {
       .map(
         (m) => `
             <tr>
-                <td style="font-weight: 700; color: #18181B;">${escapeHtml(m.title)}</td>
+                <td style="font-weight: 700; color: #ffffff;">${escapeHtml(m.title)}</td>
                 <td><span class="role-pill">${escapeHtml(m.category || "Routing")}</span></td>
                 <td><span class="status-badge status-active">${escapeHtml(m.difficulty || "Mudah")}</span></td>
                 <td style="text-align: right;">
@@ -1858,7 +1858,7 @@ function renderBadgeSection() {
                     
                     <!-- Section Header -->
                     <div style="margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid #E5E7EB;">
-                        <h3 style="font-family: var(--font-heading); font-size: 1.15rem; font-weight: 800; color: #18181B; margin: 0;">Buat Lencana Prestasi Baru</h3>
+                        <h3 style="font-family: var(--font-heading); font-size: 1.15rem; font-weight: 800; color: #ffffff; margin: 0;">Buat Lencana Prestasi Baru</h3>
                         <p style="font-size: 0.825rem; color: #71717A; margin-top: 0.25rem;">Tentukan nama lencana, target kuis selesai, dan ikon visual penghargaan siswa.</p>
                     </div>
 
@@ -1898,7 +1898,7 @@ function renderBadgeSection() {
                     </div>
 
                     <!-- Footer Action Bar -->
-                    <div style="display: flex; align-items: center; justify-content: flex-end; gap: 0.75rem; padding-top: 1.25rem; margin-top: 1.5rem; border-top: 1px solid #E5E7EB;">
+                    <div style="display: flex; align-items: center; justify-content: flex-end; gap: 0.75rem; padding-top: 1.25rem; margin-top: 1.5rem; border-top: 1px solid #222222;">
                         <button type="button" onclick="window.switchBadgeView('list')" class="btn-secondary-outline" style="padding: 0.5rem 1rem;">Batal</button>
                         <button type="submit" class="btn-primary-black" style="padding: 0.5rem 1.25rem; display: inline-flex; align-items: center; gap: 0.4rem;">
                             <i data-lucide="check" style="width: 15px; height: 15px;"></i>
@@ -1942,7 +1942,7 @@ function renderBadgeSection() {
                             <div>
                                 <!-- Header Kartu -->
                                 <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.85rem;">
-                                    <div style="width: 38px; height: 38px; background-color: #18181B; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #FFF;">
+                                    <div style="width: 38px; height: 38px; background-color: #ffffff; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #FFF;">
                                         <i data-lucide="${escapeHtml(b.icon || "award")}" style="width: 18px; height: 18px;"></i>
                                     </div>
                                     <button type="button" class="btn-icon-action btn-action-danger" title="Hapus Lencana" onclick="confirmDeleteBadge(${b.id}, '${escapeHtml(b.title).replace(/'/g, "\\'")}')">
@@ -1950,15 +1950,15 @@ function renderBadgeSection() {
                                     </button>
                                 </div>
                                 <!-- Body Kartu -->
-                                <h4 style="font-family: var(--font-heading); font-size: 0.95rem; font-weight: 800; color: #18181B; margin: 0 0 0.35rem 0;">${escapeHtml(b.title)}</h4>
+                                <h4 style="font-family: var(--font-heading); font-size: 0.95rem; font-weight: 800; color: #ffffff; margin: 0 0 0.35rem 0;">${escapeHtml(b.title)}</h4>
                                 <span class="status-badge status-active" style="margin-bottom: 0.6rem;">Target: ${b.target_value || 1} Kuis Selesai</span>
-                                <p style="font-size: 0.825rem; color: #52525B; margin: 0; line-height: 1.45;">${escapeHtml(b.description || "")}</p>
+                                <p style="font-size: 0.825rem; color: #a1a1aa; margin: 0; line-height: 1.45;">${escapeHtml(b.description || "")}</p>
                             </div>
 
                             <!-- Footer Kartu Ringkas -->
-                            <div style="margin-top: 1rem; padding-top: 0.65rem; border-top: 1px solid #E5E7EB; display: flex; align-items: center; justify-content: space-between;">
+                            <div style="margin-top: 1rem; padding-top: 0.65rem; border-top: 1px solid #222222; display: flex; align-items: center; justify-content: space-between;">
                                 <span style="font-size: 0.75rem; color: #71717A;" class="font-mono">Diperoleh oleh ${b.earned_count || 0} Siswa</span>
-                                <span class="status-badge" style="background-color: #F4F4F5; color: #71717A; font-size: 0.7rem;">Aktif</span>
+                                <span class="status-badge" style="background-color: #0f0f12; color: #71717A; font-size: 0.7rem;">Aktif</span>
                             </div>
                         </div>
                     `,

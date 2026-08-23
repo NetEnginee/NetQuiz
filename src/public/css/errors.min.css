@@ -1,0 +1,335 @@
+/**
+ * NetQuiz - Error Views Stylesheet
+ * Architecture: Vercel Dark Minimalist & 8-Bit Retro Pixel Aesthetic
+ * Features: Glowing 8-bit Error Codes, Terminal Status Badges, Pixel Buttons, Scanlines Overlay
+ */
+
+:root {
+  --bg-page: #000000;
+  --bg-card: #0a0a0a;
+  --bg-subcard: #111111;
+  --border-card: #222222;
+  --border-card-hover: #444444;
+  --border-subtle: #1c1c1c;
+
+  --accent-cyan: #50e3c2;
+  --accent-blue: #0070f3;
+  --accent-purple: #7928ca;
+  --accent-pink: #ff0080;
+  --accent-red: #ef4444;
+  --accent-gold: #f5a623;
+  --accent-emerald: #10b981;
+
+  --text-primary: #f4f4f5;
+  --text-secondary: #a1a1aa;
+  --text-muted: #71717a;
+  --text-dim: #52525b;
+
+  --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-mono: "JetBrains Mono", "Courier New", monospace;
+  --font-pixel: "Press Start 2P", monospace;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body.error-page-body {
+  font-family: var(--font-sans);
+  background-color: var(--bg-page);
+  color: var(--text-primary);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  margin: 0;
+  padding: 1.5rem;
+  background-image: 
+    radial-gradient(circle at 50% 50%, rgba(10, 10, 10, 0.8) 0%, #000000 100%),
+    linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+  background-size: 100% 100%, 32px 32px, 32px 32px;
+}
+
+/* Background Canvas */
+.error-canvas-bg {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Scanline Texture Overlay */
+.scanlines-overlay {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 2;
+  background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%);
+  background-size: 100% 4px;
+  opacity: 0.6;
+}
+
+/* Main Error Card */
+.error-panel-card {
+  background-color: rgba(10, 10, 10, 0.88);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--border-card);
+  border-radius: 12px;
+  padding: 2.25rem 2rem;
+  width: 100%;
+  max-width: 540px;
+  position: relative;
+  z-index: 10;
+  text-align: center;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.9), 0 0 30px rgba(0, 0, 0, 0.6);
+  animation: errorCardAppear 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes errorCardAppear {
+  0% {
+    opacity: 0;
+    transform: scale(0.96) translateY(12px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* Corner Crosshairs */
+.panel-crosshair {
+  position: absolute;
+  color: var(--text-dim);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1;
+  pointer-events: none;
+  user-select: none;
+  z-index: 12;
+}
+
+.panel-crosshair.corner-tl { top: -6px; left: -5px; }
+.panel-crosshair.corner-tr { top: -6px; right: -5px; }
+.panel-crosshair.corner-bl { bottom: -6px; left: -5px; }
+.panel-crosshair.corner-br { bottom: -6px; right: -5px; }
+
+/* Status Badge Pill */
+.error-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.3rem 0.85rem;
+  border-radius: 9999px;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin-bottom: 1.5rem;
+  background-color: var(--bg-subcard);
+  border: 1px solid var(--border-card);
+}
+
+.status-dot-pulse {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  display: inline-block;
+  animation: statusPulse 1.5s infinite;
+}
+
+@keyframes statusPulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(1.3); }
+}
+
+/* 404 Specific Theme */
+.theme-404 .error-status-badge {
+  border-color: rgba(80, 227, 194, 0.35);
+  color: var(--accent-cyan);
+}
+.theme-404 .status-dot-pulse {
+  background-color: var(--accent-cyan);
+  box-shadow: 0 0 8px var(--accent-cyan);
+}
+.theme-404 .error-huge-code {
+  color: #ffffff;
+  text-shadow: 
+    -2px -2px 0 #0070f3,
+    2px 2px 0 #7928ca,
+    0 0 25px rgba(80, 227, 194, 0.4);
+}
+
+/* 403 Specific Theme */
+.theme-403 .error-status-badge {
+  border-color: rgba(239, 68, 68, 0.4);
+  color: #f87171;
+}
+.theme-403 .status-dot-pulse {
+  background-color: var(--accent-red);
+  box-shadow: 0 0 8px var(--accent-red);
+}
+.theme-403 .error-huge-code {
+  color: #ffffff;
+  text-shadow: 
+    -2px -2px 0 #ef4444,
+    2px 2px 0 #ff0080,
+    0 0 25px rgba(239, 68, 68, 0.5);
+}
+
+/* 500 Specific Theme */
+.theme-500 .error-status-badge {
+  border-color: rgba(245, 166, 35, 0.4);
+  color: var(--accent-gold);
+}
+.theme-500 .status-dot-pulse {
+  background-color: var(--accent-gold);
+  box-shadow: 0 0 8px var(--accent-gold);
+}
+.theme-500 .error-huge-code {
+  color: #ffffff;
+  text-shadow: 
+    -2px -2px 0 #f5a623,
+    2px 2px 0 #f43f5e,
+    0 0 25px rgba(245, 166, 35, 0.5);
+}
+
+/* 8-Bit Retro Error Number */
+.error-huge-code {
+  font-family: var(--font-pixel, monospace);
+  font-size: clamp(3.2rem, 8vw, 4.8rem);
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  margin-bottom: 1.25rem;
+  user-select: none;
+  animation: codeFloat 4s ease-in-out infinite;
+}
+
+@keyframes codeFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+/* Error Title & Description */
+.error-main-heading {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #ffffff;
+  margin-bottom: 0.65rem;
+  letter-spacing: -0.02em;
+}
+
+.error-main-desc {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin-bottom: 1.75rem;
+}
+
+/* Terminal CLI Context Box */
+.error-cli-box {
+  background-color: #050505;
+  border: 1px solid var(--border-card);
+  border-radius: 6px;
+  padding: 0.6rem 0.85rem;
+  font-family: var(--font-mono);
+  font-size: 0.725rem;
+  color: var(--text-muted);
+  text-align: left;
+  margin-bottom: 1.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.error-cli-prompt {
+  color: var(--accent-cyan);
+  font-weight: 700;
+  user-select: none;
+  flex-shrink: 0;
+}
+
+.error-cli-text {
+  color: #d4d4d8;
+  white-space: nowrap;
+}
+
+/* Action Buttons Group */
+.error-actions-group {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.btn-pixel-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  padding: 0.65rem 1.25rem;
+  border-radius: 6px;
+  background-color: #ffffff;
+  color: #000000;
+  font-family: var(--font-sans);
+  font-size: 0.825rem;
+  font-weight: 700;
+  text-decoration: none;
+  border: 1px solid #ffffff;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.12);
+}
+
+.btn-pixel-primary:hover {
+  background-color: #f4f4f5;
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.25);
+  transform: translateY(-1px);
+}
+
+.btn-pixel-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  padding: 0.65rem 1.25rem;
+  border-radius: 6px;
+  background-color: var(--bg-subcard);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  font-size: 0.825rem;
+  font-weight: 600;
+  text-decoration: none;
+  border: 1px solid var(--border-card);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-pixel-secondary:hover {
+  background-color: #18181b;
+  border-color: var(--border-card-hover);
+  color: #ffffff;
+}
+
+/* Audio toggle or hint */
+.error-footer-hint {
+  font-family: var(--font-mono);
+  font-size: 0.675rem;
+  color: var(--text-dim);
+  margin-top: 1.5rem;
+}
