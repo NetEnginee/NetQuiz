@@ -171,8 +171,6 @@ require_once dirname(__DIR__) . "/templates/header.php";
 
     </section>
 
-    </section>
-
     <!-- 4. Main 12-Column Grid Area (7 Left / 5 Right) -->
     <div class="dashboard-main-columns">
 
@@ -184,7 +182,7 @@ require_once dirname(__DIR__) . "/templates/header.php";
             <span class="panel-crosshair corner-br">+</span>
 
             <div class="panel-header-row">
-                <div class="panel-title-wrap"
+                <div class="panel-title-wrap">
                     <h2 id="activity-panel-title" class="panel-title-text">Exam Activity History</h2>
                 </div>
             </div>
@@ -366,14 +364,8 @@ require_once dirname(__DIR__) . "/templates/header.php";
 
         <div class="panel-header-row">
             <div class="panel-title-wrap">
-                <div class="material-title-icon">
-                    <svg class="w-5 h-5 pixelated" viewBox="0 0 16 16">
-                        <use href="#pixel-book"></use>
-                    </svg>
-                </div>
                 <div>
-                    <h2 id="materials-panel-title" class="panel-title-text">Latest Learning Materials</h2>
-                    <p class="font-mono text-xs text-zinc-500">Materi Belajar & Panduan Konfigurasi MikroTik RouterOS</p>
+                    <h2 id="materials-panel-title" class="panel-title-text">Newest Learning Materials</h2>
                 </div>
             </div>
 
