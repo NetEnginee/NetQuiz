@@ -277,7 +277,9 @@ class AdminController extends Controller
             return $this->redirect(BASE_URL . '/admin#manage-section');
         }
 
-        $newStatus = trim((string)$this->request->input('status', 'Nonaktif'));
+        $rawStatus = trim((string)$this->request->input('status', 'Nonaktif'));
+        $validStatuses = ['Aktif', 'Pending', 'Nonaktif'];
+        $newStatus = in_array($rawStatus, $validStatuses, true) ? $rawStatus : 'Nonaktif';
 
         try {
             $this->userRepo->updateStatus($id, $newStatus);
@@ -353,6 +355,11 @@ class AdminController extends Controller
     public function deleteBadgesBulk(): Response
     {
         $this->checkAdmin();
+
+        if (!Security::validateCsrfToken($this->request->input('csrf_token'))) {
+            $_SESSION['admin_error'] = 'Sesi tidak valid, silakan muat ulang halaman.';
+            return $this->redirect(BASE_URL . '/admin#badge-section');
+        }
 
         $ids = $this->request->input('selected_badges', []);
         if (empty($ids) || !is_array($ids)) {

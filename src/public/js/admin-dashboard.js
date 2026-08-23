@@ -479,7 +479,16 @@ document.addEventListener("DOMContentLoaded", () => {
   window.deleteBadgeSingle = function (id) {
     const tempForm = document.createElement("form");
     tempForm.method = "POST";
-    tempForm.action = `${config.baseUrl}/admin/badge/delete/${id}`;
+    tempForm.action = `${config.baseUrl}/admin/badges/delete/${id}`;
+
+    if (window.CSRF_TOKEN) {
+      const csrfInput = document.createElement("input");
+      csrfInput.type = "hidden";
+      csrfInput.name = "csrf_token";
+      csrfInput.value = window.CSRF_TOKEN;
+      tempForm.appendChild(csrfInput);
+    }
+
     document.body.appendChild(tempForm);
     tempForm.submit();
   };
