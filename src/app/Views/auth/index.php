@@ -78,7 +78,7 @@ $mode = $mode ?? 'login';
 
                     <div class="cluster-controls">
                         <button type="button" id="soundToggleBtn" class="sound-toggle-btn font-mono" aria-label="Aktifkan/Matikan Suara">
-                            <span id="soundIcon">🔊</span>
+                            <span id="soundIcon"></span>
                             <span id="soundLabel">Sound: ON</span>
                         </button>
                         <div class="system-status-pill font-mono">
@@ -97,15 +97,9 @@ $mode = $mode ?? 'login';
 
                     <!-- Meta Tag & Title -->
                     <div class="card-intro-block">
-                        <div class="card-tag font-mono">
-                            <span class="tag-icon">⚡</span>
-                            <span>AUTH // SYSTEM_GATEWAY</span>
-                            <span class="tag-badge font-pixel">MTCNA</span>
-                        </div>
                         <h1 id="auth-card-title" class="card-title">Masuk ke Platform</h1>
                         <p class="card-subtitle">
-                            Masukkan kredensial Anda untuk mengakses evaluasi kompetensi & materi RouterOS.
-                        </p>
+                            Masukkan kredensial Anda untuk menjadi Network Engineer </p>
                     </div>
 
                     <!-- Login Form -->
