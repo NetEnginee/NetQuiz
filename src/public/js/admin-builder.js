@@ -1578,140 +1578,126 @@ function renderMaterialsSection() {
                     <!-- Hidden JSON File Input for Material Upload -->
                     <input type="file" id="import-material-json-input" accept=".json,application/json" style="display: none;">
 
-                    <!-- Modular 2-Tier Studio Toolbar -->
-                    <div class="editor-toolbar-container" id="material-editor-toolbar">
-                        <!-- TIER 1: Auto Format, Typography, Lists & Utility Actions -->
-                        <div class="toolbar-tier toolbar-tier-primary">
-                            <!-- Section: Auto Format -->
-                            <div class="toolbar-group">
-                                <button type="button" class="toolbar-btn btn-accent" onclick="window.autoFormatMaterialContent()" title="Konversi otomatis teks / markdown / perintah CLI menjadi format HTML yang rapi">
-                                    <i data-lucide="sparkles" style="width: 12px; height: 12px;"></i>
-                                    <span>Auto Format</span>
-                                </button>
-                                <button type="button" class="toolbar-btn btn-primary-tool" onclick="window.formatHtmlContent()" title="Rapikan indentasi dan baris kode HTML">
-                                    <i data-lucide="align-left" style="width: 12px; height: 12px;"></i>
-                                    <span>Rapikan HTML</span>
-                                </button>
-                            </div>
-
-                            <div class="toolbar-group-divider" aria-hidden="true"></div>
-
-                            <!-- Section: Headings -->
-                            <span class="toolbar-section-badge">TEKS</span>
-                            <div class="toolbar-group">
-                                <button type="button" class="toolbar-btn" onclick="window.insertMaterialSnippet('h2')" title="Heading 2 (Judul Bab)">H2</button>
-                                <button type="button" class="toolbar-btn" onclick="window.insertMaterialSnippet('h3')" title="Heading 3 (Sub-Bab)">H3</button>
-                                <button type="button" class="toolbar-btn" onclick="window.insertMaterialSnippet('h4')" title="Heading 4 (Poin Penting)">H4</button>
-                                <button type="button" class="toolbar-btn" onclick="window.insertMaterialSnippet('p')" title="Paragraf Teks">¶ P</button>
-                            </div>
-
-                            <div class="toolbar-group-divider" aria-hidden="true"></div>
-
-                            <!-- Section: Typography Formatting -->
-                            <div class="toolbar-group">
-                                <button type="button" class="toolbar-btn" onclick="window.insertMaterialSnippet('bold')" title="Teks Tebal (Bold)"><b>B</b></button>
-                                <button type="button" class="toolbar-btn" onclick="window.insertMaterialSnippet('italic')" title="Teks Miring (Italic)"><i>I</i></button>
-                                <button type="button" class="toolbar-btn" onclick="window.insertMaterialSnippet('underline')" title="Garis Bawah (Underline)"><u>U</u></button>
-                                <button type="button" class="toolbar-btn" onclick="window.insertMaterialSnippet('strike')" title="Teks Coret (Strikethrough)"><s>S</s></button>
-                                <button type="button" class="toolbar-btn" onclick="window.insertMaterialSnippet('mark')" title="Teks Highlight (Marker)">Mark</button>
-                                <button type="button" class="toolbar-btn" onclick="window.insertMaterialSnippet('code')" title="Inline Code">&#96;Code&#96;</button>
-                                <button type="button" class="toolbar-btn" onclick="window.insertMaterialSnippet('kbd')" title="Tombol Keyboard">[Kbd]</button>
-                                <button type="button" class="toolbar-btn" onclick="window.insertMaterialSnippet('hr')" title="Garis Pembatas (Divider)">── HR</button>
-                            </div>
-
-                            <div class="toolbar-group-divider" aria-hidden="true"></div>
-
-                            <!-- Section: Lists & Tasks -->
-                            <span class="toolbar-section-badge">LIST</span>
-                            <div class="toolbar-group">
-                                <button type="button" class="toolbar-btn" onclick="window.insertMaterialSnippet('ul')" title="Daftar Poin (Bullet List)">• List</button>
-                                <button type="button" class="toolbar-btn" onclick="window.insertMaterialSnippet('ol')" title="Daftar Berurutan (Numbered List)">1. List</button>
-                                <button type="button" class="toolbar-btn" onclick="window.insertMaterialSnippet('checklist')" title="Daftar Checklist (Task List)">☑ Task</button>
-                            </div>
-
-                            <!-- Section: Utility Actions (Right aligned) -->
-                            <div style="margin-left: auto; display: flex; align-items: center; gap: 4px;">
-                                <button type="button" class="toolbar-btn" onclick="window.copyMaterialHtml()" title="Salin seluruh kode HTML materi ke clipboard">
-                                    <i data-lucide="copy" style="width: 12px; height: 12px;"></i>
-                                    <span>Salin HTML</span>
-                                </button>
-                                <button type="button" class="toolbar-btn" onclick="window.clearMaterialEditor()" title="Kosongkan isi teks editor">
-                                    <i data-lucide="trash-2" style="width: 12px; height: 12px;"></i>
-                                    <span>Bersihkan</span>
-                                </button>
-                                <button type="button" class="toolbar-btn" onclick="downloadJsonTemplate()" title="Unduh Template JSON Materi beserta Petunjuk Penggunaan Lengkap">
-                                    <i data-lucide="download" style="width: 12px; height: 12px;"></i>
-                                    <span>Template JSON</span>
-                                </button>
-                                <button type="button" class="toolbar-btn" onclick="document.getElementById('import-material-json-input').click()" title="Upload Materi dari Berkas JSON">
-                                    <i data-lucide="upload" style="width: 12px; height: 12px;"></i>
-                                    <span>Upload JSON</span>
-                                </button>
-                            </div>
+                    <!-- Comprehensive Studio Toolbar -->
+                    <div class="editor-quick-toolbar" id="material-editor-toolbar" style="border-radius: 8px 8px 0 0;">
+                        <!-- Group 1: Auto Format & Beautify -->
+                        <div class="toolbar-group">
+                            <button type="button" class="toolbar-btn btn-accent" onclick="window.autoFormatMaterialContent()" title="Konversi otomatis teks / markdown / perintah CLI menjadi format HTML yang rapi">
+                                <i data-lucide="sparkles" style="width: 12px; height: 12px;"></i>
+                                <span>Auto Format</span>
+                            </button>
+                            <button type="button" class="toolbar-btn btn-primary-tool" onclick="window.formatHtmlContent()" title="Rapikan indentasi dan baris kode HTML">
+                                <i data-lucide="align-left" style="width: 12px; height: 12px;"></i>
+                                <span>Rapikan HTML</span>
+                            </button>
                         </div>
 
-                        <!-- TIER 2: Terminals, Callouts & Rich Interactive Components -->
-                        <div class="toolbar-tier toolbar-tier-secondary">
-                            <!-- Section: Terminals & CLI -->
-                            <span class="toolbar-section-badge"><i data-lucide="terminal" style="width: 10px; height: 10px;"></i> CLI</span>
-                            <div class="toolbar-group">
-                                <button type="button" class="toolbar-btn btn-primary-tool" onclick="window.insertMaterialSnippet('cli_routeros')" title="Blok Terminal MikroTik RouterOS Lengkap">
-                                    <i data-lucide="terminal" style="width: 12px; height: 12px;"></i>
-                                    <span>RouterOS CLI</span>
-                                </button>
-                                <button type="button" class="toolbar-btn" onclick="window.insertMaterialSnippet('cli_bash')" title="Blok Terminal Linux Bash">
-                                    <i data-lucide="terminal" style="width: 12px; height: 12px;"></i>
-                                    <span>Linux Bash</span>
-                                </button>
-                                <button type="button" class="toolbar-btn" onclick="window.insertMaterialSnippet('cli_json')" title="Blok Kode Konfigurasi JSON">
-                                    <i data-lucide="file-code" style="width: 12px; height: 12px;"></i>
-                                    <span>JSON</span>
-                                </button>
-                            </div>
+                        <div class="toolbar-group-divider" aria-hidden="true"></div>
 
-                            <div class="toolbar-group-divider" aria-hidden="true"></div>
+                        <!-- Group 2: Headings & Typography -->
+                        <div class="toolbar-group">
+                            <button type="button" class="toolbar-btn" onclick="window.insertMaterialSnippet('h2')" title="Heading 2 (Judul Bab)">H2</button>
+                            <button type="button" class="toolbar-btn" onclick="window.insertMaterialSnippet('h3')" title="Heading 3 (Sub-Bab)">H3</button>
+                            <button type="button" class="toolbar-btn" onclick="window.insertMaterialSnippet('h4')" title="Heading 4 (Poin Penting)">H4</button>
+                            <button type="button" class="toolbar-btn" onclick="window.insertMaterialSnippet('p')" title="Paragraf Teks">¶ P</button>
+                            <button type="button" class="toolbar-btn" onclick="window.insertMaterialSnippet('bold')" title="Teks Tebal (Bold)"><b>B</b></button>
+                            <button type="button" class="toolbar-btn" onclick="window.insertMaterialSnippet('italic')" title="Teks Miring (Italic)"><i>I</i></button>
+                            <button type="button" class="toolbar-btn" onclick="window.insertMaterialSnippet('underline')" title="Garis Bawah (Underline)"><u>U</u></button>
+                            <button type="button" class="toolbar-btn" onclick="window.insertMaterialSnippet('strike')" title="Teks Coret (Strikethrough)"><s>S</s></button>
+                            <button type="button" class="toolbar-btn" onclick="window.insertMaterialSnippet('mark')" title="Teks Highlight (Marker)">Mark</button>
+                            <button type="button" class="toolbar-btn" onclick="window.insertMaterialSnippet('code')" title="Inline Code">&#96;Code&#96;</button>
+                            <button type="button" class="toolbar-btn" onclick="window.insertMaterialSnippet('kbd')" title="Tombol Keyboard">[Kbd]</button>
+                            <button type="button" class="toolbar-btn" onclick="window.insertMaterialSnippet('hr')" title="Garis Pembatas (Divider)">── HR</button>
+                        </div>
 
-                            <!-- Section: Callout Alerts -->
-                            <span class="toolbar-section-badge"><i data-lucide="alert-circle" style="width: 10px; height: 10px;"></i> KOTAK</span>
-                            <div class="toolbar-group">
-                                <button type="button" class="toolbar-btn" onclick="window.insertMaterialSnippet('callout_note')" title="Kotak Catatan / Info (Biru)">💡 Info</button>
-                                <button type="button" class="toolbar-btn btn-accent" onclick="window.insertMaterialSnippet('callout_tip')" title="Kotak Tips & Trik (Hijau)">✨ Tips</button>
-                                <button type="button" class="toolbar-btn btn-warning-tool" onclick="window.insertMaterialSnippet('callout_warning')" title="Kotak Peringatan (Kuning)">⚠️ Peringatan</button>
-                                <button type="button" class="toolbar-btn" onclick="window.insertMaterialSnippet('callout_danger')" title="Kotak Bahaya / Kritis (Merah)" style="color: #f87171;">🚨 Bahaya</button>
-                                <button type="button" class="toolbar-btn" onclick="window.insertMaterialSnippet('callout_success')" title="Kotak Best Practice (Emerald)" style="color: #34d399;">✅ Best Practice</button>
-                                <button type="button" class="toolbar-btn" onclick="window.insertMaterialSnippet('quote')" title="Kutipan Referensi (Quote)">💬 Kutipan</button>
-                            </div>
+                        <div class="toolbar-group-divider" aria-hidden="true"></div>
 
-                            <div class="toolbar-group-divider" aria-hidden="true"></div>
+                        <!-- Group 3: Lists & Tasks -->
+                        <div class="toolbar-group">
+                            <button type="button" class="toolbar-btn" onclick="window.insertMaterialSnippet('ul')" title="Daftar Poin (Bullet List)">• List</button>
+                            <button type="button" class="toolbar-btn" onclick="window.insertMaterialSnippet('ol')" title="Daftar Berurutan (Numbered List)">1. List</button>
+                            <button type="button" class="toolbar-btn" onclick="window.insertMaterialSnippet('checklist')" title="Daftar Checklist (Task List)">☑ Task</button>
+                            <button type="button" class="toolbar-btn" onclick="window.insertMaterialSnippet('dl')" title="Daftar Parameter / Key-Value">📋 Key-Val</button>
+                        </div>
 
-                            <!-- Section: Rich Interactive Components -->
-                            <span class="toolbar-section-badge"><i data-lucide="layout" style="width: 10px; height: 10px;"></i> KOMPONEN</span>
-                            <div class="toolbar-group">
-                                <button type="button" class="toolbar-btn" onclick="window.insertMaterialSnippet('table')" title="Tabel Data Konfigurasi">
-                                    <i data-lucide="table" style="width: 12px; height: 12px;"></i>
-                                    <span>Tabel</span>
-                                </button>
-                                <button type="button" class="toolbar-btn" onclick="window.insertMaterialSnippet('step_guide')" title="Langkah Panduan Bertahap (Step 1, 2, 3)">
-                                    <i data-lucide="list-ordered" style="width: 12px; height: 12px;"></i>
-                                    <span>Step Guide</span>
-                                </button>
-                                <button type="button" class="toolbar-btn" onclick="window.insertMaterialSnippet('network_card')" title="Kartu Spesifikasi Jaringan (IP, Subnet, DNS)">
-                                    <i data-lucide="network" style="width: 12px; height: 12px;"></i>
-                                    <span>Network Card</span>
-                                </button>
-                                <button type="button" class="toolbar-btn" onclick="window.insertMaterialSnippet('details')" title="Kotak Buka-Tutup (Accordion FAQ)">
-                                    <i data-lucide="help-circle" style="width: 12px; height: 12px;"></i>
-                                    <span>Accordion</span>
-                                </button>
-                                <button type="button" class="toolbar-btn" onclick="window.insertMaterialSnippet('figure')" title="Gambar dengan Keterangan / Caption">
-                                    <i data-lucide="image" style="width: 12px; height: 12px;"></i>
-                                    <span>Gambar</span>
-                                </button>
-                                <button type="button" class="toolbar-btn" onclick="window.insertMaterialSnippet('link')" title="Tautan / Link Eksternal">
-                                    <i data-lucide="link" style="width: 12px; height: 12px;"></i>
-                                    <span>Link</span>
-                                </button>
-                            </div>
+                        <div class="toolbar-group-divider" aria-hidden="true"></div>
+
+                        <!-- Group 4: Code & Terminal CLI Blocks -->
+                        <div class="toolbar-group">
+                            <button type="button" class="toolbar-btn btn-primary-tool" onclick="window.insertMaterialSnippet('cli_routeros')" title="Blok Terminal MikroTik RouterOS Lengkap">
+                                <i data-lucide="terminal" style="width: 12px; height: 12px;"></i>
+                                <span>RouterOS CLI</span>
+                            </button>
+                            <button type="button" class="toolbar-btn" onclick="window.insertMaterialSnippet('cli_bash')" title="Blok Terminal Linux Bash">
+                                <i data-lucide="terminal" style="width: 12px; height: 12px;"></i>
+                                <span>Linux Bash</span>
+                            </button>
+                            <button type="button" class="toolbar-btn" onclick="window.insertMaterialSnippet('cli_json')" title="Blok Kode Konfigurasi JSON">
+                                <i data-lucide="file-code" style="width: 12px; height: 12px;"></i>
+                                <span>JSON</span>
+                            </button>
+                        </div>
+
+                        <div class="toolbar-group-divider" aria-hidden="true"></div>
+
+                        <!-- Group 5: Callout Alerts -->
+                        <div class="toolbar-group">
+                            <button type="button" class="toolbar-btn" onclick="window.insertMaterialSnippet('callout_note')" title="Kotak Catatan / Info (Biru)">💡 Info</button>
+                            <button type="button" class="toolbar-btn btn-accent" onclick="window.insertMaterialSnippet('callout_tip')" title="Kotak Tips & Trik (Hijau)">✨ Tips</button>
+                            <button type="button" class="toolbar-btn btn-warning-tool" onclick="window.insertMaterialSnippet('callout_warning')" title="Kotak Peringatan (Kuning)">⚠️ Peringatan</button>
+                            <button type="button" class="toolbar-btn" onclick="window.insertMaterialSnippet('callout_danger')" title="Kotak Bahaya / Kritis (Merah)" style="color: #f87171;">🚨 Bahaya</button>
+                            <button type="button" class="toolbar-btn" onclick="window.insertMaterialSnippet('callout_success')" title="Kotak Best Practice (Emerald)" style="color: #34d399;">✅ Best Practice</button>
+                            <button type="button" class="toolbar-btn" onclick="window.insertMaterialSnippet('quote')" title="Kutipan Referensi (Quote)">💬 Kutipan</button>
+                        </div>
+
+                        <div class="toolbar-group-divider" aria-hidden="true"></div>
+
+                        <!-- Group 6: Rich Interactive Components -->
+                        <div class="toolbar-group">
+                            <button type="button" class="toolbar-btn" onclick="window.insertMaterialSnippet('table')" title="Tabel Data Konfigurasi">
+                                <i data-lucide="table" style="width: 12px; height: 12px;"></i>
+                                <span>Tabel</span>
+                            </button>
+                            <button type="button" class="toolbar-btn" onclick="window.insertMaterialSnippet('step_guide')" title="Langkah Panduan Bertahap (Step 1, 2, 3)">
+                                <i data-lucide="list-ordered" style="width: 12px; height: 12px;"></i>
+                                <span>Step Guide</span>
+                            </button>
+                            <button type="button" class="toolbar-btn" onclick="window.insertMaterialSnippet('network_card')" title="Kartu Spesifikasi Jaringan (IP, Subnet, DNS)">
+                                <i data-lucide="network" style="width: 12px; height: 12px;"></i>
+                                <span>Network Card</span>
+                            </button>
+                            <button type="button" class="toolbar-btn" onclick="window.insertMaterialSnippet('details')" title="Kotak Buka-Tutup (Accordion FAQ)">
+                                <i data-lucide="help-circle" style="width: 12px; height: 12px;"></i>
+                                <span>Accordion</span>
+                            </button>
+                            <button type="button" class="toolbar-btn" onclick="window.insertMaterialSnippet('figure')" title="Gambar dengan Keterangan / Caption">
+                                <i data-lucide="image" style="width: 12px; height: 12px;"></i>
+                                <span>Gambar</span>
+                            </button>
+                            <button type="button" class="toolbar-btn" onclick="window.insertMaterialSnippet('link')" title="Tautan / Link Eksternal">
+                                <i data-lucide="link" style="width: 12px; height: 12px;"></i>
+                                <span>Link</span>
+                            </button>
+                        </div>
+
+                        <!-- Group 7: Utility Right Actions -->
+                        <div style="margin-left: auto; display: flex; align-items: center; gap: 4px;">
+                            <button type="button" class="toolbar-btn" onclick="window.copyMaterialHtml()" title="Salin seluruh kode HTML materi ke clipboard">
+                                <i data-lucide="copy" style="width: 12px; height: 12px;"></i>
+                                <span>Salin HTML</span>
+                            </button>
+                            <button type="button" class="toolbar-btn" onclick="window.clearMaterialEditor()" title="Kosongkan isi teks editor">
+                                <i data-lucide="trash-2" style="width: 12px; height: 12px;"></i>
+                                <span>Bersihkan</span>
+                            </button>
+                            <button type="button" class="toolbar-btn" onclick="downloadJsonTemplate()" title="Unduh Template JSON Materi">
+                                <i data-lucide="download" style="width: 12px; height: 12px;"></i>
+                                <span>Template JSON</span>
+                            </button>
+                            <button type="button" class="toolbar-btn" onclick="document.getElementById('import-material-json-input').click()" title="Upload Materi dari Berkas JSON">
+                                <i data-lucide="upload" style="width: 12px; height: 12px;"></i>
+                                <span>Upload JSON</span>
+                            </button>
                         </div>
                     </div>
 
@@ -1883,7 +1869,9 @@ function renderMaterialsSection() {
   const studioContainer = document.getElementById("material-studio-container");
   const editorWrapper = document.getElementById("material-editor-wrapper");
   const previewBox = document.getElementById("material-preview-box");
-  const previewRender = document.getElementById("material-preview-content-render");
+  const previewRender = document.getElementById(
+    "material-preview-content-render",
+  );
   const contentTextarea = document.getElementById("material-content-textarea");
   const readingTimePill = document.getElementById("material-reading-time");
   const titleInput = document.getElementById("material-input-title");
@@ -1951,7 +1939,7 @@ function renderMaterialsSection() {
         snippet = `\n<div class="network-spec-card">\n  <div class="network-spec-title">📋 PARAMETER KONFIGURASI</div>\n  <div class="network-grid">\n    <div class="network-item">\n      <div class="network-label">Parameter</div>\n      <div class="network-value">${selected || "Value"}</div>\n    </div>\n  </div>\n</div>\n`;
         break;
       case "cli_routeros":
-        snippet = `\n<div class="terminal-block-wrap">\n  <div class="terminal-block-header">\n    <div class="terminal-dots-group">\n      <span class="terminal-dot dot-red"></span>\n      <span class="terminal-dot dot-yellow"></span>\n      <span class="terminal-dot dot-green"></span>\n    </div>\n    <span class="terminal-title-label">TERMINAL CLI // ROUTEROS</span>\n    <button type="button" class="btn-copy-code" onclick="copySnippetCode(this)">\n      <i data-lucide="copy" style="width: 11px; height: 11px;"></i>\n      <span>Salin</span>\n    </button>\n  </div>\n  <div class="terminal-block-body">\n    <pre><code>${selected || "/ip address\nadd address=192.168.88.1/24 interface=ether2 comment=\"LAN Network\"\n\n/ip route\nadd dst-address=0.0.0.0/0 gateway=192.168.1.1"}</code></pre>\n  </div>\n</div>\n`;
+        snippet = `\n<div class="terminal-block-wrap">\n  <div class="terminal-block-header">\n    <div class="terminal-dots-group">\n      <span class="terminal-dot dot-red"></span>\n      <span class="terminal-dot dot-yellow"></span>\n      <span class="terminal-dot dot-green"></span>\n    </div>\n    <span class="terminal-title-label">TERMINAL CLI // ROUTEROS</span>\n    <button type="button" class="btn-copy-code" onclick="copySnippetCode(this)">\n      <i data-lucide="copy" style="width: 11px; height: 11px;"></i>\n      <span>Salin</span>\n    </button>\n  </div>\n  <div class="terminal-block-body">\n    <pre><code>${selected || '/ip address\nadd address=192.168.88.1/24 interface=ether2 comment="LAN Network"\n\n/ip route\nadd dst-address=0.0.0.0/0 gateway=192.168.1.1'}</code></pre>\n  </div>\n</div>\n`;
         break;
       case "cli_bash":
         snippet = `\n<div class="terminal-block-wrap">\n  <div class="terminal-block-header">\n    <div class="terminal-dots-group">\n      <span class="terminal-dot dot-red"></span>\n      <span class="terminal-dot dot-yellow"></span>\n      <span class="terminal-dot dot-green"></span>\n    </div>\n    <span class="terminal-title-label">TERMINAL BASH // LINUX</span>\n    <button type="button" class="btn-copy-code" onclick="copySnippetCode(this)">\n      <i data-lucide="copy" style="width: 11px; height: 11px;"></i>\n      <span>Salin</span>\n    </button>\n  </div>\n  <div class="terminal-block-body">\n    <pre><code>${selected || "sudo apt update && sudo apt install -y tcpdump\ntcpdump -i eth0 -n -c 10 icmp"}</code></pre>\n  </div>\n</div>\n`;
@@ -1990,7 +1978,7 @@ function renderMaterialsSection() {
         snippet = `\n<details class="material-details">\n  <summary>🔍 Pertanyaan Umum: ${selected || "Mengapa Router Tidak Bisa Ping ke Internet?"}</summary>\n  <div class="material-details-body">\n    <p>Periksa kembali parameter NAT (Masquerade), DNS Server pada <code>/ip dns</code>, dan Default Route.</p>\n  </div>\n</details>\n`;
         break;
       case "figure":
-        snippet = `\n<figure>\n  <img src="${selected || 'https://images.unsplash.com/photo-1544197150-b99a580bb7a8?w=800&auto=format&fit=crop'}" alt="Diagram Topologi Jaringan">\n  <figcaption>Gambar 1.1: Skema Topologi Jaringan Lab RouterOS</figcaption>\n</figure>\n`;
+        snippet = `\n<figure>\n  <img src="${selected || "https://images.unsplash.com/photo-1544197150-b99a580bb7a8?w=800&auto=format&fit=crop"}" alt="Diagram Topologi Jaringan">\n  <figcaption>Gambar 1.1: Skema Topologi Jaringan Lab RouterOS</figcaption>\n</figure>\n`;
         break;
       case "link":
         snippet = `<a href="https://wiki.mikrotik.com" target="_blank" rel="noopener noreferrer">${selected || "Dokumentasi Resmi MikroTik"}</a>`;
@@ -1999,7 +1987,8 @@ function renderMaterialsSection() {
         snippet = selected;
     }
 
-    contentTextarea.value = text.substring(0, start) + snippet + text.substring(end);
+    contentTextarea.value =
+      text.substring(0, start) + snippet + text.substring(end);
     const newPos = start + snippet.length;
     contentTextarea.focus();
     contentTextarea.setSelectionRange(newPos, newPos);
@@ -2013,7 +2002,11 @@ function renderMaterialsSection() {
     let raw = contentTextarea.value.trim();
     if (!raw) {
       if (window.showGeistToast) {
-        window.showGeistToast("error", "Editor Kosong", "Tuliskan materi terlebih dahulu sebelum auto format.");
+        window.showGeistToast(
+          "error",
+          "Editor Kosong",
+          "Tuliskan materi terlebih dahulu sebelum auto format.",
+        );
       } else {
         alert("Tuliskan materi terlebih dahulu sebelum auto format.");
       }
@@ -2021,15 +2014,21 @@ function renderMaterialsSection() {
     }
 
     // 1. Convert Multi-line Code blocks ```routeros ... ``` or ```bash ... ```
-    raw = raw.replace(/```(?:routeros|mikrotik)?\s*([\s\S]*?)```/gi, function (_, code) {
-      const cleanCode = code.trim();
-      return `\n<div class="terminal-block-wrap">\n  <div class="terminal-block-header">\n    <div class="terminal-dots-group">\n      <span class="terminal-dot dot-red"></span>\n      <span class="terminal-dot dot-yellow"></span>\n      <span class="terminal-dot dot-green"></span>\n    </div>\n    <span class="terminal-title-label">TERMINAL CLI // ROUTEROS</span>\n    <button type="button" class="btn-copy-code" onclick="copySnippetCode(this)">\n      <i data-lucide="copy" style="width: 11px; height: 11px;"></i>\n      <span>Salin</span>\n    </button>\n  </div>\n  <div class="terminal-block-body">\n    <pre><code>${cleanCode}</code></pre>\n  </div>\n</div>\n`;
-    });
+    raw = raw.replace(
+      /```(?:routeros|mikrotik)?\s*([\s\S]*?)```/gi,
+      function (_, code) {
+        const cleanCode = code.trim();
+        return `\n<div class="terminal-block-wrap">\n  <div class="terminal-block-header">\n    <div class="terminal-dots-group">\n      <span class="terminal-dot dot-red"></span>\n      <span class="terminal-dot dot-yellow"></span>\n      <span class="terminal-dot dot-green"></span>\n    </div>\n    <span class="terminal-title-label">TERMINAL CLI // ROUTEROS</span>\n    <button type="button" class="btn-copy-code" onclick="copySnippetCode(this)">\n      <i data-lucide="copy" style="width: 11px; height: 11px;"></i>\n      <span>Salin</span>\n    </button>\n  </div>\n  <div class="terminal-block-body">\n    <pre><code>${cleanCode}</code></pre>\n  </div>\n</div>\n`;
+      },
+    );
 
-    raw = raw.replace(/```(?:bash|sh|linux)\s*([\s\S]*?)```/gi, function (_, code) {
-      const cleanCode = code.trim();
-      return `\n<div class="terminal-block-wrap">\n  <div class="terminal-block-header">\n    <div class="terminal-dots-group">\n      <span class="terminal-dot dot-red"></span>\n      <span class="terminal-dot dot-yellow"></span>\n      <span class="terminal-dot dot-green"></span>\n    </div>\n    <span class="terminal-title-label">TERMINAL BASH // LINUX</span>\n    <button type="button" class="btn-copy-code" onclick="copySnippetCode(this)">\n      <i data-lucide="copy" style="width: 11px; height: 11px;"></i>\n      <span>Salin</span>\n    </button>\n  </div>\n  <div class="terminal-block-body">\n    <pre><code>${cleanCode}</code></pre>\n  </div>\n</div>\n`;
-    });
+    raw = raw.replace(
+      /```(?:bash|sh|linux)\s*([\s\S]*?)```/gi,
+      function (_, code) {
+        const cleanCode = code.trim();
+        return `\n<div class="terminal-block-wrap">\n  <div class="terminal-block-header">\n    <div class="terminal-dots-group">\n      <span class="terminal-dot dot-red"></span>\n      <span class="terminal-dot dot-yellow"></span>\n      <span class="terminal-dot dot-green"></span>\n    </div>\n    <span class="terminal-title-label">TERMINAL BASH // LINUX</span>\n    <button type="button" class="btn-copy-code" onclick="copySnippetCode(this)">\n      <i data-lucide="copy" style="width: 11px; height: 11px;"></i>\n      <span>Salin</span>\n    </button>\n  </div>\n  <div class="terminal-block-body">\n    <pre><code>${cleanCode}</code></pre>\n  </div>\n</div>\n`;
+      },
+    );
 
     raw = raw.replace(/```(?:json)\s*([\s\S]*?)```/gi, function (_, code) {
       const cleanCode = code.trim();
@@ -2041,25 +2040,41 @@ function renderMaterialsSection() {
     });
 
     // 2. Convert Callout alerts: > [!NOTE], > [!TIP], > [!WARNING], > [!DANGER]
-    raw = raw.replace(/^>\s*\[!NOTE\]\s*([\s\S]*?)(?=\n\n|$)/gim, function (_, content) {
-      return `<div class="material-callout-quote callout-note">\n  <div class="callout-header">💡 CATATAN & INFORMASI</div>\n  <p>${content.replace(/^>\s*/gm, "").trim()}</p>\n</div>`;
-    });
-    raw = raw.replace(/^>\s*\[!TIP\]\s*([\s\S]*?)(?=\n\n|$)/gim, function (_, content) {
-      return `<div class="material-callout-quote callout-tip">\n  <div class="callout-header">✨ TIPS & TRIK</div>\n  <p>${content.replace(/^>\s*/gm, "").trim()}</p>\n</div>`;
-    });
-    raw = raw.replace(/^>\s*\[!WARNING\]\s*([\s\S]*?)(?=\n\n|$)/gim, function (_, content) {
-      return `<div class="material-callout-quote callout-warning">\n  <div class="callout-header">⚠️ PERHATIAN / PERINGATAN</div>\n  <p>${content.replace(/^>\s*/gm, "").trim()}</p>\n</div>`;
-    });
-    raw = raw.replace(/^>\s*\[!DANGER\]\s*([\s\S]*?)(?=\n\n|$)/gim, function (_, content) {
-      return `<div class="material-callout-quote callout-danger">\n  <div class="callout-header">🚨 PERINGATAN KRITIS</div>\n  <p>${content.replace(/^>\s*/gm, "").trim()}</p>\n</div>`;
-    });
-    raw = raw.replace(/^>\s*\[!SUCCESS\]\s*([\s\S]*?)(?=\n\n|$)/gim, function (_, content) {
-      return `<div class="material-callout-quote callout-success">\n  <div class="callout-header">✅ BEST PRACTICE</div>\n  <p>${content.replace(/^>\s*/gm, "").trim()}</p>\n</div>`;
-    });
+    raw = raw.replace(
+      /^>\s*\[!NOTE\]\s*([\s\S]*?)(?=\n\n|$)/gim,
+      function (_, content) {
+        return `<div class="material-callout-quote callout-note">\n  <div class="callout-header">💡 CATATAN & INFORMASI</div>\n  <p>${content.replace(/^>\s*/gm, "").trim()}</p>\n</div>`;
+      },
+    );
+    raw = raw.replace(
+      /^>\s*\[!TIP\]\s*([\s\S]*?)(?=\n\n|$)/gim,
+      function (_, content) {
+        return `<div class="material-callout-quote callout-tip">\n  <div class="callout-header">✨ TIPS & TRIK</div>\n  <p>${content.replace(/^>\s*/gm, "").trim()}</p>\n</div>`;
+      },
+    );
+    raw = raw.replace(
+      /^>\s*\[!WARNING\]\s*([\s\S]*?)(?=\n\n|$)/gim,
+      function (_, content) {
+        return `<div class="material-callout-quote callout-warning">\n  <div class="callout-header">⚠️ PERHATIAN / PERINGATAN</div>\n  <p>${content.replace(/^>\s*/gm, "").trim()}</p>\n</div>`;
+      },
+    );
+    raw = raw.replace(
+      /^>\s*\[!DANGER\]\s*([\s\S]*?)(?=\n\n|$)/gim,
+      function (_, content) {
+        return `<div class="material-callout-quote callout-danger">\n  <div class="callout-header">🚨 PERINGATAN KRITIS</div>\n  <p>${content.replace(/^>\s*/gm, "").trim()}</p>\n</div>`;
+      },
+    );
+    raw = raw.replace(
+      /^>\s*\[!SUCCESS\]\s*([\s\S]*?)(?=\n\n|$)/gim,
+      function (_, content) {
+        return `<div class="material-callout-quote callout-success">\n  <div class="callout-header">✅ BEST PRACTICE</div>\n  <p>${content.replace(/^>\s*/gm, "").trim()}</p>\n</div>`;
+      },
+    );
 
     // Generic blockquotes
     raw = raw.replace(/^>\s*(.+)$/gm, function (_, text) {
-      if (text.includes("material-callout-quote") || text.includes("<div")) return text;
+      if (text.includes("material-callout-quote") || text.includes("<div"))
+        return text;
       return `<div class="material-callout-quote">\n  <p>${text.trim()}</p>\n</div>`;
     });
 
@@ -2080,10 +2095,13 @@ function renderMaterialsSection() {
     raw = raw.replace(/`([^`\n]+)`/g, "<code>$1</code>");
 
     // 6. Checklists (- [ ] item)
-    raw = raw.replace(/(?:^|\n)- \[([ xX])\] (.+)/g, function (_, checked, text) {
-      const isChecked = checked.toLowerCase() === "x" ? "checked" : "";
-      return `\n<ul class="task-list"><li><input type="checkbox" ${isChecked} disabled> ${text}</li></ul>`;
-    });
+    raw = raw.replace(
+      /(?:^|\n)- \[([ xX])\] (.+)/g,
+      function (_, checked, text) {
+        const isChecked = checked.toLowerCase() === "x" ? "checked" : "";
+        return `\n<ul class="task-list"><li><input type="checkbox" ${isChecked} disabled> ${text}</li></ul>`;
+      },
+    );
 
     // 7. Bullet lists (- item or * item)
     raw = raw.replace(/(?:^|\n)[-*]\s+(.+)/g, "\n<ul><li>$1</li></ul>");
@@ -2097,19 +2115,31 @@ function renderMaterialsSection() {
 
     // 9. Markdown Tables
     raw = raw.replace(/((?:\|[^\n]+\|\r?\n)+)/g, function (tableBlock) {
-      const lines = tableBlock.trim().split("\n").map((l) => l.trim()).filter((l) => l.startsWith("|"));
+      const lines = tableBlock
+        .trim()
+        .split("\n")
+        .map((l) => l.trim())
+        .filter((l) => l.startsWith("|"));
       if (lines.length >= 2) {
-        const headerCells = lines[0].split("|").slice(1, -1).map((c) => c.trim());
+        const headerCells = lines[0]
+          .split("|")
+          .slice(1, -1)
+          .map((c) => c.trim());
         let htmlTable = `\n<div class="material-table-wrapper">\n  <table class="material-data-table">\n    <thead>\n      <tr>\n`;
         headerCells.forEach((h) => (htmlTable += `        <th>${h}</th>\n`));
         htmlTable += `      </tr>\n    </thead>\n    <tbody>\n`;
 
         const dataLines = lines.slice(lines[1].includes("---") ? 2 : 1);
         dataLines.forEach((row) => {
-          const cells = row.split("|").slice(1, -1).map((c) => c.trim());
+          const cells = row
+            .split("|")
+            .slice(1, -1)
+            .map((c) => c.trim());
           if (cells.length > 0) {
             htmlTable += `      <tr>\n`;
-            cells.forEach((cell) => (htmlTable += `        <td>${cell}</td>\n`));
+            cells.forEach(
+              (cell) => (htmlTable += `        <td>${cell}</td>\n`),
+            );
             htmlTable += `      </tr>\n`;
           }
         });
@@ -2149,19 +2179,32 @@ function renderMaterialsSection() {
     updateLivePreviewIfActive();
 
     if (window.showGeistToast) {
-      window.showGeistToast("success", "Auto Format Berhasil", "Teks materi berhasil diformat otomatis ke struktur HTML NetQuiz.");
+      window.showGeistToast(
+        "success",
+        "Auto Format Berhasil",
+        "Teks materi berhasil diformat otomatis ke struktur HTML NetQuiz.",
+      );
     }
   };
 
   // Copy HTML to Clipboard
   window.copyMaterialHtml = function () {
     if (!contentTextarea || !contentTextarea.value.trim()) {
-      if (window.showGeistToast) window.showGeistToast("error", "Editor Kosong", "Tidak ada konten untuk disalin.");
+      if (window.showGeistToast)
+        window.showGeistToast(
+          "error",
+          "Editor Kosong",
+          "Tidak ada konten untuk disalin.",
+        );
       return;
     }
     navigator.clipboard.writeText(contentTextarea.value).then(() => {
       if (window.showGeistToast) {
-        window.showGeistToast("success", "Disalin ke Clipboard", "Kode HTML materi berhasil disalin.");
+        window.showGeistToast(
+          "success",
+          "Disalin ke Clipboard",
+          "Kode HTML materi berhasil disalin.",
+        );
       }
     });
   };
@@ -2169,7 +2212,9 @@ function renderMaterialsSection() {
   // Clear Editor
   window.clearMaterialEditor = function () {
     if (!contentTextarea || !contentTextarea.value.trim()) return;
-    if (confirm("Apakah Anda yakin ingin mengosongkan teks editor materi ini?")) {
+    if (
+      confirm("Apakah Anda yakin ingin mengosongkan teks editor materi ini?")
+    ) {
       contentTextarea.value = "";
       updateReadingTime();
       updateLivePreviewIfActive();
@@ -2181,7 +2226,9 @@ function renderMaterialsSection() {
     if (!previewRender) return;
 
     const rawContent = contentTextarea ? contentTextarea.value : "";
-    const titleVal = titleInput ? titleInput.value.trim() : "Judul Materi Pembelajaran";
+    const titleVal = titleInput
+      ? titleInput.value.trim()
+      : "Judul Materi Pembelajaran";
     const catVal = catSelect ? catSelect.value : "Routing";
     const diffVal = diffSelect ? diffSelect.value : "Mudah";
 
@@ -2190,7 +2237,12 @@ function renderMaterialsSection() {
     const readTime = Math.max(1, Math.ceil(wordCount / 150));
 
     const diffLower = diffVal.toLowerCase();
-    const diffClass = diffLower === "sedang" ? "diff-sedang" : diffLower === "sulit" ? "diff-sulit" : "diff-mudah";
+    const diffClass =
+      diffLower === "sedang"
+        ? "diff-sedang"
+        : diffLower === "sulit"
+          ? "diff-sulit"
+          : "diff-mudah";
 
     const catThemes = {
       Routing: { pillClass: "cat-routing" },
@@ -2206,7 +2258,9 @@ function renderMaterialsSection() {
       year: "numeric",
     });
 
-    const contentHtml = rawContent.trim() || `
+    const contentHtml =
+      rawContent.trim() ||
+      `
       <div style="padding: 2.5rem 1rem; text-align: center; color: #71717a;">
         <i data-lucide="book-open" style="width: 32px; height: 32px; margin: 0 auto 0.5rem auto; opacity: 0.5;"></i>
         <p style="margin: 0; font-size: 0.9rem;">Pratinjau kosong. Tulis artikel materi di tab Editor untuk melihat tampilan persis seperti yang dilihat siswa.</p>
@@ -2313,7 +2367,14 @@ function renderMaterialsSection() {
   }
 
   // Mode Switcher Controls
-  if (btnModeEditor && btnModePreview && btnModeSplit && studioContainer && editorWrapper && previewBox) {
+  if (
+    btnModeEditor &&
+    btnModePreview &&
+    btnModeSplit &&
+    studioContainer &&
+    editorWrapper &&
+    previewBox
+  ) {
     btnModeEditor.addEventListener("click", () => {
       btnModeEditor.classList.add("active");
       btnModePreview.classList.remove("active");
@@ -2345,7 +2406,9 @@ function renderMaterialsSection() {
   }
 
   // Handle JSON Material Upload & Autofill
-  const jsonMatUploadInput = document.getElementById("import-material-json-input");
+  const jsonMatUploadInput = document.getElementById(
+    "import-material-json-input",
+  );
   if (jsonMatUploadInput) {
     jsonMatUploadInput.addEventListener("change", function (e) {
       const file = e.target.files[0];
@@ -2370,13 +2433,21 @@ function renderMaterialsSection() {
           }
 
           if (window.showGeistToast) {
-            window.showGeistToast("success", "Import Berhasil", "Materi pembelajaran berhasil dimuat dari file JSON.");
+            window.showGeistToast(
+              "success",
+              "Import Berhasil",
+              "Materi pembelajaran berhasil dimuat dari file JSON.",
+            );
           } else {
             alert("Materi pembelajaran berhasil dimuat dari file JSON.");
           }
         } catch (err) {
           if (window.showGeistToast) {
-            window.showGeistToast("error", "Gagal Membaca File", "Gagal membaca file JSON: " + err.message);
+            window.showGeistToast(
+              "error",
+              "Gagal Membaca File",
+              "Gagal membaca file JSON: " + err.message,
+            );
           } else {
             alert("Gagal membaca file JSON: " + err.message);
           }
