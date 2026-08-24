@@ -49,7 +49,7 @@ $stats = $stats ?? [
 
 <body class="bg-vercel-bg text-zinc-100 font-sans antialiased min-h-screen relative overflow-x-hidden selection:bg-vercel-accent selection:text-white">
 
-    <!-- 1. TOP NAVBAR (SOLID VERCEL DARK) -->
+    <!-- 1. TOP NAVBAR (SOLID VERCEL DARK - DESKTOP ONLY) -->
     <header class="admin-top-nav">
         <div class="admin-nav-container">
             <div class="nav-brand-group">
@@ -65,7 +65,7 @@ $stats = $stats ?? [
             <div class="nav-controls-group">
                 <span class="nav-admin-badge font-mono" title="Role: Administrator System">
                     <i data-lucide="shield-check" style="width: 14px; height: 14px;"></i>
-                    <span class="nav-text-desktop">Administrator</span>
+                    <span>Administrator</span>
                 </span>
 
                 <!-- Hairline Context Divider -->
@@ -73,11 +73,11 @@ $stats = $stats ?? [
 
                 <a href="<?= BASE_URL ?>/" class="btn-geist-nav-secondary" title="Kembali ke situs publik">
                     <i data-lucide="external-link" style="width: 14px; height: 14px;"></i>
-                    <span class="nav-text-desktop">Situs Utama</span>
+                    <span>Situs Utama</span>
                 </a>
                 <a href="<?= BASE_URL ?>/logout" class="btn-geist-nav-danger" title="Keluar dari sesi admin">
                     <i data-lucide="log-out" style="width: 14px; height: 14px;"></i>
-                    <span class="nav-text-desktop">Keluar</span>
+                    <span>Keluar</span>
                 </a>
             </div>
         </div>
@@ -87,14 +87,6 @@ $stats = $stats ?? [
     <div class="admin-app-layout">
         <!-- 2. LEFT VERTICAL SIDEBAR -->
         <aside id="admin-vertical-sidebar" class="admin-vertical-sidebar" aria-label="Navigasi Panel Administrator">
-            <!-- Mobile Drawer Header with Close Button (X) -->
-            <div class="sidebar-header-mobile">
-                <span class="sidebar-mobile-title font-heading">Menu Navigasi</span>
-                <button type="button" id="sidebar-close-btn" class="sidebar-close-btn" title="Tutup Menu">
-                    <i data-lucide="x" style="width: 16px; height: 16px;"></i>
-                </button>
-            </div>
-
             <!-- Permanent Canonical Sidebar Top Button (+ Buat Kuis Baru) -->
             <button type="button" class="sidebar-cta-btn active" data-target="quiz-section" aria-selected="true" role="tab" id="tab-btn-quiz-section">
                 <span class="sidebar-menu-label-group">
@@ -272,6 +264,7 @@ $stats = $stats ?? [
                 <span class="floating-btn-icon-wrapper">
                     <i data-lucide="plus" class="floating-btn-icon"></i>
                 </span>
+                <span class="floating-btn-label">Buat Kuis</span>
             </button>
 
             <!-- 2. Daftarkan Member -->
@@ -279,6 +272,7 @@ $stats = $stats ?? [
                 <span class="floating-btn-icon-wrapper">
                     <i data-lucide="user-plus" class="floating-btn-icon"></i>
                 </span>
+                <span class="floating-btn-label">Daftar</span>
             </button>
 
             <!-- 3. Manajemen Member -->
@@ -287,6 +281,7 @@ $stats = $stats ?? [
                     <i data-lucide="users" class="floating-btn-icon"></i>
                     <span class="floating-counter-badge" id="floating-count-members">0</span>
                 </span>
+                <span class="floating-btn-label">Member</span>
             </button>
 
             <!-- 4. Materi Belajar -->
@@ -295,6 +290,7 @@ $stats = $stats ?? [
                     <i data-lucide="book-open" class="floating-btn-icon"></i>
                     <span class="floating-counter-badge" id="floating-count-materials">0</span>
                 </span>
+                <span class="floating-btn-label">Materi</span>
             </button>
 
             <!-- 5. Lencana -->
@@ -303,7 +299,16 @@ $stats = $stats ?? [
                     <i data-lucide="award" class="floating-btn-icon"></i>
                     <span class="floating-counter-badge" id="floating-count-badges">0</span>
                 </span>
+                <span class="floating-btn-label">Lencana</span>
             </button>
+
+            <!-- 6. Keluar dari Sesi (Logout) -->
+            <a href="<?= BASE_URL ?>/logout" class="floating-bottom-btn floating-btn-logout" title="Keluar dari Sesi Admin" aria-label="Keluar dari Sesi Admin">
+                <span class="floating-btn-icon-wrapper">
+                    <i data-lucide="log-out" class="floating-btn-icon"></i>
+                </span>
+                <span class="floating-btn-label">Keluar</span>
+            </a>
         </div>
     </nav>
 
