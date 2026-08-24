@@ -75,7 +75,7 @@ body {
   left: 0;
   right: 0;
   height: 56px;
-  background-color: rgba(5, 5, 5, 0.92);
+  background-color: rgba(5, 5, 5, 0.94);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border-bottom: 1px solid var(--border-card);
@@ -92,6 +92,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 0.75rem;
 }
 
 .nav-brand-group {
@@ -119,6 +120,7 @@ body {
   justify-content: center;
   position: relative;
   color: var(--accent-cyan);
+  flex-shrink: 0;
 }
 
 .live-dot {
@@ -138,6 +140,7 @@ body {
   font-weight: 800;
   letter-spacing: -0.02em;
   color: #ffffff;
+  white-space: nowrap;
 }
 
 .nav-brand-accent {
@@ -162,26 +165,30 @@ body {
 .nav-controls-group {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 0.65rem;
+  flex-shrink: 0;
 }
 
 .nav-admin-badge {
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
-  padding: 0.25rem 0.65rem;
+  padding: 0.35rem 0.75rem;
   background-color: rgba(80, 227, 194, 0.1);
   border: 1px solid rgba(80, 227, 194, 0.3);
   color: var(--accent-cyan);
-  border-radius: 9999px;
-  font-size: 0.725rem;
-  font-weight: 700;
+  border-radius: 6px;
+  font-size: 0.775rem;
+  font-weight: 600;
+  white-space: nowrap;
+  user-select: none;
 }
 
 .nav-context-divider {
   width: 1px;
   height: 18px;
   background-color: var(--border-card);
+  flex-shrink: 0;
 }
 
 .btn-geist-nav-secondary {
@@ -197,6 +204,8 @@ body {
   font-weight: 600;
   text-decoration: none;
   transition: all 0.15s ease;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .btn-geist-nav-secondary:hover {
@@ -218,6 +227,8 @@ body {
   font-weight: 600;
   text-decoration: none;
   transition: all 0.15s ease;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .btn-geist-nav-danger:hover {
@@ -889,7 +900,7 @@ textarea.form-field-input:focus {
 }
 
 /* ==========================================================================
-   7. MATERIAL EDITOR & TOOLBAR
+   7. MATERIAL EDITOR & TOOLBAR (2-TIER MODULAR PRO STUDIO)
    ========================================================================== */
 
 .editor-toolbar-container {
@@ -901,78 +912,117 @@ textarea.form-field-input:focus {
   border-top-left-radius: 8px;
   border-top-right-radius: 8px;
   overflow: hidden;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
 }
 
 .toolbar-tier {
   display: flex;
   align-items: center;
   gap: 5px;
-  padding: 6px 10px;
-  flex-wrap: wrap;
-  row-gap: 5px;
+  padding: 5px 8px;
+  width: 100%;
+  box-sizing: border-box;
+  overflow-x: auto;
+  scrollbar-width: thin;
+  white-space: nowrap;
+}
+
+.toolbar-tier::-webkit-scrollbar {
+  height: 3px;
+}
+
+.toolbar-tier::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
 }
 
 .toolbar-tier-primary {
   background-color: #0e0e12;
-  border-bottom: 1px solid #1c1c22;
+  border-bottom: 1px solid #1c1c24;
 }
 
 .toolbar-tier-secondary {
-  background-color: #09090c;
+  background-color: #08080b;
+}
+
+.toolbar-tier-left {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  flex-wrap: nowrap;
+}
+
+.toolbar-tier-right {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+  margin-left: auto;
+}
+
+/* Pill Group Container */
+.toolbar-pill-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  background: rgba(255, 255, 255, 0.025);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 5px;
+  padding: 2px 3.5px;
+  flex-shrink: 0;
 }
 
 .toolbar-section-badge {
   font-family: var(--font-mono);
-  font-size: 0.65rem;
+  font-size: 0.6rem;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: var(--text-muted);
-  background-color: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  padding: 2px 6px;
-  border-radius: 4px;
+  letter-spacing: 0.04em;
+  color: #71717a;
+  padding: 0 3px;
   user-select: none;
   display: inline-flex;
   align-items: center;
-  gap: 3px;
+  gap: 2px;
+  opacity: 0.8;
 }
 
 .toolbar-group {
   display: inline-flex;
   align-items: center;
-  gap: 3px;
-  flex-wrap: wrap;
+  gap: 2px;
+  flex-wrap: nowrap;
 }
 
 .toolbar-group-divider {
   width: 1px;
-  height: 16px;
-  background-color: var(--border-card);
-  margin: 0 3px;
+  height: 14px;
+  background-color: rgba(255, 255, 255, 0.08);
+  margin: 0 2px;
 }
 
 .toolbar-btn {
   background-color: #141418;
-  border: 1px solid var(--border-card);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 4px;
-  padding: 3.5px 7.5px;
+  padding: 3px 6.5px;
   font-family: var(--font-mono);
-  font-size: 0.725rem;
-  color: var(--text-secondary);
+  font-size: 0.7rem;
+  color: #d4d4d8;
   cursor: pointer;
   transition: all 0.15s ease;
   display: inline-flex;
   align-items: center;
-  gap: 4px;
+  gap: 3.5px;
   white-space: nowrap;
   user-select: none;
+  flex-shrink: 0;
 }
 
 .toolbar-btn:hover {
   background-color: #22222a;
   color: #ffffff;
-  border-color: var(--border-card-hover);
+  border-color: rgba(255, 255, 255, 0.25);
   transform: translateY(-1px);
 }
 
@@ -980,38 +1030,133 @@ textarea.form-field-input:focus {
   transform: translateY(0);
 }
 
-.toolbar-btn.btn-accent {
-  background-color: rgba(80, 227, 194, 0.1);
-  border-color: rgba(80, 227, 194, 0.3);
-  color: var(--accent-cyan);
-  font-weight: 600;
+/* Auto Format Special Glow */
+.toolbar-btn.btn-autoformat-glow {
+  background: linear-gradient(
+    135deg,
+    rgba(16, 185, 129, 0.15),
+    rgba(6, 182, 212, 0.15)
+  );
+  border-color: rgba(16, 185, 129, 0.45);
+  color: #34d399;
+  font-weight: 700;
+  box-shadow: 0 0 10px rgba(16, 185, 129, 0.1);
 }
 
-.toolbar-btn.btn-accent:hover {
-  background-color: rgba(80, 227, 194, 0.2);
+.toolbar-btn.btn-autoformat-glow:hover {
+  background: linear-gradient(
+    135deg,
+    rgba(16, 185, 129, 0.3),
+    rgba(6, 182, 212, 0.3)
+  );
   color: #ffffff;
+  border-color: #34d399;
+  box-shadow: 0 0 14px rgba(16, 185, 129, 0.25);
 }
 
-.toolbar-btn.btn-primary-tool {
+.toolbar-btn.btn-beautify {
   background-color: rgba(0, 112, 243, 0.12);
   border-color: rgba(0, 112, 243, 0.35);
   color: #60a5fa;
   font-weight: 600;
 }
 
-.toolbar-btn.btn-primary-tool:hover {
+.toolbar-btn.btn-beautify:hover {
   background-color: rgba(0, 112, 243, 0.25);
   color: #ffffff;
 }
 
-.toolbar-btn.btn-warning-tool {
-  background-color: rgba(245, 158, 11, 0.12);
-  border-color: rgba(245, 158, 11, 0.35);
-  color: #fbbf24;
+/* Terminal CLI Accent Buttons */
+.toolbar-btn.btn-cli-routeros {
+  background-color: rgba(192, 132, 252, 0.08);
+  border-color: rgba(192, 132, 252, 0.3);
+  color: #c084fc;
+  font-weight: 600;
 }
 
-.toolbar-btn.btn-warning-tool:hover {
-  background-color: rgba(245, 158, 11, 0.25);
+.toolbar-btn.btn-cli-routeros:hover {
+  background-color: rgba(192, 132, 252, 0.2);
+  color: #ffffff;
+  border-color: #c084fc;
+}
+
+.toolbar-btn.btn-cli-bash {
+  background-color: rgba(251, 146, 60, 0.08);
+  border-color: rgba(251, 146, 60, 0.3);
+  color: #fb923c;
+}
+
+.toolbar-btn.btn-cli-bash:hover {
+  background-color: rgba(251, 146, 60, 0.2);
+  color: #ffffff;
+  border-color: #fb923c;
+}
+
+.toolbar-btn.btn-cli-json {
+  background-color: rgba(56, 189, 248, 0.08);
+  border-color: rgba(56, 189, 248, 0.3);
+  color: #38bdf8;
+}
+
+.toolbar-btn.btn-cli-json:hover {
+  background-color: rgba(56, 189, 248, 0.2);
+  color: #ffffff;
+  border-color: #38bdf8;
+}
+
+/* Callout Color Accent Buttons */
+.toolbar-btn.btn-callout-note {
+  color: #60a5fa;
+  background-color: rgba(96, 165, 250, 0.08);
+  border-color: rgba(96, 165, 250, 0.25);
+}
+
+.toolbar-btn.btn-callout-note:hover {
+  background-color: rgba(96, 165, 250, 0.2);
+  color: #ffffff;
+}
+
+.toolbar-btn.btn-callout-tip {
+  color: #34d399;
+  background-color: rgba(52, 211, 153, 0.08);
+  border-color: rgba(52, 211, 153, 0.25);
+}
+
+.toolbar-btn.btn-callout-tip:hover {
+  background-color: rgba(52, 211, 153, 0.2);
+  color: #ffffff;
+}
+
+.toolbar-btn.btn-callout-warn {
+  color: #fbbf24;
+  background-color: rgba(251, 191, 36, 0.08);
+  border-color: rgba(251, 191, 36, 0.25);
+}
+
+.toolbar-btn.btn-callout-warn:hover {
+  background-color: rgba(251, 191, 36, 0.2);
+  color: #ffffff;
+}
+
+.toolbar-btn.btn-callout-danger {
+  color: #f87171;
+  background-color: rgba(248, 113, 113, 0.08);
+  border-color: rgba(248, 113, 113, 0.25);
+}
+
+.toolbar-btn.btn-callout-danger:hover {
+  background-color: rgba(248, 113, 113, 0.2);
+  color: #ffffff;
+}
+
+.toolbar-btn.btn-callout-success {
+  color: #50e3c2;
+  background-color: rgba(80, 227, 194, 0.08);
+  border-color: rgba(80, 227, 194, 0.25);
+}
+
+.toolbar-btn.btn-callout-success:hover {
+  background-color: rgba(80, 227, 194, 0.2);
   color: #ffffff;
 }
 
@@ -1791,22 +1936,37 @@ textarea.form-field-input:focus {
 }
 
 @media (max-width: 1024px) {
+  /* Hide Top Navbar completely on Mobile & Tablet */
+  .admin-top-nav {
+    display: none !important;
+  }
+
+  /* Full height app layout without top margin */
+  .admin-app-layout {
+    height: 100vh !important;
+    height: 100dvh !important;
+    margin-top: 0 !important;
+  }
+
+  /* Hide Vertical Sidebar on Mobile & Tablet */
   .admin-vertical-sidebar {
-    display: none;
+    display: none !important;
   }
 
   .admin-main-canvas {
-    padding: 1.25rem 1rem 5rem 1rem;
+    padding: 1.25rem 1rem 5.5rem 1rem;
+    width: 100%;
   }
 
+  /* Floating Bottom Navigation Dock */
   .admin-floating-bottom-nav {
     display: block;
     position: fixed;
     bottom: 0;
     left: 0;
     right: 0;
-    height: 60px;
-    background-color: rgba(6, 6, 8, 0.92);
+    height: 64px;
+    background-color: rgba(6, 6, 8, 0.94);
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
     border-top: 1px solid var(--border-card);
@@ -1815,25 +1975,58 @@ textarea.form-field-input:focus {
 
   .floating-nav-container {
     height: 100%;
+    max-width: 960px;
+    margin: 0 auto;
     display: flex;
     align-items: center;
     justify-content: space-around;
-    padding: 0 0.5rem;
+    padding: 0 0.75rem;
   }
 
   .floating-bottom-btn {
     background: transparent;
     border: none;
     color: var(--text-muted);
-    padding: 0.5rem;
+    padding: 0.35rem 0.65rem;
     position: relative;
     cursor: pointer;
     border-radius: 8px;
-    transition: color 0.15s ease;
+    transition:
+      color 0.15s ease,
+      background-color 0.15s ease;
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    text-decoration: none;
+    user-select: none;
+  }
+
+  .floating-bottom-btn:hover {
+    color: #ffffff;
+    background-color: rgba(255, 255, 255, 0.04);
   }
 
   .floating-bottom-btn.active {
     color: var(--accent-cyan);
+  }
+
+  .floating-bottom-btn.floating-btn-logout {
+    color: #f87171;
+  }
+
+  .floating-bottom-btn.floating-btn-logout:hover,
+  .floating-bottom-btn.floating-btn-logout:active {
+    color: #ef4444;
+    background-color: rgba(239, 68, 68, 0.12);
+  }
+
+  .floating-btn-icon-wrapper {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
   }
 
   .floating-btn-icon {
@@ -1841,16 +2034,53 @@ textarea.form-field-input:focus {
     height: 20px;
   }
 
+  .floating-btn-label {
+    font-size: 0.675rem;
+    font-weight: 600;
+    line-height: 1;
+    letter-spacing: -0.01em;
+    white-space: nowrap;
+    transition: color 0.15s ease;
+  }
+
+  .floating-bottom-btn.active .floating-btn-label {
+    color: var(--accent-cyan);
+    font-weight: 700;
+  }
+
+  .floating-bottom-btn.floating-btn-logout .floating-btn-label {
+    color: #f87171;
+  }
+
   .floating-counter-badge {
     position: absolute;
-    top: 2px;
-    right: 2px;
+    top: -4px;
+    right: -8px;
     font-family: var(--font-mono);
-    font-size: 0.6rem;
+    font-size: 0.575rem;
     font-weight: 700;
     padding: 0 4px;
     background-color: rgba(80, 227, 194, 0.2);
     color: var(--accent-cyan);
     border-radius: 9999px;
+  }
+}
+
+@media (max-width: 640px) {
+  .admin-floating-bottom-nav {
+    height: 58px;
+  }
+
+  .floating-bottom-btn {
+    padding: 0.45rem;
+  }
+
+  .floating-btn-label {
+    display: none;
+  }
+
+  .floating-counter-badge {
+    top: 0px;
+    right: -2px;
   }
 }

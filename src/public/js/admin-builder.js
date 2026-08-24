@@ -1578,126 +1578,135 @@ function renderMaterialsSection() {
                     <!-- Hidden JSON File Input for Material Upload -->
                     <input type="file" id="import-material-json-input" accept=".json,application/json" style="display: none;">
 
-                    <!-- Comprehensive Studio Toolbar -->
-                    <div class="editor-quick-toolbar" id="material-editor-toolbar" style="border-radius: 8px 8px 0 0;">
-                        <!-- Group 1: Auto Format & Beautify -->
-                        <div class="toolbar-group">
-                            <button type="button" class="toolbar-btn btn-accent" onclick="window.autoFormatMaterialContent()" title="Konversi otomatis teks / markdown / perintah CLI menjadi format HTML yang rapi">
-                                <i data-lucide="sparkles" style="width: 12px; height: 12px;"></i>
-                                <span>Auto Format</span>
-                            </button>
-                            <button type="button" class="toolbar-btn btn-primary-tool" onclick="window.formatHtmlContent()" title="Rapikan indentasi dan baris kode HTML">
-                                <i data-lucide="align-left" style="width: 12px; height: 12px;"></i>
-                                <span>Rapikan HTML</span>
-                            </button>
+                    <!-- Modular 2-Tier Compact Studio Toolbar -->
+                    <div class="editor-toolbar-container" id="material-editor-toolbar">
+                        <!-- TIER 1: Auto Format, Headings, Text Formatting, Lists & Document Utilities -->
+                        <div class="toolbar-tier toolbar-tier-primary">
+                            <div class="toolbar-tier-left">
+                                <!-- Pill 1: Smart Automations -->
+                                <div class="toolbar-pill-group">
+                                    <button type="button" class="toolbar-btn btn-autoformat-glow" onclick="window.autoFormatMaterialContent()" title="Konversi otomatis teks / Markdown / baris CLI menjadi format HTML yang rapi">
+                                        <i data-lucide="sparkles" style="width: 12px; height: 12px;"></i>
+                                        <span>Auto Format</span>
+                                    </button>
+                                    <button type="button" class="toolbar-btn btn-beautify" onclick="window.formatHtmlContent()" title="Rapikan indentasi dan penataan kode HTML">
+                                        <i data-lucide="align-left" style="width: 12px; height: 12px;"></i>
+                                        <span>Rapikan</span>
+                                    </button>
+                                </div>
+
+                                <!-- Pill 2: Headings -->
+                                <div class="toolbar-pill-group">
+                                    <span class="toolbar-section-badge"><i data-lucide="heading" style="width: 10px; height: 10px;"></i> JUDUL</span>
+                                    <button type="button" class="toolbar-btn" onclick="window.insertMaterialSnippet('h2')" title="Heading 2 (Judul Bab)">H2</button>
+                                    <button type="button" class="toolbar-btn" onclick="window.insertMaterialSnippet('h3')" title="Heading 3 (Sub-Bab)">H3</button>
+                                    <button type="button" class="toolbar-btn" onclick="window.insertMaterialSnippet('h4')" title="Heading 4 (Poin)">H4</button>
+                                    <button type="button" class="toolbar-btn" onclick="window.insertMaterialSnippet('p')" title="Paragraf Teks">¶ P</button>
+                                </div>
+
+                                <!-- Pill 3: Typography Formatting -->
+                                <div class="toolbar-pill-group">
+                                    <span class="toolbar-section-badge"><i data-lucide="type" style="width: 10px; height: 10px;"></i> TEKS</span>
+                                    <button type="button" class="toolbar-btn" onclick="window.insertMaterialSnippet('bold')" title="Teks Tebal (Bold)"><b>B</b></button>
+                                    <button type="button" class="toolbar-btn" onclick="window.insertMaterialSnippet('italic')" title="Teks Miring (Italic)"><i>I</i></button>
+                                    <button type="button" class="toolbar-btn" onclick="window.insertMaterialSnippet('underline')" title="Garis Bawah (Underline)"><u>U</u></button>
+                                    <button type="button" class="toolbar-btn" onclick="window.insertMaterialSnippet('strike')" title="Teks Coret (Strikethrough)"><s>S</s></button>
+                                    <button type="button" class="toolbar-btn" onclick="window.insertMaterialSnippet('mark')" title="Teks Highlight (Marker)">Mark</button>
+                                    <button type="button" class="toolbar-btn" onclick="window.insertMaterialSnippet('code')" title="Inline Code">&#96;Code&#96;</button>
+                                    <button type="button" class="toolbar-btn" onclick="window.insertMaterialSnippet('kbd')" title="Tombol Keyboard">[Kbd]</button>
+                                    <button type="button" class="toolbar-btn" onclick="window.insertMaterialSnippet('hr')" title="Garis Pembatas (Divider)">── HR</button>
+                                </div>
+
+                                <!-- Pill 4: Lists & Tasks -->
+                                <div class="toolbar-pill-group">
+                                    <span class="toolbar-section-badge"><i data-lucide="list" style="width: 10px; height: 10px;"></i> LIST</span>
+                                    <button type="button" class="toolbar-btn" onclick="window.insertMaterialSnippet('ul')" title="Daftar Poin (Bullet List)">• List</button>
+                                    <button type="button" class="toolbar-btn" onclick="window.insertMaterialSnippet('ol')" title="Daftar Berurutan (Numbered List)">1. List</button>
+                                    <button type="button" class="toolbar-btn" onclick="window.insertMaterialSnippet('checklist')" title="Daftar Checklist (Task List)">☑ Task</button>
+                                </div>
+                            </div>
+
+                            <!-- Pill 5: Right Utility Actions -->
+                            <div class="toolbar-tier-right">
+                                <div class="toolbar-pill-group">
+                                    <button type="button" class="toolbar-btn" onclick="window.copyMaterialHtml()" title="Salin seluruh kode HTML materi ke clipboard">
+                                        <i data-lucide="copy" style="width: 12px; height: 12px;"></i>
+                                        <span>Salin</span>
+                                    </button>
+                                    <button type="button" class="toolbar-btn" onclick="window.clearMaterialEditor()" title="Kosongkan isi teks editor">
+                                        <i data-lucide="trash-2" style="width: 12px; height: 12px;"></i>
+                                        <span>Bersih</span>
+                                    </button>
+                                    <button type="button" class="toolbar-btn" onclick="downloadJsonTemplate()" title="Unduh Template JSON Materi beserta Petunjuk Penggunaan Lengkap">
+                                        <i data-lucide="download" style="width: 12px; height: 12px;"></i>
+                                        <span>Template</span>
+                                    </button>
+                                    <button type="button" class="toolbar-btn" onclick="document.getElementById('import-material-json-input').click()" title="Upload Materi dari Berkas JSON">
+                                        <i data-lucide="upload" style="width: 12px; height: 12px;"></i>
+                                        <span>Upload</span>
+                                    </button>
+                                </div>
+                            </div>
                         </div>
 
-                        <div class="toolbar-group-divider" aria-hidden="true"></div>
+                        <!-- TIER 2: Terminals, Callouts & Rich Interactive Components -->
+                        <div class="toolbar-tier toolbar-tier-secondary">
+                            <!-- Pill 1: Terminal & CLI Presets -->
+                            <div class="toolbar-pill-group">
+                                <span class="toolbar-section-badge"><i data-lucide="terminal" style="width: 10px; height: 10px;"></i> CLI</span>
+                                <button type="button" class="toolbar-btn btn-cli-routeros" onclick="window.insertMaterialSnippet('cli_routeros')" title="Blok Terminal MikroTik RouterOS Lengkap">
+                                    <i data-lucide="terminal" style="width: 12px; height: 12px;"></i>
+                                    <span>RouterOS</span>
+                                </button>
+                                <button type="button" class="toolbar-btn btn-cli-bash" onclick="window.insertMaterialSnippet('cli_bash')" title="Blok Terminal Linux Bash">
+                                    <i data-lucide="terminal" style="width: 12px; height: 12px;"></i>
+                                    <span>Bash</span>
+                                </button>
+                                <button type="button" class="toolbar-btn btn-cli-json" onclick="window.insertMaterialSnippet('cli_json')" title="Blok Kode Konfigurasi JSON">
+                                    <i data-lucide="file-code" style="width: 12px; height: 12px;"></i>
+                                    <span>JSON</span>
+                                </button>
+                            </div>
 
-                        <!-- Group 2: Headings & Typography -->
-                        <div class="toolbar-group">
-                            <button type="button" class="toolbar-btn" onclick="window.insertMaterialSnippet('h2')" title="Heading 2 (Judul Bab)">H2</button>
-                            <button type="button" class="toolbar-btn" onclick="window.insertMaterialSnippet('h3')" title="Heading 3 (Sub-Bab)">H3</button>
-                            <button type="button" class="toolbar-btn" onclick="window.insertMaterialSnippet('h4')" title="Heading 4 (Poin Penting)">H4</button>
-                            <button type="button" class="toolbar-btn" onclick="window.insertMaterialSnippet('p')" title="Paragraf Teks">¶ P</button>
-                            <button type="button" class="toolbar-btn" onclick="window.insertMaterialSnippet('bold')" title="Teks Tebal (Bold)"><b>B</b></button>
-                            <button type="button" class="toolbar-btn" onclick="window.insertMaterialSnippet('italic')" title="Teks Miring (Italic)"><i>I</i></button>
-                            <button type="button" class="toolbar-btn" onclick="window.insertMaterialSnippet('underline')" title="Garis Bawah (Underline)"><u>U</u></button>
-                            <button type="button" class="toolbar-btn" onclick="window.insertMaterialSnippet('strike')" title="Teks Coret (Strikethrough)"><s>S</s></button>
-                            <button type="button" class="toolbar-btn" onclick="window.insertMaterialSnippet('mark')" title="Teks Highlight (Marker)">Mark</button>
-                            <button type="button" class="toolbar-btn" onclick="window.insertMaterialSnippet('code')" title="Inline Code">&#96;Code&#96;</button>
-                            <button type="button" class="toolbar-btn" onclick="window.insertMaterialSnippet('kbd')" title="Tombol Keyboard">[Kbd]</button>
-                            <button type="button" class="toolbar-btn" onclick="window.insertMaterialSnippet('hr')" title="Garis Pembatas (Divider)">── HR</button>
-                        </div>
+                            <!-- Pill 2: Callout Boxes -->
+                            <div class="toolbar-pill-group">
+                                <span class="toolbar-section-badge"><i data-lucide="alert-circle" style="width: 10px; height: 10px;"></i> KOTAK</span>
+                                <button type="button" class="toolbar-btn btn-callout-note" onclick="window.insertMaterialSnippet('callout_note')" title="Kotak Catatan / Info (Biru)">💡 Info</button>
+                                <button type="button" class="toolbar-btn btn-callout-tip" onclick="window.insertMaterialSnippet('callout_tip')" title="Kotak Tips & Trik (Hijau)">✨ Tips</button>
+                                <button type="button" class="toolbar-btn btn-callout-warn" onclick="window.insertMaterialSnippet('callout_warning')" title="Kotak Peringatan (Kuning)">⚠️ Peringatan</button>
+                                <button type="button" class="toolbar-btn btn-callout-danger" onclick="window.insertMaterialSnippet('callout_danger')" title="Kotak Bahaya / Kritis (Merah)">🚨 Bahaya</button>
+                                <button type="button" class="toolbar-btn btn-callout-success" onclick="window.insertMaterialSnippet('callout_success')" title="Kotak Best Practice (Emerald)">✅ Best</button>
+                                <button type="button" class="toolbar-btn" onclick="window.insertMaterialSnippet('quote')" title="Kutipan Referensi (Quote)">💬 Kutipan</button>
+                            </div>
 
-                        <div class="toolbar-group-divider" aria-hidden="true"></div>
-
-                        <!-- Group 3: Lists & Tasks -->
-                        <div class="toolbar-group">
-                            <button type="button" class="toolbar-btn" onclick="window.insertMaterialSnippet('ul')" title="Daftar Poin (Bullet List)">• List</button>
-                            <button type="button" class="toolbar-btn" onclick="window.insertMaterialSnippet('ol')" title="Daftar Berurutan (Numbered List)">1. List</button>
-                            <button type="button" class="toolbar-btn" onclick="window.insertMaterialSnippet('checklist')" title="Daftar Checklist (Task List)">☑ Task</button>
-                            <button type="button" class="toolbar-btn" onclick="window.insertMaterialSnippet('dl')" title="Daftar Parameter / Key-Value">📋 Key-Val</button>
-                        </div>
-
-                        <div class="toolbar-group-divider" aria-hidden="true"></div>
-
-                        <!-- Group 4: Code & Terminal CLI Blocks -->
-                        <div class="toolbar-group">
-                            <button type="button" class="toolbar-btn btn-primary-tool" onclick="window.insertMaterialSnippet('cli_routeros')" title="Blok Terminal MikroTik RouterOS Lengkap">
-                                <i data-lucide="terminal" style="width: 12px; height: 12px;"></i>
-                                <span>RouterOS CLI</span>
-                            </button>
-                            <button type="button" class="toolbar-btn" onclick="window.insertMaterialSnippet('cli_bash')" title="Blok Terminal Linux Bash">
-                                <i data-lucide="terminal" style="width: 12px; height: 12px;"></i>
-                                <span>Linux Bash</span>
-                            </button>
-                            <button type="button" class="toolbar-btn" onclick="window.insertMaterialSnippet('cli_json')" title="Blok Kode Konfigurasi JSON">
-                                <i data-lucide="file-code" style="width: 12px; height: 12px;"></i>
-                                <span>JSON</span>
-                            </button>
-                        </div>
-
-                        <div class="toolbar-group-divider" aria-hidden="true"></div>
-
-                        <!-- Group 5: Callout Alerts -->
-                        <div class="toolbar-group">
-                            <button type="button" class="toolbar-btn" onclick="window.insertMaterialSnippet('callout_note')" title="Kotak Catatan / Info (Biru)">💡 Info</button>
-                            <button type="button" class="toolbar-btn btn-accent" onclick="window.insertMaterialSnippet('callout_tip')" title="Kotak Tips & Trik (Hijau)">✨ Tips</button>
-                            <button type="button" class="toolbar-btn btn-warning-tool" onclick="window.insertMaterialSnippet('callout_warning')" title="Kotak Peringatan (Kuning)">⚠️ Peringatan</button>
-                            <button type="button" class="toolbar-btn" onclick="window.insertMaterialSnippet('callout_danger')" title="Kotak Bahaya / Kritis (Merah)" style="color: #f87171;">🚨 Bahaya</button>
-                            <button type="button" class="toolbar-btn" onclick="window.insertMaterialSnippet('callout_success')" title="Kotak Best Practice (Emerald)" style="color: #34d399;">✅ Best Practice</button>
-                            <button type="button" class="toolbar-btn" onclick="window.insertMaterialSnippet('quote')" title="Kutipan Referensi (Quote)">💬 Kutipan</button>
-                        </div>
-
-                        <div class="toolbar-group-divider" aria-hidden="true"></div>
-
-                        <!-- Group 6: Rich Interactive Components -->
-                        <div class="toolbar-group">
-                            <button type="button" class="toolbar-btn" onclick="window.insertMaterialSnippet('table')" title="Tabel Data Konfigurasi">
-                                <i data-lucide="table" style="width: 12px; height: 12px;"></i>
-                                <span>Tabel</span>
-                            </button>
-                            <button type="button" class="toolbar-btn" onclick="window.insertMaterialSnippet('step_guide')" title="Langkah Panduan Bertahap (Step 1, 2, 3)">
-                                <i data-lucide="list-ordered" style="width: 12px; height: 12px;"></i>
-                                <span>Step Guide</span>
-                            </button>
-                            <button type="button" class="toolbar-btn" onclick="window.insertMaterialSnippet('network_card')" title="Kartu Spesifikasi Jaringan (IP, Subnet, DNS)">
-                                <i data-lucide="network" style="width: 12px; height: 12px;"></i>
-                                <span>Network Card</span>
-                            </button>
-                            <button type="button" class="toolbar-btn" onclick="window.insertMaterialSnippet('details')" title="Kotak Buka-Tutup (Accordion FAQ)">
-                                <i data-lucide="help-circle" style="width: 12px; height: 12px;"></i>
-                                <span>Accordion</span>
-                            </button>
-                            <button type="button" class="toolbar-btn" onclick="window.insertMaterialSnippet('figure')" title="Gambar dengan Keterangan / Caption">
-                                <i data-lucide="image" style="width: 12px; height: 12px;"></i>
-                                <span>Gambar</span>
-                            </button>
-                            <button type="button" class="toolbar-btn" onclick="window.insertMaterialSnippet('link')" title="Tautan / Link Eksternal">
-                                <i data-lucide="link" style="width: 12px; height: 12px;"></i>
-                                <span>Link</span>
-                            </button>
-                        </div>
-
-                        <!-- Group 7: Utility Right Actions -->
-                        <div style="margin-left: auto; display: flex; align-items: center; gap: 4px;">
-                            <button type="button" class="toolbar-btn" onclick="window.copyMaterialHtml()" title="Salin seluruh kode HTML materi ke clipboard">
-                                <i data-lucide="copy" style="width: 12px; height: 12px;"></i>
-                                <span>Salin HTML</span>
-                            </button>
-                            <button type="button" class="toolbar-btn" onclick="window.clearMaterialEditor()" title="Kosongkan isi teks editor">
-                                <i data-lucide="trash-2" style="width: 12px; height: 12px;"></i>
-                                <span>Bersihkan</span>
-                            </button>
-                            <button type="button" class="toolbar-btn" onclick="downloadJsonTemplate()" title="Unduh Template JSON Materi">
-                                <i data-lucide="download" style="width: 12px; height: 12px;"></i>
-                                <span>Template JSON</span>
-                            </button>
-                            <button type="button" class="toolbar-btn" onclick="document.getElementById('import-material-json-input').click()" title="Upload Materi dari Berkas JSON">
-                                <i data-lucide="upload" style="width: 12px; height: 12px;"></i>
-                                <span>Upload JSON</span>
-                            </button>
+                            <!-- Pill 3: Rich Interactive Components -->
+                            <div class="toolbar-pill-group">
+                                <span class="toolbar-section-badge"><i data-lucide="layout" style="width: 10px; height: 10px;"></i> KOMPONEN</span>
+                                <button type="button" class="toolbar-btn" onclick="window.insertMaterialSnippet('table')" title="Tabel Data Konfigurasi">
+                                    <i data-lucide="table" style="width: 12px; height: 12px;"></i>
+                                    <span>Tabel</span>
+                                </button>
+                                <button type="button" class="toolbar-btn" onclick="window.insertMaterialSnippet('step_guide')" title="Langkah Panduan Bertahap (Step 1, 2, 3)">
+                                    <i data-lucide="list-ordered" style="width: 12px; height: 12px;"></i>
+                                    <span>Steps</span>
+                                </button>
+                                <button type="button" class="toolbar-btn" onclick="window.insertMaterialSnippet('network_card')" title="Kartu Spesifikasi Jaringan (IP, Subnet, DNS)">
+                                    <i data-lucide="network" style="width: 12px; height: 12px;"></i>
+                                    <span>IP Card</span>
+                                </button>
+                                <button type="button" class="toolbar-btn" onclick="window.insertMaterialSnippet('details')" title="Kotak Buka-Tutup (Accordion FAQ)">
+                                    <i data-lucide="help-circle" style="width: 12px; height: 12px;"></i>
+                                    <span>FAQ</span>
+                                </button>
+                                <button type="button" class="toolbar-btn" onclick="window.insertMaterialSnippet('figure')" title="Gambar dengan Keterangan / Caption">
+                                    <i data-lucide="image" style="width: 12px; height: 12px;"></i>
+                                    <span>Gambar</span>
+                                </button>
+                                <button type="button" class="toolbar-btn" onclick="window.insertMaterialSnippet('link')" title="Tautan / Link Eksternal">
+                                    <i data-lucide="link" style="width: 12px; height: 12px;"></i>
+                                    <span>Link</span>
+                                </button>
+                            </div>
                         </div>
                     </div>
 
