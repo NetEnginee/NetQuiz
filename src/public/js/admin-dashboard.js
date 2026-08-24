@@ -3,8 +3,168 @@
 // Global function to trigger template.json download with rich demo and complete toolbar guide
 function downloadJsonTemplate() {
   const templateData = {
+    title: "Panduan Konfigurasi Dasar & Lanjutan MikroTik RouterOS",
     title: "",
     category: "Routing",
+    difficulty: "Sedang",
+    content: `<h2>1. Pengantar & Konsep Routing RouterOS</h2>
+<p>Routing adalah mekanisme krusial pada MikroTik RouterOS untuk meneruskan paket data antar segmen network yang berbeda. Panduan ini mencakup konfigurasi IP Address, Default Gateway, Firewall NAT Masquerade, serta proteksi keamanan router.</p>
+
+<div class="material-callout-quote callout-note">
+  <div class="callout-header">💡 CATATAN & INFORMASI</div>
+  <p>Sebelum memulai konfigurasi, pastikan router sudah terhubung ke jaringan internet pada port WAN (misal: <code>ether1</code>) dan kabel LAN terpasang pada port lokal (misal: <code>ether2</code>).</p>
+</div>
+
+<h3>Parameter Spesifikasi Jaringan Lab</h3>
+<div class="network-spec-card">
+  <div class="network-spec-title">🌐 SPESIFIKASI JARINGAN // TOPOLOGI</div>
+  <div class="network-grid">
+    <div class="network-item">
+      <div class="network-label">IP Address LAN</div>
+      <div class="network-value">192.168.88.1/24</div>
+    </div>
+    <div class="network-item">
+      <div class="network-label">Gateway ISP / WAN</div>
+      <div class="network-value">192.168.1.1</div>
+    </div>
+    <div class="network-item">
+      <div class="network-label">DNS Resolvers</div>
+      <div class="network-value">1.1.1.1, 8.8.8.8</div>
+    </div>
+    <div class="network-item">
+      <div class="network-label">Interface Mapping</div>
+      <div class="network-value">ether1 (WAN), ether2 (LAN)</div>
+    </div>
+  </div>
+</div>
+
+<h3>Langkah Konfigurasi Bertahap</h3>
+<div class="step-guide-container">
+  <div class="step-item">
+    <div class="step-number">1</div>
+    <div class="step-content">
+      <div class="step-title">Pengaturan IP Address Interface</div>
+      <p>Tambahkan alamat IP pada interface LAN agar perangkat klien dapat terhubung dan menggunakan gateway.</p>
+    </div>
+  </div>
+  <div class="step-item">
+    <div class="step-number">2</div>
+    <div class="step-content">
+      <div class="step-title">Konfigurasi Default Route (Gateway)</div>
+      <p>Buat rute default dengan <code>dst-address=0.0.0.0/0</code> mengarah ke IP Gateway modem ISP.</p>
+    </div>
+  </div>
+  <div class="step-item">
+    <div class="step-number">3</div>
+    <div class="step-content">
+      <div class="step-title">Penerapan NAT Masquerade</div>
+      <p>Aktifkan rule Source NAT agar semua IP privat lokal ditranslasikan ke IP publik saat menuju internet.</p>
+    </div>
+  </div>
+</div>
+
+<h3>Script Perintah CLI RouterOS</h3>
+<div class="terminal-block-wrap">
+  <div class="terminal-block-header">
+    <div class="terminal-dots-group">
+      <span class="terminal-dot dot-red"></span>
+      <span class="terminal-dot dot-yellow"></span>
+      <span class="terminal-dot dot-green"></span>
+    </div>
+    <span class="terminal-title-label">TERMINAL CLI // ROUTEROS</span>
+    <button type="button" class="btn-copy-code" onclick="copySnippetCode(this)">
+      <i data-lucide="copy" style="width: 11px; height: 11px;"></i>
+      <span>Salin</span>
+    </button>
+  </div>
+  <div class="terminal-block-body">
+    <pre><code># 1. Konfigurasi IP Address
+/ip address
+add address=192.168.88.1/24 interface=ether2 comment="LAN Subnet"
+add address=192.168.1.50/24 interface=ether1 comment="WAN ISP"
+
+# 2. Tambah Default Route
+/ip route
+add dst-address=0.0.0.0/0 gateway=192.168.1.1 comment="Default Gateway"
+
+# 3. Konfigurasi DNS Server
+/ip dns
+set servers=1.1.1.1,8.8.8.8 allow-remote-requests=yes
+
+# 4. NAT Masquerade
+/ip firewall nat
+add chain=srcnat out-interface=ether1 action=masquerade comment="NAT Internet"</code></pre>
+  </div>
+</div>
+
+<div class="material-callout-quote callout-tip">
+  <div class="callout-header">✨ TIPS & TRIK</div>
+  <p>Gunakan tombol <kbd>Tab</kbd> dua kali untuk auto-complete perintah pada terminal CLI RouterOS, atau gunakan tombol <kbd>Ctrl</kbd> + <kbd>C</kbd> untuk membatalkan perintah yang sedang berjalan.</p>
+</div>
+
+<div class="material-callout-quote callout-warning">
+  <div class="callout-header">⚠️ PERHATIAN / PERINGATAN</div>
+  <p>Pastikan opsi <code>allow-remote-requests=yes</code> pada DNS dilindungi oleh firewall rule input agar router tidak menjadi sasaran DNS Amplification Attack dari internet publik.</p>
+</div>
+
+<div class="material-callout-quote callout-danger">
+  <div class="callout-header">🚨 PERINGATAN KRITIS</div>
+  <p>Jangan pernah mengubah rule <code>/ip firewall filter</code> pada remote Winbox session tanpa menyalakan <strong>Safe Mode</strong> (Shortcut: <kbd>Ctrl</kbd> + <kbd>X</kbd>)!</p>
+</div>
+
+<h3>Tabel Perbandingan Opsi NAT</h3>
+<div class="material-table-wrapper">
+  <table class="material-data-table">
+    <thead>
+      <tr>
+        <th>Action</th>
+        <th>Chain</th>
+        <th>Penggunaan Ideal</th>
+        <th>Keterangan</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>masquerade</code></td>
+        <td><code>srcnat</code></td>
+        <td>Koneksi ISP Dinamis (DHCP/PPPoE)</td>
+        <td>Otomatis mendeteksi IP keluar</td>
+      </tr>
+      <tr>
+        <td><code>src-nat</code></td>
+        <td><code>srcnat</code></td>
+        <td>Koneksi ISP Statis / IP Publik Tetap</td>
+        <td>Lebih hemat resource CPU</td>
+      </tr>
+      <tr>
+        <td><code>dst-nat</code></td>
+        <td><code>dstnat</code></td>
+        <td>Port Forwarding ke Web Server lokal</td>
+        <td>Membuka akses dari internet ke server privat</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<h3>Checklist Verifikasi Konektivitas</h3>
+<ul class="task-list">
+  <li><input type="checkbox" checked disabled> Link Status ether1 dan ether2 menyala (R)</li>
+  <li><input type="checkbox" checked disabled> Ping dari router ke IP Gateway ISP (192.168.1.1) Berhasil</li>
+  <li><input type="checkbox" checked disabled> Ping dari router ke Domain internet (google.com) Berhasil</li>
+  <li><input type="checkbox" disabled> Klien lokal mendapatkan IP via DHCP dan bisa browsing</li>
+</ul>
+
+<div class="material-callout-quote callout-success">
+  <div class="callout-header">✅ BEST PRACTICE & HASIL</div>
+  <p>Konfigurasi dasar routing MikroTik telah selesai dan siap digunakan untuk kebutuhan lab maupun jaringan skala kantor.</p>
+</div>
+
+<details class="material-details">
+  <summary>🔍 Pertanyaan Umum (FAQ): Mengapa Klien Tidak Bisa Browsing Meskipun Ping IP Sukses?</summary>
+  <div class="material-details-body">
+    <p>Penyebab paling umum adalah setting DNS resolver klien belum aktif atau setting <code>allow-remote-requests=yes</code> pada router belum diaktifkan.</p>
+  </div>
+</details>`,
     difficulty: "Mudah",
     content: "",
     _panduan_dan_keterangan_toolbar: {

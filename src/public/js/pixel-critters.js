@@ -482,7 +482,10 @@
 
   // Engine Initializer: Single Cal/Adel strolling calmly along the bottom
   function initCrittersEngine() {
-    if (window.__pixelCrittersInitialized && document.getElementById("pixel-critters-bottom-runner")) {
+    if (
+      window.__pixelCrittersInitialized &&
+      document.getElementById("pixel-critters-bottom-runner")
+    ) {
       return;
     }
     window.__pixelCrittersInitialized = true;
@@ -498,7 +501,12 @@
     const cal = new PixelCritter(calConfig, container);
 
     function updateViewportWidth() {
-      return window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth || 360;
+      return (
+        window.innerWidth ||
+        document.documentElement.clientWidth ||
+        document.body.clientWidth ||
+        360
+      );
     }
 
     let screenWidth = updateViewportWidth();
