@@ -491,6 +491,18 @@ body {
   min-width: 0;
 }
 
+/* --- 1. Breadcrumb Wrappers & Hero Header --- */
+.home-breadcrumb-wrap,
+.quiz-breadcrumb-wrap,
+.learn-breadcrumb-wrap,
+.leaderboard-breadcrumb-wrap,
+.page-breadcrumb-wrap {
+  margin-bottom: 1.5rem;
+  width: 100%;
+  text-decoration: none !important;
+  border-bottom: none !important;
+}
+
 .hero-breadcrumb {
   font-family: var(--font-mono);
   font-size: 0.725rem;

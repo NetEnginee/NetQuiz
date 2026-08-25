@@ -11,17 +11,13 @@ require_once dirname(__DIR__) . '/templates/header.php';
 
 <div class="quiz-catalog-page-container">
 
-    <!-- 1. Hero & Breadcrumb Header -->
-    <section class="dashboard-hero-header">
-        <div class="hero-brand-group">
-            <div class="hero-title-area">
-                <?= renderBreadcrumb([
-                    ['label' => 'Student', 'url' => BASE_URL . '/'],
-                    ['label' => 'Kuis']
-                ]) ?>
-            </div>
-        </div>
-    </section>
+    <!-- 1. Breadcrumb Navigation -->
+    <div class="quiz-breadcrumb-wrap max-w-full overflow-hidden">
+        <?= renderBreadcrumb([
+            ['label' => 'Student', 'url' => BASE_URL . '/'],
+            ['label' => 'Kuis']
+        ]) ?>
+    </div>
 
     <!-- 2. Filter Bar: Difficulty Switcher -->
     <div class="quiz-filter-bar">

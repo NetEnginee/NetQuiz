@@ -36,20 +36,15 @@ $categoryThemes = [
 require_once dirname(__DIR__) . '/templates/header.php';
 ?>
 
-<!-- 1. Hero & Breadcrumb Header -->
-<section class="dashboard-hero-header">
-    <div class="hero-brand-group">
-        <div class="hero-title-area">
-            <?= renderBreadcrumb([
-                ['label' => 'Student', 'url' => BASE_URL . '/'],
-                ['label' => 'Materi', 'url' => BASE_URL . '/learn'],
-
-            ]) ?>
-        </div>
-    </div>
-</section>
-
 <div class="learn-page-container pt-2">
+
+    <!-- 1. Breadcrumb Navigation -->
+    <div class="learn-breadcrumb-wrap max-w-full overflow-hidden">
+        <?= renderBreadcrumb([
+            ['label' => 'Student', 'url' => BASE_URL . '/'],
+            ['label' => 'Materi', 'url' => BASE_URL . '/learn'],
+        ]) ?>
+    </div>
 
     <!-- 1. Category Filter Toolbar (Without Search) -->
     <div class="learn-toolbar-panel">
