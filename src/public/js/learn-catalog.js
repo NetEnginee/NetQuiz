@@ -11,18 +11,23 @@
 
       this.initDom();
       this.enhanceTerminalBlocks();
+      this.enhanceTableBlocks();
       this.bindEvents();
     }
 
     initDom() {
       this.filterTabs = Array.from(
-        document.querySelectorAll(".learn-segment-tab")
+        document.querySelectorAll(".learn-segment-tab"),
       );
-      this.cards = Array.from(document.querySelectorAll(".learn-material-card"));
+      this.cards = Array.from(
+        document.querySelectorAll(".learn-material-card"),
+      );
       this.sections = Array.from(
-        document.querySelectorAll(".learn-category-section")
+        document.querySelectorAll(".learn-category-section"),
       );
-      this.copyButtons = Array.from(document.querySelectorAll(".btn-copy-code"));
+      this.copyButtons = Array.from(
+        document.querySelectorAll(".btn-copy-code"),
+      );
 
       if (window.lucide) {
         window.lucide.createIcons();
@@ -67,7 +72,29 @@
       });
 
       // Re-query copy buttons after enhancement
-      this.copyButtons = Array.from(document.querySelectorAll(".btn-copy-code"));
+      this.copyButtons = Array.from(
+        document.querySelectorAll(".btn-copy-code"),
+      );
+    }
+
+    /**
+     * Wrap raw table blocks in article body with responsive horizontal-scrolling container
+     */
+    enhanceTableBlocks() {
+      const contentBody = document.querySelector(".material-content-body");
+      if (!contentBody) return;
+
+      const tables = Array.from(contentBody.querySelectorAll("table"));
+      tables.forEach((table) => {
+        table.classList.add("material-data-table");
+        // Skip if already wrapped in .material-table-wrapper
+        if (table.closest(".material-table-wrapper")) return;
+
+        const wrapper = document.createElement("div");
+        wrapper.className = "material-table-wrapper";
+        table.parentNode.insertBefore(wrapper, table);
+        wrapper.appendChild(table);
+      });
     }
 
     escapeHtml(text) {
@@ -100,7 +127,8 @@
         e.preventDefault();
         e.stopPropagation();
 
-        const targetId = btn.getAttribute("data-code-id") || btn.getAttribute("data-target");
+        const targetId =
+          btn.getAttribute("data-code-id") || btn.getAttribute("data-target");
         let codeText = "";
 
         if (targetId) {
@@ -108,7 +136,9 @@
           if (targetEl) codeText = targetEl.textContent;
         } else {
           const preOrBody =
-            btn.closest(".terminal-block-wrap")?.querySelector(".terminal-block-body") ||
+            btn
+              .closest(".terminal-block-wrap")
+              ?.querySelector(".terminal-block-body") ||
             btn.parentElement?.nextElementSibling;
           if (preOrBody) codeText = preOrBody.textContent;
         }
@@ -141,7 +171,9 @@
     applyFilters() {
       // Filter each card & section
       this.sections.forEach((section) => {
-        const secCat = (section.getAttribute("data-category") || "").toLowerCase();
+        const secCat = (
+          section.getAttribute("data-category") || ""
+        ).toLowerCase();
 
         const matchesCat =
           this.activeCategory === "all" ||

@@ -2803,6 +2803,18 @@ function renderMaterialsSection() {
       </article>
     `;
 
+    // Auto-wrap any raw table in preview if not already wrapped in .material-table-wrapper
+    const previewTables = previewRender.querySelectorAll(".material-content-body table");
+    previewTables.forEach((table) => {
+      table.classList.add("material-data-table");
+      if (!table.closest(".material-table-wrapper")) {
+        const wrapper = document.createElement("div");
+        wrapper.className = "material-table-wrapper";
+        table.parentNode.insertBefore(wrapper, table);
+        wrapper.appendChild(table);
+      }
+    });
+
     if (window.lucide) window.lucide.createIcons();
   }
 
