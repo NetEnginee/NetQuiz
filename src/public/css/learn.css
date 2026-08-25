@@ -201,6 +201,13 @@ svg.w-12,
    2. CATEGORY FILTER TOOLBAR & BREADCRUMB
    ========================================================================== */
 
+.learn-breadcrumb-wrap {
+  margin-bottom: 1.5rem;
+  width: 100%;
+  text-decoration: none !important;
+  border-bottom: none !important;
+}
+
 .hero-breadcrumb {
   font-family: var(--font-mono);
   font-size: 0.725rem;

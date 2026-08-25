@@ -30,17 +30,13 @@ require_once dirname(__DIR__) . "/templates/header.php";
 
 <div class="dashboard-viewport-wrapper">
 
-    <!-- 1. Hero & Breadcrumb Bar -->
-    <section class="dashboard-hero-header">
-        <div class="hero-brand-group">
-            <div class="hero-title-area">
-                <div class="hero-breadcrumb">
-                    <span>Student /</span>
-                    <span class="active-tag">Dashboard</span>
-                </div>
-            </div>
+    <!-- 1. Breadcrumb Navigation -->
+    <div class="home-breadcrumb-wrap max-w-full overflow-hidden">
+        <div class="hero-breadcrumb">
+            <span>Student /</span>
+            <span class="active-tag">Dashboard</span>
         </div>
-    </section>
+    </div>
 
     <!-- 2. Top 4 Metrics Grid (Vercel Dark Glow Cards with Watermarks) -->
     <section class="pixel-metrics-grid" aria-label="Ringkasan Statistik">
