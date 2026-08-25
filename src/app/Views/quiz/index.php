@@ -27,30 +27,30 @@ require_once dirname(__DIR__) . '/templates/header.php';
     <div class="quiz-filter-bar">
         <div class="filter-tabs-group">
             <span class="filter-label font-mono">Tingkat Kesulitan:</span>
-            <a href="<?= BASE_URL ?>/quiz?difficulty=all"
+            <button type="button"
                 class="quiz-segment-tab font-mono <?= $activeDifficulty === 'all' ? 'active' : '' ?>"
-                onclick="window.playPixelSound && window.playPixelSound('click');">
+                data-difficulty="all">
                 <span>Semua</span>
-            </a>
-            <a href="<?= BASE_URL ?>/quiz?difficulty=Mudah"
+            </button>
+            <button type="button"
                 class="quiz-segment-tab font-mono <?= $activeDifficulty === 'Mudah' ? 'active' : '' ?>"
-                onclick="window.playPixelSound && window.playPixelSound('click');">
+                data-difficulty="Mudah">
                 <span>Mudah</span>
-            </a>
-            <a href="<?= BASE_URL ?>/quiz?difficulty=Sedang"
+            </button>
+            <button type="button"
                 class="quiz-segment-tab font-mono <?= $activeDifficulty === 'Sedang' ? 'active' : '' ?>"
-                onclick="window.playPixelSound && window.playPixelSound('click');">
+                data-difficulty="Sedang">
                 <span>Sedang</span>
-            </a>
-            <a href="<?= BASE_URL ?>/quiz?difficulty=Sulit"
+            </button>
+            <button type="button"
                 class="quiz-segment-tab font-mono <?= $activeDifficulty === 'Sulit' ? 'active' : '' ?>"
-                onclick="window.playPixelSound && window.playPixelSound('click');">
+                data-difficulty="Sulit">
                 <span>Sulit</span>
-            </a>
+            </button>
         </div>
 
         <div class="font-mono text-xs text-zinc-500">
-            <span>Total: <strong class="text-zinc-200"><?= $totalQuizzesCount ?></strong> Kuis Tersedia</span>
+            <span>Total: <strong class="text-zinc-200" id="total-quizzes-count"><?= $totalQuizzesCount ?></strong> Kuis Tersedia</span>
         </div>
     </div>
 
@@ -77,13 +77,35 @@ require_once dirname(__DIR__) . '/templates/header.php';
             </div>
             <h3 class="empty-headline">Belum Ada Kuis</h3>
             <p class="empty-subtext">Paket kuis sedang dalam Layer 4, tunggu beberapa saat sampai tiba di Layer 7!</p>
-            <a href="<?= BASE_URL ?>/quiz?difficulty=all" class="empty-cta-link" onclick="window.playPixelSound && window.playPixelSound('click');">
+            <button type="button" class="empty-cta-link" id="btn-reset-quiz-filter" style="cursor: pointer; border: none; background: transparent;">
                 <span>⚡ Tampilkan Semua Kuis</span>
                 <span class="cta-arrow">→</span>
-            </a>
+            </button>
         </div>
     <?php else: ?>
-        <div class="space-y-10">
+        <!-- Dynamic Empty State for Realtime Filter (No matches) -->
+        <div id="quiz-filter-empty-state" class="pixel-empty-state empty-panel-full empty-theme-cyan" style="display: none;">
+            <span class="panel-crosshair corner-tl">+</span>
+            <span class="panel-crosshair corner-tr">+</span>
+            <span class="panel-crosshair corner-bl">+</span>
+            <span class="panel-crosshair corner-br">+</span>
+
+            <div class="empty-scene">
+                <div class="empty-main-icon">
+                    <svg class="w-10 h-10 pixelated" viewBox="0 0 16 16">
+                        <use href="#pixel-router"></use>
+                    </svg>
+                </div>
+            </div>
+            <h3 class="empty-headline">Tidak Ada Kuis Ditemukan</h3>
+            <p class="empty-subtext">Belum ada paket kuis dengan tingkat kesulitan ini.</p>
+            <button type="button" class="empty-cta-link" id="btn-reset-quiz-filter" style="cursor: pointer; border: none; background: transparent;">
+                <span>⚡ Tampilkan Semua Kuis</span>
+                <span class="cta-arrow">→</span>
+            </button>
+        </div>
+
+        <div class="space-y-10" id="quiz-sections-container">
             <?php foreach ($categorized as $categoryName => $quizzes): ?>
                 <?php if (!empty($quizzes)):
                     $catThemeColor = match ($categoryName) {
@@ -101,7 +123,7 @@ require_once dirname(__DIR__) . '/templates/header.php';
                         default => '#pixel-book'
                     };
                 ?>
-                    <section class="quiz-category-section" aria-labelledby="cat-heading-<?= md5($categoryName) ?>">
+                    <section class="quiz-category-section" data-category="<?= htmlspecialchars($categoryName) ?>" aria-labelledby="cat-heading-<?= md5($categoryName) ?>">
                         <!-- Category Section Header -->
                         <div class="category-header-row">
                             <div class="category-title-wrap">
@@ -126,8 +148,9 @@ require_once dirname(__DIR__) . '/templates/header.php';
                                 $isFinished = !empty($q['is_completed']) || !empty($q['completed']);
                                 $isPaused = !empty($q['is_paused']) || !empty($q['paused']);
                                 $userScore = $q['score'] ?? null;
+                                $quizDifficulty = strtolower($q['difficulty'] ?? 'mudah');
                                 ?>
-                                <div class="quiz-card-box" style="--card-hover-border: <?= $catThemeColor ?>; --card-glow: <?= $catThemeColor ?>33;">
+                                <div class="quiz-card-box" data-difficulty="<?= htmlspecialchars($quizDifficulty) ?>" style="--card-hover-border: <?= $catThemeColor ?>; --card-glow: <?= $catThemeColor ?>33;">
                                     <span class="panel-crosshair corner-tl">+</span>
                                     <span class="panel-crosshair corner-tr">+</span>
                                     <span class="panel-crosshair corner-bl">+</span>
@@ -223,5 +246,8 @@ require_once dirname(__DIR__) . '/templates/header.php';
     <?php endif; ?>
 
 </div>
+
+<!-- Quiz Catalog Realtime Filter Module -->
+<script src="<?= function_exists('assetUrl') ? assetUrl('/js/quiz-catalog.js') : (BASE_URL . '/js/quiz-catalog.js') ?>"></script>
 
 <?php require_once dirname(__DIR__) . '/templates/footer.php'; ?>

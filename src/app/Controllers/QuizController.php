@@ -32,7 +32,7 @@ class QuizController extends Controller
         $userId = (int)($_SESSION['user']['id'] ?? 0);
         $activeDifficulty = (string)$this->request->query('difficulty', 'all');
 
-        $categorized = $this->quizRepo->getCategorizedQuizzesWithUserStatus($userId, $activeDifficulty);
+        $categorized = $this->quizRepo->getCategorizedQuizzesWithUserStatus($userId, 'all');
 
         return $this->view('quiz/index', [
             'title' => 'Daftar Quiz | NetQuiz',
