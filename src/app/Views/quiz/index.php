@@ -176,9 +176,6 @@ require_once dirname(__DIR__) . '/templates/header.php';
                                     <div class="quiz-card-footer">
                                         <div class="quiz-card-meta font-mono">
                                             <span class="meta-item">
-                                                <svg class="w-3.5 h-3.5 pixelated" viewBox="0 0 16 16">
-                                                    <use href="#pixel-router"></use>
-                                                </svg>
                                                 <span><?= (int)($q['duration'] ?? 15) ?> mnt</span>
                                             </span>
                                             <span class="meta-separator">•</span>
@@ -211,7 +208,7 @@ require_once dirname(__DIR__) . '/templates/header.php';
                                                 <a href="<?= BASE_URL ?>/quiz/play/<?= (int)$q['id'] ?>"
                                                     class="btn-hero-primary font-mono text-xs"
                                                     onclick="window.playPixelSound && window.playPixelSound('click');">
-                                                    <span>⚡ Mulai Kuis</span>
+                                                    <span>Mulai Kuis</span>
                                                 </a>
                                             <?php endif; ?>
                                         </div>
