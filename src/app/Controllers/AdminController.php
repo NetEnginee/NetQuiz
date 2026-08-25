@@ -134,7 +134,7 @@ class AdminController extends Controller
     }
 
     /**
-     * Register New Member.
+     * Register New Member (Supports Single User & Multi-User Batch List).
      */
     public function createMember(): Response
     {
@@ -146,6 +146,102 @@ class AdminController extends Controller
                 return $this->redirect(BASE_URL . '/admin#member-section');
             }
 
+            // Check if multi-user batch data is provided (via JSON string or array)
+            $usersJson = $this->request->input('users_json');
+            $usersList = [];
+
+            if (!empty($usersJson) && is_string($usersJson)) {
+                $decoded = json_decode($usersJson, true);
+                if (is_array($decoded)) {
+                    $usersList = $decoded;
+                }
+            } elseif (is_array($this->request->input('users'))) {
+                $usersList = $this->request->input('users');
+            }
+
+            // If batch list is provided
+            if (!empty($usersList)) {
+                $createdCount = 0;
+                $batchUsernames = [];
+                $batchEmails = [];
+
+                // Step 1: Pre-validation for all users in the batch
+                foreach ($usersList as $idx => $user) {
+                    $num = $idx + 1;
+                    $username = isset($user['username']) ? trim((string)$user['username']) : '';
+                    $email = isset($user['email']) ? trim((string)$user['email']) : '';
+                    $password = isset($user['password']) ? (string)$user['password'] : '';
+
+                    if (empty($username) || empty($email) || empty($password)) {
+                        $_SESSION['admin_error'] = "Data member ke-{$num} tidak lengkap (Username, Email, dan Password wajib diisi).";
+                        return $this->redirect(BASE_URL . '/admin#member-section');
+                    }
+
+                    if (strlen($password) < 8) {
+                        $_SESSION['admin_error'] = "Password untuk member '{$username}' minimal harus 8 karakter.";
+                        return $this->redirect(BASE_URL . '/admin#member-section');
+                    }
+
+                    if (!Security::isValidEmail($email)) {
+                        $_SESSION['admin_error'] = "Format email '{$email}' untuk member ke-{$num} tidak valid.";
+                        return $this->redirect(BASE_URL . '/admin#member-section');
+                    }
+
+                    // Check duplicate in current batch
+                    $lowerEmail = strtolower($email);
+                    $lowerUsername = strtolower($username);
+
+                    if (in_array($lowerEmail, $batchEmails, true)) {
+                        $_SESSION['admin_error'] = "Terdapat duplikasi email '{$email}' di dalam antrean pendaftaran.";
+                        return $this->redirect(BASE_URL . '/admin#member-section');
+                    }
+                    if (in_array($lowerUsername, $batchUsernames, true)) {
+                        $_SESSION['admin_error'] = "Terdapat duplikasi username '{$username}' di dalam antrean pendaftaran.";
+                        return $this->redirect(BASE_URL . '/admin#member-section');
+                    }
+
+                    $batchEmails[] = $lowerEmail;
+                    $batchUsernames[] = $lowerUsername;
+
+                    // Check duplicate in database
+                    if ($this->userRepo->emailExists($email)) {
+                        $_SESSION['admin_error'] = "Email '{$email}' sudah terdaftar di sistem.";
+                        return $this->redirect(BASE_URL . '/admin#member-section');
+                    }
+
+                    if ($this->userRepo->usernameExists($username)) {
+                        $_SESSION['admin_error'] = "Username '{$username}' sudah digunakan oleh akun lain.";
+                        return $this->redirect(BASE_URL . '/admin#member-section');
+                    }
+                }
+
+                // Step 2: Atomic Database Insertion
+                try {
+                    $db = \App\Core\Database::getInstance();
+                    $db->beginTransaction();
+
+                    foreach ($usersList as $user) {
+                        $username = trim((string)$user['username']);
+                        $email = trim((string)$user['email']);
+                        $password = (string)$user['password'];
+
+                        $this->userRepo->create($username, $email, $password);
+                        $createdCount++;
+                    }
+
+                    $db->commit();
+                    $_SESSION['admin_success'] = "Berhasil mendaftarkan {$createdCount} anggota baru ke dalam sistem!";
+                    return $this->redirect(BASE_URL . '/admin#manage-section');
+                } catch (\Exception $e) {
+                    if (isset($db) && $db->inTransaction()) {
+                        $db->rollBack();
+                    }
+                    $_SESSION['admin_error'] = 'Gagal mendaftarkan antrean anggota: ' . $e->getMessage();
+                    return $this->redirect(BASE_URL . '/admin#member-section');
+                }
+            }
+
+            // Fallback: Single Member Registration
             $username = trim((string)$this->request->input('username', ''));
             $email = trim((string)$this->request->input('email', ''));
             $password = (string)$this->request->input('password', '');
