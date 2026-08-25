@@ -72,10 +72,6 @@ require_once dirname(__DIR__) . '/templates/header.php';
             </div>
             <h3 class="empty-headline">Belum Ada Kuis</h3>
             <p class="empty-subtext">Paket kuis sedang dalam Layer 4, tunggu beberapa saat sampai tiba di Layer 7!</p>
-            <button type="button" class="empty-cta-link" id="btn-reset-quiz-filter" style="cursor: pointer; border: none; background: transparent;">
-                <span>⚡ Tampilkan Semua Kuis</span>
-                <span class="cta-arrow">→</span>
-            </button>
         </div>
     <?php else: ?>
         <!-- Dynamic Empty State for Realtime Filter (No matches) -->
@@ -94,10 +90,6 @@ require_once dirname(__DIR__) . '/templates/header.php';
             </div>
             <h3 class="empty-headline">Tidak Ada Kuis Ditemukan</h3>
             <p class="empty-subtext">Belum ada paket kuis dengan tingkat kesulitan ini.</p>
-            <button type="button" class="empty-cta-link" id="btn-reset-quiz-filter" style="cursor: pointer; border: none; background: transparent;">
-                <span>⚡ Tampilkan Semua Kuis</span>
-                <span class="cta-arrow">→</span>
-            </button>
         </div>
 
         <div class="space-y-10" id="quiz-sections-container">

@@ -1078,6 +1078,19 @@ body {
   flex-direction: column;
   gap: 0.6rem;
   flex: 1;
+  min-height: 0;
+  justify-content: flex-start;
+}
+
+.activity-list-container .pixel-empty-state {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: auto 0;
+  width: 100%;
+  height: 100%;
 }
 
 .activity-row-item {
@@ -1627,6 +1640,7 @@ body {
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
+  line-clamp: 2;
 }
 
 .badge-locked {
@@ -1787,6 +1801,7 @@ body {
   -webkit-box-orient: vertical;
   overflow: hidden;
   transition: color 0.15s ease;
+  line-clamp: 2;
 }
 
 .material-item-card:hover .material-card-title {
@@ -1802,6 +1817,7 @@ body {
   -webkit-box-orient: vertical;
   overflow: hidden;
   margin-top: 0.1rem;
+  line-clamp: 2;
 }
 
 .material-card-footer {

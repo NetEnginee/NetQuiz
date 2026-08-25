@@ -230,15 +230,23 @@ require_once dirname(__DIR__) . "/templates/header.php";
                         </div>
                     <?php endforeach; ?>
                 <?php else: ?>
-                    <!-- Empty State -->
-                    <div class="activity-empty-state font-mono">
-                        <div class="empty-icon-box">
-                            <svg class="w-10 h-10 pixelated" viewBox="0 0 16 16">
-                                <use href="#pixel-computer"></use>
-                            </svg>
+                    <!-- Empty State (Unified Pixel Theme - Centered) -->
+                    <div class="pixel-empty-state empty-inline empty-theme-blue" style="padding: 2.5rem 1.5rem; width: 100%;">
+                        <div class="empty-scene">
+                            <div class="sparkle-orbit">
+                                <span class="sparkle-dot"></span>
+                                <span class="sparkle-dot"></span>
+                                <span class="sparkle-dot"></span>
+                                <span class="sparkle-dot"></span>
+                            </div>
+                            <div class="empty-main-icon">
+                                <svg class="w-8 h-8 pixelated" viewBox="0 0 16 16">
+                                    <use href="#pixel-computer"></use>
+                                </svg>
+                            </div>
                         </div>
-                        <h4 class="empty-title">Belum Ada Riwayat Ujian</h4>
-                        <p class="empty-desc">Kerjakan dan Selesaikan minimal untuk mulai menjadi seorang Network Engineer Sejati.</p>
+                        <h4 class="empty-headline">Belum Ada Riwayat Ujian</h4>
+                        <p class="empty-subtext">Kerjakan kuis pertama Anda untuk mulai mencatat riwayat dan skor keahlian jaringan!</p>
                     </div>
                 <?php endif; ?>
             </div>
@@ -304,7 +312,6 @@ require_once dirname(__DIR__) . "/templates/header.php";
                         <div class="w-2.5 h-2.5 bg-amber-400 rounded-xs"></div>
                         <h2 id="badges-panel-title" class="panel-title-text">Unlocked Badges</h2>
                     </div>
-                    <span class="font-mono text-xs text-amber-400 font-bold"><?= $unlockedCount ?> Terbuka</span>
                 </div>
 
                 <!-- Badges Grid -->
@@ -348,10 +355,6 @@ require_once dirname(__DIR__) . "/templates/header.php";
                             </div>
                             <h4 class="empty-headline">Belum Ada Lencana</h4>
                             <p class="empty-subtext">Kerjakan dan Selesaikan minimal 1 kuis dan kumpulkan prestasi untuk membuka Lencana</p>
-                            <a href="<?= BASE_URL ?>/quiz" class="empty-cta-link" onclick="window.playPixelSound && window.playPixelSound('click');">
-                                <span>Kerjakan Kuis Pertama</span>
-                                <span class="cta-arrow">→</span>
-                            </a>
                         </div>
                     <?php endif; ?>
                 </div>
@@ -431,10 +434,6 @@ require_once dirname(__DIR__) . "/templates/header.php";
                     </div>
                     <h4 class="empty-headline">Materi Sedang Disiapkan</h4>
                     <p class="empty-subtext">Modul pembelajaran sedang dibuat oleh administrator. Nantikan konten terbaru</p>
-                    <a href="<?= BASE_URL ?>/quiz" class="empty-cta-link" onclick="window.playPixelSound && window.playPixelSound('click');">
-                        <span>Latihan Kuis Dulu</span>
-                        <span class="cta-arrow">→</span>
-                    </a>
                 </div>
             <?php endif; ?>
         </div>

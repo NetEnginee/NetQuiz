@@ -108,10 +108,6 @@ require_once dirname(__DIR__) . '/templates/header.php';
             </div>
             <h3 class="empty-headline">Belum Ada Materi Tersedia</h3>
             <p class="empty-subtext">Paket modul telah diambil oleh hacker. Tunggu beberapa saat sebelum admin mengiriml lagi!</p>
-            <a href="<?= BASE_URL ?>/quiz" class="empty-cta-link" onclick="window.playPixelSound && window.playPixelSound('click');">
-                <span>Latihan Kuis Dulu</span>
-                <span class="cta-arrow">→</span>
-            </a>
         </div>
     <?php else: ?>
         <div id="learn-catalog-container">
