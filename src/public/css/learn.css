@@ -654,8 +654,7 @@ svg.w-12,
   overflow-wrap: break-word;
 }
 
-.material-content-body img,
-.material-content-body table {
+.material-content-body img {
   max-width: 100%;
   height: auto;
   box-sizing: border-box;
@@ -956,48 +955,156 @@ svg.w-12,
   margin-top: 2px;
 }
 
-/* Responsive Rich Table */
-.material-table-wrapper {
+/* ==========================================================================
+   RICH RESPONSIVE MATERIAL TABLES (UNIVERSAL)
+   ========================================================================== */
+
+/* 1. Universal Table Wrapper (Card Box with Horizontal Scroll) */
+.material-table-wrapper,
+.material-content-body .material-table-wrapper {
   width: 100%;
+  max-width: 100%;
+  margin: 1.75rem 0;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
-  margin: 1.5rem 0;
+  background-color: #0c0c0f;
   border: 1px solid var(--border-card);
   border-radius: 8px;
-  background: #09090c;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.45);
+  position: relative;
+  box-sizing: border-box;
+  display: block;
 }
 
-.material-data-table {
+/* Fallback if raw table exists without wrapper */
+.material-content-body > table:not(.material-data-table) {
+  display: block;
   width: 100%;
-  border-collapse: collapse;
-  font-size: 0.85rem;
+  max-width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  margin: 1.75rem 0;
+  background-color: #0c0c0f;
+  border: 1px solid var(--border-card);
+  border-radius: 8px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.45);
+  box-sizing: border-box;
+}
+
+/* Custom Sleek Scrollbar on Table Container */
+.material-table-wrapper::-webkit-scrollbar,
+.material-content-body .material-table-wrapper::-webkit-scrollbar,
+.material-content-body > table::-webkit-scrollbar {
+  height: 6px;
+}
+
+.material-table-wrapper::-webkit-scrollbar-track,
+.material-content-body .material-table-wrapper::-webkit-scrollbar-track,
+.material-content-body > table::-webkit-scrollbar-track {
+  background: #09090c;
+  border-radius: 4px;
+}
+
+.material-table-wrapper::-webkit-scrollbar-thumb,
+.material-content-body .material-table-wrapper::-webkit-scrollbar-thumb,
+.material-content-body > table::-webkit-scrollbar-thumb {
+  background: #27272a;
+  border-radius: 4px;
+}
+
+.material-table-wrapper::-webkit-scrollbar-thumb:hover,
+.material-content-body .material-table-wrapper::-webkit-scrollbar-thumb:hover,
+.material-content-body > table::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-cyan);
+}
+
+/* 2. Table Element (Targeting both .material-data-table and any generic <table> inside content) */
+.material-data-table,
+.material-content-body table {
+  width: 100%;
+  min-width: 640px; /* Guarantees cells never compress or wrap awkwardly */
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 0.875rem;
   text-align: left;
-}
-
-.material-data-table th {
-  background: #121216;
-  color: #ffffff;
-  font-weight: 700;
-  padding: 0.75rem 1rem;
-  border-bottom: 1px solid var(--border-card);
-  font-family: var(--font-mono);
-  font-size: 0.75rem;
-  text-transform: uppercase;
-  letter-spacing: 0.03em;
-}
-
-.material-data-table td {
-  padding: 0.75rem 1rem;
-  border-bottom: 1px solid #1c1c20;
+  line-height: 1.65;
   color: #d4d4d8;
+  margin: 0;
 }
 
-.material-data-table tr:last-child td {
+/* 3. Table Header Cells */
+.material-data-table th,
+.material-content-body table th {
+  background-color: #121216;
+  color: #ffffff;
+  font-family: var(--font-heading), var(--font-sans);
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  padding: 0.85rem 1.15rem;
+  border-bottom: 1px solid var(--border-card);
+  border-top: none;
+  white-space: nowrap; /* Header titles will never wrap into single words */
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+
+/* 4. Table Body Cells */
+.material-data-table td,
+.material-content-body table td {
+  padding: 0.85rem 1.15rem;
+  border-bottom: 1px solid #1a1a20;
+  color: #d4d4d8;
+  vertical-align: top;
+  word-break: normal;
+  overflow-wrap: break-word;
+  min-width: 160px;
+}
+
+/* 5. First Column (Category / Parameter / Row Label) */
+.material-data-table td:first-child,
+.material-content-body table td:first-child {
+  font-weight: 700;
+  color: #ffffff;
+  white-space: nowrap; /* Prevents parameters/row headers from breaking awkwardly */
+  background-color: rgba(255, 255, 255, 0.01);
+  border-right: 1px solid rgba(255, 255, 255, 0.04);
+  min-width: 120px;
+}
+
+.material-data-table th:first-child,
+.material-content-body table th:first-child {
+  border-right: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+/* 6. Alternating Rows & Hover Effects */
+.material-data-table tbody tr:nth-child(even) td,
+.material-content-body table tbody tr:nth-child(even) td {
+  background-color: rgba(255, 255, 255, 0.012);
+}
+
+.material-data-table tbody tr:hover td,
+.material-content-body table tbody tr:hover td {
+  background-color: rgba(80, 227, 194, 0.04);
+}
+
+.material-data-table tbody tr:last-child td,
+.material-content-body table tbody tr:last-child td {
   border-bottom: none;
 }
 
-.material-data-table tr:hover td {
-  background: rgba(255, 255, 255, 0.02);
+/* 7. Inline code / badges inside table cells */
+.material-data-table td code,
+.material-content-body table td code {
+  background-color: #16161a;
+  border: 1px solid #27272a;
+  color: var(--accent-cyan);
+  padding: 0.15rem 0.4rem;
+  border-radius: 4px;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  white-space: nowrap;
 }
 
 /* Details / Accordion */
