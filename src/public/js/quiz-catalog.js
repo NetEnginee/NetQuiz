@@ -16,16 +16,17 @@
 
     initDom() {
       this.filterTabs = Array.from(
-        document.querySelectorAll(".quiz-segment-tab[data-difficulty]")
+        document.querySelectorAll(".quiz-segment-tab[data-difficulty]"),
       );
       this.cards = Array.from(document.querySelectorAll(".quiz-card-box"));
       this.sections = Array.from(
-        document.querySelectorAll(".quiz-category-section")
+        document.querySelectorAll(".quiz-category-section"),
       );
       this.totalCountEl = document.getElementById("total-quizzes-count");
       this.emptyStateEl = document.getElementById("quiz-filter-empty-state");
-      this.sectionsContainer = document.getElementById("quiz-sections-container");
-      this.resetBtn = document.getElementById("btn-reset-quiz-filter");
+      this.sectionsContainer = document.getElementById(
+        "quiz-sections-container",
+      );
     }
 
     initFromUrl() {
@@ -44,15 +45,6 @@
           if (window.playPixelSound) window.playPixelSound("click");
         });
       });
-
-      // 2. Reset empty state button
-      if (this.resetBtn) {
-        this.resetBtn.addEventListener("click", (e) => {
-          e.preventDefault();
-          this.applyFilter("all", true);
-          if (window.playPixelSound) window.playPixelSound("click");
-        });
-      }
     }
 
     applyFilter(difficulty, updateUrl = true) {
@@ -125,7 +117,8 @@
       // 5. Handle Global Empty State
       if (totalVisible === 0) {
         if (this.emptyStateEl) this.emptyStateEl.style.display = "block";
-        if (this.sectionsContainer) this.sectionsContainer.style.display = "none";
+        if (this.sectionsContainer)
+          this.sectionsContainer.style.display = "none";
       } else {
         if (this.emptyStateEl) this.emptyStateEl.style.display = "none";
         if (this.sectionsContainer) this.sectionsContainer.style.display = "";

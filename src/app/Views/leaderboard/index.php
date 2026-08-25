@@ -106,11 +106,24 @@ require_once dirname(__DIR__) . '/templates/header.php';
         </div>
 
         <?php if (empty($leaderboard)): ?>
-            <div class="podium-empty-state font-mono text-xs">
-                <svg class="w-10 h-10 pixelated text-zinc-700 mx-auto mb-2" width="40" height="40" viewBox="0 0 16 16">
-                    <use href="#pixel-sparkle"></use>
-                </svg>
-                <p class="text-zinc-400">Belum ada aktivitas ujian kuis yang tercatat pada kategori ini.</p>
+            <div class="podium-empty-state">
+                <div class="pixel-empty-state empty-theme-amber" style="padding: 2rem 1rem; background: transparent; border: none; box-shadow: none;">
+                    <div class="empty-scene">
+                        <div class="sparkle-orbit">
+                            <span class="sparkle-dot"></span>
+                            <span class="sparkle-dot"></span>
+                            <span class="sparkle-dot"></span>
+                            <span class="sparkle-dot"></span>
+                        </div>
+                        <div class="empty-main-icon">
+                            <svg class="w-10 h-10 pixelated" viewBox="0 0 16 16">
+                                <use href="#pixel-sparkle"></use>
+                            </svg>
+                        </div>
+                    </div>
+                    <h3 class="empty-headline">Belum Ada Aktivitas Kejuaraan</h3>
+                    <p class="empty-subtext">Belum ada aktivitas ujian kuis yang tercatat pada topik ini.</p>
+                </div>
             </div>
         <?php else: ?>
             <!-- 3-Column Podium Stage -->
@@ -293,41 +306,26 @@ require_once dirname(__DIR__) . '/templates/header.php';
                     </table>
                 </div>
             <?php else: ?>
-                <!-- Empty State Serupa Tampilan Modul Learn -->
-                <div class="pixel-empty-state">
-                    <!-- Icon Box Frame dengan 4 Titik Crosshair Pixel -->
-                    <div class="empty-target-frame">
-                        <span class="target-dot dot-top"></span>
-                        <span class="target-dot dot-right"></span>
-                        <span class="target-dot dot-bottom"></span>
-                        <span class="target-dot dot-left"></span>
-
-                        <div class="empty-icon-inner">
-                            <!-- Cute Pixel Trophy / Note Icon -->
-                            <svg width="34" height="34" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <!-- Papan / Clipboard Base -->
-                                <rect x="5" y="4" width="14" height="17" rx="1" fill="#1e222d" />
-                                <rect x="7" y="6" width="10" height="13" fill="#0d1117" />
-
-                                <!-- Header Clip (Yellow) -->
-                                <rect x="9" y="2" width="6" height="3" fill="#facc15" />
-
-                                <!-- Pixel Check / List Lines -->
-                                <rect x="9" y="8" width="6" height="2" fill="#38bdf8" />
-                                <rect x="9" y="12" width="6" height="2" fill="#f472b6" />
-                                <rect x="9" y="15" width="4" height="2" fill="#38bdf8" />
+                <!-- Harmonized Empty State for Leaderboard Table -->
+                <div class="pixel-empty-state empty-theme-amber" style="padding: 3rem 1.5rem; background: transparent; border: none; box-shadow: none;">
+                    <div class="empty-scene">
+                        <div class="sparkle-orbit">
+                            <span class="sparkle-dot"></span>
+                            <span class="sparkle-dot"></span>
+                            <span class="sparkle-dot"></span>
+                            <span class="sparkle-dot"></span>
+                        </div>
+                        <div class="empty-main-icon">
+                            <svg class="w-10 h-10 pixelated" viewBox="0 0 16 16">
+                                <use href="#pixel-coin"></use>
                             </svg>
                         </div>
                     </div>
 
-                    <h3 class="empty-state-title">Belum Ada Peserta Tambahan</h3>
-                    <p class="empty-state-desc">
-                        Papan peringkat #4 - #10 masih kosong. Taklukkan kuis, kumpulkan akumulasi poin, dan amankan posisimu di arena ini! 🏆
+                    <h3 class="empty-headline">Belum Ada Peserta Tambahan</h3>
+                    <p class="empty-subtext">
+                        Papan peringkat #4 ke bawah masih kosong. Taklukkan kuis RouterOS, kumpulkan akumulasi poin, dan amankan posisimu di arena ini!
                     </p>
-
-                    <a href="<?= BASE_URL ?>/quiz" class="btn-empty-action">
-                        Latihan Kuis Dulu &rarr;
-                    </a>
                 </div>
             <?php endif; ?>
         </div>
