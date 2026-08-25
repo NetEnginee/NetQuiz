@@ -26,7 +26,6 @@ require_once dirname(__DIR__) . '/templates/header.php';
     <!-- 2. Filter Bar: Difficulty Switcher -->
     <div class="quiz-filter-bar">
         <div class="filter-tabs-group">
-            <span class="filter-label font-mono">Tingkat Kesulitan:</span>
             <button type="button"
                 class="quiz-segment-tab font-mono <?= $activeDifficulty === 'all' ? 'active' : '' ?>"
                 data-difficulty="all">
@@ -47,10 +46,6 @@ require_once dirname(__DIR__) . '/templates/header.php';
                 data-difficulty="Sulit">
                 <span>Sulit</span>
             </button>
-        </div>
-
-        <div class="font-mono text-xs text-zinc-500">
-            <span>Total: <strong class="text-zinc-200" id="total-quizzes-count"><?= $totalQuizzesCount ?></strong> Kuis Tersedia</span>
         </div>
     </div>
 

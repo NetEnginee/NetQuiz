@@ -439,9 +439,9 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 2rem;
-  padding-bottom: 1.25rem;
-  border-bottom: 1px solid var(--border-subtle);
+  margin-bottom: 1.5rem;
+  padding-bottom: 0;
+  border-bottom: none;
   flex-wrap: wrap;
   gap: 1rem;
 }
@@ -450,6 +450,8 @@ body {
   font-family: var(--font-mono);
   font-size: 0.725rem;
   color: var(--text-muted);
+  text-decoration: none !important;
+  border-bottom: none !important;
 }
 
 .admin-breadcrumb-list {
@@ -458,19 +460,26 @@ body {
   align-items: center;
   gap: 0.4rem;
   flex-wrap: wrap;
+  text-decoration: none !important;
+  border-bottom: none !important;
 }
 
-.breadcrumb-link {
+.breadcrumb-link,
+.admin-breadcrumb-nav a {
   color: var(--text-muted);
-  text-decoration: none;
+  text-decoration: none !important;
+  border-bottom: none !important;
   display: inline-flex;
   align-items: center;
   gap: 0.3rem;
   transition: color 0.15s ease;
 }
 
-.breadcrumb-link:hover {
+.breadcrumb-link:hover,
+.admin-breadcrumb-nav a:hover {
   color: #ffffff;
+  text-decoration: none !important;
+  border-bottom: none !important;
 }
 
 .breadcrumb-icon {
@@ -482,9 +491,12 @@ body {
   color: var(--text-dim);
 }
 
-.breadcrumb-item.active {
+.breadcrumb-item.active,
+.breadcrumb-active {
   color: var(--accent-cyan);
   font-weight: 700;
+  text-decoration: none !important;
+  border-bottom: none !important;
 }
 
 /* ==========================================================================

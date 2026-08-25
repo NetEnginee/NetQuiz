@@ -112,16 +112,23 @@ svg.w-12 {
   align-items: center;
   gap: 0.45rem;
   margin-bottom: 0.35rem;
+  text-decoration: none !important;
+  border-bottom: none !important;
 }
 
-.hero-breadcrumb .breadcrumb-link {
+.hero-breadcrumb .breadcrumb-link,
+.hero-breadcrumb a {
   color: var(--text-muted);
-  text-decoration: none;
+  text-decoration: none !important;
+  border-bottom: none !important;
   transition: color 0.15s ease;
 }
 
-.hero-breadcrumb .breadcrumb-link:hover {
+.hero-breadcrumb .breadcrumb-link:hover,
+.hero-breadcrumb a:hover {
   color: #ffffff;
+  text-decoration: none !important;
+  border-bottom: none !important;
 }
 
 .hero-breadcrumb .breadcrumb-sep {
@@ -132,6 +139,8 @@ svg.w-12 {
 .hero-breadcrumb .active-tag {
   color: var(--accent-cyan);
   font-weight: 700;
+  text-decoration: none !important;
+  border-bottom: none !important;
 }
 
 /* Hero Action Buttons - Consistent Sizing */
@@ -193,15 +202,14 @@ svg.w-12 {
 .quiz-filter-bar {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 1rem;
   margin-bottom: 2rem;
-  padding: 0.85rem 1.25rem;
+  padding: 0.75rem 1rem;
   background-color: var(--bg-card);
   border: 1px solid var(--border-card);
   border-radius: 10px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .filter-tabs-group {
@@ -209,15 +217,7 @@ svg.w-12 {
   align-items: center;
   gap: 0.45rem;
   flex-wrap: wrap;
-}
-
-.filter-label {
-  font-size: 0.75rem;
-  font-weight: 700;
-  color: var(--text-secondary);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  margin-right: 0.45rem;
+  width: 100%;
 }
 
 .quiz-segment-tab {
