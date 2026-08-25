@@ -1198,18 +1198,9 @@ function handleAddMemberToQueue() {
 
 function renderQueueList() {
   const container = document.getElementById("member-queue-list-container");
-  const badge = document.getElementById("queue-count-badge");
   if (!container) return;
 
   const queue = window.MEMBER_REGISTRATION_QUEUE || [];
-  if (badge) {
-    badge.textContent = `${queue.length} Member`;
-    if (queue.length > 0) {
-      badge.classList.add("has-items");
-    } else {
-      badge.classList.remove("has-items");
-    }
-  }
 
   if (queue.length === 0) {
     container.innerHTML = `
@@ -1219,7 +1210,7 @@ function renderQueueList() {
                 </div>
                 <h4 class="queue-empty-title">Belum Ada Member di Antrean</h4>
                 <p class="queue-empty-desc">
-                    Isi formulir di atas dan klik <strong>"+ Tambahkan ke Antrean"</strong> untuk menumpuk akun siswa yang akan didaftarkan secara serentak.
+                    Isi formulir di atas dan klik <strong>"Tambahkan ke Antrean"</strong> untuk menumpuk akun siswa yang akan didaftarkan secara serentak.
                 </p>
             </div>
         `;
@@ -1433,9 +1424,8 @@ function renderMemberSection() {
                 <!-- Header with Quick Action -->
                 <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid #222222; flex-wrap: wrap;">
                     <div>
-                        <h3 style="font-family: var(--font-heading); font-size: 1.15rem; font-weight: 800; color: #ffffff; margin: 0; display: flex; align-items: center; gap: 0.5rem;">
-                            <i data-lucide="user-plus" style="width: 18px; height: 18px; color: var(--accent-cyan);"></i>
-                            <span>Daftarkan Member Baru</span>
+                        <h3 style="font-family: var(--font-heading); font-size: 1.15rem; font-weight: 800; color: #ffffff; margin: 0;">
+                            Daftarkan Member Baru
                         </h3>
                         <p style="font-size: 0.825rem; color: #a1a1aa; margin-top: 0.25rem;">
                             Masukkan data akun calon member, tambahkan ke antrean di bawah, dan daftarkan sekaligus.
@@ -1499,9 +1489,8 @@ function renderMemberSection() {
                             <button type="button" id="btn-reset-member-form" class="btn-secondary-outline" style="padding: 0.5rem 1rem;">
                                 <span>Reset Form</span>
                             </button>
-                            <button type="button" id="btn-add-to-queue" class="btn-primary-black" style="padding: 0.5rem 1.25rem; display: inline-flex; align-items: center; gap: 0.4rem;">
-                                <i data-lucide="list-plus" style="width: 15px; height: 15px;"></i>
-                                <span>+ Tambahkan ke Antrean</span>
+                            <button type="button" id="btn-add-to-queue" class="btn-primary-black" style="padding: 0.5rem 1.25rem; display: inline-flex; align-items: center; justify-content: center;">
+                                <span>Tambahkan ke Antrean</span>
                             </button>
                         </div>
                     </div>
@@ -1517,14 +1506,12 @@ function renderMemberSection() {
             <span class="corner-crosshair corner-br">+</span>
 
             <div style="padding: 1.75rem;">
-                <!-- Header with Counter Badge -->
+                <!-- Header -->
                 <div style="display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 1.25rem; padding-bottom: 1rem; border-bottom: 1px solid #222222; flex-wrap: wrap;">
-                    <div style="display: flex; align-items: center; gap: 0.65rem;">
-                        <h3 style="font-family: var(--font-heading); font-size: 1.1rem; font-weight: 800; color: #ffffff; margin: 0; display: flex; align-items: center; gap: 0.5rem;">
-                            <i data-lucide="list-checks" style="width: 17px; height: 17px; color: var(--accent-cyan);"></i>
-                            <span>Antrean Calon Member Baru</span>
+                    <div>
+                        <h3 style="font-family: var(--font-heading); font-size: 1.1rem; font-weight: 800; color: #ffffff; margin: 0;">
+                            Antrean Calon Member Baru
                         </h3>
-                        <span id="queue-count-badge" class="queue-badge-counter">0 Member</span>
                     </div>
                     <span style="font-size: 0.775rem; color: #71717a;">Data sementara disimpan sebelum dikirim ke database</span>
                 </div>
