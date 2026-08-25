@@ -978,124 +978,622 @@ function renderQuizSection() {
 }
 
 // ==========================================================================
-// 4. MODUL 2: DAFTARKAN MEMBER (Focused Single Registration Form)
+// 4. MODUL 2: DAFTARKAN MEMBER (Multi-User Batch Registration & To-Do Queue)
 // ==========================================================================
+window.MEMBER_REGISTRATION_QUEUE = window.MEMBER_REGISTRATION_QUEUE || [];
+
+function generateRandomMemberPassword(length = 10) {
+  const chars = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789!@#$%";
+  let pwd = "Net#";
+  for (let i = 0; i < length - 5; i++) {
+    pwd += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  pwd += Math.floor(10 + Math.random() * 90);
+  return pwd;
+}
+
+function clearMemberInputForm() {
+  const usernameInput = document.getElementById("reg-username");
+  const emailInput = document.getElementById("reg-email");
+  const pwdInput = document.getElementById("reg-password");
+  const cfmInput = document.getElementById("reg-confirm-password");
+
+  if (usernameInput) usernameInput.value = "";
+  if (emailInput) emailInput.value = "";
+  if (pwdInput) {
+    pwdInput.value = "";
+    pwdInput.type = "password";
+  }
+  if (cfmInput) {
+    cfmInput.value = "";
+    cfmInput.type = "password";
+  }
+  if (usernameInput) usernameInput.focus();
+}
+
+function handleAddMemberToQueue() {
+  const usernameInput = document.getElementById("reg-username");
+  const emailInput = document.getElementById("reg-email");
+  const pwdInput = document.getElementById("reg-password");
+  const cfmInput = document.getElementById("reg-confirm-password");
+
+  const username = usernameInput ? usernameInput.value.trim() : "";
+  const email = emailInput ? emailInput.value.trim() : "";
+  const pwd = pwdInput ? pwdInput.value : "";
+  const cfm = cfmInput ? cfmInput.value : "";
+
+  // Validation
+  if (!username) {
+    if (window.showGeistToast) {
+      showGeistToast("error", "Validasi Gagal", "Username siswa wajib diisi!");
+    } else {
+      alert("Username siswa wajib diisi!");
+    }
+    if (usernameInput) usernameInput.focus();
+    return;
+  }
+
+  // Username validation: letters, numbers, underscores, dashes, min 3 chars
+  if (!/^[a-zA-Z0-9_\-\.]+$/.test(username) || username.length < 3) {
+    if (window.showGeistToast) {
+      showGeistToast(
+        "error",
+        "Format Username Tidak Valid",
+        "Username minimal 3 karakter dan hanya boleh berisi huruf, angka, titik, underscore, atau tanda hubung.",
+      );
+    } else {
+      alert("Format username tidak valid.");
+    }
+    if (usernameInput) usernameInput.focus();
+    return;
+  }
+
+  if (!email) {
+    if (window.showGeistToast) {
+      showGeistToast("error", "Validasi Gagal", "Alamat email wajib diisi!");
+    } else {
+      alert("Alamat email wajib diisi!");
+    }
+    if (emailInput) emailInput.focus();
+    return;
+  }
+
+  // Email format regex
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) {
+    if (window.showGeistToast) {
+      showGeistToast(
+        "error",
+        "Format Email Salah",
+        "Silakan masukkan alamat email yang valid (contoh: user@sekolah.sch.id).",
+      );
+    } else {
+      alert("Format email tidak valid.");
+    }
+    if (emailInput) emailInput.focus();
+    return;
+  }
+
+  if (!pwd) {
+    if (window.showGeistToast) {
+      showGeistToast("error", "Validasi Gagal", "Kata sandi wajib diisi!");
+    } else {
+      alert("Kata sandi wajib diisi!");
+    }
+    if (pwdInput) pwdInput.focus();
+    return;
+  }
+
+  if (pwd.length < 8) {
+    if (window.showGeistToast) {
+      showGeistToast(
+        "error",
+        "Password Terlalu Pendek",
+        "Kata sandi minimal harus 8 karakter.",
+      );
+    } else {
+      alert("Kata sandi minimal harus 8 karakter.");
+    }
+    if (pwdInput) pwdInput.focus();
+    return;
+  }
+
+  if (pwd !== cfm) {
+    if (window.showGeistToast) {
+      showGeistToast(
+        "error",
+        "Password Tidak Cocok",
+        "Kata sandi dan konfirmasi kata sandi tidak sama!",
+      );
+    } else {
+      alert("Kata sandi dan konfirmasi kata sandi tidak sama!");
+    }
+    if (cfmInput) cfmInput.focus();
+    return;
+  }
+
+  // Duplicate Check in Current Queue
+  const queue = window.MEMBER_REGISTRATION_QUEUE || [];
+  const duplicateEmail = queue.find(
+    (u) => u.email.toLowerCase() === email.toLowerCase(),
+  );
+  if (duplicateEmail) {
+    if (window.showGeistToast) {
+      showGeistToast(
+        "error",
+        "Email Duplikat",
+        `Email "${email}" sudah ada di dalam antrean saat ini!`,
+      );
+    } else {
+      alert(`Email "${email}" sudah ada di dalam antrean!`);
+    }
+    if (emailInput) emailInput.focus();
+    return;
+  }
+
+  const duplicateUsername = queue.find(
+    (u) => u.username.toLowerCase() === username.toLowerCase(),
+  );
+  if (duplicateUsername) {
+    if (window.showGeistToast) {
+      showGeistToast(
+        "error",
+        "Username Duplikat",
+        `Username "${username}" sudah ada di dalam antrean saat ini!`,
+      );
+    } else {
+      alert(`Username "${username}" sudah ada di dalam antrean!`);
+    }
+    if (usernameInput) usernameInput.focus();
+    return;
+  }
+
+  // Check against loaded members if available
+  if (Array.isArray(window.NETQUIZ_MEMBERS)) {
+    const existingDbUser = window.NETQUIZ_MEMBERS.find(
+      (m) =>
+        (m.email && m.email.toLowerCase() === email.toLowerCase()) ||
+        (m.username && m.username.toLowerCase() === username.toLowerCase()),
+    );
+    if (existingDbUser) {
+      const isSameEmail =
+        existingDbUser.email.toLowerCase() === email.toLowerCase();
+      const msg = isSameEmail
+        ? `Email "${email}" sudah terdaftar di database!`
+        : `Username "${username}" sudah terdaftar di database!`;
+      if (window.showGeistToast) {
+        showGeistToast("error", "Akun Sudah Terdaftar", msg);
+      } else {
+        alert(msg);
+      }
+      return;
+    }
+  }
+
+  // Add Item to Queue
+  const newItem = {
+    id: "mq_" + Date.now() + "_" + Math.random().toString(36).substr(2, 5),
+    username: username,
+    email: email,
+    password: pwd,
+    createdAt: new Date().toLocaleTimeString("id-ID", {
+      hour: "2-digit",
+      minute: "2-digit",
+    }),
+  };
+
+  window.MEMBER_REGISTRATION_QUEUE.push(newItem);
+
+  if (window.showGeistToast) {
+    showGeistToast(
+      "success",
+      "Member Ditambahkan",
+      `"${username}" berhasil ditambahkan ke antrean (${window.MEMBER_REGISTRATION_QUEUE.length} total).`,
+    );
+  }
+
+  clearMemberInputForm();
+  renderQueueList();
+}
+
+function renderQueueList() {
+  const container = document.getElementById("member-queue-list-container");
+  const badge = document.getElementById("queue-count-badge");
+  if (!container) return;
+
+  const queue = window.MEMBER_REGISTRATION_QUEUE || [];
+  if (badge) {
+    badge.textContent = `${queue.length} Member`;
+    if (queue.length > 0) {
+      badge.classList.add("has-items");
+    } else {
+      badge.classList.remove("has-items");
+    }
+  }
+
+  if (queue.length === 0) {
+    container.innerHTML = `
+            <div class="queue-empty-state">
+                <div class="queue-empty-icon-wrap">
+                    <i data-lucide="users" style="width: 28px; height: 28px; color: #52525b;"></i>
+                </div>
+                <h4 class="queue-empty-title">Belum Ada Member di Antrean</h4>
+                <p class="queue-empty-desc">
+                    Isi formulir di atas dan klik <strong>"+ Tambahkan ke Antrean"</strong> untuk menumpuk akun siswa yang akan didaftarkan secara serentak.
+                </p>
+            </div>
+        `;
+    if (window.lucide) window.lucide.createIcons();
+    return;
+  }
+
+  // Render Queue Items (To-Do list style)
+  let itemsHtml = '<div class="queue-items-wrapper">';
+  queue.forEach((item, index) => {
+    const initials = item.username.substring(0, 2).toUpperCase();
+    itemsHtml += `
+            <div class="queue-item-row" id="queue-item-${item.id}">
+                <div class="queue-item-left">
+                    <span class="queue-item-index font-mono">#${index + 1}</span>
+                    <div class="queue-item-avatar font-mono">${escapeHtml(initials)}</div>
+                    <div class="queue-item-info">
+                        <div class="queue-item-title-row">
+                            <span class="queue-item-username font-mono">${escapeHtml(item.username)}</span>
+                            <span class="queue-item-tag">Antrean Baru</span>
+                        </div>
+                        <div class="queue-item-sub-row">
+                            <span class="queue-item-email font-mono">
+                                <i data-lucide="mail" style="width: 12px; height: 12px;"></i>
+                                <span>${escapeHtml(item.email)}</span>
+                            </span>
+                            <span class="queue-item-pwd-pill" onclick="window.toggleQueuePasswordVisibility('${item.id}')" title="Klik untuk melihat/sembunyikan password">
+                                <i data-lucide="key" style="width: 11px; height: 11px;"></i>
+                                <span id="queue-pwd-${item.id}" data-raw="${escapeHtml(item.password)}">••••••••</span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div class="queue-item-actions">
+                    <button type="button" class="btn-queue-action btn-queue-edit" onclick="window.editQueueMember('${item.id}')" title="Edit Data Member">
+                        <i data-lucide="edit-3" style="width: 13px; height: 13px;"></i>
+                        <span>Edit</span>
+                    </button>
+                    <button type="button" class="btn-queue-action btn-queue-delete" onclick="window.removeQueueMember('${item.id}')" title="Hapus dari Antrean">
+                        <i data-lucide="trash-2" style="width: 13px; height: 13px;"></i>
+                        <span>Hapus</span>
+                    </button>
+                </div>
+            </div>
+        `;
+  });
+  itemsHtml += "</div>";
+
+  // Footer Submit Form Bar
+  itemsHtml += `
+        <form action="${window.BASE_URL}/admin/users/create" method="POST" id="batch-submit-member-form" style="margin-top: 1.5rem; padding-top: 1.25rem; border-top: 1px solid #222222;">
+            <input type="hidden" name="csrf_token" value="${window.CSRF_TOKEN || ""}">
+            <input type="hidden" name="users_json" id="queue-users-json-input" value="">
+            
+            <div class="queue-footer-bar">
+                <div class="queue-summary-left">
+                    <button type="button" class="btn-secondary-outline" onclick="window.clearAllQueueMembers()" style="padding: 0.45rem 0.9rem; font-size: 0.775rem; display: inline-flex; align-items: center; gap: 0.35rem;">
+                        <i data-lucide="trash" style="width: 13px; height: 13px;"></i>
+                        <span>Bersihkan Antrean</span>
+                    </button>
+                    <span class="queue-summary-text">
+                        Total <strong>${queue.length}</strong> akun siap didaftarkan secara serentak.
+                    </span>
+                </div>
+                <button type="submit" class="btn-primary-black btn-submit-all-queue" id="btn-submit-all-queue" style="padding: 0.55rem 1.35rem; display: inline-flex; align-items: center; gap: 0.45rem;">
+                    <i data-lucide="check-check" style="width: 16px; height: 16px; color: var(--accent-cyan);"></i>
+                    <span>Daftarkan Semua Member (${queue.length})</span>
+                </button>
+            </div>
+        </form>
+    `;
+
+  container.innerHTML = itemsHtml;
+
+  // Bind Submit Event
+  const batchForm = document.getElementById("batch-submit-member-form");
+  if (batchForm) {
+    batchForm.addEventListener("submit", (e) => {
+      const q = window.MEMBER_REGISTRATION_QUEUE || [];
+      if (q.length === 0) {
+        e.preventDefault();
+        if (window.showGeistToast) {
+          showGeistToast(
+            "error",
+            "Antrean Kosong",
+            "Tambahkan minimal 1 member sebelum mendaftar.",
+          );
+        }
+        return false;
+      }
+
+      const jsonInput = document.getElementById("queue-users-json-input");
+      if (jsonInput) {
+        jsonInput.value = JSON.stringify(q);
+      }
+
+      const submitBtn = document.getElementById("btn-submit-all-queue");
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = `
+                    <div class="btn-spinner" style="width: 14px; height: 14px; border: 2px solid rgba(255,255,255,0.3); border-top-color: #ffffff; border-radius: 50%; animation: spin 0.8s linear infinite;"></div>
+                    <span>Mendaftarkan ${q.length} Member...</span>
+                `;
+      }
+    });
+  }
+
+  if (window.lucide) window.lucide.createIcons();
+}
+
+window.toggleQueuePasswordVisibility = function (id) {
+  const el = document.getElementById(`queue-pwd-${id}`);
+  if (!el) return;
+  const raw = el.getAttribute("data-raw") || "";
+  if (el.textContent === "••••••••") {
+    el.textContent = raw;
+    el.style.color = "var(--accent-cyan)";
+  } else {
+    el.textContent = "••••••••";
+    el.style.color = "";
+  }
+};
+
+window.removeQueueMember = function (id) {
+  const queue = window.MEMBER_REGISTRATION_QUEUE || [];
+  const idx = queue.findIndex((u) => u.id === id);
+  if (idx !== -1) {
+    const removed = queue.splice(idx, 1)[0];
+    if (window.showGeistToast) {
+      showGeistToast(
+        "info",
+        "Member Dihapus",
+        `"${removed.username}" dihapus dari antrean.`,
+      );
+    }
+    renderQueueList();
+  }
+};
+
+window.editQueueMember = function (id) {
+  const queue = window.MEMBER_REGISTRATION_QUEUE || [];
+  const idx = queue.findIndex((u) => u.id === id);
+  if (idx !== -1) {
+    const item = queue.splice(idx, 1)[0];
+
+    const usernameInput = document.getElementById("reg-username");
+    const emailInput = document.getElementById("reg-email");
+    const pwdInput = document.getElementById("reg-password");
+    const cfmInput = document.getElementById("reg-confirm-password");
+
+    if (usernameInput) usernameInput.value = item.username;
+    if (emailInput) emailInput.value = item.email;
+    if (pwdInput) {
+      pwdInput.value = item.password;
+      pwdInput.type = "text";
+    }
+    if (cfmInput) {
+      cfmInput.value = item.password;
+      cfmInput.type = "text";
+    }
+
+    if (window.showGeistToast) {
+      showGeistToast(
+        "info",
+        "Mode Edit",
+        `Data "${item.username}" dimuat kembali ke formulir.`,
+      );
+    }
+
+    renderQueueList();
+    if (usernameInput) usernameInput.focus();
+
+    const sec = document.getElementById("member-section");
+    if (sec) sec.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+};
+
+window.clearAllQueueMembers = function () {
+  const queue = window.MEMBER_REGISTRATION_QUEUE || [];
+  if (queue.length === 0) return;
+  if (
+    confirm(
+      `Apakah Anda yakin ingin mengosongkan seluruh antrean (${queue.length} calon member)?`,
+    )
+  ) {
+    window.MEMBER_REGISTRATION_QUEUE = [];
+    if (window.showGeistToast) {
+      showGeistToast(
+        "info",
+        "Antrean Dikosongkan",
+        "Seluruh antrean calon member berhasil dibersihkan.",
+      );
+    }
+    renderQueueList();
+  }
+};
+
 function renderMemberSection() {
   const sec = document.getElementById("member-section");
   if (!sec) return;
 
   sec.innerHTML = `
-        <div class="supabase-panel-card" style="margin-bottom: 2rem;">
-            <!-- Precision Corner Crosshairs -->
+        <!-- CARD 1: FORMULIR INPUT MEMBER BARU -->
+        <div class="supabase-panel-card" style="margin-bottom: 1.75rem;">
             <span class="corner-crosshair corner-tl">+</span>
             <span class="corner-crosshair corner-tr">+</span>
             <span class="corner-crosshair corner-bl">+</span>
             <span class="corner-crosshair corner-br">+</span>
 
-            <form action="${window.BASE_URL}/admin/users/create" method="POST" id="register-member-form" style="padding: 1.75rem;">
-                <input type="hidden" name="csrf_token" value="${window.CSRF_TOKEN || ""}">
-                
-                <!-- Section Header -->
-                <div style="margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid #222222;">
-                    <h3 style="font-family: var(--font-heading); font-size: 1.15rem; font-weight: 800; color: #ffffff; margin: 0;">Daftarkan Member Baru</h3>
-                    <p style="font-size: 0.825rem; color: #a1a1aa; margin-top: 0.25rem;">Buat akun anggota baru untuk mengakses kuis dan materi pembelajaran.</p>
-                </div>
-
-                <!-- 2x2 Form Grid -->
-                <div class="form-grid-2col" style="margin-bottom: 1.25rem;">
-                    <!-- Field 1: Username -->
-                    <div class="form-field-group">
-                        <label class="form-field-label">Username</label>
-                        <input type="text" class="form-field-input" name="username" id="reg-username" placeholder="budi_santoso" required autocomplete="off">
+            <div style="padding: 1.75rem;">
+                <!-- Header with Quick Action -->
+                <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid #222222; flex-wrap: wrap;">
+                    <div>
+                        <h3 style="font-family: var(--font-heading); font-size: 1.15rem; font-weight: 800; color: #ffffff; margin: 0; display: flex; align-items: center; gap: 0.5rem;">
+                            <i data-lucide="user-plus" style="width: 18px; height: 18px; color: var(--accent-cyan);"></i>
+                            <span>Daftarkan Member Baru</span>
+                        </h3>
+                        <p style="font-size: 0.825rem; color: #a1a1aa; margin-top: 0.25rem;">
+                            Masukkan data akun calon member, tambahkan ke antrean di bawah, dan daftarkan sekaligus.
+                        </p>
                     </div>
-
-                    <!-- Field 2: Email -->
-                    <div class="form-field-group">
-                        <label class="form-field-label">Email</label>
-                        <input type="email" class="form-field-input" name="email" id="reg-email" placeholder="budi@sekolah.sch.id" required autocomplete="off">
-                    </div>
-                </div>
-
-                <div class="form-grid-2col" style="margin-bottom: 1.75rem;">
-                    <!-- Field 3: Password -->
-                    <div class="form-field-group">
-                        <label class="form-field-label">Password</label>
-                        <div class="password-input-wrapper">
-                            <input type="password" class="form-field-input" name="password" id="reg-password" placeholder="Minimal 8 karakter" required minlength="8">
-                            <button type="button" class="btn-toggle-password" data-target="reg-password" title="Lihat/Sembunyikan Password">
-                                <i data-lucide="eye" style="width: 15px; height: 15px;"></i>
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Field 4: Konfirmasi Password -->
-                    <div class="form-field-group">
-                        <label class="form-field-label">Konfirmasi Password</label>
-                        <div class="password-input-wrapper">
-                            <input type="password" class="form-field-input" name="confirm_password" id="reg-confirm-password" placeholder="Ulangi password" required minlength="8">
-                            <button type="button" class="btn-toggle-password" data-target="reg-confirm-password" title="Lihat/Sembunyikan Password">
-                                <i data-lucide="eye" style="width: 15px; height: 15px;"></i>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Footer Action Bar -->
-                <div style="display: flex; align-items: center; justify-content: flex-end; gap: 0.75rem; padding-top: 1.25rem; border-top: 1px solid #222222;">
-                    <button type="reset" class="btn-secondary-outline" style="padding: 0.5rem 1rem;">Batal</button>
-                    <button type="submit" class="btn-primary-black" id="btn-submit-member" style="padding: 0.5rem 1.25rem; display: inline-flex; align-items: center; gap: 0.4rem;">
-                        <i data-lucide="user-plus" style="width: 15px; height: 15px;"></i>
-                        <span>Daftarkan Member</span>
+                    <button type="button" id="btn-quick-generate-password" class="btn-secondary-outline" style="padding: 0.4rem 0.85rem; font-size: 0.775rem; display: inline-flex; align-items: center; gap: 0.35rem;" title="Isi otomatis kolom password dengan password acak yang aman">
+                        <i data-lucide="sparkles" style="width: 14px; height: 14px; color: var(--accent-cyan);"></i>
+                        <span>Acak Password</span>
                     </button>
                 </div>
-            </form>
+
+                <form id="member-queue-input-form">
+                    <!-- 2x2 Form Grid -->
+                    <div class="form-grid-2col" style="margin-bottom: 1.25rem;">
+                        <!-- Field 1: Username -->
+                        <div class="form-field-group">
+                            <label class="form-field-label">Username Siswa <span style="color: #ef4444;">*</span></label>
+                            <input type="text" class="form-field-input" id="reg-username" placeholder="budi_santoso" autocomplete="off">
+                            <span style="font-size: 0.725rem; color: #71717a; margin-top: 0.25rem;">Gunakan huruf kecil, angka, atau underscore tanpa spasi.</span>
+                        </div>
+
+                        <!-- Field 2: Email -->
+                        <div class="form-field-group">
+                            <label class="form-field-label">Alamat Email <span style="color: #ef4444;">*</span></label>
+                            <input type="email" class="form-field-input" id="reg-email" placeholder="budi@sekolah.sch.id" autocomplete="off">
+                            <span style="font-size: 0.725rem; color: #71717a; margin-top: 0.25rem;">Email aktif untuk login dan verifikasi.</span>
+                        </div>
+                    </div>
+
+                    <div class="form-grid-2col" style="margin-bottom: 1.5rem;">
+                        <!-- Field 3: Password -->
+                        <div class="form-field-group">
+                            <label class="form-field-label">Kata Sandi <span style="color: #ef4444;">*</span></label>
+                            <div class="password-input-wrapper">
+                                <input type="password" class="form-field-input" id="reg-password" placeholder="Minimal 8 karakter">
+                                <button type="button" class="btn-toggle-password" data-target="reg-password" title="Lihat/Sembunyikan Password">
+                                    <i data-lucide="eye" style="width: 15px; height: 15px;"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Field 4: Konfirmasi Password -->
+                        <div class="form-field-group">
+                            <label class="form-field-label">Konfirmasi Kata Sandi <span style="color: #ef4444;">*</span></label>
+                            <div class="password-input-wrapper">
+                                <input type="password" class="form-field-input" id="reg-confirm-password" placeholder="Ulangi kata sandi">
+                                <button type="button" class="btn-toggle-password" data-target="reg-confirm-password" title="Lihat/Sembunyikan Password">
+                                    <i data-lucide="eye" style="width: 15px; height: 15px;"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Actions Form Bar -->
+                    <div style="display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; padding-top: 1.25rem; border-top: 1px solid #222222; flex-wrap: wrap;">
+                        <span style="font-size: 0.75rem; color: #a1a1aa;">
+                            <i data-lucide="info" style="width: 13px; height: 13px; display: inline-block; vertical-align: middle; margin-right: 3px;"></i>
+                            Tekan <strong>Enter</strong> pada formulir untuk langsung menambahkan ke antrean.
+                        </span>
+                        <div style="display: flex; align-items: center; gap: 0.65rem;">
+                            <button type="button" id="btn-reset-member-form" class="btn-secondary-outline" style="padding: 0.5rem 1rem;">
+                                <span>Reset Form</span>
+                            </button>
+                            <button type="button" id="btn-add-to-queue" class="btn-primary-black" style="padding: 0.5rem 1.25rem; display: inline-flex; align-items: center; gap: 0.4rem;">
+                                <i data-lucide="list-plus" style="width: 15px; height: 15px;"></i>
+                                <span>+ Tambahkan ke Antrean</span>
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- CARD 2: DAFTAR ANTREAN MEMBER BARU (TO-DO LIST CARD) -->
+        <div class="supabase-panel-card" id="member-queue-card">
+            <span class="corner-crosshair corner-tl">+</span>
+            <span class="corner-crosshair corner-tr">+</span>
+            <span class="corner-crosshair corner-bl">+</span>
+            <span class="corner-crosshair corner-br">+</span>
+
+            <div style="padding: 1.75rem;">
+                <!-- Header with Counter Badge -->
+                <div style="display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 1.25rem; padding-bottom: 1rem; border-bottom: 1px solid #222222; flex-wrap: wrap;">
+                    <div style="display: flex; align-items: center; gap: 0.65rem;">
+                        <h3 style="font-family: var(--font-heading); font-size: 1.1rem; font-weight: 800; color: #ffffff; margin: 0; display: flex; align-items: center; gap: 0.5rem;">
+                            <i data-lucide="list-checks" style="width: 17px; height: 17px; color: var(--accent-cyan);"></i>
+                            <span>Antrean Calon Member Baru</span>
+                        </h3>
+                        <span id="queue-count-badge" class="queue-badge-counter">0 Member</span>
+                    </div>
+                    <span style="font-size: 0.775rem; color: #71717a;">Data sementara disimpan sebelum dikirim ke database</span>
+                </div>
+
+                <!-- Interactive Queue List Container -->
+                <div id="member-queue-list-container"></div>
+            </div>
         </div>
     `;
 
-  const regPwdInput = document.getElementById("reg-password");
-  const confirmPwdInput = document.getElementById("reg-confirm-password");
-  const regForm = document.getElementById("register-member-form");
-
-  // Bind Eye Toggles
+  // Bind Eye Password Toggles
   if (window.bindPasswordToggles) {
     window.bindPasswordToggles();
   }
 
-  // Form Submit Validation
-  if (regForm) {
-    regForm.addEventListener("submit", (e) => {
-      const pwd = regPwdInput ? regPwdInput.value : "";
-      const cfm = confirmPwdInput ? confirmPwdInput.value : "";
-      if (pwd !== cfm) {
-        e.preventDefault();
-        if (window.showGeistToast) {
-          showGeistToast(
-            "error",
-            "Validasi Gagal",
-            "Password dan Konfirmasi Password tidak cocok!",
-          );
-        } else {
-          alert("Password dan Konfirmasi Password tidak cocok!");
-        }
-        if (confirmPwdInput) confirmPwdInput.focus();
-        return false;
+  // Bind Quick Generate Password
+  const btnQuickPwd = document.getElementById("btn-quick-generate-password");
+  if (btnQuickPwd) {
+    btnQuickPwd.addEventListener("click", () => {
+      const generated = generateRandomMemberPassword();
+      const pwdInput = document.getElementById("reg-password");
+      const cfmInput = document.getElementById("reg-confirm-password");
+      if (pwdInput) {
+        pwdInput.value = generated;
+        pwdInput.type = "text";
       }
-      if (pwd.length < 8) {
-        e.preventDefault();
-        if (window.showGeistToast) {
-          showGeistToast(
-            "error",
-            "Password Terlalu Pendek",
-            "Password minimal harus 8 karakter.",
-          );
-        } else {
-          alert("Password minimal harus 8 karakter.");
-        }
-        if (regPwdInput) regPwdInput.focus();
-        return false;
+      if (cfmInput) {
+        cfmInput.value = generated;
+        cfmInput.type = "text";
+      }
+      if (window.showGeistToast) {
+        showGeistToast(
+          "success",
+          "Password Dibuat",
+          "Password acak berhasil diisikan ke kedua kolom.",
+        );
       }
     });
   }
+
+  // Bind Reset Form
+  const btnReset = document.getElementById("btn-reset-member-form");
+  if (btnReset) {
+    btnReset.addEventListener("click", () => {
+      clearMemberInputForm();
+    });
+  }
+
+  // Bind Add to Queue
+  const btnAddQueue = document.getElementById("btn-add-to-queue");
+  if (btnAddQueue) {
+    btnAddQueue.addEventListener("click", () => {
+      handleAddMemberToQueue();
+    });
+  }
+
+  // Bind Enter Key on Form Fields
+  const inputForm = document.getElementById("member-queue-input-form");
+  if (inputForm) {
+    inputForm.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" && !e.shiftKey) {
+        e.preventDefault();
+        handleAddMemberToQueue();
+      }
+    });
+  }
+
+  // Initial Queue List Render
+  renderQueueList();
 
   if (window.lucide) window.lucide.createIcons();
 }
