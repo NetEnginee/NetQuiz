@@ -31,7 +31,7 @@ require_once dirname(__DIR__) . '/templates/header.php';
 <div class="leaderboard-page-container pt-2">
 
     <!-- 1. Breadcrumb Navigation -->
-    <div class="mb-4 max-w-full overflow-hidden">
+    <div class="leaderboard-breadcrumb-wrap max-w-full overflow-hidden">
         <?= renderBreadcrumb([
             ['label' => 'Student', 'url' => BASE_URL . '/'],
             ['label' => 'Leaderboard', 'url' => BASE_URL . '/leaderboard'],
