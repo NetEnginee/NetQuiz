@@ -400,7 +400,6 @@ body {
   padding: 2rem 2.5rem 4rem 2.5rem;
   scrollbar-width: thin;
   scrollbar-color: var(--border-card) transparent;
-  scrollbar-gutter: stable;
   scroll-behavior: smooth;
   -webkit-overflow-scrolling: touch;
 }
@@ -511,7 +510,6 @@ body {
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.7);
   box-sizing: border-box;
   margin-bottom: 2rem;
-  overflow: hidden;
 }
 
 .corner-crosshair {
@@ -620,7 +618,28 @@ textarea.form-field-input:focus {
   box-shadow: 0 0 0 2px rgba(80, 227, 194, 0.15);
 }
 
-.panel-select option {
+select.form-field-input,
+.panel-select {
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2371717A' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.85rem center;
+  padding-right: 2.25rem;
+  cursor: pointer;
+}
+
+input[type="number"].form-field-input::-webkit-inner-spin-button,
+input[type="number"].form-field-input::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type="number"].form-field-input {
+  -moz-appearance: textfield;
+}
+
+.panel-select option,
+select.form-field-input option {
   background-color: #121214;
   color: #ffffff;
 }
@@ -1429,22 +1448,24 @@ textarea.form-field-input:focus {
   padding: 1.5rem;
   position: relative;
   overflow: hidden;
-  /* Rich Responsive Tables for Material Preview */
-  .material-table-wrapper,
-  .student-preview-shell .material-table-wrapper {
-    width: 100%;
-    max-width: 100%;
-    margin: 1.75rem 0;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    background-color: #0c0c0f;
-    border: 1px solid var(--border-card);
-    border-radius: 8px;
-    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.45);
-    position: relative;
-    box-sizing: border-box;
-    display: block;
-  }
+}
+
+/* Rich Responsive Tables for Material Preview */
+.material-table-wrapper,
+.student-preview-shell .material-table-wrapper {
+  width: 100%;
+  max-width: 100%;
+  margin: 1.75rem 0;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  background-color: #0c0c0f;
+  border: 1px solid var(--border-card);
+  border-radius: 8px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.45);
+  position: relative;
+  box-sizing: border-box;
+  display: block;
+}
 
   .student-preview-shell table:not(.material-data-table) {
     display: block;
@@ -1726,11 +1747,26 @@ textarea.form-field-input:focus {
   }
 
   .select-wrapper .panel-select {
-    padding: 0.5rem 0.85rem;
+    padding: 0.5rem 2rem 0.5rem 0.85rem;
     font-size: 0.8rem;
     font-weight: 600;
     color: var(--text-secondary);
+    background-color: var(--bg-subcard);
+    border: 1px solid var(--border-card);
+    border-radius: 6px;
     cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2371717A' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.65rem center;
+    transition: all 0.15s ease;
+  }
+
+  .select-wrapper .panel-select:hover {
+    background-color: #18181c;
+    border-color: var(--border-card-hover);
+    color: #ffffff;
   }
 
   .btn-panel-outline {
@@ -2059,8 +2095,6 @@ textarea.form-field-input:focus {
     position: fixed;
     inset: 0;
     background-color: rgba(0, 0, 0, 0.85);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
     display: none;
     align-items: center;
     justify-content: center;
@@ -2099,8 +2133,6 @@ textarea.form-field-input:focus {
     position: fixed;
     inset: 0;
     background-color: rgba(0, 0, 0, 0.85);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
     display: none;
     align-items: center;
     justify-content: center;
@@ -2187,21 +2219,30 @@ textarea.form-field-input:focus {
     position: fixed;
     bottom: 2rem;
     left: 50%;
-    transform: translateX(-50%) translateY(100px);
+    transform: translateX(-50%) translateY(120px);
     background-color: #0c0c10;
-    border: 1px solid var(--border-card);
+    border: 1px solid var(--border-card-hover, #2f2f38);
     border-radius: 9999px;
-    padding: 0.45rem 1rem;
-    display: flex;
+    padding: 0.5rem 1.15rem;
+    display: none;
     align-items: center;
     gap: 0.85rem;
     z-index: 60;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.85);
-    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow:
+      0 12px 35px rgba(0, 0, 0, 0.9),
+      0 0 20px rgba(80, 227, 194, 0.1);
+    transition:
+      transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+      opacity 0.2s ease;
+    opacity: 0;
+    pointer-events: none;
   }
 
   .floating-bulk-bar.active {
+    display: flex !important;
     transform: translateX(-50%) translateY(0);
+    opacity: 1;
+    pointer-events: auto;
   }
 
   .bulk-count-badge {
@@ -2469,4 +2510,3 @@ textarea.form-field-input:focus {
       right: -2px;
     }
   }
-}

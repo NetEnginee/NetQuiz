@@ -373,6 +373,7 @@ document.addEventListener("DOMContentLoaded", () => {
           title: "Buat Kuis",
           desc: "Buat kuis baru dan kelola daftar pertanyaan ujian.",
           actionHtml: `<button type="button" class="btn-primary-black" id="btn-header-open-quiz-studio" onclick="if(window.openQuizStudio) window.openQuizStudio();"><i data-lucide="plus" style="width: 15px; height: 15px;"></i> <span>Buat Kuis Baru</span></button>`,
+          actionHtml: "",
         },
         "badge-section": {
           title: "Lencana",
@@ -438,6 +439,7 @@ document.addEventListener("DOMContentLoaded", () => {
         document.getElementById("admin-workspace");
       if (mainCanvasEl) {
         mainCanvasEl.scrollTo({ top: 0, behavior: "instant" });
+        mainCanvasEl.scrollTop = 0;
       }
       window.scrollTo({ top: 0, behavior: "instant" });
 
@@ -462,6 +464,11 @@ document.addEventListener("DOMContentLoaded", () => {
             openVisualBuilderFromForm();
           }
         }
+      // Hide Floating Bulk Action Bar when navigating away from manage-section
+      const floatingBulkBar = document.getElementById("floating-bulk-bar");
+      if (floatingBulkBar && targetId !== "manage-section") {
+        floatingBulkBar.classList.remove("active");
+        floatingBulkBar.style.display = "none";
       }
     }
   }
@@ -500,6 +507,16 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // Initialize active tab from URL hash
+  function ensureCanvasScrollTop() {
+    const mainCanvasEl =
+      document.querySelector(".admin-main-canvas") ||
+      document.getElementById("admin-workspace");
+    if (mainCanvasEl) {
+      mainCanvasEl.scrollTop = 0;
+    }
+    window.scrollTo(0, 0);
+  }
+
   function initTabFromHash() {
     if ("scrollRestoration" in history) {
       history.scrollRestoration = "manual";
@@ -518,11 +535,20 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     window.scrollTo(0, 0);
     setTimeout(() => window.scrollTo(0, 0), 10);
+    ensureCanvasScrollTop();
+    requestAnimationFrame(ensureCanvasScrollTop);
+    setTimeout(ensureCanvasScrollTop, 10);
+    setTimeout(ensureCanvasScrollTop, 50);
+    setTimeout(ensureCanvasScrollTop, 150);
   }
 
   // Run on load and on hash change
   initTabFromHash();
   window.addEventListener("hashchange", initTabFromHash);
+  window.addEventListener("load", () => {
+    ensureCanvasScrollTop();
+    setTimeout(ensureCanvasScrollTop, 50);
+  });
 
   // --- JSON MATERIAL IMPORT LOGIC ---
   const jsonFileInput = document.getElementById("import-material-json");

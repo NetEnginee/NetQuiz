@@ -199,11 +199,6 @@ window.openQuizStudio = function () {
   if (window.switchQuizView) {
     window.switchQuizView("create");
   }
-  const titleInput = document.getElementById("quiz-input-title");
-  if (titleInput) {
-    titleInput.focus();
-    titleInput.scrollIntoView({ behavior: "smooth", block: "center" });
-  }
 };
 
 window.closeQuizStudio = function () {
@@ -217,9 +212,6 @@ window.openMaterialForm = function () {
   const container = document.getElementById("material-form-container");
   if (container) {
     container.style.display = "block";
-    const titleInput = document.getElementById("material-input-title");
-    if (titleInput) titleInput.focus();
-    container.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 };
 
@@ -235,9 +227,6 @@ window.openBadgeForm = function () {
   const container = document.getElementById("badge-form-container");
   if (container) {
     container.style.display = "block";
-    const titleInput = container.querySelector('input[name="title"]');
-    if (titleInput) titleInput.focus();
-    container.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 };
 
@@ -254,12 +243,19 @@ window.openEditMemberModal = function (id, username, email) {
   const form = document.getElementById("edit-member-form");
   if (!modal || !form) return;
 
+  const member = Array.isArray(window.NETQUIZ_MEMBERS)
+    ? window.NETQUIZ_MEMBERS.find((u) => u.id == id)
+    : null;
+
+  const finalUsername = member ? member.username : username || "";
+  const finalEmail = member ? member.email : email || "";
+
   form.action = `${window.BASE_URL}/admin/users/update/${id}`;
   const unInput = document.getElementById("edit-member-username");
   const emInput = document.getElementById("edit-member-email");
   const pwInput = document.getElementById("edit-member-password");
-  if (unInput) unInput.value = username || "";
-  if (emInput) emInput.value = email || "";
+  if (unInput) unInput.value = finalUsername;
+  if (emInput) emInput.value = finalEmail;
   if (pwInput) pwInput.value = "";
 
   modal.classList.add("active");
@@ -338,6 +334,15 @@ document.addEventListener("DOMContentLoaded", () => {
   if (window.lucide) {
     window.lucide.createIcons();
   }
+
+  // Ensure workspace canvas is strictly at top (0, 0)
+  const mainCanvasEl =
+    document.querySelector(".admin-main-canvas") ||
+    document.getElementById("admin-workspace");
+  if (mainCanvasEl) {
+    mainCanvasEl.scrollTop = 0;
+  }
+  window.scrollTo(0, 0);
 });
 
 // ==========================================================================
@@ -1382,9 +1387,6 @@ window.editQueueMember = function (id) {
 
     renderQueueList();
     if (usernameInput) usernameInput.focus();
-
-    const sec = document.getElementById("member-section");
-    if (sec) sec.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 };
 
@@ -1432,7 +1434,6 @@ function renderMemberSection() {
                         </p>
                     </div>
                     <button type="button" id="btn-quick-generate-password" class="btn-secondary-outline" style="padding: 0.4rem 0.85rem; font-size: 0.775rem; display: inline-flex; align-items: center; gap: 0.35rem;" title="Isi otomatis kolom password dengan password acak yang aman">
-                        <i data-lucide="sparkles" style="width: 14px; height: 14px; color: var(--accent-cyan);"></i>
                         <span>Acak Password</span>
                     </button>
                 </div>
@@ -1513,7 +1514,6 @@ function renderMemberSection() {
                             Antrean Calon Member Baru
                         </h3>
                     </div>
-                    <span style="font-size: 0.775rem; color: #71717a;">Data sementara disimpan sebelum dikirim ke database</span>
                 </div>
 
                 <!-- Interactive Queue List Container -->
@@ -1665,6 +1665,28 @@ function renderManageMemberSection() {
                 </div>
             </div>
         </div>
+
+        <!-- FLOATING BULK ACTION BAR (SCOPED TO MANAGE SECTION) -->
+        <div id="floating-bulk-bar" class="floating-bulk-bar" aria-live="polite" style="display: none;">
+            <span id="bulk-selected-count" class="bulk-count-badge">0 Dipilih</span>
+            <div class="bulk-actions-group">
+                <button type="button" id="btn-bulk-activate" class="btn-bulk-action">
+                    <i data-lucide="check-circle" style="width: 14px; height: 14px;"></i>
+                    <span>Aktifkan</span>
+                </button>
+                <button type="button" id="btn-bulk-suspend" class="btn-bulk-action">
+                    <i data-lucide="user-x" style="width: 14px; height: 14px;"></i>
+                    <span>Nonaktifkan</span>
+                </button>
+                <button type="button" id="btn-bulk-export" class="btn-bulk-action">
+                    <i data-lucide="download" style="width: 14px; height: 14px;"></i>
+                    <span>Export Terpilih</span>
+                </button>
+            </div>
+            <button type="button" id="btn-bulk-dismiss" class="btn-bulk-dismiss" title="Batal Pilihan">
+                <i data-lucide="x" style="width: 16px; height: 16px;"></i>
+            </button>
+        </div>
     `;
 
   const tbody = document.getElementById("member-table-body");
@@ -1737,7 +1759,7 @@ function renderManageMemberSection() {
                     <td class="font-mono text-muted">${escapeHtml(dateStr)}</td>
                     <td style="text-align: right;">
                         <div class="table-actions-group">
-                            <button type="button" class="btn-icon-action" title="Edit Member" onclick="openEditMemberModal(${m.id}, '${safeUsername}', '${safeEmail}')">
+                            <button type="button" class="btn-icon-action" title="Edit Member" onclick="openEditMemberModal(${m.id})">
                                 <i data-lucide="pencil"></i>
                             </button>
                             <form action="${window.BASE_URL}/admin/users/suspend/${m.id}" method="POST" style="display: inline;">
@@ -1747,7 +1769,7 @@ function renderManageMemberSection() {
                                     <i data-lucide="${toggleIcon}"></i>
                                 </button>
                             </form>
-                            <button type="button" class="btn-icon-action btn-action-danger" title="Hapus Member" onclick="confirmDeleteMember(${m.id}, '${safeUsername}')">
+                            <button type="button" class="btn-icon-action btn-action-danger" title="Hapus Member" onclick="confirmDeleteMember(${m.id})">
                                 <i data-lucide="trash-2"></i>
                             </button>
                         </div>
@@ -1810,9 +1832,11 @@ function renderManageMemberSection() {
 
     if (selected.length > 0) {
       bulkCountBadge.textContent = `${selected.length} Dipilih`;
+      floatingBulkBar.style.display = "flex";
       floatingBulkBar.classList.add("active");
     } else {
       floatingBulkBar.classList.remove("active");
+      floatingBulkBar.style.display = "none";
       if (selectAllCheckbox) selectAllCheckbox.checked = false;
     }
   }
@@ -1830,7 +1854,10 @@ function renderManageMemberSection() {
       const rowCheckboxes = document.querySelectorAll(".member-row-checkbox");
       rowCheckboxes.forEach((cb) => (cb.checked = false));
       if (selectAllCheckbox) selectAllCheckbox.checked = false;
-      if (floatingBulkBar) floatingBulkBar.classList.remove("active");
+      if (floatingBulkBar) {
+        floatingBulkBar.classList.remove("active");
+        floatingBulkBar.style.display = "none";
+      }
     });
   }
 
@@ -1858,7 +1885,10 @@ function renderManageMemberSection() {
           }
         }
       });
-      if (floatingBulkBar) floatingBulkBar.classList.remove("active");
+      if (floatingBulkBar) {
+        floatingBulkBar.classList.remove("active");
+        floatingBulkBar.style.display = "none";
+      }
       if (selectAllCheckbox) selectAllCheckbox.checked = false;
     });
   }
@@ -1884,7 +1914,10 @@ function renderManageMemberSection() {
           }
         }
       });
-      if (floatingBulkBar) floatingBulkBar.classList.remove("active");
+      if (floatingBulkBar) {
+        floatingBulkBar.classList.remove("active");
+        floatingBulkBar.style.display = "none";
+      }
       if (selectAllCheckbox) selectAllCheckbox.checked = false;
     });
   }
@@ -1950,9 +1983,14 @@ function renderManageMemberSection() {
 
   // Delete Member Dialog
   window.confirmDeleteMember = function (id, username) {
+    const member = Array.isArray(window.NETQUIZ_MEMBERS)
+      ? window.NETQUIZ_MEMBERS.find((u) => u.id == id)
+      : null;
+    const finalUsername = member ? member.username : username || `ID #${id}`;
+
     showGeistConfirm(
       "Hapus Member",
-      `Apakah Anda yakin ingin menghapus akun siswa "${username}"? Tindakan ini tidak dapat dibatalkan.`,
+      `Apakah Anda yakin ingin menghapus akun siswa "${finalUsername}"? Tindakan ini tidak dapat dibatalkan.`,
       "Hapus Member",
       () => {
         const form = document.createElement("form");
@@ -2804,7 +2842,9 @@ function renderMaterialsSection() {
     `;
 
     // Auto-wrap any raw table in preview if not already wrapped in .material-table-wrapper
-    const previewTables = previewRender.querySelectorAll(".material-content-body table");
+    const previewTables = previewRender.querySelectorAll(
+      ".material-content-body table",
+    );
     previewTables.forEach((table) => {
       table.classList.add("material-data-table");
       if (!table.closest(".material-table-wrapper")) {
