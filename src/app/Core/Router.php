@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Core;
@@ -164,6 +165,22 @@ class Router
      */
     private function handleUnauthorized(): void
     {
+        $isJson = (
+            (isset($_SERVER['HTTP_ACCEPT']) && str_contains($_SERVER['HTTP_ACCEPT'], 'application/json')) ||
+            (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest') ||
+            (isset($_SERVER['REQUEST_URI']) && str_contains($_SERVER['REQUEST_URI'], '/admin/materials/upload'))
+        );
+
+        if ($isJson) {
+            if (ob_get_length()) {
+                @ob_clean();
+            }
+            http_response_code(403);
+            header('Content-Type: application/json; charset=utf-8');
+            echo json_encode(['success' => false, 'error' => 'Akses ditolak atau sesi Anda telah berakhir. Silakan login kembali.'], JSON_UNESCAPED_UNICODE);
+            exit;
+        }
+
         $currentRole = Security::getCurrentRole();
         if ($currentRole === Role::GUEST) {
             header('Location: ' . BASE_URL . '/login');
@@ -186,6 +203,22 @@ class Router
      */
     private function sendNotFound(): void
     {
+        $isJson = (
+            (isset($_SERVER['HTTP_ACCEPT']) && str_contains($_SERVER['HTTP_ACCEPT'], 'application/json')) ||
+            (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest') ||
+            (isset($_SERVER['REQUEST_URI']) && str_contains($_SERVER['REQUEST_URI'], '/admin/materials/upload'))
+        );
+
+        if ($isJson) {
+            if (ob_get_length()) {
+                @ob_clean();
+            }
+            http_response_code(404);
+            header('Content-Type: application/json; charset=utf-8');
+            echo json_encode(['success' => false, 'error' => 'Endpoint tidak ditemukan.'], JSON_UNESCAPED_UNICODE);
+            exit;
+        }
+
         http_response_code(404);
         $title = '404 - Halaman Tidak Ditemukan';
         $viewFile = APP_ROOT . '/Views/errors/404.php';

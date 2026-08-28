@@ -2435,6 +2435,14 @@ select.form-field-input option {
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.85);
   position: relative;
   overflow: hidden;
+  transition:
+    opacity 0.22s ease-out,
+    transform 0.22s ease-out;
+}
+
+.toast-item.hiding {
+  opacity: 0;
+  transform: translateX(20px);
 }
 
 .toast-item.toast-success {

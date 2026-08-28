@@ -15,7 +15,10 @@ class ImageHelper
     private const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB limit
     private const ALLOWED_MIME_TYPES = [
         'image/jpeg' => 'jpg',
-        'image/png' => 'png',
+        'image/jpg'  => 'jpg',
+        'image/pjpeg' => 'jpg',
+        'image/png'  => 'png',
+        'image/x-png' => 'png',
         'image/webp' => 'webp',
     ];
 
@@ -46,13 +49,12 @@ class ImageHelper
 
         // Strict Server-Side MIME-Type Detection via Magic Bytes
         $finfo = finfo_open(FILEINFO_MIME_TYPE);
-        if (!$finfo) {
-            return false;
+        $mimeType = $finfo ? finfo_file($finfo, $tmpPath) : (function_exists('mime_content_type') ? mime_content_type($tmpPath) : '');
+        if ($finfo) {
+            finfo_close($finfo);
         }
-        $mimeType = finfo_file($finfo, $tmpPath);
-        finfo_close($finfo);
 
-        if (!array_key_exists($mimeType, self::ALLOWED_MIME_TYPES)) {
+        if (!array_key_exists(strtolower((string)$mimeType), self::ALLOWED_MIME_TYPES)) {
             return false;
         }
 
@@ -67,12 +69,19 @@ class ImageHelper
         $destination = rtrim($targetDir, '/') . '/' . $newFilename;
 
         // Create image resource based on actual magic-byte MIME
-        $image = match ($mimeType) {
-            'image/jpeg' => @imagecreatefromjpeg($tmpPath),
-            'image/png' => @imagecreatefrompng($tmpPath),
+        $image = match (strtolower((string)$mimeType)) {
+            'image/jpeg', 'image/jpg', 'image/pjpeg' => @imagecreatefromjpeg($tmpPath),
+            'image/png', 'image/x-png' => @imagecreatefrompng($tmpPath),
             'image/webp' => @imagecreatefromwebp($tmpPath),
             default => null
         };
+
+        if (!$image) {
+            $rawBinary = @file_get_contents($tmpPath);
+            if ($rawBinary) {
+                $image = @imagecreatefromstring($rawBinary);
+            }
+        }
 
         if (!$image) {
             return false;
@@ -105,7 +114,7 @@ class ImageHelper
         }
 
         $mimePart = str_replace('data:', '', $parts[0]);
-        if (!array_key_exists($mimePart, self::ALLOWED_MIME_TYPES)) {
+        if (!array_key_exists(strtolower($mimePart), self::ALLOWED_MIME_TYPES)) {
             return null;
         }
 
@@ -170,26 +179,49 @@ class ImageHelper
 
         // Strict Server-Side MIME-Type Detection via Magic Bytes
         $finfo = finfo_open(FILEINFO_MIME_TYPE);
-        if (!$finfo) {
-            return null;
+        $mimeType = $finfo ? finfo_file($finfo, $tmpPath) : (function_exists('mime_content_type') ? mime_content_type($tmpPath) : '');
+        if ($finfo) {
+            finfo_close($finfo);
         }
-        $mimeType = finfo_file($finfo, $tmpPath);
-        finfo_close($finfo);
 
+        $mimeType = strtolower((string)$mimeType);
         if (!array_key_exists($mimeType, self::ALLOWED_MIME_TYPES)) {
-            return null;
+            $ext = strtolower(pathinfo($file['name'] ?? '', PATHINFO_EXTENSION));
+            if (!in_array($ext, ['jpg', 'jpeg', 'png', 'webp'], true)) {
+                return null;
+            }
         }
 
         // Create image resource based on actual magic-byte MIME
         $image = match ($mimeType) {
-            'image/jpeg' => @imagecreatefromjpeg($tmpPath),
-            'image/png' => @imagecreatefrompng($tmpPath),
+            'image/jpeg', 'image/jpg', 'image/pjpeg' => @imagecreatefromjpeg($tmpPath),
+            'image/png', 'image/x-png' => @imagecreatefrompng($tmpPath),
             'image/webp' => @imagecreatefromwebp($tmpPath),
             default => null
         };
 
         if (!$image) {
+            $rawBinary = @file_get_contents($tmpPath);
+            if ($rawBinary) {
+                $image = @imagecreatefromstring($rawBinary);
+            }
+        }
+
+        if (!$image) {
             return null;
+        }
+
+        // Auto-correct JPEG orientation based on EXIF if available
+        if (function_exists('exif_read_data') && ($mimeType === 'image/jpeg' || $mimeType === 'image/pjpeg' || $mimeType === 'image/jpg')) {
+            $exif = @exif_read_data($tmpPath);
+            if (!empty($exif['Orientation'])) {
+                $image = match ((int)$exif['Orientation']) {
+                    3 => imagerotate($image, 180, 0),
+                    6 => imagerotate($image, -90, 0),
+                    8 => imagerotate($image, 90, 0),
+                    default => $image
+                };
+            }
         }
 
         $origWidth = imagesx($image);
@@ -232,7 +264,7 @@ class ImageHelper
         }
 
         if (!is_dir($targetDir)) {
-            mkdir($targetDir, 0755, true);
+            @mkdir($targetDir, 0777, true);
         }
 
         // Generate cryptographically secure randomized filename
@@ -240,7 +272,18 @@ class ImageHelper
         $newFilename = "mat_img_{$randomHash}.webp";
         $destination = rtrim($targetDir, '/') . '/' . $newFilename;
 
-        $success = imagewebp($image, $destination, max(1, min(100, $quality)));
+        $success = false;
+        if (function_exists('imagewebp')) {
+            $success = @imagewebp($image, $destination, max(1, min(100, $quality)));
+        }
+
+        if (!$success) {
+            // Fallback to JPEG if WebP conversion fails on host
+            $newFilename = "mat_img_{$randomHash}.jpg";
+            $destination = rtrim($targetDir, '/') . '/' . $newFilename;
+            $success = @imagejpeg($image, $destination, max(1, min(100, $quality)));
+        }
+
         imagedestroy($image);
 
         return $success ? $newFilename : null;

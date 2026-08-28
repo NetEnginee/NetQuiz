@@ -262,16 +262,17 @@ document.addEventListener("DOMContentLoaded", () => {
       if (spinner) spinner.classList.remove("hidden");
 
       try {
-        const response = await fetch(
-          `${window.BASE_URL}/api/settings/profile`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ username, email, csrf_token: window.CSRF_TOKEN || "" }),
+        const response = await fetch("/api/settings/profile", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
           },
-        );
+          body: JSON.stringify({
+            username,
+            email,
+            csrf_token: window.CSRF_TOKEN || "",
+          }),
+        });
 
         const result = await response.json();
 
@@ -425,21 +426,18 @@ document.addEventListener("DOMContentLoaded", () => {
       if (spinner) spinner.classList.remove("hidden");
 
       try {
-        const response = await fetch(
-          `${window.BASE_URL}/api/settings/password`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              current_password,
-              new_password,
-              confirm_password,
-              csrf_token: window.CSRF_TOKEN || "",
-            }),
+        const response = await fetch("/api/settings/password", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
           },
-        );
+          body: JSON.stringify({
+            current_password,
+            new_password,
+            confirm_password,
+            csrf_token: window.CSRF_TOKEN || "",
+          }),
+        });
 
         const result = await response.json();
 
