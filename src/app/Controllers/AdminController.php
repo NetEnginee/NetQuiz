@@ -10,7 +10,6 @@ use App\Core\Role;
 use App\Core\Request;
 use App\Core\Response;
 use App\Core\Security;
-use App\Core\ImageHelper;
 use App\Repositories\QuizRepositoryInterface;
 use App\Repositories\QuestionRepositoryInterface;
 use App\Repositories\UserRepositoryInterface;
@@ -580,47 +579,5 @@ class AdminController extends Controller
         }
 
         return $this->jsonResponse(['error' => 'Materi tidak ditemukan.'], 404);
-    }
-
-    /**
-     * Upload Image for Material Article.
-     * Processes file, downscales if larger than 1600px, converts to WebP, and stores in /uploads/materials/.
-     * Prevents database bloat by storing lightweight URLs instead of binary/base64 strings.
-     */
-    public function uploadMaterialImage(): Response
-    {
-        $this->checkAdmin();
-
-        if (!$this->request->isMethod('POST')) {
-            return $this->jsonResponse(['success' => false, 'error' => 'Metode request tidak diizinkan.'], 405);
-        }
-
-        $csrfToken = $this->request->input('csrf_token') ?? ($_SERVER['HTTP_X_CSRF_TOKEN'] ?? null);
-        if (!Security::validateCsrfToken($csrfToken)) {
-            return $this->jsonResponse(['success' => false, 'error' => 'Sesi tidak valid, silakan muat ulang halaman.'], 403);
-        }
-
-        if (empty($_FILES['image']) || !isset($_FILES['image']['error'])) {
-            return $this->jsonResponse(['success' => false, 'error' => 'Tidak ada berkas gambar yang diunggah.'], 400);
-        }
-
-        $targetDir = PUBLIC_ROOT . '/uploads/materials';
-        $filename = ImageHelper::uploadMaterialImage($_FILES['image'], $targetDir, 1600, 80);
-
-        if (!$filename) {
-            return $this->jsonResponse([
-                'success' => false,
-                'error' => 'Gagal memproses gambar. Pastikan format berkas adalah JPG, PNG, atau WebP dengan ukuran maksimal 5MB.'
-            ], 422);
-        }
-
-        $url = BASE_URL . '/uploads/materials/' . $filename;
-
-        return $this->jsonResponse([
-            'success' => true,
-            'url' => $url,
-            'filename' => $filename,
-            'message' => 'Gambar berhasil dioptimasi dan diunggah.'
-        ]);
     }
 }
