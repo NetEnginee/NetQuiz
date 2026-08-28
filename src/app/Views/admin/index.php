@@ -180,7 +180,64 @@ $stats = $stats ?? [
         </main>
     </div>
 
-    <!-- 5. EDIT MEMBER MODAL (ROOT OVERLAY) -->
+    <!-- 5. MATERIAL IMAGE UPLOAD MODAL (ROOT OVERLAY) -->
+    <div id="material-image-upload-modal" class="admin-modal-overlay" aria-hidden="true" role="dialog" aria-modal="true">
+        <div class="admin-modal-content" style="max-width: 520px;">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.25rem;">
+                <div>
+                    <h3 style="font-family: var(--font-heading); font-size: 1.05rem; font-weight: 800; color: #ffffff; margin: 0;">Upload Gambar Materi</h3>
+                    <p style="font-size: 0.8rem; color: #a1a1aa; margin-top: 0.2rem;">Pilih berkas gambar lokal untuk dioptimasi (WebP) dan disisipkan ke artikel.</p>
+                </div>
+                <button type="button" onclick="window.closeMaterialImageModal && window.closeMaterialImageModal()" class="toast-close-btn" title="Tutup">
+                    <i data-lucide="x" style="width: 16px; height: 16px;"></i>
+                </button>
+            </div>
+
+            <div class="material-upload-dropzone" id="material-dropzone">
+                <input type="file" id="material-upload-file-input" accept="image/png,image/jpeg,image/jpg,image/webp" style="display: none;">
+                <div class="dropzone-empty-state" id="material-dropzone-empty">
+                    <div class="dropzone-icon-box">
+                        <i data-lucide="upload-cloud" style="width: 32px; height: 32px; color: var(--accent-cyan);"></i>
+                    </div>
+                    <p class="dropzone-primary-text">Tarik & Lepas gambar di sini atau <span class="dropzone-browse-link">Telusuri Berkas</span></p>
+                    <span class="dropzone-subtext">Mendukung PNG, JPG, JPEG, WebP (Maksimal 5MB)</span>
+                </div>
+
+                <div class="dropzone-preview-state" id="material-dropzone-preview" style="display: none;">
+                    <div class="dropzone-thumbnail-wrap">
+                        <img id="material-preview-thumbnail" src="" alt="Thumbnail Pratinjau">
+                    </div>
+                    <div class="dropzone-file-info">
+                        <span id="material-preview-filename" class="dropzone-filename font-mono">nama_gambar.png</span>
+                        <span id="material-preview-filesize" class="dropzone-filesize font-mono text-muted">0 KB</span>
+                    </div>
+                    <button type="button" class="btn-remove-preview" id="btn-remove-material-image-preview" title="Ganti Gambar">
+                        <i data-lucide="trash-2" style="width: 14px; height: 14px;"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="form-field-group" style="margin-top: 1.25rem;">
+                <label class="form-field-label">Keterangan / Caption Gambar (Opsional)</label>
+                <input type="text" class="form-field-input" id="material-image-caption-input" placeholder="Contoh: Skema Topologi VLAN & Trunking RouterOS" autocomplete="off">
+            </div>
+
+            <div class="form-field-group" style="margin-top: 0.75rem;">
+                <label class="form-field-label">Teks Alternatif (Alt Text) (Opsional)</label>
+                <input type="text" class="form-field-input" id="material-image-alt-input" placeholder="Contoh: Diagram VLAN RouterOS" autocomplete="off">
+            </div>
+
+            <div style="display: flex; justify-content: flex-end; align-items: center; gap: 0.75rem; margin-top: 1.5rem; border-top: 1px solid #222222; padding-top: 1rem;">
+                <button type="button" class="btn-secondary-outline" onclick="window.closeMaterialImageModal && window.closeMaterialImageModal()">Batal</button>
+                <button type="button" class="btn-primary-black" id="btn-submit-material-image-upload" style="display: inline-flex; align-items: center; gap: 0.4rem;">
+                    <i data-lucide="check" style="width: 14px; height: 14px;"></i>
+                    <span>Upload & Sisipkan</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 6. EDIT MEMBER MODAL (ROOT OVERLAY) -->
     <div id="edit-member-modal" class="admin-modal-overlay" aria-hidden="true" role="dialog" aria-modal="true">
         <div class="admin-modal-content" style="max-width: 480px;">
             <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.25rem;">

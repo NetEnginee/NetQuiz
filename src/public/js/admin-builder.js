@@ -275,8 +275,274 @@ window.closeEditMemberModal = function () {
   document.body.style.overflow = "";
 };
 
-// Global backdrop click & escape key listener for edit modal
+/** Global Helpers to Open and Close Material Image Upload Modal */
+let selectedMaterialImageFile = null;
+
+window.openMaterialImageModal = function (preloadedFile = null) {
+  const modal = document.getElementById("material-image-upload-modal");
+  if (!modal) return;
+
+  const fileInput = document.getElementById("material-upload-file-input");
+  const captionInput = document.getElementById("material-image-caption-input");
+  const altInput = document.getElementById("material-image-alt-input");
+  const emptyState = document.getElementById("material-dropzone-empty");
+  const previewState = document.getElementById("material-dropzone-preview");
+  const submitBtn = document.getElementById("btn-submit-material-image-upload");
+
+  if (submitBtn) {
+    submitBtn.disabled = false;
+    submitBtn.innerHTML = `<i data-lucide="check" style="width: 14px; height: 14px;"></i> <span>Upload & Sisipkan</span>`;
+  }
+
+  if (preloadedFile && preloadedFile instanceof File) {
+    setMaterialUploadFile(preloadedFile);
+  } else {
+    selectedMaterialImageFile = null;
+    if (fileInput) fileInput.value = "";
+    if (captionInput) captionInput.value = "";
+    if (altInput) altInput.value = "";
+    if (emptyState) emptyState.style.display = "flex";
+    if (previewState) previewState.style.display = "none";
+  }
+
+  modal.classList.add("active");
+  modal.setAttribute("aria-hidden", "false");
+  document.body.style.overflow = "hidden";
+  if (window.lucide) window.lucide.createIcons({ root: modal });
+};
+
+window.closeMaterialImageModal = function () {
+  const modal = document.getElementById("material-image-upload-modal");
+  if (!modal) return;
+  modal.classList.remove("active");
+  modal.setAttribute("aria-hidden", "true");
+  document.body.style.overflow = "";
+};
+
+function formatFileSize(bytes) {
+  if (!bytes || bytes === 0) return "0 B";
+  const k = 1024;
+  const sizes = ["B", "KB", "MB", "GB"];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + " " + sizes[i];
+}
+
+function setMaterialUploadFile(file) {
+  if (!file) return;
+
+  const validTypes = ["image/jpeg", "image/png", "image/webp", "image/jpg"];
+  if (!validTypes.includes(file.type)) {
+    if (window.showGeistToast) {
+      showGeistToast(
+        "error",
+        "Format Tidak Didukung",
+        "Hanya format file JPG, PNG, atau WebP yang didukung.",
+      );
+    } else {
+      alert("Hanya format file JPG, PNG, atau WebP yang didukung.");
+    }
+    return;
+  }
+
+  if (file.size > 5 * 1024 * 1024) {
+    if (window.showGeistToast) {
+      showGeistToast(
+        "error",
+        "Ukuran Terlalu Besar",
+        "Ukuran file maksimal adalah 5MB.",
+      );
+    } else {
+      alert("Ukuran file maksimal adalah 5MB.");
+    }
+    return;
+  }
+
+  selectedMaterialImageFile = file;
+
+  const emptyState = document.getElementById("material-dropzone-empty");
+  const previewState = document.getElementById("material-dropzone-preview");
+  const thumbnailImg = document.getElementById("material-preview-thumbnail");
+  const filenameSpan = document.getElementById("material-preview-filename");
+  const filesizeSpan = document.getElementById("material-preview-filesize");
+  const captionInput = document.getElementById("material-image-caption-input");
+
+  if (filenameSpan) filenameSpan.textContent = file.name;
+  if (filesizeSpan) filesizeSpan.textContent = formatFileSize(file.size);
+
+  // Auto-fill caption placeholder from cleaned filename if empty
+  if (captionInput && !captionInput.value.trim()) {
+    const rawName = file.name.replace(/\.[^/.]+$/, "").replace(/[-_]+/g, " ");
+    captionInput.value = rawName.charAt(0).toUpperCase() + rawName.slice(1);
+  }
+
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    if (thumbnailImg) thumbnailImg.src = e.target.result;
+    if (emptyState) emptyState.style.display = "none";
+    if (previewState) previewState.style.display = "flex";
+    if (window.lucide) window.lucide.createIcons();
+  };
+  reader.readAsDataURL(file);
+}
+
+function initMaterialImageUploadModal() {
+  const modal = document.getElementById("material-image-upload-modal");
+  const dropzone = document.getElementById("material-dropzone");
+  const fileInput = document.getElementById("material-upload-file-input");
+  const btnRemove = document.getElementById(
+    "btn-remove-material-image-preview",
+  );
+  const btnSubmit = document.getElementById("btn-submit-material-image-upload");
+  const captionInput = document.getElementById("material-image-caption-input");
+  const altInput = document.getElementById("material-image-alt-input");
+  const emptyState = document.getElementById("material-dropzone-empty");
+  const previewState = document.getElementById("material-dropzone-preview");
+
+  if (modal) {
+    modal.addEventListener("click", (e) => {
+      if (e.target === modal) window.closeMaterialImageModal();
+    });
+  }
+
+  if (dropzone && fileInput) {
+    dropzone.addEventListener("click", (e) => {
+      if (e.target.closest("#btn-remove-material-image-preview")) return;
+      fileInput.click();
+    });
+
+    fileInput.addEventListener("change", (e) => {
+      const file = e.target.files[0];
+      if (file) setMaterialUploadFile(file);
+    });
+
+    // Drag & Drop
+    ["dragenter", "dragover"].forEach((eventName) => {
+      dropzone.addEventListener(eventName, (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        dropzone.classList.add("dragover");
+      });
+    });
+
+    ["dragleave", "drop"].forEach((eventName) => {
+      dropzone.addEventListener(eventName, (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        dropzone.classList.remove("dragover");
+      });
+    });
+
+    dropzone.addEventListener("drop", (e) => {
+      const dt = e.dataTransfer;
+      const file = dt && dt.files && dt.files[0];
+      if (file) setMaterialUploadFile(file);
+    });
+  }
+
+  if (btnRemove) {
+    btnRemove.addEventListener("click", (e) => {
+      e.stopPropagation();
+      selectedMaterialImageFile = null;
+      if (fileInput) fileInput.value = "";
+      if (emptyState) emptyState.style.display = "flex";
+      if (previewState) previewState.style.display = "none";
+    });
+  }
+
+  if (btnSubmit) {
+    btnSubmit.addEventListener("click", async () => {
+      if (!selectedMaterialImageFile) {
+        if (window.showGeistToast) {
+          showGeistToast(
+            "error",
+            "Pilih Gambar",
+            "Silakan pilih berkas gambar lokal terlebih dahulu.",
+          );
+        } else {
+          alert("Silakan pilih berkas gambar lokal terlebih dahulu.");
+        }
+        return;
+      }
+
+      btnSubmit.disabled = true;
+      btnSubmit.innerHTML = `<i data-lucide="loader-2" class="animate-spin" style="width: 14px; height: 14px;"></i> <span>Mengunggah & Mengoptimasi...</span>`;
+      if (window.lucide) window.lucide.createIcons();
+
+      try {
+        const formData = new FormData();
+        formData.append("image", selectedMaterialImageFile);
+        formData.append("csrf_token", window.CSRF_TOKEN || "");
+
+        const response = await fetch(
+          `${window.BASE_URL}/admin/materials/upload-image`,
+          {
+            method: "POST",
+            body: formData,
+          },
+        );
+
+        const result = await response.json();
+
+        if (!response.ok || !result.success) {
+          throw new Error(result.error || "Gagal mengunggah gambar.");
+        }
+
+        const caption = captionInput ? captionInput.value.trim() : "";
+        const alt =
+          altInput && altInput.value.trim()
+            ? altInput.value.trim()
+            : caption || "Gambar Materi MikroTik";
+        const finalCaption = caption || "Gambar Penjelas Materi Pembelajaran";
+
+        const imageSnippet = `\n<figure>\n  <img src="${result.url}" alt="${escapeHtml(alt)}">\n  <figcaption>${escapeHtml(finalCaption)}</figcaption>\n</figure>\n`;
+
+        const contentTextarea = document.getElementById(
+          "material-content-textarea",
+        );
+        if (contentTextarea) {
+          const start = contentTextarea.selectionStart || 0;
+          const end = contentTextarea.selectionEnd || 0;
+          const currentVal = contentTextarea.value;
+          contentTextarea.value =
+            currentVal.substring(0, start) +
+            imageSnippet +
+            currentVal.substring(end);
+          const newCursorPos = start + imageSnippet.length;
+          contentTextarea.focus();
+          contentTextarea.setSelectionRange(newCursorPos, newCursorPos);
+
+          // Trigger input event to update reading time and live preview
+          contentTextarea.dispatchEvent(new Event("input", { bubbles: true }));
+        }
+
+        window.closeMaterialImageModal();
+
+        if (window.showGeistToast) {
+          showGeistToast(
+            "success",
+            "Gambar Disisipkan",
+            "Gambar berhasil dikonversi ke WebP dan disematkan ke materi.",
+          );
+        }
+      } catch (err) {
+        if (window.showGeistToast) {
+          showGeistToast("error", "Upload Gagal", err.message);
+        } else {
+          alert("Gagal mengunggah gambar: " + err.message);
+        }
+      } finally {
+        btnSubmit.disabled = false;
+        btnSubmit.innerHTML = `<i data-lucide="check" style="width: 14px; height: 14px;"></i> <span>Upload & Sisipkan</span>`;
+        if (window.lucide) window.lucide.createIcons();
+      }
+    });
+  }
+}
+
+// Global backdrop click & escape key listener for edit modal and material image upload modal
 document.addEventListener("DOMContentLoaded", () => {
+  initMaterialImageUploadModal();
+
   const editModal = document.getElementById("edit-member-modal");
   if (editModal) {
     editModal.addEventListener("click", (e) => {
@@ -286,8 +552,12 @@ document.addEventListener("DOMContentLoaded", () => {
   window.addEventListener("keydown", (e) => {
     if (e.key === "Escape") {
       const activeModal = document.querySelector(".admin-modal-overlay.active");
-      if (activeModal && activeModal.id === "edit-member-modal") {
-        closeEditMemberModal();
+      if (activeModal) {
+        if (activeModal.id === "edit-member-modal") {
+          closeEditMemberModal();
+        } else if (activeModal.id === "material-image-upload-modal") {
+          window.closeMaterialImageModal();
+        }
       }
     }
   });
@@ -2221,7 +2491,7 @@ function renderMaterialsSection() {
                                     <i data-lucide="help-circle" style="width: 12px; height: 12px;"></i>
                                     <span>FAQ</span>
                                 </button>
-                                <button type="button" class="toolbar-btn" onclick="window.insertMaterialSnippet('figure')" title="Gambar dengan Keterangan / Caption">
+                                <button type="button" class="toolbar-btn" onclick="window.openMaterialImageModal()" title="Upload & Sisipkan Gambar Lokal (WebP Auto-Optimized)">
                                     <i data-lucide="image" style="width: 12px; height: 12px;"></i>
                                     <span>Gambar</span>
                                 </button>
