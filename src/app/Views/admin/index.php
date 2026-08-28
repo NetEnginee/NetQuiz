@@ -180,28 +180,6 @@ $stats = $stats ?? [
         </main>
     </div>
 
-    <!-- 4. FLOATING BULK ACTION BAR (MEMBER MANAGEMENT) -->
-    <div id="floating-bulk-bar" class="floating-bulk-bar" aria-live="polite">
-        <span id="bulk-selected-count" class="bulk-count-badge">0 Dipilih</span>
-        <div class="bulk-actions-group">
-            <button type="button" id="btn-bulk-activate" class="btn-bulk-action">
-                <i data-lucide="check-circle" style="width: 14px; height: 14px;"></i>
-                <span>Aktifkan</span>
-            </button>
-            <button type="button" id="btn-bulk-suspend" class="btn-bulk-action">
-                <i data-lucide="user-x" style="width: 14px; height: 14px;"></i>
-                <span>Nonaktifkan</span>
-            </button>
-            <button type="button" id="btn-bulk-export" class="btn-bulk-action">
-                <i data-lucide="download" style="width: 14px; height: 14px;"></i>
-                <span>Export Terpilih</span>
-            </button>
-        </div>
-        <button type="button" id="btn-bulk-dismiss" class="btn-bulk-dismiss" title="Batal Pilihan">
-            <i data-lucide="x" style="width: 16px; height: 16px;"></i>
-        </button>
-    </div>
-
     <!-- 5. EDIT MEMBER MODAL (ROOT OVERLAY) -->
     <div id="edit-member-modal" class="admin-modal-overlay" aria-hidden="true" role="dialog" aria-modal="true">
         <div class="admin-modal-content" style="max-width: 480px;">

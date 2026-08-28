@@ -372,7 +372,6 @@ document.addEventListener("DOMContentLoaded", () => {
         "quiz-section": {
           title: "Buat Kuis",
           desc: "Buat kuis baru dan kelola daftar pertanyaan ujian.",
-          actionHtml: `<button type="button" class="btn-primary-black" id="btn-header-open-quiz-studio" onclick="if(window.openQuizStudio) window.openQuizStudio();"><i data-lucide="plus" style="width: 15px; height: 15px;"></i> <span>Buat Kuis Baru</span></button>`,
           actionHtml: "",
         },
         "badge-section": {
@@ -455,15 +454,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       }
 
-      // Auto-open visual builder when clicking Materi Belajar (unless just saved)
-      if (targetId === "materials-section") {
-        if (typeof openVisualBuilderFromForm === "function") {
-          if (sessionStorage.getItem("just_saved_material") === "true") {
-            sessionStorage.removeItem("just_saved_material");
-          } else {
-            openVisualBuilderFromForm();
-          }
-        }
       // Hide Floating Bulk Action Bar when navigating away from manage-section
       const floatingBulkBar = document.getElementById("floating-bulk-bar");
       if (floatingBulkBar && targetId !== "manage-section") {
@@ -533,8 +523,6 @@ document.addEventListener("DOMContentLoaded", () => {
     } else {
       activateTab("quiz-section");
     }
-    window.scrollTo(0, 0);
-    setTimeout(() => window.scrollTo(0, 0), 10);
     ensureCanvasScrollTop();
     requestAnimationFrame(ensureCanvasScrollTop);
     setTimeout(ensureCanvasScrollTop, 10);
