@@ -164,8 +164,10 @@ $router->post('/admin/badge/delete-bulk', [\App\Controllers\AdminController::cla
 
 // Materials
 $router->post('/admin/materials/create', [\App\Controllers\AdminController::class, 'createMaterial']);
+$router->post('/admin/materials/store', [\App\Controllers\AdminController::class, 'createMaterial']); // Alias
 $router->post('/admin/materials/update/{id}', [\App\Controllers\AdminController::class, 'updateMaterial']);
 $router->post('/admin/materials/upload-image', [\App\Controllers\AdminController::class, 'uploadMaterialImage']);
+$router->post('/admin/materials/upload', [\App\Controllers\AdminController::class, 'uploadMaterialImage']); // Alias
 $router->get('/admin/materials/{id}', [\App\Controllers\AdminController::class, 'getMaterialJson']);
 $router->get('/admin/material/get/{id}', [\App\Controllers\AdminController::class, 'getMaterialJson']); // Compatibility
 $router->post('/admin/materials/delete/{id}', [\App\Controllers\AdminController::class, 'deleteMaterial']);

@@ -3,17 +3,32 @@
  * Standards: Vercel Geist Light Theme, Dual-Layer CAD Blueprint, Zero AI Slop
  */
 
+function escapeHtml(str) {
+  if (str === null || str === undefined) return "";
+  return String(str)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
 // ==========================================================================
 // 1. GLOBAL TOAST & CONFIRM MODAL SYSTEM (GEIST STANDARDS)
 // ==========================================================================
 
 /** Global non-blocking floating toast notification */
 window.showGeistToast = function (type, title, message, duration = 3500) {
-  const toaster = document.getElementById("geist-toaster");
-  if (!toaster) return;
+  let toaster = document.getElementById("geist-toaster");
+  if (!toaster) {
+    toaster = document.createElement("div");
+    toaster.id = "geist-toaster";
+    toaster.className = "toast-container geist-toaster";
+    document.body.appendChild(toaster);
+  }
 
   const toast = document.createElement("div");
-  toast.className = `geist-toast toast-${type}`;
+  toast.className = `toast-item geist-toast toast-${type}`;
 
   let iconName = "check-circle";
   if (type === "error") iconName = "alert-circle";
@@ -53,6 +68,12 @@ window.showGeistToast = function (type, title, message, duration = 3500) {
     });
   }
 };
+
+function showGeistToast(type, title, message, duration = 3500) {
+  if (typeof window.showGeistToast === "function") {
+    window.showGeistToast(type, title, message, duration);
+  }
+}
 
 /** Global custom confirmation modal dialog with focus trap & scroll lock */
 window.showGeistConfirm = function (
@@ -282,6 +303,20 @@ window.openMaterialImageModal = function (preloadedFile = null) {
   const modal = document.getElementById("material-image-upload-modal");
   if (!modal) return;
 
+  const contentTextarea = document.getElementById("material-content-textarea");
+  if (contentTextarea) {
+    window.materialTextareaCaret = {
+      start:
+        contentTextarea.selectionStart !== undefined
+          ? contentTextarea.selectionStart
+          : contentTextarea.value.length,
+      end:
+        contentTextarea.selectionEnd !== undefined
+          ? contentTextarea.selectionEnd
+          : contentTextarea.value.length,
+    };
+  }
+
   const fileInput = document.getElementById("material-upload-file-input");
   const captionInput = document.getElementById("material-image-caption-input");
   const altInput = document.getElementById("material-image-alt-input");
@@ -330,10 +365,20 @@ function formatFileSize(bytes) {
 function setMaterialUploadFile(file) {
   if (!file) return;
 
-  const validTypes = ["image/jpeg", "image/png", "image/webp", "image/jpg"];
-  if (!validTypes.includes(file.type)) {
+  const validTypes = [
+    "image/jpeg",
+    "image/png",
+    "image/webp",
+    "image/jpg",
+    "image/pjpeg",
+    "image/x-png",
+  ];
+  if (
+    !validTypes.includes(file.type) &&
+    !file.name.match(/\.(jpe?g|png|webp)$/i)
+  ) {
     if (window.showGeistToast) {
-      showGeistToast(
+      window.showGeistToast(
         "error",
         "Format Tidak Didukung",
         "Hanya format file JPG, PNG, atau WebP yang didukung.",
@@ -346,7 +391,7 @@ function setMaterialUploadFile(file) {
 
   if (file.size > 5 * 1024 * 1024) {
     if (window.showGeistToast) {
-      showGeistToast(
+      window.showGeistToast(
         "error",
         "Ukuran Terlalu Besar",
         "Ukuran file maksimal adalah 5MB.",
@@ -384,6 +429,295 @@ function setMaterialUploadFile(file) {
   };
   reader.readAsDataURL(file);
 }
+window.setMaterialUploadFile = setMaterialUploadFile;
+
+window.triggerMaterialImageSelect = function (e) {
+  if (e && e.target && e.target.closest("#btn-remove-material-image-preview"))
+    return;
+  const fileInput = document.getElementById("material-upload-file-input");
+  if (fileInput) fileInput.click();
+};
+
+window.handleMaterialFileSelect = function (input) {
+  const file = input && input.files && input.files[0];
+  if (file) {
+    setMaterialUploadFile(file);
+  }
+};
+
+window.removeMaterialUploadPreview = function (e) {
+  if (e) {
+    e.preventDefault();
+    e.stopPropagation();
+  }
+  selectedMaterialImageFile = null;
+  const fileInput = document.getElementById("material-upload-file-input");
+  if (fileInput) fileInput.value = "";
+  const emptyState = document.getElementById("material-dropzone-empty");
+  const previewState = document.getElementById("material-dropzone-preview");
+  if (emptyState) emptyState.style.display = "flex";
+  if (previewState) previewState.style.display = "none";
+};
+
+window.handleMaterialDragOver = function (e) {
+  e.preventDefault();
+  e.stopPropagation();
+  const dropzone = document.getElementById("material-dropzone");
+  if (dropzone) dropzone.classList.add("dragover");
+};
+
+window.handleMaterialDragLeave = function (e) {
+  e.preventDefault();
+  e.stopPropagation();
+  const dropzone = document.getElementById("material-dropzone");
+  if (dropzone) dropzone.classList.remove("dragover");
+};
+
+window.handleMaterialDrop = function (e) {
+  e.preventDefault();
+  e.stopPropagation();
+  const dropzone = document.getElementById("material-dropzone");
+  if (dropzone) dropzone.classList.remove("dragover");
+  const dt = e.dataTransfer;
+  const file = dt && dt.files && dt.files[0];
+  if (file) {
+    setMaterialUploadFile(file);
+  }
+};
+
+/**
+ * Browser-side client pre-compression engine.
+ * Downscales images exceeding maxWidth/maxHeight to prevent HTTP 413 from reverse proxies,
+ * accelerates upload transfer speeds, and reduces memory consumption.
+ */
+async function compressImageBeforeUpload(
+  file,
+  maxDimension = 1600,
+  quality = 0.85,
+) {
+  if (!file || !(file instanceof File)) return file;
+  if (file.type === "image/svg+xml") return file;
+
+  return new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        let width = img.naturalWidth || img.width;
+        let height = img.naturalHeight || img.height;
+
+        if (!width || !height) {
+          resolve(file);
+          return;
+        }
+
+        if (width > maxDimension || height > maxDimension) {
+          if (width > height) {
+            height = Math.round((height * maxDimension) / width);
+            width = maxDimension;
+          } else {
+            width = Math.round((width * maxDimension) / height);
+            height = maxDimension;
+          }
+        }
+
+        const canvas = document.createElement("canvas");
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext("2d");
+        if (!ctx) {
+          resolve(file);
+          return;
+        }
+
+        ctx.drawImage(img, 0, 0, width, height);
+
+        const hasAlpha =
+          file.type === "image/png" || file.type === "image/webp";
+        const exportMime = hasAlpha ? "image/webp" : "image/jpeg";
+
+        canvas.toBlob(
+          (blob) => {
+            if (blob) {
+              const ext = exportMime === "image/webp" ? ".webp" : ".jpg";
+              const rawName = file.name.replace(/\.[^/.]+$/, "");
+              const newFile = new File([blob], `${rawName}${ext}`, {
+                type: exportMime,
+                lastModified: Date.now(),
+              });
+              resolve(newFile);
+            } else {
+              resolve(file);
+            }
+          },
+          exportMime,
+          quality,
+        );
+      };
+
+      img.onerror = () => {
+        resolve(file);
+      };
+
+      img.src = e.target.result;
+    };
+
+    reader.onerror = () => {
+      resolve(file);
+    };
+
+    reader.readAsDataURL(file);
+  });
+}
+
+window.submitMaterialImageUpload = async function (e) {
+  if (e && typeof e.preventDefault === "function") e.preventDefault();
+
+  const fileInput = document.getElementById("material-upload-file-input");
+  const file =
+    selectedMaterialImageFile ||
+    (fileInput && fileInput.files && fileInput.files[0]);
+
+  if (!file) {
+    if (window.showGeistToast) {
+      window.showGeistToast(
+        "error",
+        "Pilih Gambar",
+        "Silakan pilih berkas gambar lokal terlebih dahulu.",
+      );
+    } else {
+      alert("Silakan pilih berkas gambar lokal terlebih dahulu.");
+    }
+    return;
+  }
+
+  const btnSubmit = document.getElementById("btn-submit-material-image-upload");
+  const captionInput = document.getElementById("material-image-caption-input");
+  const altInput = document.getElementById("material-image-alt-input");
+
+  if (btnSubmit) {
+    btnSubmit.disabled = true;
+    btnSubmit.innerHTML = `<i data-lucide="loader-2" class="animate-spin" style="width: 14px; height: 14px;"></i> <span>Mengompres & Mengunggah...</span>`;
+    if (window.lucide) window.lucide.createIcons();
+  }
+
+  try {
+    const fileToUpload = await compressImageBeforeUpload(file, 1600, 0.85);
+
+    const token =
+      window.CSRF_TOKEN ||
+      document.querySelector('input[name="csrf_token"]')?.value ||
+      "";
+
+    const formData = new FormData();
+    formData.append("image", fileToUpload);
+    formData.append("csrf_token", token);
+
+    const uploadUrl = "/admin/materials/upload-image";
+
+    const response = await fetch(uploadUrl, {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "X-CSRF-TOKEN": token,
+        "X-Requested-With": "XMLHttpRequest",
+      },
+      body: formData,
+    });
+
+    const responseText = await response.text();
+    let result;
+    try {
+      result = JSON.parse(responseText);
+    } catch (parseErr) {
+      if (
+        responseText.includes("login") ||
+        response.status === 401 ||
+        response.status === 403
+      ) {
+        throw new Error(
+          "Sesi admin Anda telah kedaluwarsa. Silakan muat ulang halaman dan coba lagi.",
+        );
+      }
+      throw new Error(
+        `Respon server tidak valid (HTTP ${response.status}): ${responseText
+          .replace(/<[^>]*>?/gm, "")
+          .substring(0, 120)
+          .trim()}`,
+      );
+    }
+
+    if (!response.ok || !result || !result.success) {
+      throw new Error(result?.error || "Gagal mengunggah gambar.");
+    }
+
+    const caption = captionInput ? captionInput.value.trim() : "";
+    const alt =
+      altInput && altInput.value.trim()
+        ? altInput.value.trim()
+        : caption || "Gambar Materi MikroTik";
+    const finalCaption = caption || "Gambar Penjelas Materi Pembelajaran";
+
+    const imageSnippet = `\n<figure>\n  <img src="${result.url}" alt="${escapeHtml(alt)}">\n  <figcaption>${escapeHtml(finalCaption)}</figcaption>\n</figure>\n`;
+
+    const contentTextarea = document.getElementById(
+      "material-content-textarea",
+    );
+    if (contentTextarea) {
+      let start = contentTextarea.selectionStart;
+      let end = contentTextarea.selectionEnd;
+
+      if (
+        window.materialTextareaCaret &&
+        typeof window.materialTextareaCaret.start === "number"
+      ) {
+        start = window.materialTextareaCaret.start;
+        end = window.materialTextareaCaret.end;
+      }
+
+      if (typeof start !== "number" || start < 0)
+        start = contentTextarea.value.length;
+      if (typeof end !== "number" || end < 0) end = start;
+
+      const currentVal = contentTextarea.value;
+      contentTextarea.value =
+        currentVal.substring(0, start) +
+        imageSnippet +
+        currentVal.substring(end);
+      const newCursorPos = start + imageSnippet.length;
+      contentTextarea.focus();
+      contentTextarea.setSelectionRange(newCursorPos, newCursorPos);
+
+      // Trigger input event to update reading time and live preview
+      contentTextarea.dispatchEvent(new Event("input", { bubbles: true }));
+      if (typeof updateReadingTime === "function") updateReadingTime();
+      if (typeof updateLivePreviewIfActive === "function")
+        updateLivePreviewIfActive();
+    }
+
+    window.closeMaterialImageModal();
+
+    if (window.showGeistToast) {
+      window.showGeistToast(
+        "success",
+        "Gambar Disisipkan",
+        "Gambar berhasil dikonversi ke WebP dan disematkan ke materi.",
+      );
+    }
+  } catch (err) {
+    if (window.showGeistToast) {
+      window.showGeistToast("error", "Upload Gagal", err.message);
+    } else {
+      alert("Gagal mengunggah gambar: " + err.message);
+    }
+  } finally {
+    if (btnSubmit) {
+      btnSubmit.disabled = false;
+      btnSubmit.innerHTML = `<i data-lucide="check" style="width: 14px; height: 14px;"></i> <span>Upload & Sisipkan</span>`;
+      if (window.lucide) window.lucide.createIcons();
+    }
+  }
+};
 
 function initMaterialImageUploadModal() {
   const modal = document.getElementById("material-image-upload-modal");
@@ -393,10 +727,6 @@ function initMaterialImageUploadModal() {
     "btn-remove-material-image-preview",
   );
   const btnSubmit = document.getElementById("btn-submit-material-image-upload");
-  const captionInput = document.getElementById("material-image-caption-input");
-  const altInput = document.getElementById("material-image-alt-input");
-  const emptyState = document.getElementById("material-dropzone-empty");
-  const previewState = document.getElementById("material-dropzone-preview");
 
   if (modal) {
     modal.addEventListener("click", (e) => {
@@ -405,142 +735,77 @@ function initMaterialImageUploadModal() {
   }
 
   if (dropzone && fileInput) {
-    dropzone.addEventListener("click", (e) => {
-      if (e.target.closest("#btn-remove-material-image-preview")) return;
-      fileInput.click();
+    dropzone.addEventListener("click", window.triggerMaterialImageSelect);
+    dropzone.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        fileInput.click();
+      }
     });
 
     fileInput.addEventListener("change", (e) => {
-      const file = e.target.files[0];
-      if (file) setMaterialUploadFile(file);
+      window.handleMaterialFileSelect(e.target);
     });
 
-    // Drag & Drop
     ["dragenter", "dragover"].forEach((eventName) => {
-      dropzone.addEventListener(eventName, (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        dropzone.classList.add("dragover");
-      });
+      dropzone.addEventListener(eventName, window.handleMaterialDragOver);
     });
 
-    ["dragleave", "drop"].forEach((eventName) => {
-      dropzone.addEventListener(eventName, (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        dropzone.classList.remove("dragover");
-      });
+    ["dragleave", "dragend"].forEach((eventName) => {
+      dropzone.addEventListener(eventName, window.handleMaterialDragLeave);
     });
 
-    dropzone.addEventListener("drop", (e) => {
+    dropzone.addEventListener("drop", window.handleMaterialDrop);
+  }
+
+  // Global Paste & Drop Listener for Material Content Textarea
+  document.addEventListener("paste", (e) => {
+    const textarea = document.getElementById("material-content-textarea");
+    if (
+      document.activeElement === textarea &&
+      e.clipboardData &&
+      e.clipboardData.files &&
+      e.clipboardData.files.length > 0
+    ) {
+      const file = e.clipboardData.files[0];
+      if (file.type.startsWith("image/")) {
+        e.preventDefault();
+        window.openMaterialImageModal(file);
+      }
+    }
+  });
+
+  // Global Drop Listener for Material Content Textarea
+  const textareaEl = document.getElementById("material-content-textarea");
+  if (textareaEl) {
+    textareaEl.addEventListener("dragover", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+    });
+    textareaEl.addEventListener("drop", (e) => {
       const dt = e.dataTransfer;
-      const file = dt && dt.files && dt.files[0];
-      if (file) setMaterialUploadFile(file);
+      if (dt && dt.files && dt.files.length > 0) {
+        const file = dt.files[0];
+        if (file.type.startsWith("image/")) {
+          e.preventDefault();
+          e.stopPropagation();
+          window.openMaterialImageModal(file);
+        }
+      }
     });
   }
 
   if (btnRemove) {
-    btnRemove.addEventListener("click", (e) => {
-      e.stopPropagation();
-      selectedMaterialImageFile = null;
-      if (fileInput) fileInput.value = "";
-      if (emptyState) emptyState.style.display = "flex";
-      if (previewState) previewState.style.display = "none";
-    });
+    btnRemove.addEventListener("click", window.removeMaterialUploadPreview);
   }
 
   if (btnSubmit) {
-    btnSubmit.addEventListener("click", async () => {
-      if (!selectedMaterialImageFile) {
-        if (window.showGeistToast) {
-          showGeistToast(
-            "error",
-            "Pilih Gambar",
-            "Silakan pilih berkas gambar lokal terlebih dahulu.",
-          );
-        } else {
-          alert("Silakan pilih berkas gambar lokal terlebih dahulu.");
-        }
-        return;
-      }
-
-      btnSubmit.disabled = true;
-      btnSubmit.innerHTML = `<i data-lucide="loader-2" class="animate-spin" style="width: 14px; height: 14px;"></i> <span>Mengunggah & Mengoptimasi...</span>`;
-      if (window.lucide) window.lucide.createIcons();
-
-      try {
-        const formData = new FormData();
-        formData.append("image", selectedMaterialImageFile);
-        formData.append("csrf_token", window.CSRF_TOKEN || "");
-
-        const response = await fetch(
-          `${window.BASE_URL}/admin/materials/upload-image`,
-          {
-            method: "POST",
-            body: formData,
-          },
-        );
-
-        const result = await response.json();
-
-        if (!response.ok || !result.success) {
-          throw new Error(result.error || "Gagal mengunggah gambar.");
-        }
-
-        const caption = captionInput ? captionInput.value.trim() : "";
-        const alt =
-          altInput && altInput.value.trim()
-            ? altInput.value.trim()
-            : caption || "Gambar Materi MikroTik";
-        const finalCaption = caption || "Gambar Penjelas Materi Pembelajaran";
-
-        const imageSnippet = `\n<figure>\n  <img src="${result.url}" alt="${escapeHtml(alt)}">\n  <figcaption>${escapeHtml(finalCaption)}</figcaption>\n</figure>\n`;
-
-        const contentTextarea = document.getElementById(
-          "material-content-textarea",
-        );
-        if (contentTextarea) {
-          const start = contentTextarea.selectionStart || 0;
-          const end = contentTextarea.selectionEnd || 0;
-          const currentVal = contentTextarea.value;
-          contentTextarea.value =
-            currentVal.substring(0, start) +
-            imageSnippet +
-            currentVal.substring(end);
-          const newCursorPos = start + imageSnippet.length;
-          contentTextarea.focus();
-          contentTextarea.setSelectionRange(newCursorPos, newCursorPos);
-
-          // Trigger input event to update reading time and live preview
-          contentTextarea.dispatchEvent(new Event("input", { bubbles: true }));
-        }
-
-        window.closeMaterialImageModal();
-
-        if (window.showGeistToast) {
-          showGeistToast(
-            "success",
-            "Gambar Disisipkan",
-            "Gambar berhasil dikonversi ke WebP dan disematkan ke materi.",
-          );
-        }
-      } catch (err) {
-        if (window.showGeistToast) {
-          showGeistToast("error", "Upload Gagal", err.message);
-        } else {
-          alert("Gagal mengunggah gambar: " + err.message);
-        }
-      } finally {
-        btnSubmit.disabled = false;
-        btnSubmit.innerHTML = `<i data-lucide="check" style="width: 14px; height: 14px;"></i> <span>Upload & Sisipkan</span>`;
-        if (window.lucide) window.lucide.createIcons();
-      }
-    });
+    btnSubmit.addEventListener("click", window.submitMaterialImageUpload);
   }
 }
 
 // Global backdrop click & escape key listener for edit modal and material image upload modal
-document.addEventListener("DOMContentLoaded", () => {
+function setupModalGlobalListeners() {
   initMaterialImageUploadModal();
 
   const editModal = document.getElementById("edit-member-modal");
@@ -561,12 +826,18 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
   });
-});
+}
+
+if (document.readyState !== "loading") {
+  setupModalGlobalListeners();
+} else {
+  document.addEventListener("DOMContentLoaded", setupModalGlobalListeners);
+}
 
 // ==========================================================================
 // 2. DOCUMENT INITIALIZATION
 // ==========================================================================
-document.addEventListener("DOMContentLoaded", () => {
+function initAdminConsoleModules() {
   // Render all 5 workspace module sections
   renderQuizSection();
   renderMemberSection();
@@ -579,42 +850,47 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Bind eye icons
   bindPasswordToggles();
+}
 
-  // Global keyboard shortcut '/' for search
-  document.addEventListener("keydown", (e) => {
-    if (
-      e.key === "/" &&
-      !["INPUT", "TEXTAREA"].includes(document.activeElement.tagName)
-    ) {
-      e.preventDefault();
-      const activeSection = document.querySelector(
-        ".admin-section-content.active",
-      );
-      if (activeSection) {
-        const searchInput = activeSection.querySelector(".panel-search-input");
-        if (searchInput) {
-          searchInput.focus();
-          searchInput.select();
-        }
+if (document.readyState !== "loading") {
+  initAdminConsoleModules();
+} else {
+  document.addEventListener("DOMContentLoaded", initAdminConsoleModules);
+}
+
+// Global keyboard shortcut '/' for search
+document.addEventListener("keydown", (e) => {
+  if (
+    e.key === "/" &&
+    !["INPUT", "TEXTAREA"].includes(document.activeElement.tagName)
+  ) {
+    e.preventDefault();
+    const activeSection = document.querySelector(
+      ".admin-section-content.active",
+    );
+    if (activeSection) {
+      const searchInput = activeSection.querySelector(".panel-search-input");
+      if (searchInput) {
+        searchInput.focus();
+        searchInput.select();
       }
     }
-  });
-
-  // Re-initialize Lucide Icons
-  if (window.lucide) {
-    window.lucide.createIcons();
   }
-
-  // Ensure workspace canvas is strictly at top (0, 0)
-  const mainCanvasEl =
-    document.querySelector(".admin-main-canvas") ||
-    document.getElementById("admin-workspace");
-  if (mainCanvasEl) {
-    mainCanvasEl.scrollTop = 0;
-  }
-  window.scrollTo(0, 0);
 });
 
+// Re-initialize Lucide Icons
+if (window.lucide) {
+  window.lucide.createIcons();
+}
+
+// Ensure workspace canvas is strictly at top (0, 0)
+const mainCanvasEl =
+  document.querySelector(".admin-main-canvas") ||
+  document.getElementById("admin-workspace");
+if (mainCanvasEl) {
+  mainCanvasEl.scrollTop = 0;
+}
+window.scrollTo(0, 0);
 // ==========================================================================
 // 3. MODUL 1: BUAT KUIS (Dedicated Studio View & Quizzes Table)
 // ==========================================================================
@@ -2603,6 +2879,9 @@ function renderMaterialsSection() {
                         <a href="${window.BASE_URL}/learn/${m.id}" target="_blank" class="btn-icon-action" title="Lihat Tampilan Siswa">
                             <i data-lucide="external-link"></i>
                         </a>
+                        <button type="button" class="btn-icon-action" title="Edit Materi" onclick="window.editMaterial(${m.id})">
+                            <i data-lucide="edit-3"></i>
+                        </button>
                         <button type="button" class="btn-icon-action btn-action-danger" title="Hapus Materi" onclick="confirmDeleteMaterial(${m.id}, '${escapeHtml(m.title).replace(/'/g, "\\'")}')">
                             <i data-lucide="trash-2"></i>
                         </button>
@@ -2649,8 +2928,62 @@ function renderMaterialsSection() {
       if (viewList) viewList.style.display = "block";
       if (tabCreate) tabCreate.classList.remove("active");
       if (tabList) tabList.classList.add("active");
+
+      const form = document.getElementById("form-create-material");
+      if (form) {
+        form.reset();
+        form.action = `${window.BASE_URL}/admin/materials/create`;
+        const submitBtn = form.querySelector('button[type="submit"] span');
+        if (submitBtn) submitBtn.textContent = "Simpan Materi";
+      }
     }
     if (window.lucide) window.lucide.createIcons();
+  };
+
+  // Edit Material Feature
+  window.editMaterial = async function (id) {
+    try {
+      const resp = await fetch(`/admin/materials/${id}`, {
+        headers: {
+          Accept: "application/json",
+          "X-Requested-With": "XMLHttpRequest",
+        },
+      });
+      if (!resp.ok) throw new Error("Gagal mengambil data materi.");
+      const data = await resp.json();
+
+      if (data) {
+        window.switchMaterialView("create");
+        const titleInput = document.getElementById("material-input-title");
+        const catSelect = document.getElementById("material-input-category");
+        const diffSelect = document.getElementById("material-input-difficulty");
+        const contentTextarea = document.getElementById(
+          "material-content-textarea",
+        );
+
+        if (titleInput) titleInput.value = data.title || "";
+        if (catSelect) catSelect.value = data.category || "Routing";
+        if (diffSelect) diffSelect.value = data.difficulty || "Mudah";
+        if (contentTextarea) {
+          contentTextarea.value = data.content || "";
+          updateReadingTime();
+          updateLivePreviewIfActive();
+        }
+
+        const form = document.getElementById("form-create-material");
+        if (form) {
+          form.action = `${window.BASE_URL}/admin/materials/update/${id}`;
+          const submitBtn = form.querySelector('button[type="submit"] span');
+          if (submitBtn) submitBtn.textContent = "Perbarui Materi";
+        }
+      }
+    } catch (err) {
+      if (window.showGeistToast) {
+        showGeistToast("error", "Gagal Membuka Materi", err.message);
+      } else {
+        alert(err.message);
+      }
+    }
   };
 
   window.openMaterialForm = function () {
@@ -2780,8 +3113,8 @@ function renderMaterialsSection() {
         snippet = `\n<details class="material-details">\n  <summary>🔍 Pertanyaan Umum: ${selected || "Mengapa Router Tidak Bisa Ping ke Internet?"}</summary>\n  <div class="material-details-body">\n    <p>Periksa kembali parameter NAT (Masquerade), DNS Server pada <code>/ip dns</code>, dan Default Route.</p>\n  </div>\n</details>\n`;
         break;
       case "figure":
-        snippet = `\n<figure>\n  <img src="${selected || "https://images.unsplash.com/photo-1544197150-b99a580bb7a8?w=800&auto=format&fit=crop"}" alt="Diagram Topologi Jaringan">\n  <figcaption>Gambar 1.1: Skema Topologi Jaringan Lab RouterOS</figcaption>\n</figure>\n`;
-        break;
+        window.openMaterialImageModal();
+        return;
       case "link":
         snippet = `<a href="https://wiki.mikrotik.com" target="_blank" rel="noopener noreferrer">${selected || "Dokumentasi Resmi MikroTik"}</a>`;
         break;
@@ -2950,6 +3283,15 @@ function renderMaterialsSection() {
       }
       return tableBlock;
     });
+
+    // 9.5. Markdown Images ![alt](url) -> <figure><img src="url" alt="alt"><figcaption>alt</figcaption></figure>
+    raw = raw.replace(
+      /!\[([^\]]*)\]\((https?:\/\/[^\s\)]+|\/[^\s\)]+)\)/g,
+      function (_, altText, url) {
+        const cleanAlt = altText.trim() || "Gambar Materi";
+        return `\n<figure>\n  <img src="${url}" alt="${cleanAlt}">\n  <figcaption>${cleanAlt}</figcaption>\n</figure>\n`;
+      },
+    );
 
     // 10. Wrap plain lines in <p> if not already inside HTML block
     const blocks = raw.split(/\n{2,}/);
@@ -3558,14 +3900,4 @@ function formatDate(dateString) {
   } catch (e) {
     return dateString;
   }
-}
-
-function escapeHtml(str) {
-  if (!str) return "";
-  return String(str)
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;");
 }

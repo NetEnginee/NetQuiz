@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Core;
@@ -79,6 +80,12 @@ class Response
      */
     public function send(): void
     {
+        if (isset($this->headers['Content-Type']) && str_contains($this->headers['Content-Type'], 'application/json')) {
+            if (ob_get_length()) {
+                @ob_clean();
+            }
+        }
+
         if (!headers_sent()) {
             http_response_code($this->statusCode);
 

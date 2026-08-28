@@ -10,6 +10,7 @@ use App\Core\Role;
 use App\Core\Request;
 use App\Core\Response;
 use App\Core\Security;
+use App\Core\ImageHelper;
 use App\Repositories\QuizRepositoryInterface;
 use App\Repositories\QuestionRepositoryInterface;
 use App\Repositories\UserRepositoryInterface;
@@ -35,6 +36,22 @@ class AdminController extends Controller
     {
         $email = isset($_SESSION['user']['email']) ? trim($_SESSION['user']['email']) : '';
         if (!isset($_SESSION['user']) || !Security::isAdminEmail($email)) {
+            $isJson = (
+                $this->request->isAjax() ||
+                str_contains($_SERVER['HTTP_ACCEPT'] ?? '', 'application/json') ||
+                str_contains($_SERVER['REQUEST_URI'] ?? '', '/admin/materials/upload')
+            );
+
+            if ($isJson) {
+                if (ob_get_length()) {
+                    @ob_clean();
+                }
+                http_response_code(403);
+                header('Content-Type: application/json; charset=utf-8');
+                echo json_encode(['success' => false, 'error' => 'Akses ditolak atau sesi admin telah berakhir. Silakan muat ulang halaman atau login kembali.'], JSON_UNESCAPED_UNICODE);
+                exit;
+            }
+
             header('Location: ' . BASE_URL . '/');
             exit;
         }
@@ -579,5 +596,65 @@ class AdminController extends Controller
         }
 
         return $this->jsonResponse(['error' => 'Materi tidak ditemukan.'], 404);
+    }
+
+    /**
+     * Upload Image for Material Article.
+     * Processes file, downscales if larger than 1600px, converts to WebP, and stores in /uploads/materials/.
+     * Prevents database bloat by storing lightweight URLs instead of binary/base64 strings.
+     */
+    public function uploadMaterialImage(): Response
+    {
+        $this->checkAdmin();
+
+        if (!$this->request->isMethod('POST')) {
+            return $this->jsonResponse(['success' => false, 'error' => 'Metode request tidak diizinkan.'], 405);
+        }
+
+        $csrfToken = $this->request->input('csrf_token')
+            ?? ($_SERVER['HTTP_X_CSRF_TOKEN'] ?? null)
+            ?? ($_POST['csrf_token'] ?? null);
+
+        if (!Security::validateCsrfToken($csrfToken)) {
+            return $this->jsonResponse(['success' => false, 'error' => 'Sesi tidak valid, silakan muat ulang halaman.'], 403);
+        }
+
+        $file = $_FILES['image'] ?? $this->request->file('image');
+        if (empty($file) || !isset($file['error']) || $file['error'] !== UPLOAD_ERR_OK) {
+            $errorCode = $file['error'] ?? UPLOAD_ERR_NO_FILE;
+            $errorMsg = match ($errorCode) {
+                UPLOAD_ERR_INI_SIZE, UPLOAD_ERR_FORM_SIZE => 'Ukuran berkas melebihi batas upload server.',
+                UPLOAD_ERR_PARTIAL => 'Berkas hanya terunggah sebagian. Silakan coba lagi.',
+                UPLOAD_ERR_NO_FILE => 'Tidak ada berkas gambar yang dipilih.',
+                default => 'Gagal mengunggah berkas gambar.'
+            };
+            return $this->jsonResponse(['success' => false, 'error' => $errorMsg], 400);
+        }
+
+        try {
+            $targetDir = PUBLIC_ROOT . '/uploads/materials';
+            $filename = ImageHelper::uploadMaterialImage($file, $targetDir, 1600, 80);
+
+            if (!$filename) {
+                return $this->jsonResponse([
+                    'success' => false,
+                    'error' => 'Gagal memproses gambar. Pastikan format berkas adalah JPG, PNG, atau WebP dengan ukuran maksimal 5MB.'
+                ], 422);
+            }
+
+            $url = BASE_URL . '/uploads/materials/' . $filename;
+
+            return $this->jsonResponse([
+                'success' => true,
+                'url' => $url,
+                'filename' => $filename,
+                'message' => 'Gambar berhasil dioptimasi dan diunggah.'
+            ]);
+        } catch (\Throwable $e) {
+            return $this->jsonResponse([
+                'success' => false,
+                'error' => 'Gagal memproses gambar: ' . $e->getMessage()
+            ], 500);
+        }
     }
 }

@@ -193,8 +193,10 @@ $stats = $stats ?? [
                 </button>
             </div>
 
-            <div class="material-upload-dropzone" id="material-dropzone">
-                <input type="file" id="material-upload-file-input" accept="image/png,image/jpeg,image/jpg,image/webp" style="display: none;">
+            <!-- Hidden File Input for Local Image Picker -->
+            <input type="file" id="material-upload-file-input" accept="image/png,image/jpeg,image/jpg,image/webp" style="display: none;" onchange="window.handleMaterialFileSelect && window.handleMaterialFileSelect(this)">
+
+            <div class="material-upload-dropzone" id="material-dropzone" role="button" tabindex="0" title="Klik atau tarik gambar ke sini" onclick="window.triggerMaterialImageSelect && window.triggerMaterialImageSelect(event)" ondragover="window.handleMaterialDragOver && window.handleMaterialDragOver(event)" ondragleave="window.handleMaterialDragLeave && window.handleMaterialDragLeave(event)" ondrop="window.handleMaterialDrop && window.handleMaterialDrop(event)">
                 <div class="dropzone-empty-state" id="material-dropzone-empty">
                     <div class="dropzone-icon-box">
                         <i data-lucide="upload-cloud" style="width: 32px; height: 32px; color: var(--accent-cyan);"></i>
@@ -211,7 +213,7 @@ $stats = $stats ?? [
                         <span id="material-preview-filename" class="dropzone-filename font-mono">nama_gambar.png</span>
                         <span id="material-preview-filesize" class="dropzone-filesize font-mono text-muted">0 KB</span>
                     </div>
-                    <button type="button" class="btn-remove-preview" id="btn-remove-material-image-preview" title="Ganti Gambar">
+                    <button type="button" class="btn-remove-preview" id="btn-remove-material-image-preview" title="Ganti Gambar" onclick="window.removeMaterialUploadPreview && window.removeMaterialUploadPreview(event)">
                         <i data-lucide="trash-2" style="width: 14px; height: 14px;"></i>
                     </button>
                 </div>
@@ -229,7 +231,7 @@ $stats = $stats ?? [
 
             <div style="display: flex; justify-content: flex-end; align-items: center; gap: 0.75rem; margin-top: 1.5rem; border-top: 1px solid #222222; padding-top: 1rem;">
                 <button type="button" class="btn-secondary-outline" onclick="window.closeMaterialImageModal && window.closeMaterialImageModal()">Batal</button>
-                <button type="button" class="btn-primary-black" id="btn-submit-material-image-upload" style="display: inline-flex; align-items: center; gap: 0.4rem;">
+                <button type="button" class="btn-primary-black" id="btn-submit-material-image-upload" onclick="window.submitMaterialImageUpload && window.submitMaterialImageUpload(event)" style="display: inline-flex; align-items: center; gap: 0.4rem;">
                     <i data-lucide="check" style="width: 14px; height: 14px;"></i>
                     <span>Upload & Sisipkan</span>
                 </button>
@@ -346,6 +348,9 @@ $stats = $stats ?? [
             </a>
         </div>
     </nav>
+
+    <!-- Global Floating Toast Notification Container -->
+    <div id="geist-toaster" class="toast-container geist-toaster" aria-live="polite" aria-atomic="true"></div>
 
     <!-- Scripts -->
     <script src="<?= function_exists('assetUrl') ? assetUrl('/js/admin-dashboard.js') : (BASE_URL . '/js/admin-dashboard.js') ?>"></script>
