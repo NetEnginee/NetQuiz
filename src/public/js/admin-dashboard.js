@@ -353,6 +353,7 @@ document.addEventListener("DOMContentLoaded", () => {
         b.setAttribute("aria-selected", "true");
         b.setAttribute("tabindex", "0");
       });
+      void targetSec.offsetWidth;
       targetSec.classList.add("active");
 
       // Update Dynamic Page Header Title, Desc, and Right Action Button (Strict Rules 2 & 3 in design/Layout.md)
@@ -437,8 +438,9 @@ document.addEventListener("DOMContentLoaded", () => {
         document.querySelector(".admin-main-canvas") ||
         document.getElementById("admin-workspace");
       if (mainCanvasEl) {
-        mainCanvasEl.scrollTo({ top: 0, behavior: "instant" });
+        mainCanvasEl.style.scrollBehavior = "auto";
         mainCanvasEl.scrollTop = 0;
+        mainCanvasEl.style.scrollBehavior = "";
       }
       window.scrollTo({ top: 0, behavior: "instant" });
 
@@ -502,40 +504,59 @@ document.addEventListener("DOMContentLoaded", () => {
       document.querySelector(".admin-main-canvas") ||
       document.getElementById("admin-workspace");
     if (mainCanvasEl) {
+      mainCanvasEl.style.scrollBehavior = "auto";
       mainCanvasEl.scrollTop = 0;
+      mainCanvasEl.style.scrollBehavior = "";
     }
-    window.scrollTo(0, 0);
+    window.scrollTo({ top: 0, behavior: "instant" });
   }
 
-  function initTabFromHash() {
+  function initTabFromHash(isInitialLoad = false) {
     if ("scrollRestoration" in history) {
       history.scrollRestoration = "manual";
     }
-    const currentHash = window.location.hash.substring(1);
-    if (
-      currentHash &&
-      document.getElementById(currentHash) &&
+    const rawHash =
+      window.location.hash.substring(1) || window.__INITIAL_ADMIN_HASH || "";
+    window.__INITIAL_ADMIN_HASH = null;
+    const targetId =
+      rawHash &&
+      document.getElementById(rawHash) &&
       document.querySelector(
-        `.sidebar-cta-btn[data-target="${currentHash}"], .sidebar-menu-btn[data-target="${currentHash}"], .floating-bottom-btn[data-target="${currentHash}"]`,
+        `.sidebar-cta-btn[data-target="${rawHash}"], .sidebar-menu-btn[data-target="${rawHash}"], .floating-bottom-btn[data-target="${rawHash}"]`,
       )
-    ) {
-      activateTab(currentHash);
-    } else {
-      activateTab("quiz-section");
-    }
+        ? rawHash
+        : "quiz-section";
+
+    activateTab(targetId);
     ensureCanvasScrollTop();
     requestAnimationFrame(ensureCanvasScrollTop);
-    setTimeout(ensureCanvasScrollTop, 10);
-    setTimeout(ensureCanvasScrollTop, 50);
-    setTimeout(ensureCanvasScrollTop, 150);
+
+    // Sync fadeIn animation with page-loader fade-out on initial page reload
+    if (
+      isInitialLoad === true &&
+      window.NetQuizLoading &&
+      typeof window.NetQuizLoading.isStarted === "function" &&
+      window.NetQuizLoading.isStarted()
+    ) {
+      const activeSec = document.getElementById(targetId);
+      if (activeSec) {
+        activeSec.style.opacity = "0";
+        setTimeout(() => {
+          activeSec.style.opacity = "";
+          activeSec.classList.remove("active");
+          void activeSec.offsetWidth;
+          activeSec.classList.add("active");
+          ensureCanvasScrollTop();
+        }, 120);
+      }
+    }
   }
 
   // Run on load and on hash change
-  initTabFromHash();
-  window.addEventListener("hashchange", initTabFromHash);
+  initTabFromHash(true);
+  window.addEventListener("hashchange", () => initTabFromHash(false));
   window.addEventListener("load", () => {
     ensureCanvasScrollTop();
-    setTimeout(ensureCanvasScrollTop, 50);
   });
 
   // --- JSON MATERIAL IMPORT LOGIC ---

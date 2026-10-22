@@ -298,13 +298,25 @@ window.closeEditMemberModal = function () {
 
 /** Global Helpers to Open and Close Material Image Upload Modal */
 let selectedMaterialImageFile = null;
+let isUploadingMaterialImage = false;
 
 window.openMaterialImageModal = function (preloadedFile = null) {
   const modal = document.getElementById("material-image-upload-modal");
   if (!modal) return;
 
   const contentTextarea = document.getElementById("material-content-textarea");
-  if (contentTextarea) {
+  if (contentTextarea && document.activeElement === contentTextarea) {
+    window.materialTextareaCaret = {
+      start:
+        contentTextarea.selectionStart !== undefined
+          ? contentTextarea.selectionStart
+          : contentTextarea.value.length,
+      end:
+        contentTextarea.selectionEnd !== undefined
+          ? contentTextarea.selectionEnd
+          : contentTextarea.value.length,
+    };
+  } else if (contentTextarea && !window.materialTextareaCaret) {
     window.materialTextareaCaret = {
       start:
         contentTextarea.selectionStart !== undefined
@@ -536,19 +548,41 @@ async function compressImageBeforeUpload(
           file.type === "image/png" || file.type === "image/webp";
         const exportMime = hasAlpha ? "image/webp" : "image/jpeg";
 
+        const finishWithBlob = (blob, mime) => {
+          if (blob) {
+            const ext = mime === "image/webp" ? ".webp" : ".jpg";
+            const rawName = file.name.replace(/\.[^/.]+$/, "");
+            const newFile = new File([blob], `${rawName}${ext}`, {
+              type: mime,
+              lastModified: Date.now(),
+            });
+            resolve(newFile);
+          } else {
+            resolve(file);
+          }
+        };
+
         canvas.toBlob(
           (blob) => {
-            if (blob) {
-              const ext = exportMime === "image/webp" ? ".webp" : ".jpg";
-              const rawName = file.name.replace(/\.[^/.]+$/, "");
-              const newFile = new File([blob], `${rawName}${ext}`, {
-                type: exportMime,
-                lastModified: Date.now(),
-              });
-              resolve(newFile);
-            } else {
+            if (!blob) {
+              // Fallback to JPEG if browser cannot encode WebP
+              if (exportMime === "image/webp") {
+                canvas.toBlob(
+                  (jpgBlob) => finishWithBlob(jpgBlob, "image/jpeg"),
+                  "image/jpeg",
+                  quality,
+                );
+                return;
+              }
               resolve(file);
+              return;
             }
+            // If still > 1.5MB (for strict 2MB shared hosting limits), re-encode more compactly
+            if (blob.size > 1.5 * 1024 * 1024 && maxDimension > 1200) {
+              compressImageBeforeUpload(file, 1200, 0.72).then(resolve);
+              return;
+            }
+            finishWithBlob(blob, blob.type || exportMime);
           },
           exportMime,
           quality,
@@ -572,6 +606,9 @@ async function compressImageBeforeUpload(
 
 window.submitMaterialImageUpload = async function (e) {
   if (e && typeof e.preventDefault === "function") e.preventDefault();
+  if (e && typeof e.stopPropagation === "function") e.stopPropagation();
+
+  if (isUploadingMaterialImage) return;
 
   const fileInput = document.getElementById("material-upload-file-input");
   const file =
@@ -591,6 +628,7 @@ window.submitMaterialImageUpload = async function (e) {
     return;
   }
 
+  isUploadingMaterialImage = true;
   const btnSubmit = document.getElementById("btn-submit-material-image-upload");
   const captionInput = document.getElementById("material-image-caption-input");
   const altInput = document.getElementById("material-image-alt-input");
@@ -613,10 +651,14 @@ window.submitMaterialImageUpload = async function (e) {
     formData.append("image", fileToUpload);
     formData.append("csrf_token", token);
 
-    const uploadUrl = "/admin/materials/upload-image";
+    const basePath = (window.BASE_URL || "")
+      .replace(/^https?:\/\/[^/]+/i, "")
+      .replace(/\/$/, "");
+    const uploadUrl = `${basePath}/admin/materials/upload-image`;
 
     const response = await fetch(uploadUrl, {
       method: "POST",
+      credentials: "same-origin",
       headers: {
         Accept: "application/json",
         "X-CSRF-TOKEN": token,
@@ -685,14 +727,21 @@ window.submitMaterialImageUpload = async function (e) {
         imageSnippet +
         currentVal.substring(end);
       const newCursorPos = start + imageSnippet.length;
-      contentTextarea.focus();
-      contentTextarea.setSelectionRange(newCursorPos, newCursorPos);
+      window.materialTextareaCaret = {
+        start: newCursorPos,
+        end: newCursorPos,
+      };
+      if (contentTextarea.offsetParent !== null) {
+        contentTextarea.focus();
+        contentTextarea.setSelectionRange(newCursorPos, newCursorPos);
+      }
 
       // Trigger input event to update reading time and live preview
       contentTextarea.dispatchEvent(new Event("input", { bubbles: true }));
-      if (typeof updateReadingTime === "function") updateReadingTime();
-      if (typeof updateLivePreviewIfActive === "function")
-        updateLivePreviewIfActive();
+      if (typeof window.updateMaterialReadingTime === "function")
+        window.updateMaterialReadingTime();
+      if (typeof window.updateMaterialLivePreview === "function")
+        window.updateMaterialLivePreview();
     }
 
     window.closeMaterialImageModal();
@@ -701,7 +750,7 @@ window.submitMaterialImageUpload = async function (e) {
       window.showGeistToast(
         "success",
         "Gambar Disisipkan",
-        "Gambar berhasil dikonversi ke WebP dan disematkan ke materi.",
+        "Gambar berhasil dioptimasi dan disematkan ke materi.",
       );
     }
   } catch (err) {
@@ -711,6 +760,7 @@ window.submitMaterialImageUpload = async function (e) {
       alert("Gagal mengunggah gambar: " + err.message);
     }
   } finally {
+    isUploadingMaterialImage = false;
     if (btnSubmit) {
       btnSubmit.disabled = false;
       btnSubmit.innerHTML = `<i data-lucide="check" style="width: 14px; height: 14px;"></i> <span>Upload & Sisipkan</span>`;
@@ -721,6 +771,9 @@ window.submitMaterialImageUpload = async function (e) {
 
 function initMaterialImageUploadModal() {
   const modal = document.getElementById("material-image-upload-modal");
+  if (!modal || modal.dataset.bound === "1") return;
+  modal.dataset.bound = "1";
+
   const dropzone = document.getElementById("material-dropzone");
   const fileInput = document.getElementById("material-upload-file-input");
   const btnRemove = document.getElementById(
@@ -828,12 +881,6 @@ function setupModalGlobalListeners() {
   });
 }
 
-if (document.readyState !== "loading") {
-  setupModalGlobalListeners();
-} else {
-  document.addEventListener("DOMContentLoaded", setupModalGlobalListeners);
-}
-
 // ==========================================================================
 // 2. DOCUMENT INITIALIZATION
 // ==========================================================================
@@ -850,6 +897,9 @@ function initAdminConsoleModules() {
 
   // Bind eye icons
   bindPasswordToggles();
+
+  // Bind modal & textarea listeners after sections are rendered
+  setupModalGlobalListeners();
 }
 
 if (document.readyState !== "loading") {
@@ -3221,11 +3271,11 @@ function renderMaterialsSection() {
     // 4. Horizontal dividers
     raw = raw.replace(/^(?:---|___|\*\*\*)$/gm, '<hr class="section-divider">');
 
-    // 5. Typography formatting: Bold, Italic, Strikethrough, Code
+    // 5. Typography formatting: Bold, Italic, Strikethrough, Code (skipping HTML tags & URLs)
     raw = raw.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
-    raw = raw.replace(/__(.+?)__/g, "<strong>$1</strong>");
-    raw = raw.replace(/\*(.+?)\*/g, "<em>$1</em>");
-    raw = raw.replace(/_(.+?)_/g, "<em>$1</em>");
+    raw = raw.replace(/(^|[\s(])__(.+?)__(?=[\s.,!?:;)]|$)/gm, "$1<strong>$2</strong>");
+    raw = raw.replace(/(^|[\s(])\*([^*\n<>]+?)\*(?=[\s.,!?:;)]|$)/gm, "$1<em>$2</em>");
+    raw = raw.replace(/(^|[\s(])_([^_\n<>]+?)_(?=[\s.,!?:;)]|$)/gm, "$1<em>$2</em>");
     raw = raw.replace(/~~(.+?)~~/g, "<s>$1</s>");
     raw = raw.replace(/`([^`\n]+)`/g, "<code>$1</code>");
 
@@ -3475,6 +3525,7 @@ function renderMaterialsSection() {
       renderStudentReaderPreview();
     }
   }
+  window.updateMaterialLivePreview = updateLivePreviewIfActive;
 
   // Active Copy Snippet Code within Terminal Blocks
   window.copySnippetCode = function (btn) {
@@ -3504,10 +3555,27 @@ function renderMaterialsSection() {
     readingTimePill.innerHTML = `<i data-lucide="clock" style="width: 12px; height: 12px;"></i> <span>~${minutes} menit baca (${words} kata)</span>`;
     if (window.lucide) window.lucide.createIcons();
   }
+  window.updateMaterialReadingTime = updateReadingTime;
 
   let debounceTimer = null;
   if (contentTextarea) {
+    const saveCaretPosition = () => {
+      window.materialTextareaCaret = {
+        start:
+          contentTextarea.selectionStart !== undefined
+            ? contentTextarea.selectionStart
+            : contentTextarea.value.length,
+        end:
+          contentTextarea.selectionEnd !== undefined
+            ? contentTextarea.selectionEnd
+            : contentTextarea.value.length,
+      };
+    };
+    ["keyup", "mouseup", "click", "select"].forEach((evtName) => {
+      contentTextarea.addEventListener(evtName, saveCaretPosition);
+    });
     contentTextarea.addEventListener("input", () => {
+      saveCaretPosition();
       updateReadingTime();
       clearTimeout(debounceTimer);
       debounceTimer = setTimeout(updateLivePreviewIfActive, 120);

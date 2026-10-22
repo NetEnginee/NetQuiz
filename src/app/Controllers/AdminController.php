@@ -633,6 +633,20 @@ class AdminController extends Controller
 
         try {
             $targetDir = PUBLIC_ROOT . '/uploads/materials';
+            if (!is_dir($targetDir)) {
+                @mkdir($targetDir, 0777, true);
+            }
+            if (!is_writable($targetDir)) {
+                @chmod($targetDir, 0777);
+            }
+
+            if (!is_dir($targetDir) || !is_writable($targetDir)) {
+                return $this->jsonResponse([
+                    'success' => false,
+                    'error' => 'Direktori penyimpanan (/uploads/materials) tidak dapat ditulis oleh server. Periksa permission folder.'
+                ], 500);
+            }
+
             $filename = ImageHelper::uploadMaterialImage($file, $targetDir, 1600, 80);
 
             if (!$filename) {
@@ -642,7 +656,8 @@ class AdminController extends Controller
                 ], 422);
             }
 
-            $url = BASE_URL . '/uploads/materials/' . $filename;
+            $basePath = rtrim((string)(parse_url(BASE_URL, PHP_URL_PATH) ?? ''), '/');
+            $url = $basePath . '/uploads/materials/' . $filename;
 
             return $this->jsonResponse([
                 'success' => true,

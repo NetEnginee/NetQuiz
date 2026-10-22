@@ -37,6 +37,13 @@ $stats = $stats ?? [
 
     <!-- Global App State & Database Real Datasets -->
     <script>
+        if ("scrollRestoration" in history) {
+            history.scrollRestoration = "manual";
+        }
+        if (window.location.hash) {
+            window.__INITIAL_ADMIN_HASH = window.location.hash.substring(1);
+            history.replaceState(null, "", window.location.pathname + window.location.search);
+        }
         window.BASE_URL = "<?= BASE_URL ?>";
         window.CSRF_TOKEN = "<?= \App\Core\Security::generateCsrfToken() ?>";
         window.ADMIN_EMAIL = "<?= htmlspecialchars($_SESSION['user']['email'] ?? 'admin@routerosquiz.academy') ?>";
@@ -171,7 +178,7 @@ $stats = $stats ?? [
                 <?php endif; ?>
 
                 <!-- Scoped Module Workspace Sections -->
-                <div id="quiz-section" class="admin-section-content active" role="tabpanel" aria-labelledby="tab-btn-quiz-section"></div>
+                <div id="quiz-section" class="admin-section-content" role="tabpanel" aria-labelledby="tab-btn-quiz-section"></div>
                 <div id="member-section" class="admin-section-content" role="tabpanel" aria-labelledby="tab-btn-member-section"></div>
                 <div id="manage-section" class="admin-section-content" role="tabpanel" aria-labelledby="tab-btn-manage-section"></div>
                 <div id="materials-section" class="admin-section-content" role="tabpanel" aria-labelledby="tab-btn-materials-section"></div>
@@ -194,9 +201,9 @@ $stats = $stats ?? [
             </div>
 
             <!-- Hidden File Input for Local Image Picker -->
-            <input type="file" id="material-upload-file-input" accept="image/png,image/jpeg,image/jpg,image/webp" style="display: none;" onchange="window.handleMaterialFileSelect && window.handleMaterialFileSelect(this)">
+            <input type="file" id="material-upload-file-input" accept="image/png,image/jpeg,image/jpg,image/webp" style="display: none;">
 
-            <div class="material-upload-dropzone" id="material-dropzone" role="button" tabindex="0" title="Klik atau tarik gambar ke sini" onclick="window.triggerMaterialImageSelect && window.triggerMaterialImageSelect(event)" ondragover="window.handleMaterialDragOver && window.handleMaterialDragOver(event)" ondragleave="window.handleMaterialDragLeave && window.handleMaterialDragLeave(event)" ondrop="window.handleMaterialDrop && window.handleMaterialDrop(event)">
+            <div class="material-upload-dropzone" id="material-dropzone" role="button" tabindex="0" title="Klik atau tarik gambar ke sini">
                 <div class="dropzone-empty-state" id="material-dropzone-empty">
                     <div class="dropzone-icon-box">
                         <i data-lucide="upload-cloud" style="width: 32px; height: 32px; color: var(--accent-cyan);"></i>
@@ -213,7 +220,7 @@ $stats = $stats ?? [
                         <span id="material-preview-filename" class="dropzone-filename font-mono">nama_gambar.png</span>
                         <span id="material-preview-filesize" class="dropzone-filesize font-mono text-muted">0 KB</span>
                     </div>
-                    <button type="button" class="btn-remove-preview" id="btn-remove-material-image-preview" title="Ganti Gambar" onclick="window.removeMaterialUploadPreview && window.removeMaterialUploadPreview(event)">
+                    <button type="button" class="btn-remove-preview" id="btn-remove-material-image-preview" title="Ganti Gambar">
                         <i data-lucide="trash-2" style="width: 14px; height: 14px;"></i>
                     </button>
                 </div>
@@ -231,7 +238,7 @@ $stats = $stats ?? [
 
             <div style="display: flex; justify-content: flex-end; align-items: center; gap: 0.75rem; margin-top: 1.5rem; border-top: 1px solid #222222; padding-top: 1rem;">
                 <button type="button" class="btn-secondary-outline" onclick="window.closeMaterialImageModal && window.closeMaterialImageModal()">Batal</button>
-                <button type="button" class="btn-primary-black" id="btn-submit-material-image-upload" onclick="window.submitMaterialImageUpload && window.submitMaterialImageUpload(event)" style="display: inline-flex; align-items: center; gap: 0.4rem;">
+                <button type="button" class="btn-primary-black" id="btn-submit-material-image-upload" style="display: inline-flex; align-items: center; gap: 0.4rem;">
                     <i data-lucide="check" style="width: 14px; height: 14px;"></i>
                     <span>Upload & Sisipkan</span>
                 </button>
@@ -353,8 +360,8 @@ $stats = $stats ?? [
     <div id="geist-toaster" class="toast-container geist-toaster" aria-live="polite" aria-atomic="true"></div>
 
     <!-- Scripts -->
-    <script src="<?= function_exists('assetUrl') ? assetUrl('/js/admin-dashboard.js') : (BASE_URL . '/js/admin-dashboard.js') ?>"></script>
     <script src="<?= function_exists('assetUrl') ? assetUrl('/js/admin-builder.js') : (BASE_URL . '/js/admin-builder.js') ?>"></script>
+    <script src="<?= function_exists('assetUrl') ? assetUrl('/js/admin-dashboard.js') : (BASE_URL . '/js/admin-dashboard.js') ?>"></script>
     <script>
         document.addEventListener("DOMContentLoaded", function() {
             if (window.lucide) {

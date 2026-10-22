@@ -29,3 +29,10 @@ COPY php/opcache.ini /usr/local/etc/php/conf.d/opcache.ini
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 WORKDIR /var/webfeed/html
+
+# Ensure upload and log directories exist with writable permissions for www-data
+RUN mkdir -p /var/webfeed/html/public/uploads/materials \
+             /var/webfeed/html/public/uploads/questions \
+             /var/webfeed/html/logs \
+    && chown -R www-data:www-data /var/webfeed/html/public/uploads /var/webfeed/html/logs \
+    && chmod -R 0775 /var/webfeed/html/public/uploads /var/webfeed/html/logs

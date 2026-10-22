@@ -48,13 +48,25 @@ class ImageHelper
         $tmpPath = $file['tmp_name'];
 
         // Strict Server-Side MIME-Type Detection via Magic Bytes
-        $finfo = finfo_open(FILEINFO_MIME_TYPE);
-        $mimeType = $finfo ? finfo_file($finfo, $tmpPath) : (function_exists('mime_content_type') ? mime_content_type($tmpPath) : '');
-        if ($finfo) {
-            finfo_close($finfo);
+        $mimeType = '';
+        if (function_exists('finfo_open')) {
+            $finfo = @finfo_open(FILEINFO_MIME_TYPE);
+            if ($finfo) {
+                $mimeType = (string)@finfo_file($finfo, $tmpPath);
+                @finfo_close($finfo);
+            }
+        }
+        if ($mimeType === '' && function_exists('mime_content_type')) {
+            $mimeType = (string)@mime_content_type($tmpPath);
+        }
+        if ($mimeType === '' && function_exists('getimagesize')) {
+            $imgInfo = @getimagesize($tmpPath);
+            if (is_array($imgInfo) && !empty($imgInfo['mime'])) {
+                $mimeType = (string)$imgInfo['mime'];
+            }
         }
 
-        if (!array_key_exists(strtolower((string)$mimeType), self::ALLOWED_MIME_TYPES)) {
+        if (!array_key_exists(strtolower($mimeType), self::ALLOWED_MIME_TYPES)) {
             return false;
         }
 
@@ -63,20 +75,26 @@ class ImageHelper
         $newFilename = "img_{$randomHash}.webp";
 
         if (!is_dir($targetDir)) {
-            mkdir($targetDir, 0755, true);
+            @mkdir($targetDir, 0777, true);
+        }
+        if (!is_writable($targetDir)) {
+            @chmod($targetDir, 0777);
         }
 
         $destination = rtrim($targetDir, '/') . '/' . $newFilename;
 
         // Create image resource based on actual magic-byte MIME
-        $image = match (strtolower((string)$mimeType)) {
-            'image/jpeg', 'image/jpg', 'image/pjpeg' => @imagecreatefromjpeg($tmpPath),
-            'image/png', 'image/x-png' => @imagecreatefrompng($tmpPath),
-            'image/webp' => @imagecreatefromwebp($tmpPath),
-            default => null
-        };
+        $mimeLower = strtolower($mimeType);
+        $image = null;
+        if (in_array($mimeLower, ['image/jpeg', 'image/jpg', 'image/pjpeg'], true) && function_exists('imagecreatefromjpeg')) {
+            $image = @imagecreatefromjpeg($tmpPath);
+        } elseif (in_array($mimeLower, ['image/png', 'image/x-png'], true) && function_exists('imagecreatefrompng')) {
+            $image = @imagecreatefrompng($tmpPath);
+        } elseif ($mimeLower === 'image/webp' && function_exists('imagecreatefromwebp')) {
+            $image = @imagecreatefromwebp($tmpPath);
+        }
 
-        if (!$image) {
+        if (!$image && function_exists('imagecreatefromstring')) {
             $rawBinary = @file_get_contents($tmpPath);
             if ($rawBinary) {
                 $image = @imagecreatefromstring($rawBinary);
@@ -88,12 +106,21 @@ class ImageHelper
         }
 
         // Preserve alpha transparency for PNG / WebP
-        imagepalettetotruecolor($image);
-        imagealphablending($image, true);
-        imagesavealpha($image, true);
+        if (function_exists('imagepalettetotruecolor')) {
+            @imagepalettetotruecolor($image);
+        }
+        @imagealphablending($image, true);
+        @imagesavealpha($image, true);
 
-        $success = imagewebp($image, $destination, max(1, min(100, $quality)));
+        $success = false;
+        if (function_exists('imagewebp')) {
+            $success = @imagewebp($image, $destination, max(1, min(100, $quality)));
+        }
         imagedestroy($image);
+
+        if ($success) {
+            @chmod($destination, 0644);
+        }
 
         return $success ? $destination : false;
     }
@@ -178,114 +205,162 @@ class ImageHelper
         $tmpPath = $file['tmp_name'];
 
         // Strict Server-Side MIME-Type Detection via Magic Bytes
-        $finfo = finfo_open(FILEINFO_MIME_TYPE);
-        $mimeType = $finfo ? finfo_file($finfo, $tmpPath) : (function_exists('mime_content_type') ? mime_content_type($tmpPath) : '');
-        if ($finfo) {
-            finfo_close($finfo);
+        $mimeType = '';
+        if (function_exists('finfo_open')) {
+            $finfo = @finfo_open(FILEINFO_MIME_TYPE);
+            if ($finfo) {
+                $mimeType = (string)@finfo_file($finfo, $tmpPath);
+                @finfo_close($finfo);
+            }
+        }
+        if ($mimeType === '' && function_exists('mime_content_type')) {
+            $mimeType = (string)@mime_content_type($tmpPath);
+        }
+        $imgInfo = function_exists('getimagesize') ? @getimagesize($tmpPath) : false;
+        if ($mimeType === '' && is_array($imgInfo) && !empty($imgInfo['mime'])) {
+            $mimeType = (string)$imgInfo['mime'];
         }
 
-        $mimeType = strtolower((string)$mimeType);
+        $mimeType = strtolower(trim($mimeType));
+        $ext = strtolower(pathinfo($file['name'] ?? '', PATHINFO_EXTENSION));
         if (!array_key_exists($mimeType, self::ALLOWED_MIME_TYPES)) {
-            $ext = strtolower(pathinfo($file['name'] ?? '', PATHINFO_EXTENSION));
             if (!in_array($ext, ['jpg', 'jpeg', 'png', 'webp'], true)) {
                 return null;
             }
         }
 
-        // Create image resource based on actual magic-byte MIME
-        $image = match ($mimeType) {
-            'image/jpeg', 'image/jpg', 'image/pjpeg' => @imagecreatefromjpeg($tmpPath),
-            'image/png', 'image/x-png' => @imagecreatefrompng($tmpPath),
-            'image/webp' => @imagecreatefromwebp($tmpPath),
-            default => null
-        };
+        if (!is_dir($targetDir)) {
+            @mkdir($targetDir, 0777, true);
+        }
+        if (!is_writable($targetDir)) {
+            @chmod($targetDir, 0777);
+        }
 
-        if (!$image) {
+        // Generate cryptographically secure randomized filename
+        $randomHash = bin2hex(random_bytes(16));
+
+        // Create image resource based on actual magic-byte MIME (safe if GD functions are disabled)
+        $image = null;
+        if (in_array($mimeType, ['image/jpeg', 'image/jpg', 'image/pjpeg'], true) && function_exists('imagecreatefromjpeg')) {
+            $image = @imagecreatefromjpeg($tmpPath);
+        } elseif (in_array($mimeType, ['image/png', 'image/x-png'], true) && function_exists('imagecreatefrompng')) {
+            $image = @imagecreatefrompng($tmpPath);
+        } elseif ($mimeType === 'image/webp' && function_exists('imagecreatefromwebp')) {
+            $image = @imagecreatefromwebp($tmpPath);
+        }
+
+        if (!$image && function_exists('imagecreatefromstring')) {
             $rawBinary = @file_get_contents($tmpPath);
             if ($rawBinary) {
                 $image = @imagecreatefromstring($rawBinary);
             }
         }
 
-        if (!$image) {
-            return null;
-        }
-
-        // Auto-correct JPEG orientation based on EXIF if available
-        if (function_exists('exif_read_data') && ($mimeType === 'image/jpeg' || $mimeType === 'image/pjpeg' || $mimeType === 'image/jpg')) {
-            $exif = @exif_read_data($tmpPath);
-            if (!empty($exif['Orientation'])) {
-                $image = match ((int)$exif['Orientation']) {
-                    3 => imagerotate($image, 180, 0),
-                    6 => imagerotate($image, -90, 0),
-                    8 => imagerotate($image, 90, 0),
-                    default => $image
-                };
+        if ($image) {
+            // Auto-correct JPEG orientation based on EXIF if available
+            if (
+                function_exists('exif_read_data') &&
+                function_exists('imagerotate') &&
+                ($mimeType === 'image/jpeg' || $mimeType === 'image/pjpeg' || $mimeType === 'image/jpg')
+            ) {
+                $exif = @exif_read_data($tmpPath);
+                if (!empty($exif['Orientation'])) {
+                    $rotated = match ((int)$exif['Orientation']) {
+                        3 => @imagerotate($image, 180, 0),
+                        6 => @imagerotate($image, -90, 0),
+                        8 => @imagerotate($image, 90, 0),
+                        default => $image
+                    };
+                    if ($rotated) {
+                        $image = $rotated;
+                    }
+                }
             }
-        }
 
-        $origWidth = imagesx($image);
-        $origHeight = imagesy($image);
+            $origWidth = imagesx($image);
+            $origHeight = imagesy($image);
 
-        // Cap dimensions if image exceeds maxWidth (maintaining aspect ratio)
-        if ($origWidth > $maxWidth && $origWidth > 0 && $origHeight > 0) {
-            $newWidth = $maxWidth;
-            $newHeight = (int)round(($origHeight / $origWidth) * $maxWidth);
+            // Cap dimensions if image exceeds maxWidth (maintaining aspect ratio)
+            if ($origWidth > $maxWidth && $origWidth > 0 && $origHeight > 0) {
+                $newWidth = $maxWidth;
+                $newHeight = (int)round(($origHeight / $origWidth) * $maxWidth);
 
-            $resizedImage = imagecreatetruecolor($newWidth, $newHeight);
-            if ($resizedImage) {
-                // Enable alpha blending and transparency preservation
-                imagealphablending($resizedImage, false);
-                imagesavealpha($resizedImage, true);
-                $transparent = imagecolorallocatealpha($resizedImage, 255, 255, 255, 127);
-                imagefilledrectangle($resizedImage, 0, 0, $newWidth, $newHeight, $transparent);
+                $resizedImage = imagecreatetruecolor($newWidth, $newHeight);
+                if ($resizedImage) {
+                    imagealphablending($resizedImage, false);
+                    imagesavealpha($resizedImage, true);
+                    $transparent = imagecolorallocatealpha($resizedImage, 255, 255, 255, 127);
+                    imagefilledrectangle($resizedImage, 0, 0, $newWidth, $newHeight, $transparent);
 
-                imagecopyresampled(
-                    $resizedImage,
-                    $image,
-                    0,
-                    0,
-                    0,
-                    0,
-                    $newWidth,
-                    $newHeight,
-                    $origWidth,
-                    $origHeight
-                );
+                    imagecopyresampled(
+                        $resizedImage,
+                        $image,
+                        0,
+                        0,
+                        0,
+                        0,
+                        $newWidth,
+                        $newHeight,
+                        $origWidth,
+                        $origHeight
+                    );
 
-                imagedestroy($image);
-                $image = $resizedImage;
+                    imagedestroy($image);
+                    $image = $resizedImage;
+                }
+            } else {
+                // Preserve alpha transparency for PNG / WebP
+                if (function_exists('imagepalettetotruecolor')) {
+                    @imagepalettetotruecolor($image);
+                }
+                @imagealphablending($image, true);
+                @imagesavealpha($image, true);
             }
-        } else {
-            // Preserve alpha transparency for PNG / WebP
-            imagepalettetotruecolor($image);
-            imagealphablending($image, true);
-            imagesavealpha($image, true);
-        }
 
-        if (!is_dir($targetDir)) {
-            @mkdir($targetDir, 0777, true);
-        }
-
-        // Generate cryptographically secure randomized filename
-        $randomHash = bin2hex(random_bytes(16));
-        $newFilename = "mat_img_{$randomHash}.webp";
-        $destination = rtrim($targetDir, '/') . '/' . $newFilename;
-
-        $success = false;
-        if (function_exists('imagewebp')) {
-            $success = @imagewebp($image, $destination, max(1, min(100, $quality)));
-        }
-
-        if (!$success) {
-            // Fallback to JPEG if WebP conversion fails on host
-            $newFilename = "mat_img_{$randomHash}.jpg";
+            $newFilename = "mat_img_{$randomHash}.webp";
             $destination = rtrim($targetDir, '/') . '/' . $newFilename;
-            $success = @imagejpeg($image, $destination, max(1, min(100, $quality)));
+
+            $success = false;
+            if (function_exists('imagewebp')) {
+                $success = @imagewebp($image, $destination, max(1, min(100, $quality)));
+            }
+
+            if (!$success && function_exists('imagejpeg')) {
+                // Fallback to JPEG if WebP conversion fails on host
+                $newFilename = "mat_img_{$randomHash}.jpg";
+                $destination = rtrim($targetDir, '/') . '/' . $newFilename;
+                $success = @imagejpeg($image, $destination, max(1, min(100, $quality)));
+            }
+
+            if (!$success && function_exists('imagepng')) {
+                $newFilename = "mat_img_{$randomHash}.png";
+                $destination = rtrim($targetDir, '/') . '/' . $newFilename;
+                $success = @imagepng($image, $destination, 6);
+            }
+
+            imagedestroy($image);
+
+            if ($success && is_file($destination)) {
+                @chmod($destination, 0644);
+                return $newFilename;
+            }
         }
 
-        imagedestroy($image);
+        // Production Fallback: If GD lacks WebP/codec support on shared hosting,
+        // verify image dimensions via getimagesize() and move the already-compressed client upload safely.
+        if (is_array($imgInfo) && ($imgInfo[0] ?? 0) > 0 && ($imgInfo[1] ?? 0) > 0) {
+            $detectedMime = strtolower((string)($imgInfo['mime'] ?? $mimeType));
+            $safeExt = self::ALLOWED_MIME_TYPES[$detectedMime] ?? (in_array($ext, ['jpg', 'jpeg', 'png', 'webp'], true) ? ($ext === 'jpeg' ? 'jpg' : $ext) : null);
+            if ($safeExt !== null) {
+                $fallbackFilename = "mat_img_{$randomHash}.{$safeExt}";
+                $fallbackDest = rtrim($targetDir, '/') . '/' . $fallbackFilename;
+                if (@move_uploaded_file($tmpPath, $fallbackDest) || @copy($tmpPath, $fallbackDest)) {
+                    @chmod($fallbackDest, 0644);
+                    return $fallbackFilename;
+                }
+            }
+        }
 
-        return $success ? $newFilename : null;
+        return null;
     }
 }
