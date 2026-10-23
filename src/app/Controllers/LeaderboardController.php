@@ -14,6 +14,14 @@ use App\Repositories\AttemptRepositoryInterface;
 #[Authorize(Role::USER, Role::ADMIN)]
 class LeaderboardController extends Controller
 {
+    private const CATEGORY_DISPLAY_NAMES = [
+        'all' => 'Semua Topik',
+        'Routing' => 'Routing',
+        'Firewall & NAT' => 'Firewall & NAT',
+        'Wireless' => 'Wireless',
+        'Network Management' => 'Network Management'
+    ];
+
     public function __construct(
         private AttemptRepositoryInterface $attemptRepo,
         private Request $request
@@ -21,6 +29,7 @@ class LeaderboardController extends Controller
 
     /**
      * Display Leaderboard Rankings and User Personal Rank.
+     * Supports both standard SSR View and Live AJAX/JSON responses.
      */
     public function index(): Response
     {
@@ -34,6 +43,26 @@ class LeaderboardController extends Controller
 
         // Fetch current user position and statistics
         $userRankData = $this->attemptRepo->getUserRank($userId, $categoryFilter);
+
+        $activeCategoryLabel = self::CATEGORY_DISPLAY_NAMES[$activeCategory] ?? 'Semua Topik';
+
+        // Check if AJAX / JSON request
+        $isAjax = $this->request->isAjax() ||
+                  str_contains($_SERVER['HTTP_ACCEPT'] ?? '', 'application/json') ||
+                  $this->request->query('ajax') === '1' ||
+                  $this->request->query('json') === '1';
+
+        if ($isAjax) {
+            return $this->jsonResponse([
+                'status' => 'success',
+                'activeCategory' => $activeCategory,
+                'activeCategoryLabel' => $activeCategoryLabel,
+                'leaderboard' => $leaderboard,
+                'currentUserId' => $userId,
+                'currentUserRank' => $userRankData['rank'],
+                'currentUserStats' => $userRankData['stats']
+            ]);
+        }
 
         return $this->view('leaderboard/index', [
             'title' => 'Leaderboard | NetQuiz',

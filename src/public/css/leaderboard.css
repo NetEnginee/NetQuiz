@@ -742,4 +742,19 @@
   font-weight: 600;
 }
 
+/* ==========================================================================
+   5. REALTIME LIVE FILTER TRANSITION & SKELETON STATES
+   ========================================================================== */
+
+#podium-content-container,
+#leaderboard-table-container {
+  transition: opacity 0.2s ease, filter 0.2s ease;
+}
+
+.leaderboard-updating {
+  opacity: 0.55;
+  filter: blur(1px);
+  pointer-events: none;
+}
+
 /* End of Leaderboard Styles */

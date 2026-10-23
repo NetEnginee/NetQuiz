@@ -28,6 +28,15 @@ $rank3 = $leaderboard[2] ?? null;
 require_once dirname(__DIR__) . '/templates/header.php';
 ?>
 
+<script>
+    window.INITIAL_LEADERBOARD = {
+        activeCategory: <?= json_encode($activeCategory) ?>,
+        activeCategoryLabel: <?= json_encode($activeCategoryLabel) ?>,
+        leaderboard: <?= json_encode($leaderboard) ?>,
+        currentUserId: <?= $currentUserId ?>
+    };
+</script>
+
 <div class="leaderboard-page-container pt-2">
 
     <!-- 1. Breadcrumb Navigation -->
@@ -46,33 +55,33 @@ require_once dirname(__DIR__) . '/templates/header.php';
         <span class="panel-crosshair corner-bl">+</span>
         <span class="panel-crosshair corner-br">+</span>
 
-        <div class="leaderboard-filter-tabs">
+        <div class="leaderboard-filter-tabs" id="leaderboard-filter-tabs">
             <a href="<?= BASE_URL ?>/leaderboard?category=all"
-                class="leaderboard-segment-tab font-mono <?= $activeCategory === 'all' ? 'active' : '' ?>"
-                onclick="window.playPixelSound && window.playPixelSound('click');">
+                data-category="all"
+                class="leaderboard-segment-tab font-mono <?= $activeCategory === 'all' ? 'active' : '' ?>">
                 <span>Semua Topik</span>
             </a>
             <a href="<?= BASE_URL ?>/leaderboard?category=Routing"
-                class="leaderboard-segment-tab font-mono <?= $activeCategory === 'Routing' ? 'active' : '' ?>"
-                onclick="window.playPixelSound && window.playPixelSound('click');">
+                data-category="Routing"
+                class="leaderboard-segment-tab font-mono <?= $activeCategory === 'Routing' ? 'active' : '' ?>">
                 <span class="w-1.5 h-1.5 rounded-full inline-block" style="background-color: #60a5fa;"></span>
                 <span>Routing</span>
             </a>
             <a href="<?= BASE_URL ?>/leaderboard?category=Firewall%20%26%20NAT"
-                class="leaderboard-segment-tab font-mono <?= $activeCategory === 'Firewall & NAT' ? 'active' : '' ?>"
-                onclick="window.playPixelSound && window.playPixelSound('click');">
+                data-category="Firewall & NAT"
+                class="leaderboard-segment-tab font-mono <?= $activeCategory === 'Firewall & NAT' ? 'active' : '' ?>">
                 <span class="w-1.5 h-1.5 rounded-full inline-block" style="background-color: #fbbf24;"></span>
                 <span>Firewall & NAT</span>
             </a>
             <a href="<?= BASE_URL ?>/leaderboard?category=Wireless"
-                class="leaderboard-segment-tab font-mono <?= $activeCategory === 'Wireless' ? 'active' : '' ?>"
-                onclick="window.playPixelSound && window.playPixelSound('click');">
+                data-category="Wireless"
+                class="leaderboard-segment-tab font-mono <?= $activeCategory === 'Wireless' ? 'active' : '' ?>">
                 <span class="w-1.5 h-1.5 rounded-full inline-block" style="background-color: #f472b6;"></span>
                 <span>Wireless</span>
             </a>
             <a href="<?= BASE_URL ?>/leaderboard?category=Network%20Management"
-                class="leaderboard-segment-tab font-mono <?= $activeCategory === 'Network Management' ? 'active' : '' ?>"
-                onclick="window.playPixelSound && window.playPixelSound('click');">
+                data-category="Network Management"
+                class="leaderboard-segment-tab font-mono <?= $activeCategory === 'Network Management' ? 'active' : '' ?>">
                 <span class="w-1.5 h-1.5 rounded-full inline-block" style="background-color: #50e3c2;"></span>
                 <span>Network Management</span>
             </a>
@@ -100,11 +109,12 @@ require_once dirname(__DIR__) . '/templates/header.php';
                     </h2>
                 </div>
             </div>
-            <span class="podium-category-badge">
+            <span class="podium-category-badge" id="podium-category-badge">
                 <?= htmlspecialchars($activeCategoryLabel) ?>
             </span>
         </div>
 
+        <div id="podium-content-container">
         <?php if (empty($leaderboard)): ?>
             <div class="podium-empty-state">
                 <div class="pixel-empty-state empty-theme-amber" style="padding: 2rem 1rem; background: transparent; border: none; box-shadow: none;">
@@ -238,6 +248,7 @@ require_once dirname(__DIR__) . '/templates/header.php';
 
             </div>
         <?php endif; ?>
+        </div>
     </section>
 
     <!-- 4. RANKINGS TABLE CARD (Rank 4 onwards) -->
@@ -254,13 +265,13 @@ require_once dirname(__DIR__) . '/templates/header.php';
             <h3 class="table-panel-title font-sans">
                 Daftar Peringkat Peserta (#4 - #10)
             </h3>
-            <span class="table-panel-meta">
+            <span class="table-panel-meta" id="table-panel-meta">
                 Kategori: <?= htmlspecialchars($activeCategoryLabel) ?>
             </span>
         </div>
 
         <!-- Leaderboard #4 - #10 List / Empty State -->
-        <div class="leaderboard-others-container">
+        <div class="leaderboard-others-container" id="leaderboard-table-container">
             <?php if (!empty($tableLeaderboard)): ?>
                 <div class="leaderboard-table-wrap">
                     <table class="leaderboard-data-table">
@@ -331,5 +342,7 @@ require_once dirname(__DIR__) . '/templates/header.php';
         </div>
     </div>
 </div>
+
+<script src="<?= function_exists('assetUrl') ? assetUrl('/js/leaderboard.js') : (BASE_URL . '/js/leaderboard.js') ?>"></script>
 
 <?php require_once dirname(__DIR__) . '/templates/footer.php'; ?>

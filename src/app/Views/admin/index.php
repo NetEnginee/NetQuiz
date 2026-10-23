@@ -291,6 +291,7 @@ $stats = $stats ?? [
             <div id="confirm-icon-container" class="confirm-icon-box confirm-icon-danger">
                 <i id="confirm-icon" data-lucide="alert-triangle" style="width: 24px; height: 24px;"></i>
             </div>
+
             <h3 id="confirm-modal-title" class="confirm-title">Konfirmasi Aksi</h3>
             <p id="confirm-modal-message" class="confirm-message">Apakah Anda yakin ingin melanjutkan tindakan ini?</p>
             <div class="confirm-btn-actions">
