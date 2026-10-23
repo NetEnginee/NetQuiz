@@ -165,17 +165,48 @@ class ImageHelper
         }
 
         $randomHash = bin2hex(random_bytes(16));
-        $newFilename = "qimg_{$randomHash}.webp";
+        $mimeLower = strtolower($mimePart);
+        $isPng = in_array($mimeLower, ['image/png', 'image/x-png'], true);
+        $ext = $isPng ? 'png' : 'webp';
+        $newFilename = "qimg_{$randomHash}.{$ext}";
         $fullPath = rtrim($targetDir, '/') . '/' . $newFilename;
 
         imagepalettetotruecolor($image);
         imagealphablending($image, true);
         imagesavealpha($image, true);
 
-        $saved = imagewebp($image, $fullPath, max(1, min(100, $quality)));
+        $saved = false;
+        if ($isPng && function_exists('imagepng')) {
+            // Lossless PNG compression (level 6) preserving crisp lines and topology diagram text
+            $saved = @imagepng($image, $fullPath, 6);
+        }
+
+        if (!$saved && function_exists('imagewebp')) {
+            $newFilename = "qimg_{$randomHash}.webp";
+            $fullPath = rtrim($targetDir, '/') . '/' . $newFilename;
+            $saved = @imagewebp($image, $fullPath, max(1, min(100, $quality)));
+        }
+
+        if (!$saved && function_exists('imagepng')) {
+            $newFilename = "qimg_{$randomHash}.png";
+            $fullPath = rtrim($targetDir, '/') . '/' . $newFilename;
+            $saved = @imagepng($image, $fullPath, 6);
+        }
+
+        if (!$saved && function_exists('imagejpeg')) {
+            $newFilename = "qimg_{$randomHash}.jpg";
+            $fullPath = rtrim($targetDir, '/') . '/' . $newFilename;
+            $saved = @imagejpeg($image, $fullPath, 85);
+        }
+
         imagedestroy($image);
 
-        return $saved ? $newFilename : null;
+        if ($saved && is_file($fullPath)) {
+            @chmod($fullPath, 0644);
+            return $newFilename;
+        }
+
+        return null;
     }
 
     /**

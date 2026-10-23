@@ -102,6 +102,7 @@ class AdminController extends Controller
             $description = trim((string)$this->request->input('description', ''));
             $category = (string)$this->request->input('category', 'Routing');
             $difficulty = (string)$this->request->input('difficulty', 'Mudah');
+            $image = (string)$this->request->input('image', '');
             $questions = $this->request->input('questions', []);
 
             if (empty($title) || empty($description) || empty($questions) || !is_array($questions)) {
@@ -115,7 +116,8 @@ class AdminController extends Controller
                     'description' => $description,
                     'category' => $category,
                     'duration' => $duration,
-                    'difficulty' => $difficulty
+                    'difficulty' => $difficulty,
+                    'image' => !empty($image) ? $image : null
                 ];
 
                 $this->quizRepo->createWithQuestions($quizData, $questions);

@@ -527,21 +527,46 @@ svg.w-12 {
 }
 
 .question-image-frame {
+  width: 100%;
   margin-bottom: 1.75rem;
   border: 1px solid var(--border-card);
   border-radius: 8px;
   overflow: hidden;
-  max-height: 340px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: #050505;
+  background-color: #030304;
+  padding: 0.75rem;
+  box-sizing: border-box;
+  position: relative;
+  transition: all 0.2s ease;
+  cursor: zoom-in;
+}
+
+.question-image-frame:hover {
+  border-color: var(--border-card-hover);
 }
 
 .question-image-frame img {
+  width: auto;
   max-width: 100%;
-  max-height: 340px;
+  height: auto;
+  max-height: 480px;
   object-fit: contain;
+  display: block;
+  margin: 0 auto;
+  border-radius: 4px;
+  transition: max-height 0.25s ease;
+}
+
+.question-image-frame.is-zoomed {
+  cursor: zoom-out;
+  border-color: var(--accent-cyan);
+  box-shadow: 0 0 20px rgba(80, 227, 194, 0.15);
+}
+
+.question-image-frame.is-zoomed img {
+  max-height: none;
 }
 
 /* 4 Options Stack */

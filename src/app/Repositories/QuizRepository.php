@@ -120,7 +120,19 @@ class QuizRepository implements QuizRepositoryInterface
     public function createWithQuestions(array $quizData, array $questionsData): int
     {
         return $this->db->transaction(function (PDO $db) use ($quizData, $questionsData) {
+            $uploadDir = PUBLIC_ROOT . '/uploads/questions/';
+
             // 1. Insert Quiz
+            $quizImagePath = null;
+            if (!empty($quizData['image'])) {
+                $savedQuizName = ImageHelper::saveBase64ToWebP($quizData['image'], $uploadDir);
+                if ($savedQuizName) {
+                    $quizImagePath = 'uploads/questions/' . $savedQuizName;
+                }
+            } elseif (!empty($quizData['image_path'])) {
+                $quizImagePath = $quizData['image_path'];
+            }
+
             $stmt = $db->prepare("
                 INSERT INTO quizzes (title, description, category, duration, difficulty, image_path) 
                 VALUES (:title, :description, :category, :duration, :difficulty, :image_path)
@@ -131,7 +143,7 @@ class QuizRepository implements QuizRepositoryInterface
                 'category' => $quizData['category'] ?? 'Routing',
                 'duration' => (int)($quizData['duration'] ?? 15),
                 'difficulty' => $quizData['difficulty'] ?? 'Mudah',
-                'image_path' => $quizData['image_path'] ?? null
+                'image_path' => $quizImagePath
             ]);
             $quizId = (int)$db->lastInsertId();
 
@@ -140,8 +152,6 @@ class QuizRepository implements QuizRepositoryInterface
                 INSERT INTO questions (quiz_id, question, option_a, option_b, option_c, option_d, correct, explanation, image_path) 
                 VALUES (:quiz_id, :question, :option_a, :option_b, :option_c, :option_d, :correct, :explanation, :image_path)
             ");
-
-            $uploadDir = PUBLIC_ROOT . '/uploads/questions/';
 
             foreach ($questionsData as $q) {
                 $qImagePath = null;

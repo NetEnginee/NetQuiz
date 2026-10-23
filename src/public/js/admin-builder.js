@@ -1134,6 +1134,37 @@ function renderQuizSection() {
                 <textarea class="form-field-input" name="questions[${index}][question]" rows="2" placeholder="Tulis pertanyaan soal di sini..." required></textarea>
             </div>
 
+            <!-- Optional Topology Image Attachment -->
+            <div class="q-topology-attach-wrap">
+                <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem;">
+                    <label class="form-field-label" style="margin-bottom: 0; font-size: 0.775rem;">Lampiran Topologi Jaringan</label>
+                    <button type="button" class="btn-attach-topology" onclick="window.triggerQuestionImageUpload(${index})">
+                        <i data-lucide="image" style="width: 13px; height: 13px;"></i>
+                        <span id="q-image-btn-text-${index}">Sisipkan Gambar Topologi (PNG)</span>
+                    </button>
+                </div>
+                <input type="file" id="q-image-file-${index}" class="q-image-file-input" accept=".png,image/png,image/jpeg,image/webp" style="display: none;" onchange="window.handleQuestionImageSelected(this, ${index})">
+                <input type="hidden" name="questions[${index}][image]" id="q-image-base64-${index}" class="q-image-base64-input" value="">
+
+                <!-- Auto Fit Topology Preview Box -->
+                <div id="q-image-preview-box-${index}" class="q-topology-preview-container" style="display: none;">
+                    <div class="q-topology-image-frame">
+                        <img id="q-image-preview-img-${index}" src="" alt="Topologi Soal #${index + 1}" class="q-topology-preview-img">
+                    </div>
+                    <div class="q-topology-preview-footer">
+                        <div class="q-topology-meta">
+                            <i data-lucide="file-check" style="width: 14px; height: 14px; color: var(--accent-cyan);"></i>
+                            <span id="q-image-preview-name-${index}" class="q-topology-filename">topology.png</span>
+                            <span id="q-image-preview-size-${index}" class="q-topology-filesize">(PNG)</span>
+                        </div>
+                        <button type="button" class="btn-remove-topology-preview" onclick="window.removeQuestionImage(${index})" title="Hapus gambar topologi">
+                            <i data-lucide="x" style="width: 12px; height: 12px;"></i>
+                            <span>Hapus Gambar</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
             <!-- Integrated Radio Option Stack -->
             <div class="q-options-stack">
                 <label class="form-field-label" style="margin-bottom: 0.4rem;">Pilihan Jawaban</label>
@@ -1200,6 +1231,64 @@ function renderQuizSection() {
       const qText = card.querySelector('textarea[name*="[question]"]');
       if (qText) qText.name = `questions[${idx}][question]`;
 
+      // Update topology image inputs & triggers
+      const fileInput = card.querySelector(".q-image-file-input");
+      if (fileInput) {
+        fileInput.id = `q-image-file-${idx}`;
+        fileInput.setAttribute(
+          "onchange",
+          `window.handleQuestionImageSelected(this, ${idx})`,
+        );
+      }
+
+      const base64Input = card.querySelector(".q-image-base64-input");
+      if (base64Input) {
+        base64Input.name = `questions[${idx}][image]`;
+        base64Input.id = `q-image-base64-${idx}`;
+      }
+
+      const btnAttach = card.querySelector(".btn-attach-topology");
+      if (btnAttach) {
+        btnAttach.setAttribute(
+          "onclick",
+          `window.triggerQuestionImageUpload(${idx})`,
+        );
+      }
+
+      const btnText = card.querySelector('[id^="q-image-btn-text-"]');
+      if (btnText) {
+        btnText.id = `q-image-btn-text-${idx}`;
+      }
+
+      const prevBox = card.querySelector(".q-topology-preview-container");
+      if (prevBox) {
+        prevBox.id = `q-image-preview-box-${idx}`;
+      }
+
+      const prevImg = card.querySelector(".q-topology-preview-img");
+      if (prevImg) {
+        prevImg.id = `q-image-preview-img-${idx}`;
+        prevImg.alt = `Topologi Soal #${idx + 1}`;
+      }
+
+      const prevName = card.querySelector(".q-topology-filename");
+      if (prevName) {
+        prevName.id = `q-image-preview-name-${idx}`;
+      }
+
+      const prevSize = card.querySelector(".q-topology-filesize");
+      if (prevSize) {
+        prevSize.id = `q-image-preview-size-${idx}`;
+      }
+
+      const btnRemoveImg = card.querySelector(".btn-remove-topology-preview");
+      if (btnRemoveImg) {
+        btnRemoveImg.setAttribute(
+          "onclick",
+          `window.removeQuestionImage(${idx})`,
+        );
+      }
+
       const optA = card.querySelector('input[name*="[option_a]"]');
       if (optA) optA.name = `questions[${idx}][option_a]`;
 
@@ -1240,6 +1329,103 @@ function renderQuizSection() {
 
     if (window.lucide) window.lucide.createIcons();
   }
+
+  // Question Topology Image Upload Handlers
+  window.triggerQuestionImageUpload = function (idx) {
+    const fileInput = document.getElementById(`q-image-file-${idx}`);
+    if (fileInput) fileInput.click();
+  };
+
+  window.handleQuestionImageSelected = function (input, idx) {
+    const file = input.files && input.files[0];
+    if (!file) return;
+
+    // Validate size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      if (window.showGeistToast) {
+        window.showGeistToast(
+          "error",
+          "Ukuran Terlalu Besar",
+          "Ukuran gambar topologi maksimal adalah 5MB.",
+        );
+      } else {
+        alert("Ukuran gambar topologi maksimal adalah 5MB.");
+      }
+      input.value = "";
+      return;
+    }
+
+    // Validate format
+    const allowed = ["image/png", "image/jpeg", "image/jpg", "image/webp"];
+    if (!allowed.includes(file.type.toLowerCase())) {
+      if (window.showGeistToast) {
+        window.showGeistToast(
+          "error",
+          "Format Tidak Didukung",
+          "Format gambar disarankan PNG (.png), JPG, atau WebP.",
+        );
+      } else {
+        alert("Format gambar disarankan PNG (.png), JPG, atau WebP.");
+      }
+      input.value = "";
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = function (e) {
+      const base64Data = e.target.result;
+      const base64Input = document.getElementById(`q-image-base64-${idx}`);
+      const prevBox = document.getElementById(`q-image-preview-box-${idx}`);
+      const prevImg = document.getElementById(`q-image-preview-img-${idx}`);
+      const prevName = document.getElementById(`q-image-preview-name-${idx}`);
+      const prevSize = document.getElementById(`q-image-preview-size-${idx}`);
+      const btnText = document.getElementById(`q-image-btn-text-${idx}`);
+
+      if (base64Input) base64Input.value = base64Data;
+      if (prevImg) prevImg.src = base64Data;
+      if (prevName) prevName.textContent = file.name;
+      if (prevSize) {
+        const kb = (file.size / 1024).toFixed(1);
+        prevSize.textContent = `(${kb} KB)`;
+      }
+      if (prevBox) prevBox.style.display = "block";
+      if (btnText) btnText.textContent = "Ganti Gambar Topologi";
+
+      if (window.showGeistToast) {
+        window.showGeistToast(
+          "success",
+          "Gambar Disisipkan",
+          `Gambar topologi '${file.name}' siap dilampirkan ke Soal #${idx + 1}.`,
+          2500,
+        );
+      }
+      if (window.lucide) window.lucide.createIcons();
+    };
+    reader.readAsDataURL(file);
+  };
+
+  window.removeQuestionImage = function (idx) {
+    const fileInput = document.getElementById(`q-image-file-${idx}`);
+    const base64Input = document.getElementById(`q-image-base64-${idx}`);
+    const prevBox = document.getElementById(`q-image-preview-box-${idx}`);
+    const prevImg = document.getElementById(`q-image-preview-img-${idx}`);
+    const btnText = document.getElementById(`q-image-btn-text-${idx}`);
+
+    if (fileInput) fileInput.value = "";
+    if (base64Input) base64Input.value = "";
+    if (prevImg) prevImg.src = "";
+    if (prevBox) prevBox.style.display = "none";
+    if (btnText) btnText.textContent = "Sisipkan Gambar Topologi (PNG)";
+
+    if (window.showGeistToast) {
+      window.showGeistToast(
+        "info",
+        "Gambar Dihapus",
+        `Lampiran gambar pada Soal #${idx + 1} telah dibatalkan.`,
+        2000,
+      );
+    }
+  };
 
   window.toggleQuestionExtra = function (idx) {
     const extraContent = document.getElementById(`q-extra-${idx}`);
@@ -1307,6 +1493,7 @@ function renderQuizSection() {
         {
           question:
             "Protokol routing manakah yang menggunakan algoritma link-state?",
+          image: "",
           option_a: "RIP",
           option_b: "OSPF",
           option_c: "BGP",
@@ -1317,14 +1504,15 @@ function renderQuizSection() {
         },
         {
           question:
-            "Berapakah nilai default administrative distance untuk OSPF pada RouterOS?",
-          option_a: "110",
-          option_b: "120",
-          option_c: "90",
-          option_d: "200",
+            "Perhatikan diagram topologi jaringan berikut. Interface manakah yang terhubung ke Backbone Area 0?",
+          image: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=",
+          option_a: "ether1 (Area 0)",
+          option_b: "ether2 (Area 1)",
+          option_c: "wlan1 (Area 2)",
+          option_d: "bridge1 (Area 3)",
           correct: "A",
           explanation:
-            "Nilai default administrative distance untuk OSPF pada RouterOS adalah 110.",
+            "Interface ether1 dikonfigurasi sebagai link uplink utama menuju backbone Area 0.0.0.0.",
         },
       ],
     };
@@ -1439,6 +1627,23 @@ function renderQuizSection() {
                 if (extraContent) extraContent.style.display = "block";
                 if (extraLabel)
                   extraLabel.textContent = "- Sembunyikan Pembahasan";
+              }
+
+              // Restore imported topology image if present
+              const qImg = item.image || item.gambar || "";
+              if (qImg && typeof qImg === "string" && qImg.startsWith("data:image/")) {
+                const base64Input = block.querySelector(".q-image-base64-input");
+                const prevBox = block.querySelector(".q-topology-preview-container");
+                const prevImg = block.querySelector(".q-topology-preview-img");
+                const prevName = block.querySelector(".q-topology-filename");
+                const prevSize = block.querySelector(".q-topology-filesize");
+                const btnText = block.querySelector('[id^="q-image-btn-text-"]');
+                if (base64Input) base64Input.value = qImg;
+                if (prevImg) prevImg.src = qImg;
+                if (prevName) prevName.textContent = "topologi_soal.png";
+                if (prevSize) prevSize.textContent = "(PNG Dimuat)";
+                if (prevBox) prevBox.style.display = "block";
+                if (btnText) btnText.textContent = "Ganti Gambar Topologi";
               }
 
               repeaterStack.appendChild(block);

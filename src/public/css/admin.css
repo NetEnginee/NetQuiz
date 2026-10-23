@@ -1171,6 +1171,125 @@ select.form-field-input option {
   color: var(--accent-cyan);
 }
 
+/* Quiz Question Topology Attachment & Auto-Fit Preview */
+.q-topology-attach-wrap {
+  background-color: #0c0c0e;
+  border: 1px dashed var(--border-card);
+  border-radius: 6px;
+  padding: 0.75rem 1rem;
+  margin-bottom: 1rem;
+  transition: border-color 0.15s ease;
+}
+
+.q-topology-attach-wrap:hover {
+  border-color: var(--border-card-hover);
+}
+
+.btn-attach-topology {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.35rem 0.75rem;
+  border-radius: 5px;
+  background-color: rgba(80, 227, 194, 0.08);
+  border: 1px solid rgba(80, 227, 194, 0.25);
+  color: var(--accent-cyan);
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-attach-topology:hover {
+  background-color: rgba(80, 227, 194, 0.18);
+  border-color: rgba(80, 227, 194, 0.45);
+}
+
+.q-topology-preview-container {
+  margin-top: 0.75rem;
+  border: 1px solid var(--border-card);
+  border-radius: 8px;
+  background-color: #050505;
+  overflow: hidden;
+}
+
+.q-topology-image-frame {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem;
+  background-color: #030304;
+  box-sizing: border-box;
+}
+
+.q-topology-preview-img {
+  width: auto;
+  max-width: 100%;
+  height: auto;
+  max-height: 380px;
+  object-fit: contain;
+  display: block;
+  margin: 0 auto;
+  border-radius: 4px;
+  border: 1px solid #1c1c1f;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+}
+
+.q-topology-preview-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 0.75rem;
+  background-color: #09090b;
+  border-top: 1px solid var(--border-subtle);
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.q-topology-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+.q-topology-filename {
+  font-weight: 600;
+  color: #ffffff;
+  max-width: 250px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.q-topology-filesize {
+  color: var(--text-muted);
+}
+
+.btn-remove-topology-preview {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.25rem 0.6rem;
+  border-radius: 4px;
+  background-color: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.25);
+  color: #f87171;
+  font-size: 0.725rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-remove-topology-preview:hover {
+  background-color: rgba(239, 68, 68, 0.25);
+  color: #ffffff;
+}
+
 /* ==========================================================================
    7. MATERIAL EDITOR & TOOLBAR (2-TIER MODULAR PRO STUDIO)
    ========================================================================== */

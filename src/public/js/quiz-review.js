@@ -99,6 +99,14 @@
           }
         }
       });
+
+      // 3. Click-to-zoom on question topology image frames
+      document.addEventListener("click", (e) => {
+        const frame = e.target.closest(".question-image-frame");
+        if (frame) {
+          frame.classList.toggle("is-zoomed");
+        }
+      });
     }
   }
 
