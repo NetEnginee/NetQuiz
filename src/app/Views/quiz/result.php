@@ -23,20 +23,7 @@ require_once dirname(__DIR__) . '/templates/header.php';
             <span class="panel-crosshair corner-br">+</span>
 
             <!-- Passing Status Badge -->
-            <div class="result-status-badge-wrap">
-                <?php if ($isPassed): ?>
-                    <span class="quiz-status-tag status-finished font-mono text-xs px-3 py-1">
-                        <svg class="w-3.5 h-3.5 pixelated" viewBox="0 0 16 16">
-                            <use href="#pixel-sparkle"></use>
-                        </svg>
-                        <span>Kompeten (Lulus Passing Grade)</span>
-                    </span>
-                <?php else: ?>
-                    <span class="quiz-status-tag font-mono text-xs px-3 py-1" style="background-color: rgba(239, 68, 68, 0.12); border: 1px solid rgba(239, 68, 68, 0.3); color: #f87171;">
-                        <span>Perlu Evaluasi Ulang (&lt; 70%)</span>
-                    </span>
-                <?php endif; ?>
-            </div>
+
 
             <!-- Score Badge Circle -->
             <div class="result-score-circle <?= $isPassed ? 'passed' : 'failed' ?>">
@@ -45,12 +32,12 @@ require_once dirname(__DIR__) . '/templates/header.php';
             </div>
 
             <h2 class="result-title-text font-sans">
-                <?= $isPassed ? 'Simulasi Ujian Selesai' : 'Evaluasi Simulasi Ujian Selesai' ?><span class="text-cyan-400">_</span>
+                <?= $isPassed ? 'Lulus' : 'Tidak Lulus' ?><span class="text-cyan-400"></span>
             </h2>
             <p class="result-desc-text font-mono">
                 <?= $isPassed
-                    ? 'Selamat! Anda telah menguasai kompetensi materi konfigurasi MikroTik RouterOS ini.'
-                    : 'Hasil ujian Anda telah dicatat ke database. Silakan pelajari kembali modul pembahasan untuk memperdalam materi.' ?>
+                    ? 'Selamat! Anda telah menguasai materi saat ini.'
+                    : 'Silakan pelajari kembali untuk memperdalam materi.' ?>
             </p>
 
             <!-- Stats Breakdown Grid -->
@@ -70,9 +57,6 @@ require_once dirname(__DIR__) . '/templates/header.php';
                 <div class="result-stat-box">
                     <span class="result-stat-label font-mono">Perolehan Poin</span>
                     <span class="result-stat-val font-mono text-amber-400 flex items-center gap-1">
-                        <svg class="w-3.5 h-3.5 pixelated" viewBox="0 0 16 16">
-                            <use href="#pixel-coin"></use>
-                        </svg>
                         <span>+<?= (int)$score ?> pts</span>
                     </span>
                 </div>
@@ -89,18 +73,18 @@ require_once dirname(__DIR__) . '/templates/header.php';
                 <a href="<?= BASE_URL ?>/quiz"
                     class="btn-hero-secondary font-mono"
                     onclick="window.playPixelSound && window.playPixelSound('click');">
-                    <span>← Kembali ke Kuis</span>
+                    <span>← Kembali</span>
                 </a>
                 <?php if (!empty($quiz['id'])): ?>
                     <a href="<?= BASE_URL ?>/quiz/play/<?= (int)$quiz['id'] ?>"
                         class="btn-hero-secondary font-mono"
                         onclick="window.playPixelSound && window.playPixelSound('click');">
-                        <span>Ulangi Kuis</span>
+                        <span>Ulangi</span>
                     </a>
                     <a href="<?= BASE_URL ?>/quiz/review/<?= (int)$quiz['id'] ?>"
                         class="btn-hero-primary font-mono"
                         onclick="window.playPixelSound && window.playPixelSound('coin');">
-                        <span>Review Pembahasan →</span>
+                        <span>Review →</span>
                     </a>
                 <?php endif; ?>
             </div>

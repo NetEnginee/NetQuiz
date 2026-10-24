@@ -26,7 +26,7 @@ require_once dirname(__DIR__) . '/templates/header.php';
                 <h1 class="hero-main-title">
                     <span><?= htmlspecialchars($quiz['title']) ?></span>
                 </h1>
-                <div class="flex items-center gap-2 mt-1">
+                <div class="flex items-center" style="display: flex; align-items: center; gap: 0.75rem; margin-top: 0.5rem;">
                     <span class="quiz-diff-pill font-mono font-bold text-cyan-400">
                         <?= htmlspecialchars($quiz['category']) ?>
                     </span>
@@ -44,11 +44,6 @@ require_once dirname(__DIR__) . '/templates/header.php';
         <!-- LEFT COLUMN: Active Question Carousel -->
         <div class="question-column-left">
             <div class="question-card-container">
-                <span class="panel-crosshair corner-tl">+</span>
-                <span class="panel-crosshair corner-tr">+</span>
-                <span class="panel-crosshair corner-bl">+</span>
-                <span class="panel-crosshair corner-br">+</span>
-
                 <form id="quiz-form" action="<?= BASE_URL ?>/quiz/submit/<?= (int)$quiz['id'] ?>" method="POST">
                     <input type="hidden" name="csrf_token" value="<?= \App\Core\Security::generateCsrfToken() ?>">
                     <input type="hidden" name="time_left" id="time_left" value="<?= $initialTimeLeft ?>">
@@ -129,15 +124,10 @@ require_once dirname(__DIR__) . '/templates/header.php';
         <div class="timer-palette-column-right space-y-5">
             <!-- Card 1: Timer & Action Box -->
             <div class="desktop-timer-card">
-                <span class="panel-crosshair corner-tl">+</span>
-                <span class="panel-crosshair corner-tr">+</span>
-                <span class="panel-crosshair corner-bl">+</span>
-                <span class="panel-crosshair corner-br">+</span>
-
                 <div class="timer-box-header">
                     <span class="font-mono text-xs font-bold text-zinc-400 uppercase tracking-wider">Sisa Waktu Ujian</span>
-                    <button type="button" class="btn-pause-trigger btn-hero-secondary font-mono text-xs px-2 py-0.5" title="Jeda & Simpan Progres" onclick="window.playPixelSound && window.playPixelSound('blip');">
-                        <span>⏸ Jeda</span>
+                    <button type="button" class="btn-pause-trigger btn-hero-secondary font-mono text-xs px-2.5 py-1" title="Jeda & Simpan Progres" onclick="window.playPixelSound && window.playPixelSound('blip');">
+                        <span>Jeda</span>
                     </button>
                 </div>
 
@@ -149,11 +139,6 @@ require_once dirname(__DIR__) . '/templates/header.php';
 
             <!-- Card 2: Question Palette Grid -->
             <div class="palette-card-box">
-                <span class="panel-crosshair corner-tl">+</span>
-                <span class="panel-crosshair corner-tr">+</span>
-                <span class="panel-crosshair corner-bl">+</span>
-                <span class="panel-crosshair corner-br">+</span>
-
                 <div class="flex items-center justify-between pb-2 mb-3 border-b border-zinc-800">
                     <h4 class="font-sans text-xs font-bold text-white uppercase tracking-wider m-0">
                         Palet Nomor Soal
@@ -179,24 +164,18 @@ require_once dirname(__DIR__) . '/templates/header.php';
                 </div>
 
                 <!-- Palette Legend with Badges & Explicit Indicators -->
-                <div class="palette-legend-row font-mono">
+                <div class="palette-legend-row legend-row-start font-mono">
                     <span class="legend-badge-item">
-                        <span class="legend-dot bg-white"></span>
                         <span>Terjawab</span>
                     </span>
                     <span class="legend-badge-item">
-                        <span class="legend-dot bg-zinc-900 border border-zinc-700"></span>
                         <span>Belum</span>
-                    </span>
-                    <span class="legend-badge-item legend-active">
-                        <span class="legend-dot-active"></span>
-                        <span>Aktif</span>
                     </span>
                 </div>
 
                 <!-- Palette Direct Submit Button -->
                 <button type="button" class="btn-hero-primary btn-open-submit-modal font-mono text-xs w-full justify-center" onclick="window.playPixelSound && window.playPixelSound('coin');">
-                    <span>✓ Kumpulkan Ujian Sekarang</span>
+                    <span>Kumpulkan Ujian</span>
                 </button>
             </div>
         </div>
@@ -208,11 +187,6 @@ require_once dirname(__DIR__) . '/templates/header.php';
 <!-- 1. MODAL KONFIRMASI KUMPULKAN UJIAN -->
 <div id="submit-confirm-modal" class="dialog-overlay" style="display: none;">
     <div class="modal-dark-card">
-        <span class="panel-crosshair corner-tl">+</span>
-        <span class="panel-crosshair corner-tr">+</span>
-        <span class="panel-crosshair corner-bl">+</span>
-        <span class="panel-crosshair corner-br">+</span>
-
         <h3 class="modal-title-text font-sans">
             Kumpulkan Ujian Kuis?
         </h3>
@@ -250,11 +224,6 @@ require_once dirname(__DIR__) . '/templates/header.php';
 <!-- 2. MODAL JEDA (PAUSE & RESUME) -->
 <div id="pause-dialog" class="dialog-overlay" style="display: none;">
     <div class="modal-dark-card">
-        <span class="panel-crosshair corner-tl">+</span>
-        <span class="panel-crosshair corner-tr">+</span>
-        <span class="panel-crosshair corner-bl">+</span>
-        <span class="panel-crosshair corner-br">+</span>
-
         <h3 class="modal-title-text font-sans">
             Jeda Pengerjaan Ujian?
         </h3>

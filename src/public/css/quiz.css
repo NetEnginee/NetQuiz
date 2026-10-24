@@ -756,6 +756,11 @@ svg.w-12 {
   flex-wrap: nowrap;
 }
 
+.palette-legend-row.legend-row-start {
+  justify-content: flex-start;
+  gap: 0.65rem;
+}
+
 .legend-badge-item {
   display: inline-flex;
   align-items: center;

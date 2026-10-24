@@ -190,14 +190,12 @@ function renderBreadcrumb(array $items): string
             <div class="student-nav-controls">
                 <!-- Audio Synth Toggle -->
                 <button type="button" id="soundToggleBtn" class="sound-toggle-btn font-mono" aria-label="Aktifkan/Matikan Suara">
-                    <span id="soundIcon">🔊</span>
                     <span id="soundLabel">Sound: ON</span>
                 </button>
 
                 <!-- Admin Link if Admin -->
                 <?php if ($isAdmin): ?>
                     <a href="<?= BASE_URL ?>/admin" class="admin-quick-link font-mono" title="Akses Admin Panel">
-                        <i data-lucide="shield" class="w-3.5 h-3.5"></i>
                         <span>Admin</span>
                     </a>
                 <?php endif; ?>

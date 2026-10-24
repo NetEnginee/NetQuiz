@@ -34,7 +34,7 @@ require_once dirname(__DIR__) . '/templates/header.php';
             <h1 class="hero-main-title">
                 <span>Review: <?= htmlspecialchars($quiz['title']) ?></span>
             </h1>
-            <div class="flex items-center gap-2 mt-1.5">
+            <div class="flex items-center" style="display: flex; align-items: center; gap: 0.75rem; margin-top: 0.5rem;">
                 <span class="quiz-diff-pill font-mono font-bold text-cyan-400">
                     <?= htmlspecialchars($quiz['category']) ?>
                 </span>
@@ -46,10 +46,10 @@ require_once dirname(__DIR__) . '/templates/header.php';
 
         <div class="hero-action-bar">
             <a href="<?= BASE_URL ?>/quiz" class="btn-hero-secondary font-mono text-xs" onclick="window.playPixelSound && window.playPixelSound('click');">
-                <span>← Kembali ke Kuis</span>
+                <span>← Kembali</span>
             </a>
             <a href="<?= BASE_URL ?>/quiz/play/<?= (int)$quiz['id'] ?>" class="btn-hero-primary font-mono text-xs" onclick="window.playPixelSound && window.playPixelSound('click');">
-                <span>Ulangi Kuis</span>
+                <span>Ulangi</span>
             </a>
         </div>
     </section>
@@ -201,18 +201,12 @@ require_once dirname(__DIR__) . '/templates/header.php';
                 </div>
 
                 <!-- Palette Legend with Counts & Indicators -->
-                <div class="palette-legend-row font-mono">
+                <div class="palette-legend-row font-mono" style="display: flex; align-items: center; justify-content: flex-start; gap: 0.65rem;">
                     <span class="legend-badge-item legend-correct">
-                        <span class="legend-dot bg-emerald-500"></span>
                         <span>Benar: <strong class="text-emerald-400 font-bold"><?= $correctCount ?></strong></span>
                     </span>
                     <span class="legend-badge-item legend-wrong">
-                        <span class="legend-dot bg-red-500"></span>
                         <span>Salah: <strong class="text-red-400 font-bold"><?= $wrongCount ?></strong></span>
-                    </span>
-                    <span class="legend-badge-item legend-active">
-                        <span class="legend-dot-active"></span>
-                        <span>Aktif</span>
                     </span>
                 </div>
             </div>
@@ -226,9 +220,6 @@ require_once dirname(__DIR__) . '/templates/header.php';
 
                 <div class="explanation-card-header flex items-center justify-between pb-2 mb-3 border-b border-zinc-800">
                     <div class="flex items-center gap-2">
-                        <svg class="w-4 h-4 pixelated text-cyan-400" viewBox="0 0 16 16">
-                            <use href="#pixel-robot"></use>
-                        </svg>
                         <h4 class="font-sans text-xs font-bold text-cyan-400 uppercase tracking-wider m-0">
                             Pembahasan Teknis RouterOS
                         </h4>

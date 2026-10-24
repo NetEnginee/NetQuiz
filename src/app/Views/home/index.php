@@ -241,7 +241,6 @@ require_once dirname(__DIR__) . "/templates/header.php";
 
                 <div class="panel-header-row">
                     <div class="panel-title-wrap">
-                        <div class="w-2.5 h-2.5 bg-blue-500 rounded-xs"></div>
                         <h2 id="topic-panel-title" class="panel-title-text">Exam Topic Distribution</h2>
                     </div>
                 </div>
@@ -263,7 +262,6 @@ require_once dirname(__DIR__) . "/templates/header.php";
                         <div class="topic-progress-item">
                             <div class="topic-progress-header font-mono">
                                 <span class="topic-name-wrap">
-                                    <span class="topic-dot" style="background-color: <?= $topConf['color'] ?>;"></span>
                                     <span><?= htmlspecialchars($topName) ?></span>
                                 </span>
                                 <span class="topic-stats-text"><?= $cCount ?> Kuis (<?= $cPercent ?>%)</span>
@@ -285,7 +283,6 @@ require_once dirname(__DIR__) . "/templates/header.php";
 
                 <div class="panel-header-row">
                     <div class="panel-title-wrap">
-                        <div class="w-2.5 h-2.5 bg-amber-400 rounded-xs"></div>
                         <h2 id="badges-panel-title" class="panel-title-text">Unlocked Badges</h2>
                     </div>
                 </div>

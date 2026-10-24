@@ -98,11 +98,6 @@ require_once dirname(__DIR__) . '/templates/header.php';
         <!-- Podium Header -->
         <div class="podium-stage-header">
             <div class="podium-header-title-wrap">
-                <div class="podium-trophy-box">
-                    <svg class="w-5 h-5 pixelated text-amber-400" width="20" height="20" viewBox="0 0 16 16">
-                        <use href="#pixel-coin"></use>
-                    </svg>
-                </div>
                 <div>
                     <h2 class="podium-stage-title font-sans">
                         Panggung Juara Terbaik
@@ -115,139 +110,139 @@ require_once dirname(__DIR__) . '/templates/header.php';
         </div>
 
         <div id="podium-content-container">
-        <?php if (empty($leaderboard)): ?>
-            <div class="podium-empty-state">
-                <div class="pixel-empty-state empty-theme-amber" style="padding: 2rem 1rem; background: transparent; border: none; box-shadow: none;">
-                    <div class="empty-scene">
-                        <div class="sparkle-orbit">
-                            <span class="sparkle-dot"></span>
-                            <span class="sparkle-dot"></span>
-                            <span class="sparkle-dot"></span>
-                            <span class="sparkle-dot"></span>
-                        </div>
-                        <div class="empty-main-icon">
-                            <svg class="w-10 h-10 pixelated" viewBox="0 0 16 16">
-                                <use href="#pixel-sparkle"></use>
-                            </svg>
-                        </div>
-                    </div>
-                    <h3 class="empty-headline">Belum Ada Aktivitas Kejuaraan</h3>
-                    <p class="empty-subtext">Belum ada aktivitas ujian kuis yang tercatat pada topik ini.</p>
-                </div>
-            </div>
-        <?php else: ?>
-            <!-- 3-Column Podium Stage -->
-            <div class="podium-columns-container">
-
-                <!-- 1. Silver / Juara 2 (Left Column) -->
-                <div class="podium-column podium-rank-2">
-                    <?php if ($rank2): ?>
-                        <div class="podium-player-card">
-                            <div class="podium-avatar-wrap">
-                                <div class="podium-avatar">
-                                    <?= strtoupper(substr(htmlspecialchars($rank2['username']), 0, 1)) ?>
-                                </div>
-                                <span class="podium-rank-badge">2nd</span>
+            <?php if (empty($leaderboard)): ?>
+                <div class="podium-empty-state">
+                    <div class="pixel-empty-state empty-theme-amber" style="padding: 2rem 1rem; background: transparent; border: none; box-shadow: none;">
+                        <div class="empty-scene">
+                            <div class="sparkle-orbit">
+                                <span class="sparkle-dot"></span>
+                                <span class="sparkle-dot"></span>
+                                <span class="sparkle-dot"></span>
+                                <span class="sparkle-dot"></span>
                             </div>
-                            <div class="podium-username" title="<?= htmlspecialchars($rank2['username']) ?>">
-                                <?= htmlspecialchars($rank2['username']) ?>
-                            </div>
-                            <div class="podium-score">
-                                <?= number_format((int)$rank2['total_score']) ?> <span class="text-[11px] font-normal text-zinc-400">Pts</span>
-                            </div>
-                            <div class="podium-quiz-count">
-                                <?= (int)$rank2['completed_quizzes'] ?> Kuis Selesai
+                            <div class="empty-main-icon">
+                                <svg class="w-10 h-10 pixelated" viewBox="0 0 16 16">
+                                    <use href="#pixel-sparkle"></use>
+                                </svg>
                             </div>
                         </div>
-                    <?php else: ?>
-                        <div class="podium-player-card opacity-30">
-                            <div class="podium-avatar-wrap">
-                                <div class="podium-avatar border-zinc-700 text-zinc-600">-</div>
-                                <span class="podium-rank-badge bg-zinc-800 text-zinc-400">2nd</span>
-                            </div>
-                            <div class="podium-username text-zinc-500">Kosong</div>
-                        </div>
-                    <?php endif; ?>
-                    <div class="podium-pedestal-block pedestal-2">
-                        <span class="podium-pedestal-number">2</span>
+                        <h3 class="empty-headline">Belum Ada Aktivitas Kejuaraan</h3>
+                        <p class="empty-subtext">Belum ada aktivitas ujian kuis yang tercatat pada topik ini.</p>
                     </div>
                 </div>
+            <?php else: ?>
+                <!-- 3-Column Podium Stage -->
+                <div class="podium-columns-container">
 
-                <!-- 2. Gold / Juara 1 (Center Column - Highest) -->
-                <div class="podium-column podium-rank-1">
-                    <?php if ($rank1): ?>
-                        <div class="podium-player-card">
-                            <div class="podium-avatar-wrap">
-                                <div class="podium-crown-icon">
-                                    <svg class="w-6 h-6 pixelated" width="24" height="24" viewBox="0 0 16 16">
-                                        <use href="#pixel-coin"></use>
-                                    </svg>
+                    <!-- 1. Silver / Juara 2 (Left Column) -->
+                    <div class="podium-column podium-rank-2">
+                        <?php if ($rank2): ?>
+                            <div class="podium-player-card">
+                                <div class="podium-avatar-wrap">
+                                    <div class="podium-avatar">
+                                        <?= strtoupper(substr(htmlspecialchars($rank2['username']), 0, 1)) ?>
+                                    </div>
+                                    <span class="podium-rank-badge">2nd</span>
                                 </div>
-                                <div class="podium-avatar">
-                                    <?= strtoupper(substr(htmlspecialchars($rank1['username']), 0, 1)) ?>
+                                <div class="podium-username" title="<?= htmlspecialchars($rank2['username']) ?>">
+                                    <?= htmlspecialchars($rank2['username']) ?>
                                 </div>
-                                <span class="podium-rank-badge">1st</span>
+                                <div class="podium-score">
+                                    <?= number_format((int)$rank2['total_score']) ?> <span class="text-[11px] font-normal text-zinc-400">Pts</span>
+                                </div>
+                                <div class="podium-quiz-count">
+                                    <?= (int)$rank2['completed_quizzes'] ?> Kuis Selesai
+                                </div>
                             </div>
-                            <div class="podium-username" title="<?= htmlspecialchars($rank1['username']) ?>">
-                                <?= htmlspecialchars($rank1['username']) ?>
+                        <?php else: ?>
+                            <div class="podium-player-card opacity-30">
+                                <div class="podium-avatar-wrap">
+                                    <div class="podium-avatar border-zinc-700 text-zinc-600">-</div>
+                                    <span class="podium-rank-badge bg-zinc-800 text-zinc-400">2nd</span>
+                                </div>
+                                <div class="podium-username text-zinc-500">Kosong</div>
                             </div>
-                            <div class="podium-score">
-                                <?= number_format((int)$rank1['total_score']) ?> <span class="text-[11px] font-normal text-amber-200/70">Pts</span>
-                            </div>
-                            <div class="podium-quiz-count">
-                                <?= (int)$rank1['completed_quizzes'] ?> Kuis Selesai
-                            </div>
+                        <?php endif; ?>
+                        <div class="podium-pedestal-block pedestal-2">
+                            <span class="podium-pedestal-number">2</span>
                         </div>
-                    <?php else: ?>
-                        <div class="podium-player-card opacity-30">
-                            <div class="podium-avatar-wrap">
-                                <div class="podium-avatar border-zinc-700 text-zinc-600">-</div>
-                                <span class="podium-rank-badge bg-zinc-800 text-zinc-400">1st</span>
-                            </div>
-                            <div class="podium-username text-zinc-500">Kosong</div>
-                        </div>
-                    <?php endif; ?>
-                    <div class="podium-pedestal-block pedestal-1">
-                        <span class="podium-pedestal-number">1</span>
                     </div>
-                </div>
 
-                <!-- 3. Bronze / Juara 3 (Right Column) -->
-                <div class="podium-column podium-rank-3">
-                    <?php if ($rank3): ?>
-                        <div class="podium-player-card">
-                            <div class="podium-avatar-wrap">
-                                <div class="podium-avatar">
-                                    <?= strtoupper(substr(htmlspecialchars($rank3['username']), 0, 1)) ?>
+                    <!-- 2. Gold / Juara 1 (Center Column - Highest) -->
+                    <div class="podium-column podium-rank-1">
+                        <?php if ($rank1): ?>
+                            <div class="podium-player-card">
+                                <div class="podium-avatar-wrap">
+                                    <div class="podium-crown-icon">
+                                        <svg class="w-6 h-6 pixelated" width="24" height="24" viewBox="0 0 16 16">
+                                            <use href="#pixel-coin"></use>
+                                        </svg>
+                                    </div>
+                                    <div class="podium-avatar">
+                                        <?= strtoupper(substr(htmlspecialchars($rank1['username']), 0, 1)) ?>
+                                    </div>
+                                    <span class="podium-rank-badge">1st</span>
                                 </div>
-                                <span class="podium-rank-badge">3rd</span>
+                                <div class="podium-username" title="<?= htmlspecialchars($rank1['username']) ?>">
+                                    <?= htmlspecialchars($rank1['username']) ?>
+                                </div>
+                                <div class="podium-score">
+                                    <?= number_format((int)$rank1['total_score']) ?> <span class="text-[11px] font-normal text-amber-200/70">Pts</span>
+                                </div>
+                                <div class="podium-quiz-count">
+                                    <?= (int)$rank1['completed_quizzes'] ?> Kuis Selesai
+                                </div>
                             </div>
-                            <div class="podium-username" title="<?= htmlspecialchars($rank3['username']) ?>">
-                                <?= htmlspecialchars($rank3['username']) ?>
+                        <?php else: ?>
+                            <div class="podium-player-card opacity-30">
+                                <div class="podium-avatar-wrap">
+                                    <div class="podium-avatar border-zinc-700 text-zinc-600">-</div>
+                                    <span class="podium-rank-badge bg-zinc-800 text-zinc-400">1st</span>
+                                </div>
+                                <div class="podium-username text-zinc-500">Kosong</div>
                             </div>
-                            <div class="podium-score">
-                                <?= number_format((int)$rank3['total_score']) ?> <span class="text-[11px] font-normal text-zinc-400">Pts</span>
-                            </div>
-                            <div class="podium-quiz-count">
-                                <?= (int)$rank3['completed_quizzes'] ?> Kuis Selesai
-                            </div>
+                        <?php endif; ?>
+                        <div class="podium-pedestal-block pedestal-1">
+                            <span class="podium-pedestal-number">1</span>
                         </div>
-                    <?php else: ?>
-                        <div class="podium-player-card opacity-30">
-                            <div class="podium-avatar-wrap">
-                                <div class="podium-avatar border-zinc-700 text-zinc-600">-</div>
-                                <span class="podium-rank-badge bg-zinc-800 text-zinc-400">3rd</span>
-                            </div>
-                            <div class="podium-username text-zinc-500">Kosong</div>
-                        </div>
-                    <?php endif; ?>
-                    <div class="podium-pedestal-block pedestal-3">
-                        <span class="podium-pedestal-number">3</span>
                     </div>
-                </div>
 
-            </div>
-        <?php endif; ?>
+                    <!-- 3. Bronze / Juara 3 (Right Column) -->
+                    <div class="podium-column podium-rank-3">
+                        <?php if ($rank3): ?>
+                            <div class="podium-player-card">
+                                <div class="podium-avatar-wrap">
+                                    <div class="podium-avatar">
+                                        <?= strtoupper(substr(htmlspecialchars($rank3['username']), 0, 1)) ?>
+                                    </div>
+                                    <span class="podium-rank-badge">3rd</span>
+                                </div>
+                                <div class="podium-username" title="<?= htmlspecialchars($rank3['username']) ?>">
+                                    <?= htmlspecialchars($rank3['username']) ?>
+                                </div>
+                                <div class="podium-score">
+                                    <?= number_format((int)$rank3['total_score']) ?> <span class="text-[11px] font-normal text-zinc-400">Pts</span>
+                                </div>
+                                <div class="podium-quiz-count">
+                                    <?= (int)$rank3['completed_quizzes'] ?> Kuis Selesai
+                                </div>
+                            </div>
+                        <?php else: ?>
+                            <div class="podium-player-card opacity-30">
+                                <div class="podium-avatar-wrap">
+                                    <div class="podium-avatar border-zinc-700 text-zinc-600">-</div>
+                                    <span class="podium-rank-badge bg-zinc-800 text-zinc-400">3rd</span>
+                                </div>
+                                <div class="podium-username text-zinc-500">Kosong</div>
+                            </div>
+                        <?php endif; ?>
+                        <div class="podium-pedestal-block pedestal-3">
+                            <span class="podium-pedestal-number">3</span>
+                        </div>
+                    </div>
+
+                </div>
+            <?php endif; ?>
         </div>
     </section>
 
