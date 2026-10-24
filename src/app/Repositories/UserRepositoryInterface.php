@@ -20,4 +20,5 @@ interface UserRepositoryInterface
     public function updatePassword(int $id, string $newPassword): bool;
     public function updateStatus(int $id, string $status): bool;
     public function delete(int $id): bool;
+    public function deleteBulk(array $ids): bool;
 }

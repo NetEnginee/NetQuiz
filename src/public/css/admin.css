@@ -1954,6 +1954,11 @@ select.form-field-input option {
   background-color: #0d0d11;
 }
 
+.supabase-data-table tr.row-selected td,
+.geist-data-table tr.row-selected td {
+  background-color: rgba(80, 227, 194, 0.04);
+}
+
 .panel-checkbox {
   accent-color: var(--accent-cyan);
   width: 16px;
@@ -2522,6 +2527,18 @@ select.form-field-input option {
 
 .btn-bulk-action:hover {
   background-color: #222228;
+}
+
+.btn-bulk-action.btn-bulk-danger {
+  background-color: rgba(239, 68, 68, 0.14);
+  border-color: rgba(239, 68, 68, 0.35);
+  color: #f87171;
+}
+
+.btn-bulk-action.btn-bulk-danger:hover {
+  background-color: rgba(239, 68, 68, 0.25);
+  border-color: rgba(239, 68, 68, 0.55);
+  color: #ffffff;
 }
 
 .btn-bulk-dismiss {

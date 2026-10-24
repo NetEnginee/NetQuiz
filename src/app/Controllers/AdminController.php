@@ -380,6 +380,46 @@ class AdminController extends Controller
     }
 
     /**
+     * Delete Members Bulk (Selected Accounts).
+     */
+    public function deleteMembersBulk(): Response
+    {
+        $this->checkAdmin();
+
+        if (!Security::validateCsrfToken($this->request->input('csrf_token'))) {
+            $_SESSION['admin_error'] = 'Sesi tidak valid, silakan muat ulang halaman.';
+            return $this->redirect(BASE_URL . '/admin#manage-section');
+        }
+
+        $ids = $this->request->input('selected_members', []);
+        if (is_string($ids) && !empty($ids)) {
+            $decoded = json_decode($ids, true);
+            $ids = is_array($decoded) ? $decoded : explode(',', $ids);
+        }
+
+        if (empty($ids) || !is_array($ids)) {
+            $_SESSION['admin_error'] = 'Pilih akun member yang ingin dihapus terlebih dahulu.';
+            return $this->redirect(BASE_URL . '/admin#manage-section');
+        }
+
+        $cleanIds = array_values(array_unique(array_filter(array_map('intval', $ids), fn(int $id) => $id > 0)));
+        if (empty($cleanIds)) {
+            $_SESSION['admin_error'] = 'Data member yang dipilih tidak valid.';
+            return $this->redirect(BASE_URL . '/admin#manage-section');
+        }
+
+        try {
+            $this->userRepo->deleteBulk($cleanIds);
+            $count = count($cleanIds);
+            $_SESSION['admin_success'] = "{$count} akun anggota terpilih berhasil dihapus!";
+        } catch (\Exception $e) {
+            $_SESSION['admin_error'] = 'Gagal menghapus akun anggota terpilih: ' . $e->getMessage();
+        }
+
+        return $this->redirect(BASE_URL . '/admin#manage-section');
+    }
+
+    /**
      * Toggle Member Suspended / Active Status.
      */
     public function suspendMember(string|int $id): Response

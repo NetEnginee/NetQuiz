@@ -2483,6 +2483,10 @@ function renderManageMemberSection() {
                     <i data-lucide="download" style="width: 14px; height: 14px;"></i>
                     <span>Export Terpilih</span>
                 </button>
+                <button type="button" id="btn-bulk-delete" class="btn-bulk-action btn-bulk-danger" title="Hapus akun member yang dipilih">
+                    <i data-lucide="trash-2" style="width: 14px; height: 14px;"></i>
+                    <span>Hapus Terpilih</span>
+                </button>
             </div>
             <button type="button" id="btn-bulk-dismiss" class="btn-bulk-dismiss" title="Batal Pilihan">
                 <i data-lucide="x" style="width: 16px; height: 16px;"></i>
@@ -2499,6 +2503,9 @@ function renderManageMemberSection() {
   const bulkCountBadge = document.getElementById("bulk-selected-count");
   const btnBulkDismiss = document.getElementById("btn-bulk-dismiss");
   const btnBulkExport = document.getElementById("btn-bulk-export");
+  const btnBulkDelete = document.getElementById("btn-bulk-delete");
+
+  const selectedMemberIds = new Set();
 
   function renderRows(list) {
     if (!tbody) return;
@@ -2517,6 +2524,7 @@ function renderManageMemberSection() {
                 </tr>
             `;
       if (window.lucide) window.lucide.createIcons();
+      updateBulkState();
       return;
     }
 
@@ -2540,11 +2548,12 @@ function renderManageMemberSection() {
           status === "Aktif" ? "Nonaktifkan Member" : "Aktifkan Member";
         const safeUsername = escapeHtml(m.username).replace(/'/g, "\\'");
         const safeEmail = escapeHtml(m.email).replace(/'/g, "\\'");
+        const isSelected = selectedMemberIds.has(String(m.id));
 
         return `
-                <tr>
+                <tr class="${isSelected ? "row-selected" : ""}">
                     <td style="text-align: center;">
-                        <input type="checkbox" class="panel-checkbox member-row-checkbox" value="${m.id}" data-username="${safeUsername}" data-email="${safeEmail}" data-status="${status}">
+                        <input type="checkbox" class="panel-checkbox member-row-checkbox" value="${m.id}" data-username="${safeUsername}" data-email="${safeEmail}" data-status="${status}" ${isSelected ? "checked" : ""}>
                     </td>
                     <td>
                         <div class="member-user-cell">
@@ -2589,6 +2598,7 @@ function renderManageMemberSection() {
     }
 
     bindRowCheckboxes();
+    updateBulkState();
   }
 
   renderRows(rawMembers);
@@ -2623,43 +2633,141 @@ function renderManageMemberSection() {
   function bindRowCheckboxes() {
     const rowCheckboxes = document.querySelectorAll(".member-row-checkbox");
     rowCheckboxes.forEach((cb) => {
-      cb.addEventListener("change", updateBulkState);
+      cb.addEventListener("change", function () {
+        const idStr = String(this.value);
+        if (this.checked) {
+          selectedMemberIds.add(idStr);
+        } else {
+          selectedMemberIds.delete(idStr);
+        }
+        const row = this.closest("tr");
+        if (row) {
+          row.classList.toggle("row-selected", this.checked);
+        }
+        updateBulkState();
+      });
     });
   }
 
   function updateBulkState() {
-    const selected = document.querySelectorAll(".member-row-checkbox:checked");
+    const rowCheckboxes = Array.from(
+      document.querySelectorAll(".member-row-checkbox"),
+    );
+    const checkedVisibleCount = rowCheckboxes.filter((cb) => cb.checked).length;
+    const totalSelectedCount = selectedMemberIds.size;
+
+    if (selectAllCheckbox) {
+      if (rowCheckboxes.length === 0) {
+        selectAllCheckbox.checked = false;
+        selectAllCheckbox.indeterminate = false;
+      } else {
+        selectAllCheckbox.checked =
+          checkedVisibleCount === rowCheckboxes.length;
+        selectAllCheckbox.indeterminate =
+          checkedVisibleCount > 0 &&
+          checkedVisibleCount < rowCheckboxes.length;
+      }
+    }
+
     if (!floatingBulkBar || !bulkCountBadge) return;
 
-    if (selected.length > 0) {
-      bulkCountBadge.textContent = `${selected.length} Dipilih`;
+    if (totalSelectedCount > 0) {
+      bulkCountBadge.textContent = `${totalSelectedCount} Dipilih`;
       floatingBulkBar.style.display = "flex";
       floatingBulkBar.classList.add("active");
     } else {
       floatingBulkBar.classList.remove("active");
       floatingBulkBar.style.display = "none";
-      if (selectAllCheckbox) selectAllCheckbox.checked = false;
     }
   }
 
   if (selectAllCheckbox) {
     selectAllCheckbox.addEventListener("change", function () {
       const rowCheckboxes = document.querySelectorAll(".member-row-checkbox");
-      rowCheckboxes.forEach((cb) => (cb.checked = this.checked));
+      rowCheckboxes.forEach((cb) => {
+        cb.checked = this.checked;
+        const idStr = String(cb.value);
+        if (this.checked) {
+          selectedMemberIds.add(idStr);
+        } else {
+          selectedMemberIds.delete(idStr);
+        }
+        const row = cb.closest("tr");
+        if (row) {
+          row.classList.toggle("row-selected", this.checked);
+        }
+      });
       updateBulkState();
     });
   }
 
-  if (btnBulkDismiss) {
-    btnBulkDismiss.addEventListener("click", () => {
-      const rowCheckboxes = document.querySelectorAll(".member-row-checkbox");
-      rowCheckboxes.forEach((cb) => (cb.checked = false));
-      if (selectAllCheckbox) selectAllCheckbox.checked = false;
-      if (floatingBulkBar) {
-        floatingBulkBar.classList.remove("active");
-        floatingBulkBar.style.display = "none";
-      }
+  function clearMemberSelections() {
+    selectedMemberIds.clear();
+    const rowCheckboxes = document.querySelectorAll(".member-row-checkbox");
+    rowCheckboxes.forEach((cb) => {
+      cb.checked = false;
+      const row = cb.closest("tr");
+      if (row) row.classList.remove("row-selected");
     });
+    if (selectAllCheckbox) {
+      selectAllCheckbox.checked = false;
+      selectAllCheckbox.indeterminate = false;
+    }
+    updateBulkState();
+  }
+
+  if (btnBulkDismiss) {
+    btnBulkDismiss.addEventListener("click", clearMemberSelections);
+  }
+
+  // Bulk Delete Selected Members
+  function triggerBulkDeleteMembers() {
+    const idsArray = Array.from(selectedMemberIds);
+    if (idsArray.length === 0) return;
+
+    const selectedMembersData = rawMembers.filter((m) =>
+      selectedMemberIds.has(String(m.id)),
+    );
+    const count = idsArray.length;
+    const namesList = selectedMembersData
+      .slice(0, 3)
+      .map((m) => m.username || m.email || `ID #${m.id}`)
+      .join(", ");
+    const moreText = count > 3 ? ` dan ${count - 3} lainnya` : "";
+    const detailText = namesList ? ` (${namesList}${moreText})` : "";
+
+    showGeistConfirm(
+      "Hapus Akun Member Terpilih",
+      `Apakah Anda yakin ingin menghapus ${count} akun member yang dipilih${detailText}? Seluruh riwayat ujian member tersebut juga akan terhapus permanen dan tindakan ini tidak dapat dibatalkan.`,
+      `Hapus ${count} Member`,
+      () => {
+        const form = document.createElement("form");
+        form.method = "POST";
+        form.action = `${window.BASE_URL}/admin/users/delete-bulk`;
+
+        const csrfInput = document.createElement("input");
+        csrfInput.type = "hidden";
+        csrfInput.name = "csrf_token";
+        csrfInput.value = window.CSRF_TOKEN || "";
+        form.appendChild(csrfInput);
+
+        idsArray.forEach((id) => {
+          const idInput = document.createElement("input");
+          idInput.type = "hidden";
+          idInput.name = "selected_members[]";
+          idInput.value = id;
+          form.appendChild(idInput);
+        });
+
+        document.body.appendChild(form);
+        form.submit();
+      },
+      true,
+    );
+  }
+
+  if (btnBulkDelete) {
+    btnBulkDelete.addEventListener("click", triggerBulkDeleteMembers);
   }
 
   const btnBulkActivate = document.getElementById("btn-bulk-activate");
@@ -2670,11 +2778,11 @@ function renderManageMemberSection() {
       const selected = document.querySelectorAll(
         ".member-row-checkbox:checked",
       );
-      if (selected.length === 0) return;
+      if (selected.length === 0 && selectedMemberIds.size === 0) return;
       showGeistToast(
         "success",
         "Aktivasi Berhasil",
-        `${selected.length} member telah diaktifkan.`,
+        `${selectedMemberIds.size || selected.length} member telah diaktifkan.`,
       );
       selected.forEach((cb) => {
         const row = cb.closest("tr");
@@ -2686,11 +2794,7 @@ function renderManageMemberSection() {
           }
         }
       });
-      if (floatingBulkBar) {
-        floatingBulkBar.classList.remove("active");
-        floatingBulkBar.style.display = "none";
-      }
-      if (selectAllCheckbox) selectAllCheckbox.checked = false;
+      clearMemberSelections();
     });
   }
 
@@ -2699,11 +2803,11 @@ function renderManageMemberSection() {
       const selected = document.querySelectorAll(
         ".member-row-checkbox:checked",
       );
-      if (selected.length === 0) return;
+      if (selected.length === 0 && selectedMemberIds.size === 0) return;
       showGeistToast(
         "info",
         "Status Diperbarui",
-        `${selected.length} member telah dinonaktifkan.`,
+        `${selectedMemberIds.size || selected.length} member telah dinonaktifkan.`,
       );
       selected.forEach((cb) => {
         const row = cb.closest("tr");
@@ -2715,32 +2819,28 @@ function renderManageMemberSection() {
           }
         }
       });
-      if (floatingBulkBar) {
-        floatingBulkBar.classList.remove("active");
-        floatingBulkBar.style.display = "none";
-      }
-      if (selectAllCheckbox) selectAllCheckbox.checked = false;
+      clearMemberSelections();
     });
   }
 
   // Bulk Export to CSV
   if (btnBulkExport) {
     btnBulkExport.addEventListener("click", () => {
-      const selected = document.querySelectorAll(
-        ".member-row-checkbox:checked",
+      const selectedMembersData = rawMembers.filter((m) =>
+        selectedMemberIds.has(String(m.id)),
       );
-      if (selected.length === 0) return;
+      if (selectedMembersData.length === 0) return;
 
       let csv = "ID,Username,Email,Status\n";
-      selected.forEach((cb) => {
-        csv += `"${cb.value}","${cb.getAttribute("data-username")}","${cb.getAttribute("data-email")}","${cb.getAttribute("data-status")}"\n`;
+      selectedMembersData.forEach((m) => {
+        csv += `"${m.id}","${m.username}","${m.email}","${m.status || "Aktif"}"\n`;
       });
 
       downloadCsvFile(csv, "selected_members.csv");
       showGeistToast(
         "success",
         "Export Selesai",
-        `${selected.length} data member terpilih berhasil diexport.`,
+        `${selectedMembersData.length} data member terpilih berhasil diexport.`,
       );
     });
   }

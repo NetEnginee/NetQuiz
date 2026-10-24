@@ -154,6 +154,8 @@ $router->post('/admin/quizzes/delete/{id}', [\App\Controllers\AdminController::c
 $router->post('/admin/users/create', [\App\Controllers\AdminController::class, 'createMember']);
 $router->post('/admin/users/update/{id}', [\App\Controllers\AdminController::class, 'updateMember']);
 $router->post('/admin/users/delete/{id}', [\App\Controllers\AdminController::class, 'deleteMember']);
+$router->post('/admin/users/delete-bulk', [\App\Controllers\AdminController::class, 'deleteMembersBulk']);
+$router->post('/admin/user/delete-bulk', [\App\Controllers\AdminController::class, 'deleteMembersBulk']);
 $router->post('/admin/users/suspend/{id}', [\App\Controllers\AdminController::class, 'suspendMember']);
 
 // Badges

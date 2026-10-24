@@ -177,4 +177,20 @@ class UserRepository implements UserRepositoryInterface
         $stmt = $this->db->prepare("DELETE FROM users WHERE id = :id");
         return $stmt->execute(['id' => $id]);
     }
+
+    /**
+     * Delete multiple non-admin users in bulk.
+     */
+    public function deleteBulk(array $ids): bool
+    {
+        $cleanIds = array_values(array_unique(array_filter(array_map('intval', $ids), fn(int $id) => $id > 0)));
+        if (empty($cleanIds)) {
+            return false;
+        }
+
+        $placeholders = implode(',', array_fill(0, count($cleanIds), '?'));
+        $sql = "DELETE FROM users WHERE id IN ({$placeholders}) AND LOWER(TRIM(email)) NOT IN ('admin@routerosquiz.academy', 'super@netquiz.academy', 'super@network.academy', 'admin@quiz.local')";
+        $stmt = $this->db->prepare($sql);
+        return $stmt->execute($cleanIds);
+    }
 }
