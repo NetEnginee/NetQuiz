@@ -94,58 +94,6 @@ require_once dirname(__DIR__) . '/templates/header.php';
         </div>
     </div>
 
-    <!-- 2.5 USER PERSONAL RANK STATUS PANEL (PENANDA POSISI USER) -->
-    <?php
-    $hasCompleted = !empty($currentUserStats) && ((int)($currentUserStats['completed_quizzes'] ?? 0) > 0);
-    $userInitial = strtoupper(substr(htmlspecialchars($currentUserName), 0, 1));
-    ?>
-    <div class="personal-rank-panel <?= $hasCompleted ? 'is-ranked' : '' ?>" id="personal-rank-panel">
-        <span class="panel-crosshair corner-tl">+</span>
-        <span class="panel-crosshair corner-tr">+</span>
-        <span class="panel-crosshair corner-bl">+</span>
-        <span class="panel-crosshair corner-br">+</span>
-
-        <div class="personal-rank-left">
-            <div class="personal-rank-avatar font-mono">
-                <?= $userInitial ?>
-            </div>
-            <div class="personal-rank-name-wrap">
-                <div class="personal-rank-name-row">
-                    <span class="personal-rank-username"><?= htmlspecialchars($currentUserName) ?></span>
-                    <span class="badge-you-tag">Anda</span>
-                </div>
-                <span class="personal-rank-desc" id="personal-rank-desc">
-                    <?php if ($hasCompleted): ?>
-                        <?= $currentUserRank <= 3 ? '🎉 Luar biasa! Anda berada di Panggung Juara' : ($currentUserRank <= 10 ? '⭐ Hebat! Anda berada di Top 10 Leaderboard' : 'Peringkat Anda saat ini pada topik ' . htmlspecialchars($activeCategoryLabel)) ?>
-                    <?php else: ?>
-                        Belum ada riwayat pengerjaan pada topik <?= htmlspecialchars($activeCategoryLabel) ?>
-                    <?php endif; ?>
-                </span>
-            </div>
-        </div>
-
-        <div class="personal-rank-stats-wrap">
-            <div class="personal-stat-item">
-                <span class="personal-stat-label">Peringkat Anda</span>
-                <span class="personal-stat-value highlight-rank" id="personal-stat-rank">
-                    <?= $hasCompleted ? '#' . $currentUserRank : '-' ?>
-                </span>
-            </div>
-            <div class="personal-stat-item">
-                <span class="personal-stat-label">Kuis Selesai</span>
-                <span class="personal-stat-value" id="personal-stat-quizzes">
-                    <?= (int)($currentUserStats['completed_quizzes'] ?? 0) ?>
-                </span>
-            </div>
-            <div class="personal-stat-item">
-                <span class="personal-stat-label">Total Skor</span>
-                <span class="personal-stat-value text-amber-400" id="personal-stat-score">
-                    <?= number_format((int)($currentUserStats['total_score'] ?? 0)) ?> <span class="text-xs font-normal text-zinc-400">Pts</span>
-                </span>
-            </div>
-        </div>
-    </div>
-
     <!-- 3. TOP 3 PODIUM STAGE GIMMICK (PANGGUNG KEJUARAAN) -->
     <section class="podium-stage-panel">
         <span class="panel-crosshair corner-tl">+</span>
