@@ -149,6 +149,8 @@ $router->get('/admin', [\App\Controllers\AdminController::class, 'index']);
 // Quizzes
 $router->post('/admin/quizzes', [\App\Controllers\AdminController::class, 'createQuiz']);
 $router->post('/admin/quizzes/delete/{id}', [\App\Controllers\AdminController::class, 'deleteQuiz']);
+$router->post('/admin/quizzes/delete-bulk', [\App\Controllers\AdminController::class, 'deleteQuizzesBulk']);
+$router->post('/admin/quiz/delete-bulk', [\App\Controllers\AdminController::class, 'deleteQuizzesBulk']); // Alias
 
 // Members / Users
 $router->post('/admin/users/create', [\App\Controllers\AdminController::class, 'createMember']);

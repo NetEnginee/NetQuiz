@@ -54,11 +54,6 @@ require_once dirname(__DIR__) . "/templates/header.php";
 
             <div class="metric-header-row">
                 <span class="metric-label">Quizzes Completed</span>
-                <div class="metric-icon-badge icon-badge-blue">
-                    <svg class="w-5 h-5 pixelated" viewBox="0 0 16 16">
-                        <use href="#pixel-router"></use>
-                    </svg>
-                </div>
             </div>
 
             <div class="metric-value-row">
@@ -67,7 +62,7 @@ require_once dirname(__DIR__) . "/templates/header.php";
             </div>
 
             <div class="metric-sub-note text-emerald-400">
-                <span>↑ Active</span>
+                <span>Active</span>
                 <span class="text-zinc-500">learning track</span>
             </div>
         </div>
@@ -85,11 +80,6 @@ require_once dirname(__DIR__) . "/templates/header.php";
 
             <div class="metric-header-row">
                 <span class="metric-label">Average Score</span>
-                <div class="metric-icon-badge icon-badge-emerald">
-                    <svg class="w-5 h-5 pixelated" viewBox="0 0 16 16">
-                        <use href="#pixel-computer"></use>
-                    </svg>
-                </div>
             </div>
 
             <div class="metric-value-row">
@@ -98,7 +88,7 @@ require_once dirname(__DIR__) . "/templates/header.php";
             </div>
 
             <div class="metric-sub-note <?= $averageScore >= 70 ? 'text-emerald-400' : 'text-amber-400' ?>">
-                <span><?= $averageScore >= 70 ? '↑ Passed' : '⚡ Keep Practicing' ?></span>
+                <span><?= $averageScore >= 70 ? '↑ Passed' : 'Keep Practicing' ?></span>
                 <span class="text-zinc-500">overall grade</span>
             </div>
         </div>
@@ -116,11 +106,7 @@ require_once dirname(__DIR__) . "/templates/header.php";
 
             <div class="metric-header-row">
                 <span class="metric-label">Total Points</span>
-                <div class="metric-icon-badge icon-badge-gold">
-                    <svg class="w-5 h-5 pixelated animate-float" viewBox="0 0 16 16">
-                        <use href="#pixel-coin"></use>
-                    </svg>
-                </div>
+
             </div>
 
             <div class="metric-value-row">
@@ -129,7 +115,7 @@ require_once dirname(__DIR__) . "/templates/header.php";
             </div>
 
             <div class="metric-sub-note text-amber-400">
-                <span>★ <?= $totalScore >= 500 ? 'Tier 3 Expert' : ($totalScore >= 200 ? 'Tier 2 Tech' : 'Tier 1 Operator') ?></span>
+                <span><?= $totalScore >= 500 ? 'Tier 3 Expert' : ($totalScore >= 200 ? 'Tier 2 Tech' : 'Tier 1 Operator') ?></span>
                 <span class="text-zinc-500">standing</span>
             </div>
         </div>
@@ -147,11 +133,6 @@ require_once dirname(__DIR__) . "/templates/header.php";
 
             <div class="metric-header-row">
                 <span class="metric-label">Achievements</span>
-                <div class="metric-icon-badge icon-badge-purple">
-                    <svg class="w-5 h-5 pixelated" viewBox="0 0 16 16">
-                        <use href="#pixel-robot"></use>
-                    </svg>
-                </div>
             </div>
 
             <div class="metric-value-row">
@@ -263,7 +244,6 @@ require_once dirname(__DIR__) . "/templates/header.php";
                         <div class="w-2.5 h-2.5 bg-blue-500 rounded-xs"></div>
                         <h2 id="topic-panel-title" class="panel-title-text">Exam Topic Distribution</h2>
                     </div>
-                    <span class="font-mono text-xs text-zinc-500">4 Kategori</span>
                 </div>
 
                 <!-- Topic Progress Bars -->

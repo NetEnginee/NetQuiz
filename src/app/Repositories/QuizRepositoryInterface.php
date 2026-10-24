@@ -16,5 +16,6 @@ interface QuizRepositoryInterface
     public function createWithQuestions(array $quizData, array $questionsData): int;
     public function update(int $id, array $data): bool;
     public function delete(int $id): bool;
+    public function deleteBulk(array $ids): bool;
     public function getCategorizedQuizzesWithUserStatus(int $userId, ?string $activeDifficulty = null): array;
 }

@@ -216,6 +216,26 @@ class QuizRepository implements QuizRepositoryInterface
     }
 
     /**
+     * Delete multiple quizzes and questions in bulk.
+     */
+    public function deleteBulk(array $ids): bool
+    {
+        $cleanIds = array_values(array_unique(array_filter(array_map('intval', $ids), fn(int $id) => $id > 0)));
+        if (empty($cleanIds)) {
+            return false;
+        }
+
+        return $this->db->transaction(function (PDO $db) use ($cleanIds) {
+            $placeholders = implode(',', array_fill(0, count($cleanIds), '?'));
+            $stmtQ = $db->prepare("DELETE FROM questions WHERE quiz_id IN ({$placeholders})");
+            $stmtQ->execute($cleanIds);
+
+            $stmt = $db->prepare("DELETE FROM quizzes WHERE id IN ({$placeholders})");
+            return $stmt->execute($cleanIds);
+        });
+    }
+
+    /**
      * Fetch all quizzes categorized with user completion status.
      */
     public function getCategorizedQuizzesWithUserStatus(int $userId, ?string $activeDifficulty = null): array

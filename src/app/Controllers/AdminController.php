@@ -153,6 +153,46 @@ class AdminController extends Controller
     }
 
     /**
+     * Delete Quizzes Bulk (Selected Quizzes).
+     */
+    public function deleteQuizzesBulk(): Response
+    {
+        $this->checkAdmin();
+
+        if (!Security::validateCsrfToken($this->request->input('csrf_token'))) {
+            $_SESSION['admin_error'] = 'Sesi tidak valid, silakan muat ulang halaman.';
+            return $this->redirect(BASE_URL . '/admin#quiz-section');
+        }
+
+        $ids = $this->request->input('selected_quizzes', []);
+        if (is_string($ids) && !empty($ids)) {
+            $decoded = json_decode($ids, true);
+            $ids = is_array($decoded) ? $decoded : explode(',', $ids);
+        }
+
+        if (empty($ids) || !is_array($ids)) {
+            $_SESSION['admin_error'] = 'Pilih kuis yang ingin dihapus terlebih dahulu.';
+            return $this->redirect(BASE_URL . '/admin#quiz-section');
+        }
+
+        $cleanIds = array_values(array_unique(array_filter(array_map('intval', $ids), fn(int $id) => $id > 0)));
+        if (empty($cleanIds)) {
+            $_SESSION['admin_error'] = 'Data kuis yang dipilih tidak valid.';
+            return $this->redirect(BASE_URL . '/admin#quiz-section');
+        }
+
+        try {
+            $this->quizRepo->deleteBulk($cleanIds);
+            $count = count($cleanIds);
+            $_SESSION['admin_success'] = "{$count} kuis terpilih berhasil dihapus!";
+        } catch (\Exception $e) {
+            $_SESSION['admin_error'] = 'Gagal menghapus kuis terpilih: ' . $e->getMessage();
+        }
+
+        return $this->redirect(BASE_URL . '/admin#quiz-section');
+    }
+
+    /**
      * Register New Member (Supports Single User & Multi-User Batch List).
      */
     public function createMember(): Response

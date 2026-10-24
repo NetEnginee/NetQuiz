@@ -1092,6 +1092,9 @@ function renderQuizSection() {
                     <table class="supabase-data-table">
                         <thead>
                             <tr>
+                                <th style="width: 44px; text-align: center;">
+                                    <input type="checkbox" id="select-all-quizzes" class="panel-checkbox" title="Pilih Semua Kuis">
+                                </th>
                                 <th>JUDUL KUIS</th>
                                 <th>KATEGORI</th>
                                 <th>KESULITAN</th>
@@ -1103,6 +1106,20 @@ function renderQuizSection() {
                         </tbody>
                     </table>
                 </div>
+            </div>
+
+            <!-- FLOATING BULK ACTION BAR (SCOPED TO QUIZ LIST) -->
+            <div id="floating-quiz-bulk-bar" class="floating-bulk-bar" aria-live="polite" style="display: none;">
+                <span id="bulk-quiz-selected-count" class="bulk-count-badge">0 Dipilih</span>
+                <div class="bulk-actions-group">
+                    <button type="button" id="btn-bulk-delete-quizzes" class="btn-bulk-action btn-bulk-danger" title="Hapus kuis yang dipilih">
+                        <i data-lucide="trash-2" style="width: 14px; height: 14px;"></i>
+                        <span>Hapus Terpilih</span>
+                    </button>
+                </div>
+                <button type="button" id="btn-bulk-dismiss-quizzes" class="btn-bulk-dismiss" title="Batal Pilihan">
+                    <i data-lucide="x" style="width: 16px; height: 16px;"></i>
+                </button>
             </div>
         </div>
     `;
@@ -1705,6 +1722,12 @@ function renderQuizSection() {
       if (tabList) tabList.classList.remove("active");
       const titleInput = document.getElementById("quiz-input-title");
       if (titleInput) titleInput.focus();
+      // Hide bulk bar when switching to create tab
+      const qBulkBar = document.getElementById("floating-quiz-bulk-bar");
+      if (qBulkBar) {
+        qBulkBar.classList.remove("active");
+        qBulkBar.style.display = "none";
+      }
     } else {
       if (viewCreate) viewCreate.style.display = "none";
       if (viewList) viewList.style.display = "block";
@@ -1718,12 +1741,155 @@ function renderQuizSection() {
     window.switchQuizView("create");
   };
 
+  const selectedQuizIds = new Set();
+  const selectAllQuizzesCheckbox = document.getElementById("select-all-quizzes");
+  const floatingQuizBulkBar = document.getElementById("floating-quiz-bulk-bar");
+  const bulkQuizCountBadge = document.getElementById("bulk-quiz-selected-count");
+  const btnBulkDeleteQuizzes = document.getElementById("btn-bulk-delete-quizzes");
+  const btnBulkDismissQuizzes = document.getElementById("btn-bulk-dismiss-quizzes");
+
+  function updateQuizBulkState() {
+    const rowCheckboxes = document.querySelectorAll(".quiz-row-checkbox");
+    const totalSelectedCount = selectedQuizIds.size;
+    let checkedVisibleCount = 0;
+
+    rowCheckboxes.forEach((cb) => {
+      if (cb.checked) checkedVisibleCount++;
+    });
+
+    if (selectAllQuizzesCheckbox) {
+      if (rowCheckboxes.length === 0) {
+        selectAllQuizzesCheckbox.checked = false;
+        selectAllQuizzesCheckbox.indeterminate = false;
+      } else {
+        selectAllQuizzesCheckbox.checked = checkedVisibleCount === rowCheckboxes.length;
+        selectAllQuizzesCheckbox.indeterminate = checkedVisibleCount > 0 && checkedVisibleCount < rowCheckboxes.length;
+      }
+    }
+
+    if (!floatingQuizBulkBar || !bulkQuizCountBadge) return;
+
+    if (totalSelectedCount > 0) {
+      bulkQuizCountBadge.textContent = `${totalSelectedCount} Dipilih`;
+      floatingQuizBulkBar.style.display = "flex";
+      floatingQuizBulkBar.classList.add("active");
+    } else {
+      floatingQuizBulkBar.classList.remove("active");
+      floatingQuizBulkBar.style.display = "none";
+    }
+  }
+
+  function bindQuizRowCheckboxes() {
+    const rowCheckboxes = document.querySelectorAll(".quiz-row-checkbox");
+    rowCheckboxes.forEach((cb) => {
+      cb.addEventListener("change", function () {
+        const idStr = String(this.value);
+        if (this.checked) {
+          selectedQuizIds.add(idStr);
+        } else {
+          selectedQuizIds.delete(idStr);
+        }
+        const row = this.closest("tr");
+        if (row) {
+          row.classList.toggle("row-selected", this.checked);
+        }
+        updateQuizBulkState();
+      });
+    });
+  }
+
+  if (selectAllQuizzesCheckbox) {
+    selectAllQuizzesCheckbox.addEventListener("change", function () {
+      const rowCheckboxes = document.querySelectorAll(".quiz-row-checkbox");
+      rowCheckboxes.forEach((cb) => {
+        cb.checked = this.checked;
+        const idStr = String(cb.value);
+        if (this.checked) {
+          selectedQuizIds.add(idStr);
+        } else {
+          selectedQuizIds.delete(idStr);
+        }
+        const row = cb.closest("tr");
+        if (row) {
+          row.classList.toggle("row-selected", this.checked);
+        }
+      });
+      updateQuizBulkState();
+    });
+  }
+
+  function clearQuizSelections() {
+    selectedQuizIds.clear();
+    const rowCheckboxes = document.querySelectorAll(".quiz-row-checkbox");
+    rowCheckboxes.forEach((cb) => {
+      cb.checked = false;
+      const row = cb.closest("tr");
+      if (row) row.classList.remove("row-selected");
+    });
+    if (selectAllQuizzesCheckbox) {
+      selectAllQuizzesCheckbox.checked = false;
+      selectAllQuizzesCheckbox.indeterminate = false;
+    }
+    updateQuizBulkState();
+  }
+
+  if (btnBulkDismissQuizzes) {
+    btnBulkDismissQuizzes.addEventListener("click", clearQuizSelections);
+  }
+
+  function triggerBulkDeleteQuizzes() {
+    const idsArray = Array.from(selectedQuizIds);
+    if (idsArray.length === 0) return;
+
+    const selectedQuizzesData = rawQuizzes.filter((q) => selectedQuizIds.has(String(q.id)));
+    const count = idsArray.length;
+    const titlesList = selectedQuizzesData
+      .slice(0, 3)
+      .map((q) => q.title || `Kuis #${q.id}`)
+      .join(", ");
+    const moreText = count > 3 ? ` dan ${count - 3} lainnya` : "";
+    const detailText = titlesList ? ` (${titlesList}${moreText})` : "";
+
+    showGeistConfirm(
+      "Hapus Kuis Terpilih",
+      `Apakah Anda yakin ingin menghapus ${count} kuis yang dipilih${detailText}? Seluruh butir pertanyaan dan data di dalamnya akan terhapus permanen.`,
+      `Hapus ${count} Kuis`,
+      () => {
+        const form = document.createElement("form");
+        form.method = "POST";
+        form.action = `${window.BASE_URL}/admin/quizzes/delete-bulk`;
+
+        const csrfInput = document.createElement("input");
+        csrfInput.type = "hidden";
+        csrfInput.name = "csrf_token";
+        csrfInput.value = window.CSRF_TOKEN || "";
+        form.appendChild(csrfInput);
+
+        idsArray.forEach((id) => {
+          const idInput = document.createElement("input");
+          idInput.type = "hidden";
+          idInput.name = "selected_quizzes[]";
+          idInput.value = id;
+          form.appendChild(idInput);
+        });
+
+        document.body.appendChild(form);
+        form.submit();
+      },
+      true
+    );
+  }
+
+  if (btnBulkDeleteQuizzes) {
+    btnBulkDeleteQuizzes.addEventListener("click", triggerBulkDeleteQuizzes);
+  }
+
   function renderQuizRows(list) {
     if (!qTbody) return;
     if (list.length === 0) {
       qTbody.innerHTML = `
                 <tr>
-                    <td colspan="5">
+                    <td colspan="6">
                         <div class="panel-empty-state">
                             <div class="empty-state-icon-box">
                                 <i data-lucide="file-question" style="width: 24px; height: 24px;"></i>
@@ -1735,13 +1901,18 @@ function renderQuizSection() {
                 </tr>
             `;
       if (window.lucide) window.lucide.createIcons();
+      updateQuizBulkState();
       return;
     }
 
     qTbody.innerHTML = list
-      .map(
-        (q) => `
-            <tr>
+      .map((q) => {
+        const isSelected = selectedQuizIds.has(String(q.id));
+        return `
+            <tr class="${isSelected ? "row-selected" : ""}">
+                <td style="text-align: center;">
+                    <input type="checkbox" class="panel-checkbox quiz-row-checkbox" value="${q.id}" ${isSelected ? "checked" : ""}>
+                </td>
                 <td style="font-weight: 700; color: #ffffff;">${escapeHtml(q.title)}</td>
                 <td><span class="role-pill">${escapeHtml(q.category || "Routing")}</span></td>
                 <td><span class="status-badge status-active">${escapeHtml(q.difficulty || "Mudah")}</span></td>
@@ -1754,11 +1925,13 @@ function renderQuizSection() {
                     </div>
                 </td>
             </tr>
-        `,
-      )
+        `;
+      })
       .join("");
 
     if (window.lucide) window.lucide.createIcons();
+    bindQuizRowCheckboxes();
+    updateQuizBulkState();
   }
 
   renderQuizRows(rawQuizzes);

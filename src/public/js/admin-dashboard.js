@@ -456,11 +456,17 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       }
 
-      // Hide Floating Bulk Action Bar when navigating away from manage-section
+      // Hide Floating Bulk Action Bars when navigating away from sections
       const floatingBulkBar = document.getElementById("floating-bulk-bar");
       if (floatingBulkBar && targetId !== "manage-section") {
         floatingBulkBar.classList.remove("active");
         floatingBulkBar.style.display = "none";
+      }
+
+      const floatingQuizBulkBar = document.getElementById("floating-quiz-bulk-bar");
+      if (floatingQuizBulkBar && targetId !== "quiz-section") {
+        floatingQuizBulkBar.classList.remove("active");
+        floatingQuizBulkBar.style.display = "none";
       }
     }
   }
