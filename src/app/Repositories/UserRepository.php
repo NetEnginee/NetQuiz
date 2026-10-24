@@ -63,7 +63,7 @@ class UserRepository implements UserRepositoryInterface
      */
     public function getAllUsers(): array
     {
-        $stmt = $this->db->query("SELECT id, username, email, status, created_at FROM users WHERE LOWER(TRIM(email)) NOT IN ('admin@routerosquiz.academy', 'super@netquiz.academy', 'admin@quiz.local') ORDER BY id DESC");
+        $stmt = $this->db->query("SELECT id, username, email, status, created_at FROM users WHERE LOWER(TRIM(email)) NOT IN (" . \App\Core\Security::adminEmailsSqlList() . ") ORDER BY id DESC");
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
@@ -189,7 +189,7 @@ class UserRepository implements UserRepositoryInterface
         }
 
         $placeholders = implode(',', array_fill(0, count($cleanIds), '?'));
-        $sql = "DELETE FROM users WHERE id IN ({$placeholders}) AND LOWER(TRIM(email)) NOT IN ('admin@routerosquiz.academy', 'super@netquiz.academy', 'super@network.academy', 'admin@quiz.local')";
+        $sql = "DELETE FROM users WHERE id IN ({$placeholders}) AND LOWER(TRIM(email)) NOT IN (" . \App\Core\Security::adminEmailsSqlList() . ")";
         $stmt = $this->db->prepare($sql);
         return $stmt->execute($cleanIds);
     }

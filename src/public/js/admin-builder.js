@@ -1505,7 +1505,8 @@ function renderQuizSection() {
         {
           question:
             "Perhatikan diagram topologi jaringan berikut. Interface manakah yang terhubung ke Backbone Area 0?",
-          image: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=",
+          image:
+            "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=",
           option_a: "ether1 (Area 0)",
           option_b: "ether2 (Area 1)",
           option_c: "wlan1 (Area 2)",
@@ -1631,13 +1632,23 @@ function renderQuizSection() {
 
               // Restore imported topology image if present
               const qImg = item.image || item.gambar || "";
-              if (qImg && typeof qImg === "string" && qImg.startsWith("data:image/")) {
-                const base64Input = block.querySelector(".q-image-base64-input");
-                const prevBox = block.querySelector(".q-topology-preview-container");
+              if (
+                qImg &&
+                typeof qImg === "string" &&
+                qImg.startsWith("data:image/")
+              ) {
+                const base64Input = block.querySelector(
+                  ".q-image-base64-input",
+                );
+                const prevBox = block.querySelector(
+                  ".q-topology-preview-container",
+                );
                 const prevImg = block.querySelector(".q-topology-preview-img");
                 const prevName = block.querySelector(".q-topology-filename");
                 const prevSize = block.querySelector(".q-topology-filesize");
-                const btnText = block.querySelector('[id^="q-image-btn-text-"]');
+                const btnText = block.querySelector(
+                  '[id^="q-image-btn-text-"]',
+                );
                 if (base64Input) base64Input.value = qImg;
                 if (prevImg) prevImg.src = qImg;
                 if (prevName) prevName.textContent = "topologi_soal.png";
@@ -2664,8 +2675,7 @@ function renderManageMemberSection() {
         selectAllCheckbox.checked =
           checkedVisibleCount === rowCheckboxes.length;
         selectAllCheckbox.indeterminate =
-          checkedVisibleCount > 0 &&
-          checkedVisibleCount < rowCheckboxes.length;
+          checkedVisibleCount > 0 && checkedVisibleCount < rowCheckboxes.length;
       }
     }
 
@@ -2988,10 +2998,6 @@ function renderMaterialsSection() {
                                 <i data-lucide="eye" style="width: 13px; height: 13px;"></i>
                                 <span>Pratinjau Siswa (1:1)</span>
                             </button>
-                            <button type="button" class="quiz-segment-tab" id="btn-mode-split" style="padding: 4px 12px; font-size: 0.775rem;">
-                                <i data-lucide="columns" style="width: 13px; height: 13px;"></i>
-                                <span>Berdampingan (Split)</span>
-                            </button>
                         </div>
                         <span class="reading-time-pill" id="material-reading-time" style="font-size: 0.75rem; color: #a1a1aa; display: inline-flex; align-items: center; gap: 4px;">
                             <i data-lucide="clock" style="width: 12px; height: 12px;"></i>
@@ -3095,11 +3101,11 @@ function renderMaterialsSection() {
                             <!-- Pill 2: Callout Boxes -->
                             <div class="toolbar-pill-group">
                                 <span class="toolbar-section-badge"><i data-lucide="alert-circle" style="width: 10px; height: 10px;"></i> KOTAK</span>
-                                <button type="button" class="toolbar-btn btn-callout-note" onclick="window.insertMaterialSnippet('callout_note')" title="Kotak Catatan / Info (Biru)">💡 Info</button>
-                                <button type="button" class="toolbar-btn btn-callout-tip" onclick="window.insertMaterialSnippet('callout_tip')" title="Kotak Tips & Trik (Hijau)">✨ Tips</button>
-                                <button type="button" class="toolbar-btn btn-callout-warn" onclick="window.insertMaterialSnippet('callout_warning')" title="Kotak Peringatan (Kuning)">⚠️ Peringatan</button>
-                                <button type="button" class="toolbar-btn btn-callout-danger" onclick="window.insertMaterialSnippet('callout_danger')" title="Kotak Bahaya / Kritis (Merah)">🚨 Bahaya</button>
-                                <button type="button" class="toolbar-btn btn-callout-success" onclick="window.insertMaterialSnippet('callout_success')" title="Kotak Best Practice (Emerald)">✅ Best</button>
+                                <button type="button" class="toolbar-btn btn-callout-note" onclick="window.insertMaterialSnippet('callout_note')" title="Kotak Catatan / Info (Biru)">Catatan Info</button>
+                                <button type="button" class="toolbar-btn btn-callout-tip" onclick="window.insertMaterialSnippet('callout_tip')" title="Kotak Tips & Trik (Hijau)">Tips &amp; Trik</button>
+                                <button type="button" class="toolbar-btn btn-callout-warn" onclick="window.insertMaterialSnippet('callout_warning')" title="Kotak Peringatan (Kuning)">Peringatan</button>
+                                <button type="button" class="toolbar-btn btn-callout-danger" onclick="window.insertMaterialSnippet('callout_danger')" title="Kotak Bahaya / Kritis (Merah)">Bahaya Kritis</button>
+                                <button type="button" class="toolbar-btn btn-callout-success" onclick="window.insertMaterialSnippet('callout_success')" title="Kotak Best Practice (Emerald)">Best Practice</button>
                                 <button type="button" class="toolbar-btn" onclick="window.insertMaterialSnippet('quote')" title="Kutipan Referensi (Quote)">💬 Kutipan</button>
                             </div>
 
@@ -3134,7 +3140,7 @@ function renderMaterialsSection() {
                         </div>
                     </div>
 
-                    <!-- Editor & Preview Containers (Supports Single Mode & Split Mode) -->
+                    <!-- Editor & Preview Containers -->
                     <div id="material-studio-container" style="margin-bottom: 1.5rem;">
                         <!-- Editor Textarea Shell -->
                         <div id="material-editor-wrapper" style="width: 100%;">
@@ -3355,7 +3361,6 @@ function renderMaterialsSection() {
 
   const btnModeEditor = document.getElementById("btn-mode-editor");
   const btnModePreview = document.getElementById("btn-mode-preview");
-  const btnModeSplit = document.getElementById("btn-mode-split");
   const studioContainer = document.getElementById("material-studio-container");
   const editorWrapper = document.getElementById("material-editor-wrapper");
   const previewBox = document.getElementById("material-preview-box");
@@ -3578,9 +3583,18 @@ function renderMaterialsSection() {
 
     // 5. Typography formatting: Bold, Italic, Strikethrough, Code (skipping HTML tags & URLs)
     raw = raw.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
-    raw = raw.replace(/(^|[\s(])__(.+?)__(?=[\s.,!?:;)]|$)/gm, "$1<strong>$2</strong>");
-    raw = raw.replace(/(^|[\s(])\*([^*\n<>]+?)\*(?=[\s.,!?:;)]|$)/gm, "$1<em>$2</em>");
-    raw = raw.replace(/(^|[\s(])_([^_\n<>]+?)_(?=[\s.,!?:;)]|$)/gm, "$1<em>$2</em>");
+    raw = raw.replace(
+      /(^|[\s(])__(.+?)__(?=[\s.,!?:;)]|$)/gm,
+      "$1<strong>$2</strong>",
+    );
+    raw = raw.replace(
+      /(^|[\s(])\*([^*\n<>]+?)\*(?=[\s.,!?:;)]|$)/gm,
+      "$1<em>$2</em>",
+    );
+    raw = raw.replace(
+      /(^|[\s(])_([^_\n<>]+?)_(?=[\s.,!?:;)]|$)/gm,
+      "$1<em>$2</em>",
+    );
     raw = raw.replace(/~~(.+?)~~/g, "<s>$1</s>");
     raw = raw.replace(/`([^`\n]+)`/g, "<code>$1</code>");
 
@@ -3901,7 +3915,6 @@ function renderMaterialsSection() {
   if (
     btnModeEditor &&
     btnModePreview &&
-    btnModeSplit &&
     studioContainer &&
     editorWrapper &&
     previewBox
@@ -3909,7 +3922,6 @@ function renderMaterialsSection() {
     btnModeEditor.addEventListener("click", () => {
       btnModeEditor.classList.add("active");
       btnModePreview.classList.remove("active");
-      btnModeSplit.classList.remove("active");
       studioContainer.className = "";
       editorWrapper.style.display = "block";
       previewBox.style.display = "none";
@@ -3918,19 +3930,8 @@ function renderMaterialsSection() {
     btnModePreview.addEventListener("click", () => {
       btnModePreview.classList.add("active");
       btnModeEditor.classList.remove("active");
-      btnModeSplit.classList.remove("active");
       studioContainer.className = "";
       editorWrapper.style.display = "none";
-      previewBox.style.display = "block";
-      renderStudentReaderPreview();
-    });
-
-    btnModeSplit.addEventListener("click", () => {
-      btnModeSplit.classList.add("active");
-      btnModeEditor.classList.remove("active");
-      btnModePreview.classList.remove("active");
-      studioContainer.className = "material-editor-split";
-      editorWrapper.style.display = "block";
       previewBox.style.display = "block";
       renderStudentReaderPreview();
     });

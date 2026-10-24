@@ -57,11 +57,25 @@ class Security
             return false;
         }
         $cleanEmail = strtolower(trim($email));
-        return in_array($cleanEmail, [
-            'super@netquiz.academy',
-            'admin@routerosquiz.academy',
-            'admin@quiz.local'
-        ], true);
+        return in_array($cleanEmail, self::ADMIN_EMAILS, true);
+    }
+
+    /**
+     * Single source of truth for administrator accounts.
+     */
+    public const ADMIN_EMAILS = [
+        'super@netquiz.academy',
+        'super@network.academy',
+        'admin@routerosquiz.academy',
+        'admin@quiz.local',
+    ];
+
+    /**
+     * SQL-safe quoted list of admin emails for NOT IN / IN clauses.
+     */
+    public static function adminEmailsSqlList(): string
+    {
+        return implode(', ', array_map(fn(string $e) => "'" . $e . "'", self::ADMIN_EMAILS));
     }
 
     /**

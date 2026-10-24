@@ -151,6 +151,7 @@ class AttemptRepository implements AttemptRepositoryInterface
         $joinSql = implode(" AND ", $joinConditions);
         $safeLimit = max(1, min(100, $limit));
 
+        $adminEmails = \App\Core\Security::adminEmailsSqlList();
         $query = "
             SELECT 
                 u.id, 
@@ -159,7 +160,7 @@ class AttemptRepository implements AttemptRepositoryInterface
                 COUNT(qa.id) as completed_quizzes 
             FROM users u
             LEFT JOIN quiz_attempts qa ON {$joinSql}
-            WHERE LOWER(TRIM(u.email)) NOT IN ('admin@routerosquiz.academy', 'super@netquiz.academy', 'admin@quiz.local')
+            WHERE LOWER(TRIM(u.email)) NOT IN ({$adminEmails})
             GROUP BY u.id, u.username
             ORDER BY total_score DESC, completed_quizzes DESC
             LIMIT {$safeLimit}
@@ -212,6 +213,7 @@ class AttemptRepository implements AttemptRepositoryInterface
         $userQuizzes = (int)$stats['completed_quizzes'];
 
         // 2. Count users who have a strictly higher score (or tie-breakers)
+        $adminEmails = \App\Core\Security::adminEmailsSqlList();
         $rankQuery = "
             SELECT COUNT(*) + 1 as user_rank
             FROM (
@@ -221,7 +223,7 @@ class AttemptRepository implements AttemptRepositoryInterface
                     COUNT(qa.id) as completed_quizzes
                 FROM users u
                 LEFT JOIN quiz_attempts qa ON {$joinSql}
-                WHERE LOWER(TRIM(u.email)) NOT IN ('admin@routerosquiz.academy', 'super@netquiz.academy', 'admin@quiz.local')
+                WHERE LOWER(TRIM(u.email)) NOT IN ({$adminEmails})
                 GROUP BY u.id
                 HAVING (total_score > {$userScore})
                    OR (total_score = {$userScore} AND completed_quizzes > {$userQuizzes})

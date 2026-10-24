@@ -1705,20 +1705,6 @@ select.form-field-input option {
   white-space: nowrap;
 }
 
-/* Split Screen Layout for Material Editor */
-.material-editor-split {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1.5rem;
-  align-items: start;
-}
-
-@media (max-width: 1024px) {
-  .material-editor-split {
-    grid-template-columns: 1fr;
-  }
-}
-
 .reading-time-pill {
   font-family: var(--font-mono);
   font-size: 0.725rem;
