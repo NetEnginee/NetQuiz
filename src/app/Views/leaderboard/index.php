@@ -2,6 +2,9 @@
 $activeCategory = $activeCategory ?? 'all';
 $leaderboard = $leaderboard ?? [];
 $currentUserId = (int)($_SESSION['user']['id'] ?? 0);
+$currentUserName = $_SESSION['user']['username'] ?? ($_SESSION['user']['name'] ?? 'Peserta');
+$currentUserRank = (int)($currentUserRank ?? 0);
+$currentUserStats = $currentUserStats ?? null;
 
 $categoryThemes = [
     'Routing' => ['color' => '#60a5fa'],
@@ -33,7 +36,10 @@ require_once dirname(__DIR__) . '/templates/header.php';
         activeCategory: <?= json_encode($activeCategory) ?>,
         activeCategoryLabel: <?= json_encode($activeCategoryLabel) ?>,
         leaderboard: <?= json_encode($leaderboard) ?>,
-        currentUserId: <?= $currentUserId ?>
+        currentUserId: <?= $currentUserId ?>,
+        currentUserRank: <?= (int)$currentUserRank ?>,
+        currentUserStats: <?= json_encode($currentUserStats) ?>,
+        currentUserName: <?= json_encode($currentUserName) ?>
     };
 </script>
 
@@ -88,6 +94,58 @@ require_once dirname(__DIR__) . '/templates/header.php';
         </div>
     </div>
 
+    <!-- 2.5 USER PERSONAL RANK STATUS PANEL (PENANDA POSISI USER) -->
+    <?php
+    $hasCompleted = !empty($currentUserStats) && ((int)($currentUserStats['completed_quizzes'] ?? 0) > 0);
+    $userInitial = strtoupper(substr(htmlspecialchars($currentUserName), 0, 1));
+    ?>
+    <div class="personal-rank-panel <?= $hasCompleted ? 'is-ranked' : '' ?>" id="personal-rank-panel">
+        <span class="panel-crosshair corner-tl">+</span>
+        <span class="panel-crosshair corner-tr">+</span>
+        <span class="panel-crosshair corner-bl">+</span>
+        <span class="panel-crosshair corner-br">+</span>
+
+        <div class="personal-rank-left">
+            <div class="personal-rank-avatar font-mono">
+                <?= $userInitial ?>
+            </div>
+            <div class="personal-rank-name-wrap">
+                <div class="personal-rank-name-row">
+                    <span class="personal-rank-username"><?= htmlspecialchars($currentUserName) ?></span>
+                    <span class="badge-you-tag">Anda</span>
+                </div>
+                <span class="personal-rank-desc" id="personal-rank-desc">
+                    <?php if ($hasCompleted): ?>
+                        <?= $currentUserRank <= 3 ? '🎉 Luar biasa! Anda berada di Panggung Juara' : ($currentUserRank <= 10 ? '⭐ Hebat! Anda berada di Top 10 Leaderboard' : 'Peringkat Anda saat ini pada topik ' . htmlspecialchars($activeCategoryLabel)) ?>
+                    <?php else: ?>
+                        Belum ada riwayat pengerjaan pada topik <?= htmlspecialchars($activeCategoryLabel) ?>
+                    <?php endif; ?>
+                </span>
+            </div>
+        </div>
+
+        <div class="personal-rank-stats-wrap">
+            <div class="personal-stat-item">
+                <span class="personal-stat-label">Peringkat Anda</span>
+                <span class="personal-stat-value highlight-rank" id="personal-stat-rank">
+                    <?= $hasCompleted ? '#' . $currentUserRank : '-' ?>
+                </span>
+            </div>
+            <div class="personal-stat-item">
+                <span class="personal-stat-label">Kuis Selesai</span>
+                <span class="personal-stat-value" id="personal-stat-quizzes">
+                    <?= (int)($currentUserStats['completed_quizzes'] ?? 0) ?>
+                </span>
+            </div>
+            <div class="personal-stat-item">
+                <span class="personal-stat-label">Total Skor</span>
+                <span class="personal-stat-value text-amber-400" id="personal-stat-score">
+                    <?= number_format((int)($currentUserStats['total_score'] ?? 0)) ?> <span class="text-xs font-normal text-zinc-400">Pts</span>
+                </span>
+            </div>
+        </div>
+    </div>
+
     <!-- 3. TOP 3 PODIUM STAGE GIMMICK (PANGGUNG KEJUARAAN) -->
     <section class="podium-stage-panel">
         <span class="panel-crosshair corner-tl">+</span>
@@ -137,7 +195,8 @@ require_once dirname(__DIR__) . '/templates/header.php';
                     <!-- 1. Silver / Juara 2 (Left Column) -->
                     <div class="podium-column podium-rank-2">
                         <?php if ($rank2): ?>
-                            <div class="podium-player-card">
+                            <?php $isUserRank2 = ((int)($rank2['id'] ?? 0) === $currentUserId); ?>
+                            <div class="podium-player-card <?= $isUserRank2 ? 'is-current-user' : '' ?>">
                                 <div class="podium-avatar-wrap">
                                     <div class="podium-avatar">
                                         <?= strtoupper(substr(htmlspecialchars($rank2['username']), 0, 1)) ?>
@@ -146,6 +205,9 @@ require_once dirname(__DIR__) . '/templates/header.php';
                                 </div>
                                 <div class="podium-username" title="<?= htmlspecialchars($rank2['username']) ?>">
                                     <?= htmlspecialchars($rank2['username']) ?>
+                                    <?php if ($isUserRank2): ?>
+                                        <span class="badge-you-tag" style="margin-left: 4px;">Anda</span>
+                                    <?php endif; ?>
                                 </div>
                                 <div class="podium-score">
                                     <?= number_format((int)$rank2['total_score']) ?> <span class="text-[11px] font-normal text-zinc-400">Pts</span>
@@ -171,13 +233,10 @@ require_once dirname(__DIR__) . '/templates/header.php';
                     <!-- 2. Gold / Juara 1 (Center Column - Highest) -->
                     <div class="podium-column podium-rank-1">
                         <?php if ($rank1): ?>
-                            <div class="podium-player-card">
+                            <?php $isUserRank1 = ((int)($rank1['id'] ?? 0) === $currentUserId); ?>
+                            <div class="podium-player-card <?= $isUserRank1 ? 'is-current-user' : '' ?>">
                                 <div class="podium-avatar-wrap">
-                                    <div class="podium-crown-icon">
-                                        <svg class="w-6 h-6 pixelated" width="24" height="24" viewBox="0 0 16 16">
-                                            <use href="#pixel-coin"></use>
-                                        </svg>
-                                    </div>
+
                                     <div class="podium-avatar">
                                         <?= strtoupper(substr(htmlspecialchars($rank1['username']), 0, 1)) ?>
                                     </div>
@@ -185,6 +244,9 @@ require_once dirname(__DIR__) . '/templates/header.php';
                                 </div>
                                 <div class="podium-username" title="<?= htmlspecialchars($rank1['username']) ?>">
                                     <?= htmlspecialchars($rank1['username']) ?>
+                                    <?php if ($isUserRank1): ?>
+                                        <span class="badge-you-tag" style="margin-left: 4px;">Anda</span>
+                                    <?php endif; ?>
                                 </div>
                                 <div class="podium-score">
                                     <?= number_format((int)$rank1['total_score']) ?> <span class="text-[11px] font-normal text-amber-200/70">Pts</span>
@@ -210,7 +272,8 @@ require_once dirname(__DIR__) . '/templates/header.php';
                     <!-- 3. Bronze / Juara 3 (Right Column) -->
                     <div class="podium-column podium-rank-3">
                         <?php if ($rank3): ?>
-                            <div class="podium-player-card">
+                            <?php $isUserRank3 = ((int)($rank3['id'] ?? 0) === $currentUserId); ?>
+                            <div class="podium-player-card <?= $isUserRank3 ? 'is-current-user' : '' ?>">
                                 <div class="podium-avatar-wrap">
                                     <div class="podium-avatar">
                                         <?= strtoupper(substr(htmlspecialchars($rank3['username']), 0, 1)) ?>
@@ -219,6 +282,9 @@ require_once dirname(__DIR__) . '/templates/header.php';
                                 </div>
                                 <div class="podium-username" title="<?= htmlspecialchars($rank3['username']) ?>">
                                     <?= htmlspecialchars($rank3['username']) ?>
+                                    <?php if ($isUserRank3): ?>
+                                        <span class="badge-you-tag" style="margin-left: 4px;">Anda</span>
+                                    <?php endif; ?>
                                 </div>
                                 <div class="podium-score">
                                     <?= number_format((int)$rank3['total_score']) ?> <span class="text-[11px] font-normal text-zinc-400">Pts</span>

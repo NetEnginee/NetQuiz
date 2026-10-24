@@ -68,7 +68,9 @@
           activeCategoryLabel:
             window.INITIAL_LEADERBOARD.activeCategoryLabel || "Semua Topik",
           leaderboard: window.INITIAL_LEADERBOARD.leaderboard || [],
-          currentUserId: this.currentUserId
+          currentUserId: this.currentUserId,
+          currentUserRank: window.INITIAL_LEADERBOARD.currentUserRank || 0,
+          currentUserStats: window.INITIAL_LEADERBOARD.currentUserStats || null
         };
       }
     }
@@ -212,9 +214,15 @@
         this.tableMeta.textContent = `Kategori: ${activeLabel}`;
       }
 
+      // 1.5 Update Personal Rank Marker Panel
+      this.updatePersonalRankUI(data);
+
       // 2. Render Podium Stage
       if (this.podiumContainer) {
-        this.podiumContainer.innerHTML = this.buildPodiumHtml(leaderboard);
+        this.podiumContainer.innerHTML = this.buildPodiumHtml(
+          leaderboard,
+          currentUserId
+        );
       }
 
       // 3. Render Rankings Table (#4 - #10)
@@ -231,7 +239,58 @@
       }
     }
 
-    buildPodiumHtml(leaderboard) {
+    updatePersonalRankUI(data) {
+      const rankPanel = document.getElementById("personal-rank-panel");
+      if (!rankPanel) return;
+
+      const activeLabel = data.activeCategoryLabel || "Semua Topik";
+      const stats = data.currentUserStats || null;
+      const rank = parseInt(data.currentUserRank || 0, 10);
+      const quizzesCount = stats
+        ? parseInt(stats.completed_quizzes || 0, 10)
+        : 0;
+      const totalScore = stats ? parseInt(stats.total_score || 0, 10) : 0;
+      const hasCompleted = quizzesCount > 0;
+
+      if (hasCompleted) {
+        rankPanel.classList.add("is-ranked");
+      } else {
+        rankPanel.classList.remove("is-ranked");
+      }
+
+      const descEl = document.getElementById("personal-rank-desc");
+      if (descEl) {
+        if (hasCompleted) {
+          descEl.textContent =
+            rank <= 3
+              ? "🎉 Luar biasa! Anda berada di Panggung Juara"
+              : rank <= 10
+              ? "⭐ Hebat! Anda berada di Top 10 Leaderboard"
+              : `Peringkat Anda saat ini pada topik ${activeLabel}`;
+        } else {
+          descEl.textContent = `Belum ada riwayat pengerjaan pada topik ${activeLabel}`;
+        }
+      }
+
+      const rankEl = document.getElementById("personal-stat-rank");
+      if (rankEl) {
+        rankEl.textContent = hasCompleted ? `#${rank}` : "-";
+      }
+
+      const quizzesEl = document.getElementById("personal-stat-quizzes");
+      if (quizzesEl) {
+        quizzesEl.textContent = quizzesCount;
+      }
+
+      const scoreEl = document.getElementById("personal-stat-score");
+      if (scoreEl) {
+        scoreEl.innerHTML = `${formatNumber(
+          totalScore
+        )} <span class="text-xs font-normal text-zinc-400">Pts</span>`;
+      }
+    }
+
+    buildPodiumHtml(leaderboard, currentUserId) {
       if (!leaderboard || leaderboard.length === 0) {
         return `
           <div class="podium-empty-state">
@@ -260,6 +319,13 @@
       const rank2 = leaderboard[1] || null;
       const rank3 = leaderboard[2] || null;
 
+      const isUserRank1 =
+        rank1 && parseInt(rank1.id, 10) === parseInt(currentUserId, 10);
+      const isUserRank2 =
+        rank2 && parseInt(rank2.id, 10) === parseInt(currentUserId, 10);
+      const isUserRank3 =
+        rank3 && parseInt(rank3.id, 10) === parseInt(currentUserId, 10);
+
       return `
         <div class="podium-columns-container">
 
@@ -268,7 +334,7 @@
                 ${
                   rank2
                     ? `
-                    <div class="podium-player-card">
+                    <div class="podium-player-card ${isUserRank2 ? "is-current-user" : ""}">
                         <div class="podium-avatar-wrap">
                             <div class="podium-avatar">
                                 ${escapeHtml(
@@ -281,6 +347,7 @@
                           rank2.username || "Peserta"
                         )}">
                             ${escapeHtml(rank2.username || "Peserta")}
+                            ${isUserRank2 ? '<span class="badge-you-tag" style="margin-left: 4px;">Anda</span>' : ""}
                         </div>
                         <div class="podium-score">
                             ${formatNumber(
@@ -315,7 +382,7 @@
                 ${
                   rank1
                     ? `
-                    <div class="podium-player-card">
+                    <div class="podium-player-card ${isUserRank1 ? "is-current-user" : ""}">
                         <div class="podium-avatar-wrap">
                             <div class="podium-crown-icon">
                                 <svg class="w-6 h-6 pixelated" width="24" height="24" viewBox="0 0 16 16">
@@ -333,6 +400,7 @@
                           rank1.username || "Peserta"
                         )}">
                             ${escapeHtml(rank1.username || "Peserta")}
+                            ${isUserRank1 ? '<span class="badge-you-tag" style="margin-left: 4px;">Anda</span>' : ""}
                         </div>
                         <div class="podium-score">
                             ${formatNumber(
@@ -367,7 +435,7 @@
                 ${
                   rank3
                     ? `
-                    <div class="podium-player-card">
+                    <div class="podium-player-card ${isUserRank3 ? "is-current-user" : ""}">
                         <div class="podium-avatar-wrap">
                             <div class="podium-avatar">
                                 ${escapeHtml(
@@ -380,6 +448,7 @@
                           rank3.username || "Peserta"
                         )}">
                             ${escapeHtml(rank3.username || "Peserta")}
+                            ${isUserRank3 ? '<span class="badge-you-tag" style="margin-left: 4px;">Anda</span>' : ""}
                         </div>
                         <div class="podium-score">
                             ${formatNumber(

@@ -208,6 +208,130 @@
 }
 
 /* ==========================================================================
+   2.5 PERSONAL USER RANK PANEL (PENANDA POSISI USER)
+   ========================================================================== */
+
+.personal-rank-panel {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-card);
+  border-radius: 10px;
+  padding: 1rem 1.25rem;
+  margin-bottom: 2rem;
+  position: relative;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.25rem;
+  flex-wrap: wrap;
+  box-sizing: border-box;
+}
+
+.personal-rank-panel.is-ranked {
+  border-color: rgba(80, 227, 194, 0.4);
+  background: linear-gradient(90deg, rgba(80, 227, 194, 0.06) 0%, rgba(10, 10, 10, 0.98) 100%);
+  box-shadow: 0 4px 25px rgba(80, 227, 194, 0.12);
+}
+
+.personal-rank-left {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  min-width: 0;
+}
+
+.personal-rank-avatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background-color: #121214;
+  color: var(--accent-cyan);
+  border: 1.5px solid var(--accent-cyan);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 1.05rem;
+  flex-shrink: 0;
+  box-shadow: 0 0 12px rgba(80, 227, 194, 0.25);
+}
+
+.personal-rank-name-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  min-width: 0;
+}
+
+.personal-rank-name-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.personal-rank-username {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.personal-rank-desc {
+  font-family: var(--font-mono);
+  font-size: 0.725rem;
+  color: var(--text-muted);
+}
+
+.personal-rank-stats-wrap {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.personal-stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.15rem;
+}
+
+@media (max-width: 640px) {
+  .personal-stat-item {
+    align-items: flex-start;
+  }
+}
+
+.personal-stat-label {
+  font-family: var(--font-mono);
+  font-size: 0.675rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.personal-stat-value {
+  font-family: var(--font-mono);
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #ffffff;
+}
+
+.personal-stat-value.highlight-rank {
+  color: var(--accent-cyan);
+  text-shadow: 0 0 12px rgba(80, 227, 194, 0.45);
+}
+
+.podium-player-card.is-current-user .podium-avatar {
+  border-color: var(--accent-cyan) !important;
+  box-shadow: 0 0 18px rgba(80, 227, 194, 0.5);
+}
+
+.podium-player-card.is-current-user .podium-username {
+  color: var(--accent-cyan) !important;
+}
+
+/* ==========================================================================
    3. TOP 3 PODIUM STAGE GIMMICK (PANGGUNG KEJUARAAN)
    ========================================================================== */
 
