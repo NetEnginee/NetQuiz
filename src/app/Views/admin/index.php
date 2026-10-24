@@ -163,14 +163,14 @@ $stats = $stats ?? [
 
                 <!-- System Session Alerts (Vercel Dark Styled) -->
                 <?php if (isset($_SESSION['admin_success'])): ?>
-                    <div style="background-color: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); color: #34D399; padding: 0.75rem 1rem; border-radius: 8px; margin-bottom: 1.5rem; font-size: 0.875rem; display: flex; align-items: center; gap: 0.5rem;">
+                    <div class="admin-alert admin-alert-success" role="status" style="transition: opacity 0.4s ease, transform 0.4s ease, max-height 0.4s ease, margin 0.4s ease, padding 0.4s ease; max-height: 120px; overflow: hidden; background-color: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); color: #34D399; padding: 0.75rem 1rem; border-radius: 8px; margin-bottom: 1.5rem; font-size: 0.875rem; display: flex; align-items: center; gap: 0.5rem;">
                         <i data-lucide="check-circle-2" style="width: 16px; height: 16px; flex-shrink: 0;"></i>
                         <span><?= htmlspecialchars($_SESSION['admin_success']);
                                 unset($_SESSION['admin_success']); ?></span>
                     </div>
                 <?php endif; ?>
                 <?php if (isset($_SESSION['admin_error'])): ?>
-                    <div style="background-color: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); color: #F87171; padding: 0.75rem 1rem; border-radius: 8px; margin-bottom: 1.5rem; font-size: 0.875rem; display: flex; align-items: center; gap: 0.5rem;">
+                    <div class="admin-alert admin-alert-error" role="alert" style="transition: opacity 0.4s ease, transform 0.4s ease, max-height 0.4s ease, margin 0.4s ease, padding 0.4s ease; max-height: 120px; overflow: hidden; background-color: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); color: #F87171; padding: 0.75rem 1rem; border-radius: 8px; margin-bottom: 1.5rem; font-size: 0.875rem; display: flex; align-items: center; gap: 0.5rem;">
                         <i data-lucide="alert-circle" style="width: 16px; height: 16px; flex-shrink: 0;"></i>
                         <span><?= htmlspecialchars($_SESSION['admin_error']);
                                 unset($_SESSION['admin_error']); ?></span>

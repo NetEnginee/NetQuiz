@@ -1524,11 +1524,21 @@ document.addEventListener("DOMContentLoaded", () => {
   // --- ALERT AUTO-DISMISS LOGIC ---
   const adminAlerts = document.querySelectorAll(".admin-alert");
   adminAlerts.forEach((alertEl) => {
-    setTimeout(() => {
+    const dismiss = () => {
+      if (!alertEl.isConnected) return;
       alertEl.style.opacity = "0";
-      setTimeout(() => {
-        alertEl.remove();
-      }, 500);
-    }, 2000);
+      alertEl.style.transform = "translateY(-8px)";
+      alertEl.style.maxHeight = "0";
+      alertEl.style.marginTop = "0";
+      alertEl.style.marginBottom = "0";
+      alertEl.style.paddingTop = "0";
+      alertEl.style.paddingBottom = "0";
+      setTimeout(() => alertEl.remove(), 450);
+    };
+    // Success alerts auto-hide after 4s; error alerts stay longer (8s)
+    const delay = alertEl.classList.contains("admin-alert-success")
+      ? 2000
+      : 2000;
+    setTimeout(dismiss, delay);
   });
 });
