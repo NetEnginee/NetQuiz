@@ -128,28 +128,23 @@ require_once dirname(__DIR__) . '/templates/header.php';
                                     if ($isThisCorrect) {
                                         $optClass = 'opt-correct';
                                         $badgeStyle = 'background-color: #10b981; border-color: #10b981; color: #000000; font-weight: 800;';
-                                        if ($isThisUserChoice) {
-                                            $tagLabel = '<span class="quiz-status-tag status-finished font-mono text-[11px]"><svg class="w-3 h-3 pixelated" viewBox="0 0 16 16"><use href="#pixel-sparkle"></use></svg> Jawaban Anda (Benar)</span>';
-                                        } else {
-                                            $tagLabel = '<span class="quiz-status-tag status-finished font-mono text-[11px]"><svg class="w-3 h-3 pixelated" viewBox="0 0 16 16"><use href="#pixel-sparkle"></use></svg> Kunci Jawaban</span>';
-                                        }
                                     } elseif ($isThisUserChoice && !$isCorrect) {
                                         $optClass = 'opt-wrong';
                                         $badgeStyle = 'background-color: #ef4444; border-color: #ef4444; color: #ffffff; font-weight: 800;';
                                         $tagLabel = '<span class="quiz-status-tag font-mono text-[11px]" style="background-color: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.4); color: #f87171;">✕ Jawaban Anda (Salah)</span>';
                                     }
                                     ?>
-                                    <div class="review-evaluated-option <?= $optClass ?>">
-                                        <div class="flex items-center gap-3 flex-1 min-w-0">
-                                            <div class="option-badge font-mono" style="<?= $badgeStyle ?>">
+                                    <div class="review-evaluated-option <?= $optClass ?>" style="display: flex; align-items: center; justify-content: space-between; gap: 0.85rem;">
+                                        <div style="display: flex; align-items: center; gap: 0.85rem; flex: 1; min-width: 0;">
+                                            <div class="option-badge font-mono" style="<?= $badgeStyle ?> flex-shrink: 0; min-width: 32px;">
                                                 <?= $optKey ?>
                                             </div>
-                                            <span class="option-text-content font-sans">
+                                            <span class="option-text-content font-sans" style="flex: 1; min-width: 0; word-break: break-word;">
                                                 <?= htmlspecialchars($optText) ?>
                                             </span>
                                         </div>
                                         <?php if (!empty($tagLabel)): ?>
-                                            <div class="flex-shrink-0">
+                                            <div style="flex-shrink: 0;">
                                                 <?= $tagLabel ?>
                                             </div>
                                         <?php endif; ?>
