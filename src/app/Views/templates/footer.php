@@ -192,14 +192,30 @@
                         length: packetCount
                     }, () => new DataPacket());
 
+                    let isRunning = true;
+                    let animId = null;
+
                     function animateCanvas() {
+                        if (!isRunning) return;
                         ctx.clearRect(0, 0, width, height);
                         packets.forEach((p) => {
                             p.update();
                             p.draw();
                         });
-                        requestAnimationFrame(animateCanvas);
+                        animId = requestAnimationFrame(animateCanvas);
                     }
+
+                    document.addEventListener("visibilitychange", () => {
+                        if (document.hidden) {
+                            isRunning = false;
+                            if (animId) cancelAnimationFrame(animId);
+                        } else {
+                            if (!isRunning) {
+                                isRunning = true;
+                                animateCanvas();
+                            }
+                        }
+                    });
 
                     animateCanvas();
                 }

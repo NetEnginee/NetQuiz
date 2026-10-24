@@ -88,21 +88,27 @@ class BadgeRepository implements BadgeRepositoryInterface
      */
     public function calculateUserBadges(int $userId): array
     {
-        // 1. Completed finished quizzes
-        $stmt = $this->db->prepare("SELECT COUNT(*) as count FROM quiz_attempts WHERE user_id = :uid AND status = 'finished'");
-        $stmt->execute(['uid' => $userId]);
-        $completedQuizzes = (int)($stmt->fetch(PDO::FETCH_ASSOC)['count'] ?? 0);
 
-        // 2. Total score
-        $stmt = $this->db->prepare("SELECT SUM(score) as total FROM quiz_attempts WHERE user_id = :uid AND status = 'finished'");
+        $stmt = $this->db->prepare("
+                SELECT 
+                    COUNT(*) as count,
+                    COALESCE(SUM(score), 0) as total,
+                    COALESCE(SUM(CASE WHEN score = 100 THEN 1 ELSE 0 END), 0) as perfect_count
+                FROM quiz_attempts 
+                WHERE user_id = :uid AND status = 'finished'
+            ");
         $stmt->execute(['uid' => $userId]);
-        $totalScore = (int)($stmt->fetch(PDO::FETCH_ASSOC)['total'] ?? 0);
+        $stats = $stmt->fetch(PDO::FETCH_ASSOC) ?: [];
+        $completedQuizzes = (int)($stats['count'] ?? 0);
+        $totalScore = (int)($stats['total'] ?? 0);
+        $perfectScores = (int)($stats['perfect_count'] ?? 0);
 
         // 3. Category count & scores
         $categories = ['Routing' => 0, 'Firewall & NAT' => 0, 'Wireless' => 0, 'Network Management' => 0];
         $categoryScores = ['Routing' => 0, 'Firewall & NAT' => 0, 'Wireless' => 0, 'Network Management' => 0];
 
-        $stmt = $this->db->prepare("SELECT category, COUNT(*) as count, SUM(score) as score_sum FROM quiz_attempts WHERE user_id = :uid AND status = 'finished' GROUP BY category");
+        $stmt = $this->db->prepare("SELECT category, COUNT(*) as count, SUM(score) as score_sum FROM quiz_attempts WHERE
+            user_id = :uid AND status = 'finished' GROUP BY category");
         $stmt->execute(['uid' => $userId]);
         foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $row) {
             $cat = $row['category'];
@@ -111,12 +117,6 @@ class BadgeRepository implements BadgeRepositoryInterface
                 $categoryScores[$cat] = (int)($row['score_sum'] ?? 0);
             }
         }
-
-        // 4. Perfect scores
-        $stmt = $this->db->prepare("SELECT COUNT(*) as count FROM quiz_attempts WHERE user_id = :uid AND score = 100 AND status = 'finished'");
-        $stmt->execute(['uid' => $userId]);
-        $perfectScores = (int)($stmt->fetch(PDO::FETCH_ASSOC)['count'] ?? 0);
-
         // 5. Total available quizzes in database
         $totalAvailableQuizzes = (int)($this->db->query("SELECT COUNT(*) FROM quizzes")->fetchColumn() ?: 1);
         $completionRate = (int)round(($completedQuizzes / max(1, $totalAvailableQuizzes)) * 100);

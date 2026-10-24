@@ -79,7 +79,7 @@ function renderBreadcrumb(array $items): string
     <?php endif; ?>
 
     <!-- Lucide Icons CDN -->
-    <script src="https://unpkg.com/lucide@latest" defer></script>
+    <script src="https://unpkg.com/lucide@0.344.0/dist/umd/lucide.min.js" defer></script>
 
     <!-- Top Slim Loading Engine -->
     <script src="<?= function_exists('assetUrl') ? assetUrl('/js/page-loader.js') : (BASE_URL . '/js/page-loader.js') ?>"></script>
