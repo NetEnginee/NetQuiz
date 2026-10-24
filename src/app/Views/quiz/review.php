@@ -48,9 +48,6 @@ require_once dirname(__DIR__) . '/templates/header.php';
             <a href="<?= BASE_URL ?>/quiz" class="btn-hero-secondary font-mono text-xs" onclick="window.playPixelSound && window.playPixelSound('click');">
                 <span>← Kembali</span>
             </a>
-            <a href="<?= BASE_URL ?>/quiz/play/<?= (int)$quiz['id'] ?>" class="btn-hero-primary font-mono text-xs" onclick="window.playPixelSound && window.playPixelSound('click');">
-                <span>Ulangi</span>
-            </a>
         </div>
     </section>
 

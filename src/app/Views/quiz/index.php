@@ -98,23 +98,12 @@ require_once dirname(__DIR__) . '/templates/header.php';
                         'Network Management' => '#34d399',
                         default => '#0070f3'
                     };
-                    $catIconSvg = match ($categoryName) {
-                        'Routing' => '#pixel-router',
-                        'Firewall & NAT' => '#pixel-robot',
-                        'Wireless' => '#pixel-sparkle',
-                        'Network Management' => '#pixel-computer',
-                        default => '#pixel-book'
-                    };
+
                 ?>
                     <section class="quiz-category-section" data-category="<?= htmlspecialchars($categoryName) ?>" aria-labelledby="cat-heading-<?= md5($categoryName) ?>">
                         <!-- Category Section Header -->
                         <div class="category-header-row">
                             <div class="category-title-wrap">
-                                <div class="category-icon-box" style="border-color: <?= $catThemeColor ?>44; background-color: <?= $catThemeColor ?>14;">
-                                    <svg class="w-5 h-5 pixelated" viewBox="0 0 16 16" style="color: <?= $catThemeColor ?>;">
-                                        <use href="<?= $catIconSvg ?>"></use>
-                                    </svg>
-                                </div>
                                 <h2 id="cat-heading-<?= md5($categoryName) ?>" class="category-title font-sans">
                                     <?= htmlspecialchars($categoryName) ?>
                                 </h2>
@@ -139,10 +128,7 @@ require_once dirname(__DIR__) . '/templates/header.php';
                                     <span class="panel-crosshair corner-bl">+</span>
                                     <span class="panel-crosshair corner-br">+</span>
 
-                                    <!-- Pixel Watermark SVG -->
-                                    <svg class="quiz-watermark pixelated" viewBox="0 0 16 16">
-                                        <use href="<?= $catIconSvg ?>"></use>
-                                    </svg>
+
 
                                     <div class="quiz-card-content">
                                         <!-- Top Meta Badges -->
@@ -197,12 +183,6 @@ require_once dirname(__DIR__) . '/templates/header.php';
                                                     title="Review Pembahasan"
                                                     onclick="window.playPixelSound && window.playPixelSound('click');">
                                                     <span>Review</span>
-                                                </a>
-                                                <a href="<?= BASE_URL ?>/quiz/play/<?= (int)$q['id'] ?>"
-                                                    class="btn-hero-primary font-mono text-xs"
-                                                    title="Ulangi Ujian"
-                                                    onclick="window.playPixelSound && window.playPixelSound('click');">
-                                                    <span>Ulangi</span>
                                                 </a>
                                             <?php elseif ($isPaused): ?>
                                                 <a href="<?= BASE_URL ?>/quiz/play/<?= (int)$q['id'] ?>"

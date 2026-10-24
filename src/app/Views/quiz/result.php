@@ -76,11 +76,6 @@ require_once dirname(__DIR__) . '/templates/header.php';
                     <span>← Kembali</span>
                 </a>
                 <?php if (!empty($quiz['id'])): ?>
-                    <a href="<?= BASE_URL ?>/quiz/play/<?= (int)$quiz['id'] ?>"
-                        class="btn-hero-secondary font-mono"
-                        onclick="window.playPixelSound && window.playPixelSound('click');">
-                        <span>Ulangi</span>
-                    </a>
                     <a href="<?= BASE_URL ?>/quiz/review/<?= (int)$quiz['id'] ?>"
                         class="btn-hero-primary font-mono"
                         onclick="window.playPixelSound && window.playPixelSound('coin');">
