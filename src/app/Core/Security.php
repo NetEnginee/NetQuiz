@@ -64,10 +64,7 @@ class Security
      * Single source of truth for administrator accounts.
      */
     public const ADMIN_EMAILS = [
-        'super@netquiz.academy',
-        'super@network.academy',
-        'admin@routerosquiz.academy',
-        'admin@quiz.local',
+        'super@netquiz.local',
     ];
 
     /**
