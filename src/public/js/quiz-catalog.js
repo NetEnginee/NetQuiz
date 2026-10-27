@@ -8,6 +8,7 @@
   class NetQuizCatalogFilter {
     constructor() {
       this.initDom();
+      this.initResumeCooldowns();
       if (!this.filterTabs || this.filterTabs.length === 0) return;
 
       this.bindEvents();
@@ -123,6 +124,53 @@
         if (this.emptyStateEl) this.emptyStateEl.style.display = "none";
         if (this.sectionsContainer) this.sectionsContainer.style.display = "";
       }
+    }
+
+    initResumeCooldowns() {
+      const resumeButtons = Array.from(
+        document.querySelectorAll(".btn-resume-quiz")
+      );
+      if (resumeButtons.length === 0) return;
+
+      resumeButtons.forEach((btn) => {
+        const quizId = btn.getAttribute("data-quiz-id");
+        const userId = btn.getAttribute("data-user-id") || "0";
+        const unlockKey = `quiz_resume_unlock_${userId}_${quizId}`;
+        const unlockAt = parseInt(localStorage.getItem(unlockKey), 10) || 0;
+        const now = Date.now();
+        let remainingSeconds = Math.ceil((unlockAt - now) / 1000);
+
+        if (remainingSeconds > 0) {
+          const originalHref =
+            btn.getAttribute("href") ||
+            `${window.BASE_URL || ""}/quiz/play/${quizId}`;
+
+          // Transform button into disabled timer state
+          btn.classList.add("is-disabled");
+          btn.setAttribute("aria-disabled", "true");
+          btn.removeAttribute("href");
+          btn.innerHTML = `<span>⏱ ${remainingSeconds}s</span>`;
+
+          const timer = setInterval(() => {
+            const currentNow = Date.now();
+            remainingSeconds = Math.ceil((unlockAt - currentNow) / 1000);
+
+            if (remainingSeconds > 0) {
+              btn.innerHTML = `<span>⏱ ${remainingSeconds}s</span>`;
+            } else {
+              clearInterval(timer);
+              localStorage.removeItem(unlockKey);
+              btn.classList.remove("is-disabled");
+              btn.removeAttribute("aria-disabled");
+              btn.setAttribute("href", originalHref);
+              btn.innerHTML = `<span>Lanjutkan ▶</span>`;
+              if (window.playPixelSound) {
+                window.playPixelSound("coin");
+              }
+            }
+          }, 1000);
+        }
+      });
     }
   }
 

@@ -61,7 +61,8 @@ class QuizController extends Controller
             $decoded = json_decode($pausedAttempt['user_answers'] ?? '{}', true);
             $pausedState = [
                 'answers' => $decoded['answers'] ?? [],
-                'time_left' => (int)($decoded['time_left'] ?? ($quiz['duration'] * 60))
+                'time_left' => (int)($decoded['time_left'] ?? ($quiz['duration'] * 60)),
+                'pause_count' => (int)($decoded['pause_count'] ?? 1)
             ];
         }
 

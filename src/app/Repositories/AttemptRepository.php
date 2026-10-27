@@ -35,13 +35,20 @@ class AttemptRepository implements AttemptRepositoryInterface
      */
     public function savePausedAttempt(int $userId, int $quizId, string $category, array $answers, int $timeLeft): bool
     {
+        $existing = $this->getPausedAttempt($userId, $quizId);
+        $pauseCount = 1;
+        if ($existing && !empty($existing['user_answers'])) {
+            $existingData = json_decode($existing['user_answers'], true);
+            $pauseCount = ((int)($existingData['pause_count'] ?? 0)) + 1;
+        }
+
         $payload = json_encode([
             'answers' => $answers,
-            'time_left' => $timeLeft
+            'time_left' => $timeLeft,
+            'pause_count' => $pauseCount
         ], JSON_UNESCAPED_UNICODE);
 
         $pausedAt = date('Y-m-d H:i:s');
-        $existing = $this->getPausedAttempt($userId, $quizId);
 
         if ($existing) {
             $stmt = $this->db->prepare("UPDATE quiz_attempts SET user_answers = :payload, created_at = :paused_at WHERE id = :id");

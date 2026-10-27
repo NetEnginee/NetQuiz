@@ -139,14 +139,11 @@ require_once dirname(__DIR__) . '/templates/header.php';
 
                                             <?php if ($isFinished): ?>
                                                 <span class="quiz-status-tag status-finished">
-                                                    <svg class="w-3 h-3 pixelated inline-block" viewBox="0 0 16 16">
-                                                        <use href="#pixel-sparkle"></use>
-                                                    </svg>
                                                     <span>Selesai (<?= (int)$userScore ?> pts)</span>
                                                 </span>
                                             <?php elseif ($isPaused): ?>
                                                 <span class="quiz-status-tag status-paused">
-                                                    <span>⏸ Dijeda</span>
+                                                    <span>Dijeda</span>
                                                 </span>
                                             <?php else: ?>
                                                 <span class="quiz-status-tag status-unattempted">
@@ -186,7 +183,9 @@ require_once dirname(__DIR__) . '/templates/header.php';
                                                 </a>
                                             <?php elseif ($isPaused): ?>
                                                 <a href="<?= BASE_URL ?>/quiz/play/<?= (int)$q['id'] ?>"
-                                                    class="btn-hero-primary font-mono text-xs"
+                                                    class="btn-hero-primary font-mono text-xs btn-resume-quiz"
+                                                    data-quiz-id="<?= (int)$q['id'] ?>"
+                                                    data-user-id="<?= (int)($_SESSION['user']['id'] ?? 0) ?>"
                                                     onclick="window.playPixelSound && window.playPixelSound('click');">
                                                     <span>Lanjutkan ▶</span>
                                                 </a>

@@ -242,6 +242,15 @@ require_once dirname(__DIR__) . '/templates/header.php';
 </div>
 
 <!-- Reviewer JS Module -->
+<script>
+    try {
+        const userId = <?= (int)($_SESSION['user']['id'] ?? 0) ?>;
+        const quizId = <?= (int)($quiz['id'] ?? 0) ?>;
+        localStorage.removeItem(`quiz_pause_count_${userId}_${quizId}`);
+        localStorage.removeItem(`quiz_resume_unlock_${userId}_${quizId}`);
+        localStorage.removeItem(`quiz_timer_${userId}_${quizId}`);
+    } catch (e) {}
+</script>
 <script src="<?= function_exists('assetUrl') ? assetUrl('/js/quiz-review.js') : (BASE_URL . '/js/quiz-review.js') ?>"></script>
 
 <?php require_once dirname(__DIR__) . '/templates/footer.php'; ?>

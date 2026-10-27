@@ -121,35 +121,16 @@ require_once dirname(__DIR__) . '/templates/header.php';
         </div>
 
         <!-- RIGHT COLUMN: Question Palette & Realtime Timer -->
-        <div class="timer-palette-column-right space-y-5">
-            <!-- Card 1: Timer & Action Box -->
-            <div class="desktop-timer-card">
-                <div class="timer-box-header">
-                    <span class="font-mono text-xs font-bold text-zinc-400 uppercase tracking-wider">Sisa Waktu Ujian</span>
-                    <button type="button" class="btn-pause-trigger btn-hero-secondary font-mono text-xs px-2.5 py-1" title="Jeda & Simpan Progres" onclick="window.playPixelSound && window.playPixelSound('blip');">
-                        <span>Jeda</span>
-                    </button>
-                </div>
-
-                <!-- Big Monospace Timer Badge -->
-                <div id="quiz-timer-desktop" class="timer-digits-display font-mono" style="margin-bottom: 0;">
-                    <span class="timer-display-text">--:--</span>
-                </div>
+        <div class="timer-palette-column-right" style="display: flex; flex-direction: column; gap: 0.85rem;">
+            <!-- Timer Display Diluar Atas Card Palet -->
+            <div id="quiz-timer-desktop" class="timer-digits-display font-mono" style="margin-bottom: 0; padding: 0.85rem 1rem;">
+                <span class="timer-display-text">--:--</span>
             </div>
 
-            <!-- Card 2: Question Palette Grid -->
+            <!-- Card Palet Nomor Soal -->
             <div class="palette-card-box">
-                <div class="flex items-center justify-between pb-2 mb-3 border-b border-zinc-800">
-                    <h4 class="font-sans text-xs font-bold text-white uppercase tracking-wider m-0">
-                        Palet Nomor Soal
-                    </h4>
-                    <span id="answered-counter-text" class="font-mono text-xs font-bold text-cyan-400">
-                        0 / <?= $totalQuestions ?> Terjawab
-                    </span>
-                </div>
-
                 <!-- Palette Grid -->
-                <div id="quiz-page-buttons-grid" class="palette-buttons-grid">
+                <div id="quiz-page-buttons-grid" class="palette-buttons-grid" style="margin-top: 0; margin-bottom: 1.25rem; padding: 0;">
                     <?php foreach ($questions as $index => $q): ?>
                         <?php
                         $isAnswered = isset($pausedAnswers[$index]) && $pausedAnswers[$index] !== '';
@@ -163,20 +144,15 @@ require_once dirname(__DIR__) . '/templates/header.php';
                     <?php endforeach; ?>
                 </div>
 
-                <!-- Palette Legend with Badges & Explicit Indicators -->
-                <div class="palette-legend-row legend-row-start font-mono">
-                    <span class="legend-badge-item">
-                        <span>Terjawab</span>
-                    </span>
-                    <span class="legend-badge-item">
-                        <span>Belum</span>
-                    </span>
+                <!-- Action Buttons: Tombol Jeda Disamping Kumpulkan Ujian -->
+                <div style="display: flex; align-items: center; gap: 0.65rem;">
+                    <button type="button" class="btn-pause-trigger btn-hero-secondary font-mono text-xs px-3.5" style="height: 38px; display: inline-flex; align-items: center; justify-content: center; flex: 0 0 auto;" title="Jeda & Simpan Progres" onclick="window.playPixelSound && window.playPixelSound('blip');">
+                        <span>Jeda</span>
+                    </button>
+                    <button type="button" class="btn-hero-primary btn-open-submit-modal font-mono text-xs justify-center" style="height: 38px; display: inline-flex; align-items: center; justify-content: center; flex: 1;" onclick="window.playPixelSound && window.playPixelSound('coin');">
+                        <span>Kumpulkan Ujian</span>
+                    </button>
                 </div>
-
-                <!-- Palette Direct Submit Button -->
-                <button type="button" class="btn-hero-primary btn-open-submit-modal font-mono text-xs w-full justify-center" onclick="window.playPixelSound && window.playPixelSound('coin');">
-                    <span>Kumpulkan Ujian</span>
-                </button>
             </div>
         </div>
 

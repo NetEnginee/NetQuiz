@@ -467,6 +467,17 @@ svg.w-12 {
   gap: 0.45rem;
 }
 
+.btn-resume-quiz.is-disabled {
+  background-color: #18181b !important;
+  color: #71717a !important;
+  border-color: #27272a !important;
+  cursor: not-allowed !important;
+  pointer-events: none !important;
+  box-shadow: none !important;
+  transform: none !important;
+  user-select: none !important;
+}
+
 /* ==========================================================================
    2. QUIZ EXAM ARENA (/quiz/play) & REVIEW (/quiz/review)
    ========================================================================== */

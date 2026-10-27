@@ -15,6 +15,8 @@
       this.isResumed = !!config.isResumed;
 
       this.storageKey = `quiz_timer_${this.userId}_${this.quizId}`;
+      this.pauseStorageKey = `quiz_pause_count_${this.userId}_${this.quizId}`;
+      this.unlockStorageKey = `quiz_resume_unlock_${this.userId}_${this.quizId}`;
       this.currentSlide = 0;
       this.isSubmitting = false;
       this.timerInterval = null;
@@ -67,6 +69,14 @@
     }
 
     initState() {
+      // Check if direct URL access was attempted during cooldown
+      const unlockAt =
+        parseInt(localStorage.getItem(this.unlockStorageKey), 10) || 0;
+      if (unlockAt > Date.now()) {
+        window.location.replace(`${window.BASE_URL || ""}/quiz`);
+        return;
+      }
+
       // 1. Timer Countdown Initialization
       if (this.durationSeconds > 0) {
         let targetTimestamp = localStorage.getItem(this.storageKey);
@@ -140,6 +150,8 @@
       if (this.isSubmitting) return;
 
       localStorage.removeItem(this.storageKey);
+      localStorage.removeItem(this.pauseStorageKey);
+      localStorage.removeItem(this.unlockStorageKey);
       if (window.playPixelSound) {
         window.playPixelSound("badge");
       }
@@ -248,6 +260,17 @@
           this.isSubmitting = true;
           localStorage.removeItem(this.storageKey);
 
+          // Increment pause count in localStorage
+          const currentPauseCount =
+            parseInt(localStorage.getItem(this.pauseStorageKey), 10) || 0;
+          const nextPauseCount = currentPauseCount + 1;
+          localStorage.setItem(this.pauseStorageKey, nextPauseCount);
+
+          // Set unlock timestamp for cooldown on "Lanjutkan" button
+          const cooldownSeconds = nextPauseCount * 5;
+          const unlockAt = Date.now() + cooldownSeconds * 1000;
+          localStorage.setItem(this.unlockStorageKey, unlockAt);
+
           // Submit via pause action URL
           const action = `${window.BASE_URL || ""}/quiz/pause/${this.quizId}`;
           this.quizForm.setAttribute("action", action);
@@ -283,6 +306,8 @@
         this.btnFinalSubmit.addEventListener("click", () => {
           this.isSubmitting = true;
           localStorage.removeItem(this.storageKey);
+          localStorage.removeItem(this.pauseStorageKey);
+          localStorage.removeItem(this.unlockStorageKey);
           this.quizForm.submit();
         });
       }

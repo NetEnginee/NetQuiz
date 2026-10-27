@@ -89,6 +89,14 @@ require_once dirname(__DIR__) . '/templates/header.php';
 
 <script>
     document.addEventListener('DOMContentLoaded', () => {
+        try {
+            const userId = <?= (int)($_SESSION['user']['id'] ?? 0) ?>;
+            const quizId = <?= (int)($quiz['id'] ?? 0) ?>;
+            localStorage.removeItem(`quiz_pause_count_${userId}_${quizId}`);
+            localStorage.removeItem(`quiz_resume_unlock_${userId}_${quizId}`);
+            localStorage.removeItem(`quiz_timer_${userId}_${quizId}`);
+        } catch (e) {}
+
         if (window.playPixelSound) {
             window.playPixelSound('<?= $isPassed ? "badge" : "coin" ?>');
         }
