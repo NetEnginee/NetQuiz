@@ -665,6 +665,46 @@ class AdminController extends Controller
     }
 
     /**
+     * Delete Materials Bulk (Selected Materials).
+     */
+    public function deleteMaterialsBulk(): Response
+    {
+        $this->checkAdmin();
+
+        if (!Security::validateCsrfToken($this->request->input('csrf_token'))) {
+            $_SESSION['admin_error'] = 'Sesi tidak valid, silakan muat ulang halaman.';
+            return $this->redirect(BASE_URL . '/admin#materials-section');
+        }
+
+        $ids = $this->request->input('selected_materials', []);
+        if (is_string($ids) && !empty($ids)) {
+            $decoded = json_decode($ids, true);
+            $ids = is_array($decoded) ? $decoded : explode(',', $ids);
+        }
+
+        if (empty($ids) || !is_array($ids)) {
+            $_SESSION['admin_error'] = 'Pilih materi yang ingin dihapus terlebih dahulu.';
+            return $this->redirect(BASE_URL . '/admin#materials-section');
+        }
+
+        $cleanIds = array_values(array_unique(array_filter(array_map('intval', $ids), fn(int $id) => $id > 0)));
+        if (empty($cleanIds)) {
+            $_SESSION['admin_error'] = 'Data materi yang dipilih tidak valid.';
+            return $this->redirect(BASE_URL . '/admin#materials-section');
+        }
+
+        try {
+            $this->materialRepo->deleteBulk($cleanIds);
+            $count = count($cleanIds);
+            $_SESSION['admin_success'] = "{$count} materi pembelajaran berhasil dihapus!";
+        } catch (\Exception $e) {
+            $_SESSION['admin_error'] = 'Gagal menghapus materi terpilih: ' . $e->getMessage();
+        }
+
+        return $this->redirect(BASE_URL . '/admin#materials-section');
+    }
+
+    /**
      * Fetch Material JSON for Visual Editor.
      */
     public function getMaterialJson(string|int $id): Response

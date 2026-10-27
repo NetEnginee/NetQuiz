@@ -112,4 +112,23 @@ class MaterialRepository implements MaterialRepositoryInterface
         $stmt = $this->db->prepare("DELETE FROM materials WHERE id = :id");
         return $stmt->execute(['id' => $id]);
     }
+
+    /**
+     * Delete multiple learning materials in bulk.
+     */
+    public function deleteBulk(array $ids): bool
+    {
+        if (empty($ids)) {
+            return false;
+        }
+
+        $ids = array_values(array_unique(array_filter(array_map('intval', $ids), fn(int $id) => $id > 0)));
+        if (empty($ids)) {
+            return false;
+        }
+
+        $placeholders = implode(',', array_fill(0, count($ids), '?'));
+        $stmt = $this->db->prepare("DELETE FROM materials WHERE id IN ({$placeholders})");
+        return $stmt->execute($ids);
+    }
 }

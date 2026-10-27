@@ -175,6 +175,7 @@ $router->post('/admin/materials/upload', [\App\Controllers\AdminController::clas
 $router->get('/admin/materials/{id}', [\App\Controllers\AdminController::class, 'getMaterialJson']);
 $router->get('/admin/material/get/{id}', [\App\Controllers\AdminController::class, 'getMaterialJson']); // Compatibility
 $router->post('/admin/materials/delete/{id}', [\App\Controllers\AdminController::class, 'deleteMaterial']);
+$router->post('/admin/materials/delete-bulk', [\App\Controllers\AdminController::class, 'deleteMaterialsBulk']);
 
 // 9. Dispatch Request via Router
 $router->dispatch();

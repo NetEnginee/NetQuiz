@@ -3364,6 +3364,9 @@ function renderMaterialsSection() {
                     <table class="supabase-data-table">
                         <thead>
                             <tr>
+                                <th style="width: 44px; text-align: center;">
+                                    <input type="checkbox" id="select-all-materials" class="panel-checkbox" title="Pilih Semua Materi">
+                                </th>
                                 <th>JUDUL MATERI</th>
                                 <th>KATEGORI</th>
                                 <th>KESULITAN</th>
@@ -3375,18 +3378,174 @@ function renderMaterialsSection() {
                     </table>
                 </div>
             </div>
+
+            <!-- FLOATING BULK ACTION BAR (SCOPED TO MATERIALS LIST) -->
+            <div id="floating-material-bulk-bar" class="floating-bulk-bar" aria-live="polite" style="display: none;">
+                <span id="bulk-material-selected-count" class="bulk-count-badge">0 Dipilih</span>
+                <div class="bulk-actions-group">
+                    <button type="button" id="btn-bulk-delete-materials" class="btn-bulk-action btn-bulk-danger" title="Hapus materi yang dipilih">
+                        <i data-lucide="trash-2" style="width: 14px; height: 14px;"></i>
+                        <span>Hapus Terpilih</span>
+                    </button>
+                </div>
+                <button type="button" id="btn-bulk-dismiss-materials" class="btn-bulk-dismiss" title="Batal Pilihan">
+                    <i data-lucide="x" style="width: 16px; height: 16px;"></i>
+                </button>
+            </div>
         </div>
     `;
 
   const matTbody = document.getElementById("materials-table-body");
   const matSearch = document.getElementById("material-search-input");
+  const selectedMaterialIds = new Set();
+  const selectAllMaterialsCheckbox = document.getElementById("select-all-materials");
+  const floatingMaterialBulkBar = document.getElementById("floating-material-bulk-bar");
+  const bulkMaterialCountBadge = document.getElementById("bulk-material-selected-count");
+  const btnBulkDeleteMaterials = document.getElementById("btn-bulk-delete-materials");
+  const btnBulkDismissMaterials = document.getElementById("btn-bulk-dismiss-materials");
+
+  function updateMaterialBulkState() {
+    const rowCheckboxes = document.querySelectorAll(".material-row-checkbox");
+    const totalSelectedCount = selectedMaterialIds.size;
+    let checkedVisibleCount = 0;
+
+    rowCheckboxes.forEach((cb) => {
+      if (cb.checked) checkedVisibleCount++;
+    });
+
+    if (selectAllMaterialsCheckbox) {
+      if (rowCheckboxes.length === 0) {
+        selectAllMaterialsCheckbox.checked = false;
+        selectAllMaterialsCheckbox.indeterminate = false;
+      } else {
+        selectAllMaterialsCheckbox.checked = checkedVisibleCount === rowCheckboxes.length;
+        selectAllMaterialsCheckbox.indeterminate = checkedVisibleCount > 0 && checkedVisibleCount < rowCheckboxes.length;
+      }
+    }
+
+    if (!floatingMaterialBulkBar || !bulkMaterialCountBadge) return;
+
+    if (totalSelectedCount > 0) {
+      bulkMaterialCountBadge.textContent = `${totalSelectedCount} Dipilih`;
+      floatingMaterialBulkBar.style.display = "flex";
+      floatingMaterialBulkBar.classList.add("active");
+    } else {
+      floatingMaterialBulkBar.classList.remove("active");
+      floatingMaterialBulkBar.style.display = "none";
+    }
+  }
+
+  function bindMaterialRowCheckboxes() {
+    const rowCheckboxes = document.querySelectorAll(".material-row-checkbox");
+    rowCheckboxes.forEach((cb) => {
+      cb.addEventListener("change", function () {
+        const idStr = String(this.value);
+        if (this.checked) {
+          selectedMaterialIds.add(idStr);
+        } else {
+          selectedMaterialIds.delete(idStr);
+        }
+        const row = this.closest("tr");
+        if (row) {
+          row.classList.toggle("row-selected", this.checked);
+        }
+        updateMaterialBulkState();
+      });
+    });
+  }
+
+  if (selectAllMaterialsCheckbox) {
+    selectAllMaterialsCheckbox.addEventListener("change", function () {
+      const rowCheckboxes = document.querySelectorAll(".material-row-checkbox");
+      rowCheckboxes.forEach((cb) => {
+        cb.checked = this.checked;
+        const idStr = String(cb.value);
+        if (this.checked) {
+          selectedMaterialIds.add(idStr);
+        } else {
+          selectedMaterialIds.delete(idStr);
+        }
+        const row = cb.closest("tr");
+        if (row) {
+          row.classList.toggle("row-selected", this.checked);
+        }
+      });
+      updateMaterialBulkState();
+    });
+  }
+
+  function clearMaterialSelections() {
+    selectedMaterialIds.clear();
+    const rowCheckboxes = document.querySelectorAll(".material-row-checkbox");
+    rowCheckboxes.forEach((cb) => {
+      cb.checked = false;
+      const row = cb.closest("tr");
+      if (row) row.classList.remove("row-selected");
+    });
+    if (selectAllMaterialsCheckbox) {
+      selectAllMaterialsCheckbox.checked = false;
+      selectAllMaterialsCheckbox.indeterminate = false;
+    }
+    updateMaterialBulkState();
+  }
+
+  if (btnBulkDismissMaterials) {
+    btnBulkDismissMaterials.addEventListener("click", clearMaterialSelections);
+  }
+
+  function triggerBulkDeleteMaterials() {
+    const idsArray = Array.from(selectedMaterialIds);
+    if (idsArray.length === 0) return;
+
+    const selectedMaterialsData = materials.filter((m) => selectedMaterialIds.has(String(m.id)));
+    const count = idsArray.length;
+    const titlesList = selectedMaterialsData
+      .slice(0, 3)
+      .map((m) => m.title || `Materi #${m.id}`)
+      .join(", ");
+    const moreText = count > 3 ? ` dan ${count - 3} lainnya` : "";
+    const detailText = titlesList ? ` (${titlesList}${moreText})` : "";
+
+    showGeistConfirm(
+      "Hapus Materi Terpilih",
+      `Apakah Anda yakin ingin menghapus ${count} materi pembelajaran yang dipilih${detailText}? Data materi akan dihapus permanen.`,
+      `Hapus ${count} Materi`,
+      () => {
+        const form = document.createElement("form");
+        form.method = "POST";
+        form.action = `${window.BASE_URL}/admin/materials/delete-bulk`;
+
+        const csrfInput = document.createElement("input");
+        csrfInput.type = "hidden";
+        csrfInput.name = "csrf_token";
+        csrfInput.value = window.CSRF_TOKEN || "";
+        form.appendChild(csrfInput);
+
+        idsArray.forEach((id) => {
+          const idInput = document.createElement("input");
+          idInput.type = "hidden";
+          idInput.name = "selected_materials[]";
+          idInput.value = id;
+          form.appendChild(idInput);
+        });
+
+        document.body.appendChild(form);
+        form.submit();
+      },
+      true
+    );
+  }
+
+  if (btnBulkDeleteMaterials) {
+    btnBulkDeleteMaterials.addEventListener("click", triggerBulkDeleteMaterials);
+  }
 
   function renderMatRows(list) {
     if (!matTbody) return;
     if (list.length === 0) {
       matTbody.innerHTML = `
                 <tr>
-                    <td colspan="4">
+                    <td colspan="5">
                         <div class="panel-empty-state">
                             <div class="empty-state-icon-box">
                                 <i data-lucide="book-open" style="width: 24px; height: 24px;"></i>
@@ -3398,13 +3557,18 @@ function renderMaterialsSection() {
                 </tr>
             `;
       if (window.lucide) window.lucide.createIcons();
+      updateMaterialBulkState();
       return;
     }
 
     matTbody.innerHTML = list
-      .map(
-        (m) => `
-            <tr>
+      .map((m) => {
+        const isSelected = selectedMaterialIds.has(String(m.id));
+        return `
+            <tr class="${isSelected ? "row-selected" : ""}">
+                <td style="text-align: center;">
+                    <input type="checkbox" class="panel-checkbox material-row-checkbox" value="${m.id}" ${isSelected ? "checked" : ""} title="Pilih materi ini">
+                </td>
                 <td style="font-weight: 700; color: #ffffff;">${escapeHtml(m.title)}</td>
                 <td><span class="role-pill">${escapeHtml(m.category || "Routing")}</span></td>
                 <td><span class="status-badge status-active">${escapeHtml(m.difficulty || "Mudah")}</span></td>
@@ -3422,10 +3586,12 @@ function renderMaterialsSection() {
                     </div>
                 </td>
             </tr>
-        `,
-      )
+        `;
+      })
       .join("");
 
+    bindMaterialRowCheckboxes();
+    updateMaterialBulkState();
     if (window.lucide) window.lucide.createIcons();
   }
 
@@ -3457,6 +3623,12 @@ function renderMaterialsSection() {
       if (tabList) tabList.classList.remove("active");
       const titleInput = document.getElementById("material-input-title");
       if (titleInput) titleInput.focus();
+      // Hide bulk bar when switching to create tab
+      const mBulkBar = document.getElementById("floating-material-bulk-bar");
+      if (mBulkBar) {
+        mBulkBar.classList.remove("active");
+        mBulkBar.style.display = "none";
+      }
     } else {
       if (viewCreate) viewCreate.style.display = "none";
       if (viewList) viewList.style.display = "block";

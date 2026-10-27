@@ -468,6 +468,12 @@ document.addEventListener("DOMContentLoaded", () => {
         floatingQuizBulkBar.classList.remove("active");
         floatingQuizBulkBar.style.display = "none";
       }
+
+      const floatingMaterialBulkBar = document.getElementById("floating-material-bulk-bar");
+      if (floatingMaterialBulkBar && targetId !== "materials-section") {
+        floatingMaterialBulkBar.classList.remove("active");
+        floatingMaterialBulkBar.style.display = "none";
+      }
     }
   }
 
