@@ -2415,12 +2415,27 @@ function renderMemberSection() {
                             Daftarkan Member Baru
                         </h3>
                         <p style="font-size: 0.825rem; color: #a1a1aa; margin-top: 0.25rem;">
-                            Masukkan data akun calon member, tambahkan ke antrean di bawah, dan daftarkan sekaligus.
+                            Masukkan data akun calon member, atau unggah file template untuk menumpuk antrean pendaftaran sekaligus.
                         </p>
                     </div>
-                    <button type="button" id="btn-quick-generate-password" class="btn-secondary-outline" style="padding: 0.4rem 0.85rem; font-size: 0.775rem; display: inline-flex; align-items: center; gap: 0.35rem;" title="Isi otomatis kolom password dengan password acak yang aman">
-                        <span>Acak Password</span>
-                    </button>
+                    <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+                        <!-- Hidden File Inputs for Member Batch Upload -->
+                        <input type="file" id="import-member-csv-input" accept=".csv,text/csv" style="display: none;">
+                        <input type="file" id="import-member-json-input" accept=".json,application/json" style="display: none;">
+
+                        <button type="button" id="btn-download-member-template" class="btn-secondary-outline" style="padding: 0.4rem 0.85rem; font-size: 0.775rem; display: inline-flex; align-items: center; gap: 0.35rem;" title="Unduh template CSV/Excel untuk pendaftaran massal">
+                            <i data-lucide="download" style="width: 13px; height: 13px;"></i>
+                            <span>Template CSV</span>
+                        </button>
+                        <button type="button" id="btn-upload-member-file" class="btn-secondary-outline" style="padding: 0.4rem 0.85rem; font-size: 0.775rem; display: inline-flex; align-items: center; gap: 0.35rem;" title="Upload file CSV atau JSON calon member ke antrean">
+                            <i data-lucide="upload" style="width: 13px; height: 13px;"></i>
+                            <span>Upload CSV / JSON</span>
+                        </button>
+                        <button type="button" id="btn-quick-generate-password" class="btn-secondary-outline" style="padding: 0.4rem 0.85rem; font-size: 0.775rem; display: inline-flex; align-items: center; gap: 0.35rem;" title="Isi otomatis kolom password dengan password acak yang aman">
+                            <i data-lucide="key" style="width: 13px; height: 13px;"></i>
+                            <span>Acak Password</span>
+                        </button>
+                    </div>
                 </div>
 
                 <form id="member-queue-input-form">
@@ -2510,6 +2525,227 @@ function renderMemberSection() {
   // Bind Eye Password Toggles
   if (window.bindPasswordToggles) {
     window.bindPasswordToggles();
+  }
+
+  // Bind Download CSV Template for Members
+  const btnDownloadTpl = document.getElementById("btn-download-member-template");
+  if (btnDownloadTpl) {
+    btnDownloadTpl.addEventListener("click", () => {
+      const csvContent =
+        "Username,Email,Password\n" +
+        "siswa_andi,andi@sekolah.sch.id,AndiSecure123!\n" +
+        "siswa_budi,budi@sekolah.sch.id,BudiPassw0rd!\n" +
+        "siswa_citra,citra@sekolah.sch.id,CitraSecret789!\n";
+
+      const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "template_pendaftaran_member.csv";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+
+      if (window.showGeistToast) {
+        showGeistToast(
+          "success",
+          "Template Diunduh",
+          "Gunakan template CSV ini untuk mengisi data calon member.",
+        );
+      }
+    });
+  }
+
+  // Bind Upload Button (Triggers File Selector)
+  const btnUploadMemberFile = document.getElementById("btn-upload-member-file");
+  const fileInputCsv = document.getElementById("import-member-csv-input");
+  const fileInputJson = document.getElementById("import-member-json-input");
+
+  if (btnUploadMemberFile && fileInputCsv) {
+    btnUploadMemberFile.addEventListener("click", () => {
+      // Allow choosing CSV or JSON
+      fileInputCsv.accept = ".csv,text/csv,.json,application/json";
+      fileInputCsv.click();
+    });
+  }
+
+  if (fileInputCsv) {
+    fileInputCsv.addEventListener("change", function (e) {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      const isJson = file.name.toLowerCase().endsWith(".json");
+      const reader = new FileReader();
+
+      reader.onload = function (evt) {
+        try {
+          const content = evt.target.result;
+          let parsedUsers = [];
+
+          if (isJson) {
+            const data = JSON.parse(content);
+            const rawArray = Array.isArray(data) ? data : (data.users || data.members || []);
+            parsedUsers = rawArray.map((item) => ({
+              username: String(item.username || item.user || "").trim(),
+              email: String(item.email || "").trim(),
+              password: String(item.password || item.pass || item.kata_sandi || "").trim(),
+            }));
+          } else {
+            // Parse CSV format (comma, semicolon, or tab delimited)
+            const lines = content.split(/\r\n|\n|\r/);
+            for (let i = 0; i < lines.length; i++) {
+              const line = lines[i].trim();
+              if (!line) continue;
+
+              // Detect delimiter
+              let delimiter = ",";
+              if (line.includes(";") && !line.includes(",")) delimiter = ";";
+              else if (line.includes("\t") && !line.includes(",")) delimiter = "\t";
+
+              // Split with respect to quotes
+              const cols = line.split(delimiter).map((c) =>
+                c.replace(/^["']|["']$/g, "").trim()
+              );
+
+              // Skip header line
+              if (
+                i === 0 &&
+                cols[0].toLowerCase().includes("user") &&
+                cols[1] &&
+                cols[1].toLowerCase().includes("email")
+              ) {
+                continue;
+              }
+
+              if (cols.length >= 3) {
+                parsedUsers.push({
+                  username: cols[0],
+                  email: cols[1],
+                  password: cols[2],
+                });
+              } else if (cols.length === 2) {
+                // If only username and email are provided, auto-generate a secure password
+                parsedUsers.push({
+                  username: cols[0],
+                  email: cols[1],
+                  password: generateRandomMemberPassword(),
+                });
+              }
+            }
+          }
+
+          if (parsedUsers.length === 0) {
+            throw new Error("Tidak ada data member yang valid di dalam file.");
+          }
+
+          if (!window.MEMBER_REGISTRATION_QUEUE) {
+            window.MEMBER_REGISTRATION_QUEUE = [];
+          }
+
+          let addedCount = 0;
+          let skippedErrors = [];
+
+          parsedUsers.forEach((u, uIdx) => {
+            const rowNum = uIdx + 1;
+            const uname = u.username.toLowerCase();
+            const uemail = u.email.toLowerCase();
+
+            if (!u.username || !u.email || !u.password) {
+              skippedErrors.push(`Baris ${rowNum}: Data tidak lengkap`);
+              return;
+            }
+
+            if (!/^[a-zA-Z0-9._-]+$/.test(u.username)) {
+              skippedErrors.push(`Baris ${rowNum}: Username '${u.username}' format tidak valid`);
+              return;
+            }
+
+            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(u.email)) {
+              skippedErrors.push(`Baris ${rowNum}: Email '${u.email}' format tidak valid`);
+              return;
+            }
+
+            if (u.password.length < 8) {
+              skippedErrors.push(`Baris ${rowNum}: Password minimal 8 karakter`);
+              return;
+            }
+
+            // Check duplicate in current queue
+            const isDupQueue = window.MEMBER_REGISTRATION_QUEUE.some(
+              (item) =>
+                item.username.toLowerCase() === uname ||
+                item.email.toLowerCase() === uemail
+            );
+            if (isDupQueue) {
+              skippedErrors.push(`Baris ${rowNum}: Duplikasi di antrean (${u.username})`);
+              return;
+            }
+
+            // Check duplicate in database
+            if (Array.isArray(window.NETQUIZ_MEMBERS)) {
+              const isDbDup = window.NETQUIZ_MEMBERS.some(
+                (m) =>
+                  (m.email && m.email.toLowerCase() === uemail) ||
+                  (m.username && m.username.toLowerCase() === uname)
+              );
+              if (isDbDup) {
+                skippedErrors.push(`Baris ${rowNum}: '${u.username}' sudah ada di database`);
+                return;
+              }
+            }
+
+            window.MEMBER_REGISTRATION_QUEUE.push({
+              id: "mq_" + Date.now() + "_" + Math.random().toString(36).substr(2, 5),
+              username: u.username,
+              email: u.email,
+              password: u.password,
+              createdAt: new Date().toLocaleTimeString("id-ID", {
+                hour: "2-digit",
+                minute: "2-digit",
+              }),
+            });
+            addedCount++;
+          });
+
+          renderQueueList();
+
+          if (addedCount > 0) {
+            const errNote = skippedErrors.length > 0 ? ` (${skippedErrors.length} baris dilewati karena duplikasi/tidak valid)` : "";
+            if (window.showGeistToast) {
+              showGeistToast(
+                "success",
+                "Import Selesai",
+                `Berhasil memasukkan ${addedCount} calon member ke antrean.${errNote}`
+              );
+            } else {
+              alert(`Berhasil memasukkan ${addedCount} calon member ke antrean.${errNote}`);
+            }
+          } else {
+            const detailMsg = skippedErrors.slice(0, 3).join(", ");
+            if (window.showGeistToast) {
+              showGeistToast(
+                "error",
+                "Gagal Memasukkan Member",
+                detailMsg || "Semua data pada file tidak lolos validasi atau duplikat."
+              );
+            } else {
+              alert("Gagal: " + (detailMsg || "Semua data pada file tidak lolos validasi."));
+            }
+          }
+        } catch (err) {
+          if (window.showGeistToast) {
+            showGeistToast("error", "Format File Tidak Sesuai", err.message);
+          } else {
+            alert("Error: " + err.message);
+          }
+        } finally {
+          fileInputCsv.value = "";
+        }
+      };
+
+      reader.readAsText(file);
+    });
   }
 
   // Bind Quick Generate Password
