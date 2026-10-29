@@ -1110,11 +1110,11 @@ function renderQuizSection() {
 
             <!-- FLOATING BULK ACTION BAR (SCOPED TO QUIZ LIST) -->
             <div id="floating-quiz-bulk-bar" class="floating-bulk-bar" aria-live="polite" style="display: none;">
-                <span id="bulk-quiz-selected-count" class="bulk-count-badge">0 Dipilih</span>
+                
                 <div class="bulk-actions-group">
                     <button type="button" id="btn-bulk-delete-quizzes" class="btn-bulk-action btn-bulk-danger" title="Hapus kuis yang dipilih">
                         <i data-lucide="trash-2" style="width: 14px; height: 14px;"></i>
-                        <span>Hapus Terpilih</span>
+                     
                     </button>
                 </div>
                 <button type="button" id="btn-bulk-dismiss-quizzes" class="btn-bulk-dismiss" title="Batal Pilihan">
@@ -1742,11 +1742,18 @@ function renderQuizSection() {
   };
 
   const selectedQuizIds = new Set();
-  const selectAllQuizzesCheckbox = document.getElementById("select-all-quizzes");
+  const selectAllQuizzesCheckbox =
+    document.getElementById("select-all-quizzes");
   const floatingQuizBulkBar = document.getElementById("floating-quiz-bulk-bar");
-  const bulkQuizCountBadge = document.getElementById("bulk-quiz-selected-count");
-  const btnBulkDeleteQuizzes = document.getElementById("btn-bulk-delete-quizzes");
-  const btnBulkDismissQuizzes = document.getElementById("btn-bulk-dismiss-quizzes");
+  const bulkQuizCountBadge = document.getElementById(
+    "bulk-quiz-selected-count",
+  );
+  const btnBulkDeleteQuizzes = document.getElementById(
+    "btn-bulk-delete-quizzes",
+  );
+  const btnBulkDismissQuizzes = document.getElementById(
+    "btn-bulk-dismiss-quizzes",
+  );
 
   function updateQuizBulkState() {
     const rowCheckboxes = document.querySelectorAll(".quiz-row-checkbox");
@@ -1762,8 +1769,10 @@ function renderQuizSection() {
         selectAllQuizzesCheckbox.checked = false;
         selectAllQuizzesCheckbox.indeterminate = false;
       } else {
-        selectAllQuizzesCheckbox.checked = checkedVisibleCount === rowCheckboxes.length;
-        selectAllQuizzesCheckbox.indeterminate = checkedVisibleCount > 0 && checkedVisibleCount < rowCheckboxes.length;
+        selectAllQuizzesCheckbox.checked =
+          checkedVisibleCount === rowCheckboxes.length;
+        selectAllQuizzesCheckbox.indeterminate =
+          checkedVisibleCount > 0 && checkedVisibleCount < rowCheckboxes.length;
       }
     }
 
@@ -1841,7 +1850,9 @@ function renderQuizSection() {
     const idsArray = Array.from(selectedQuizIds);
     if (idsArray.length === 0) return;
 
-    const selectedQuizzesData = rawQuizzes.filter((q) => selectedQuizIds.has(String(q.id)));
+    const selectedQuizzesData = rawQuizzes.filter((q) =>
+      selectedQuizIds.has(String(q.id)),
+    );
     const count = idsArray.length;
     const titlesList = selectedQuizzesData
       .slice(0, 3)
@@ -1876,7 +1887,7 @@ function renderQuizSection() {
         document.body.appendChild(form);
         form.submit();
       },
-      true
+      true,
     );
   }
 
@@ -2528,7 +2539,9 @@ function renderMemberSection() {
   }
 
   // Bind Download CSV Template for Members
-  const btnDownloadTpl = document.getElementById("btn-download-member-template");
+  const btnDownloadTpl = document.getElementById(
+    "btn-download-member-template",
+  );
   if (btnDownloadTpl) {
     btnDownloadTpl.addEventListener("click", () => {
       const csvContent =
@@ -2585,11 +2598,15 @@ function renderMemberSection() {
 
           if (isJson) {
             const data = JSON.parse(content);
-            const rawArray = Array.isArray(data) ? data : (data.users || data.members || []);
+            const rawArray = Array.isArray(data)
+              ? data
+              : data.users || data.members || [];
             parsedUsers = rawArray.map((item) => ({
               username: String(item.username || item.user || "").trim(),
               email: String(item.email || "").trim(),
-              password: String(item.password || item.pass || item.kata_sandi || "").trim(),
+              password: String(
+                item.password || item.pass || item.kata_sandi || "",
+              ).trim(),
             }));
           } else {
             // Parse CSV format (comma, semicolon, or tab delimited)
@@ -2601,12 +2618,13 @@ function renderMemberSection() {
               // Detect delimiter
               let delimiter = ",";
               if (line.includes(";") && !line.includes(",")) delimiter = ";";
-              else if (line.includes("\t") && !line.includes(",")) delimiter = "\t";
+              else if (line.includes("\t") && !line.includes(","))
+                delimiter = "\t";
 
               // Split with respect to quotes
-              const cols = line.split(delimiter).map((c) =>
-                c.replace(/^["']|["']$/g, "").trim()
-              );
+              const cols = line
+                .split(delimiter)
+                .map((c) => c.replace(/^["']|["']$/g, "").trim());
 
               // Skip header line
               if (
@@ -2657,17 +2675,23 @@ function renderMemberSection() {
             }
 
             if (!/^[a-zA-Z0-9._-]+$/.test(u.username)) {
-              skippedErrors.push(`Baris ${rowNum}: Username '${u.username}' format tidak valid`);
+              skippedErrors.push(
+                `Baris ${rowNum}: Username '${u.username}' format tidak valid`,
+              );
               return;
             }
 
             if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(u.email)) {
-              skippedErrors.push(`Baris ${rowNum}: Email '${u.email}' format tidak valid`);
+              skippedErrors.push(
+                `Baris ${rowNum}: Email '${u.email}' format tidak valid`,
+              );
               return;
             }
 
             if (u.password.length < 8) {
-              skippedErrors.push(`Baris ${rowNum}: Password minimal 8 karakter`);
+              skippedErrors.push(
+                `Baris ${rowNum}: Password minimal 8 karakter`,
+              );
               return;
             }
 
@@ -2675,10 +2699,12 @@ function renderMemberSection() {
             const isDupQueue = window.MEMBER_REGISTRATION_QUEUE.some(
               (item) =>
                 item.username.toLowerCase() === uname ||
-                item.email.toLowerCase() === uemail
+                item.email.toLowerCase() === uemail,
             );
             if (isDupQueue) {
-              skippedErrors.push(`Baris ${rowNum}: Duplikasi di antrean (${u.username})`);
+              skippedErrors.push(
+                `Baris ${rowNum}: Duplikasi di antrean (${u.username})`,
+              );
               return;
             }
 
@@ -2687,16 +2713,22 @@ function renderMemberSection() {
               const isDbDup = window.NETQUIZ_MEMBERS.some(
                 (m) =>
                   (m.email && m.email.toLowerCase() === uemail) ||
-                  (m.username && m.username.toLowerCase() === uname)
+                  (m.username && m.username.toLowerCase() === uname),
               );
               if (isDbDup) {
-                skippedErrors.push(`Baris ${rowNum}: '${u.username}' sudah ada di database`);
+                skippedErrors.push(
+                  `Baris ${rowNum}: '${u.username}' sudah ada di database`,
+                );
                 return;
               }
             }
 
             window.MEMBER_REGISTRATION_QUEUE.push({
-              id: "mq_" + Date.now() + "_" + Math.random().toString(36).substr(2, 5),
+              id:
+                "mq_" +
+                Date.now() +
+                "_" +
+                Math.random().toString(36).substr(2, 5),
               username: u.username,
               email: u.email,
               password: u.password,
@@ -2711,15 +2743,20 @@ function renderMemberSection() {
           renderQueueList();
 
           if (addedCount > 0) {
-            const errNote = skippedErrors.length > 0 ? ` (${skippedErrors.length} baris dilewati karena duplikasi/tidak valid)` : "";
+            const errNote =
+              skippedErrors.length > 0
+                ? ` (${skippedErrors.length} baris dilewati karena duplikasi/tidak valid)`
+                : "";
             if (window.showGeistToast) {
               showGeistToast(
                 "success",
                 "Import Selesai",
-                `Berhasil memasukkan ${addedCount} calon member ke antrean.${errNote}`
+                `Berhasil memasukkan ${addedCount} calon member ke antrean.${errNote}`,
               );
             } else {
-              alert(`Berhasil memasukkan ${addedCount} calon member ke antrean.${errNote}`);
+              alert(
+                `Berhasil memasukkan ${addedCount} calon member ke antrean.${errNote}`,
+              );
             }
           } else {
             const detailMsg = skippedErrors.slice(0, 3).join(", ");
@@ -2727,10 +2764,14 @@ function renderMemberSection() {
               showGeistToast(
                 "error",
                 "Gagal Memasukkan Member",
-                detailMsg || "Semua data pada file tidak lolos validasi atau duplikat."
+                detailMsg ||
+                  "Semua data pada file tidak lolos validasi atau duplikat.",
               );
             } else {
-              alert("Gagal: " + (detailMsg || "Semua data pada file tidak lolos validasi."));
+              alert(
+                "Gagal: " +
+                  (detailMsg || "Semua data pada file tidak lolos validasi."),
+              );
             }
           }
         } catch (err) {
@@ -2889,23 +2930,20 @@ function renderManageMemberSection() {
 
         <!-- FLOATING BULK ACTION BAR (SCOPED TO MANAGE SECTION) -->
         <div id="floating-bulk-bar" class="floating-bulk-bar" aria-live="polite" style="display: none;">
-            <span id="bulk-selected-count" class="bulk-count-badge">0 Dipilih</span>
+            <span id="bulk-selected-count" class="bulk-count-badge">0</span>
             <div class="bulk-actions-group">
                 <button type="button" id="btn-bulk-activate" class="btn-bulk-action">
                     <i data-lucide="check-circle" style="width: 14px; height: 14px;"></i>
-                    <span>Aktifkan</span>
                 </button>
                 <button type="button" id="btn-bulk-suspend" class="btn-bulk-action">
                     <i data-lucide="user-x" style="width: 14px; height: 14px;"></i>
-                    <span>Nonaktifkan</span>
+                
                 </button>
                 <button type="button" id="btn-bulk-export" class="btn-bulk-action">
                     <i data-lucide="download" style="width: 14px; height: 14px;"></i>
-                    <span>Export Terpilih</span>
                 </button>
                 <button type="button" id="btn-bulk-delete" class="btn-bulk-action btn-bulk-danger" title="Hapus akun member yang dipilih">
                     <i data-lucide="trash-2" style="width: 14px; height: 14px;"></i>
-                    <span>Hapus Terpilih</span>
                 </button>
             </div>
             <button type="button" id="btn-bulk-dismiss" class="btn-bulk-dismiss" title="Batal Pilihan">
@@ -3617,7 +3655,7 @@ function renderMaterialsSection() {
 
             <!-- FLOATING BULK ACTION BAR (SCOPED TO MATERIALS LIST) -->
             <div id="floating-material-bulk-bar" class="floating-bulk-bar" aria-live="polite" style="display: none;">
-                <span id="bulk-material-selected-count" class="bulk-count-badge">0 Dipilih</span>
+                <span id="bulk-material-selected-count" class="bulk-count-badge">0</span>
                 <div class="bulk-actions-group">
                     <button type="button" id="btn-bulk-delete-materials" class="btn-bulk-action btn-bulk-danger" title="Hapus materi yang dipilih">
                         <i data-lucide="trash-2" style="width: 14px; height: 14px;"></i>
@@ -3634,11 +3672,21 @@ function renderMaterialsSection() {
   const matTbody = document.getElementById("materials-table-body");
   const matSearch = document.getElementById("material-search-input");
   const selectedMaterialIds = new Set();
-  const selectAllMaterialsCheckbox = document.getElementById("select-all-materials");
-  const floatingMaterialBulkBar = document.getElementById("floating-material-bulk-bar");
-  const bulkMaterialCountBadge = document.getElementById("bulk-material-selected-count");
-  const btnBulkDeleteMaterials = document.getElementById("btn-bulk-delete-materials");
-  const btnBulkDismissMaterials = document.getElementById("btn-bulk-dismiss-materials");
+  const selectAllMaterialsCheckbox = document.getElementById(
+    "select-all-materials",
+  );
+  const floatingMaterialBulkBar = document.getElementById(
+    "floating-material-bulk-bar",
+  );
+  const bulkMaterialCountBadge = document.getElementById(
+    "bulk-material-selected-count",
+  );
+  const btnBulkDeleteMaterials = document.getElementById(
+    "btn-bulk-delete-materials",
+  );
+  const btnBulkDismissMaterials = document.getElementById(
+    "btn-bulk-dismiss-materials",
+  );
 
   function updateMaterialBulkState() {
     const rowCheckboxes = document.querySelectorAll(".material-row-checkbox");
@@ -3654,8 +3702,10 @@ function renderMaterialsSection() {
         selectAllMaterialsCheckbox.checked = false;
         selectAllMaterialsCheckbox.indeterminate = false;
       } else {
-        selectAllMaterialsCheckbox.checked = checkedVisibleCount === rowCheckboxes.length;
-        selectAllMaterialsCheckbox.indeterminate = checkedVisibleCount > 0 && checkedVisibleCount < rowCheckboxes.length;
+        selectAllMaterialsCheckbox.checked =
+          checkedVisibleCount === rowCheckboxes.length;
+        selectAllMaterialsCheckbox.indeterminate =
+          checkedVisibleCount > 0 && checkedVisibleCount < rowCheckboxes.length;
       }
     }
 
@@ -3733,7 +3783,9 @@ function renderMaterialsSection() {
     const idsArray = Array.from(selectedMaterialIds);
     if (idsArray.length === 0) return;
 
-    const selectedMaterialsData = materials.filter((m) => selectedMaterialIds.has(String(m.id)));
+    const selectedMaterialsData = materials.filter((m) =>
+      selectedMaterialIds.has(String(m.id)),
+    );
     const count = idsArray.length;
     const titlesList = selectedMaterialsData
       .slice(0, 3)
@@ -3768,12 +3820,15 @@ function renderMaterialsSection() {
         document.body.appendChild(form);
         form.submit();
       },
-      true
+      true,
     );
   }
 
   if (btnBulkDeleteMaterials) {
-    btnBulkDeleteMaterials.addEventListener("click", triggerBulkDeleteMaterials);
+    btnBulkDeleteMaterials.addEventListener(
+      "click",
+      triggerBulkDeleteMaterials,
+    );
   }
 
   function renderMatRows(list) {

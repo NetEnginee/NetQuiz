@@ -463,13 +463,17 @@ document.addEventListener("DOMContentLoaded", () => {
         floatingBulkBar.style.display = "none";
       }
 
-      const floatingQuizBulkBar = document.getElementById("floating-quiz-bulk-bar");
+      const floatingQuizBulkBar = document.getElementById(
+        "floating-quiz-bulk-bar",
+      );
       if (floatingQuizBulkBar && targetId !== "quiz-section") {
         floatingQuizBulkBar.classList.remove("active");
         floatingQuizBulkBar.style.display = "none";
       }
 
-      const floatingMaterialBulkBar = document.getElementById("floating-material-bulk-bar");
+      const floatingMaterialBulkBar = document.getElementById(
+        "floating-material-bulk-bar",
+      );
       if (floatingMaterialBulkBar && targetId !== "materials-section") {
         floatingMaterialBulkBar.classList.remove("active");
         floatingMaterialBulkBar.style.display = "none";

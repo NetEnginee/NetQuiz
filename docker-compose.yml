@@ -19,6 +19,8 @@ services:
     container_name: cpu-php-fpm
     volumes:
       - ./src:/var/webfeed/html:z
+    depends_on:
+      - nvram-mysql
     networks:
       - mikrotik-localnet
 
@@ -35,6 +37,7 @@ services:
       - "3306:3306"
     volumes:
       - nvram-data:/var/lib/mysql
+      - ./database.sql:/docker-entrypoint-initdb.d/init.sql:ro,z
     networks:
       - mikrotik-localnet
 
