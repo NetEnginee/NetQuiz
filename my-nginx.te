@@ -1,0 +1,11 @@
+
+module my-nginx 1.0;
+
+require {
+	type user_home_t;
+	type container_t;
+	class file read;
+}
+
+#============= container_t ==============
+allow container_t user_home_t:file read;
