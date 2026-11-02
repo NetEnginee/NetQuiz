@@ -1,4 +1,4 @@
-FROM php:8.4-fpm
+FROM php:8.4.26-fpm
 
 # Install system dependencies including WebP, JPEG, Freetype
 RUN apt-get update && apt-get install -y \
